@@ -6,7 +6,8 @@ DESCRIPCIÓN: Extrae y audita la consistencia diaria utilizando peticiones HTTP 
              de red se cierren herméticamente tras cada ciclo. Se ejecuta en un bucle continuo.
              Resuelve las rutas de .env de forma absoluta y cuenta con un decodificador inteligente
              para solucionar problemas de formato de archivos creados en Windows/PowerShell.
-             Sincroniza y escribe dinámicamente tanto las tareas diarias como el desglose de estados en dashboard.html.
+             Sincroniza y escribe dinámicamente tanto las tareas diarias como el desglose de estados en index
+             .html.
 AUTOR: Tu Mentor de Programación & Analista de Ciberseguridad
 """
 
@@ -261,9 +262,9 @@ def auditar_consistencia_diaria():
         print(f"🎯 Auditoría completada: {tareas_consistentes_hoy} de {total_tareas_hoy} tareas consistentes hoy ({round(tasa_constancia, 1)}%)")
 
         # ----------------------------------------------------------------
-        # 🛡️ INYECCIÓN EN EL DASHBOARD HTML (RUTAS ABSOLUTAS)
+        # 🛡️ INYECCIÓN EN EL INDEX HTML (RUTAS ABSOLUTAS)
         # ----------------------------------------------------------------
-        html_path = BASE_DIR / "dashboard.html"
+        html_path = BASE_DIR / "index.html"
         
         if not html_path.exists():
             print(f"❌ [ERROR]: No se encontró el archivo '{html_path}' para sincronizar.")
