@@ -1,4 +1,4 @@
-🛡️ Notion Flow Auditor
+_🛡️ Notion Flow Auditor
 
 ¡Bienvenido a Notion Flow Auditor! Este es un microservicio local de auditoría y visualización de consistencia diaria, diseñado para extraer datos en tiempo real de tu base de datos de Notion, procesar tus hábitos bajo reglas de negocio estrictas y proyectarlos en un dashboard interactivo de alta fidelidad visual.
 
