@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-MÓDULO: extract_and_audit.py (Versión de Producción en Español - Enfoque Diario)
-DESCRIPCIÓN: Extrae y audita la consistencia diaria utilizando peticiones HTTP nativas.
-             Implementa un administrador de sesiones para garantizar que las conexiones
-             de red se cierren herméticamente tras cada ciclo. Se ejecuta en un bucle continuo.
-             Resuelve las rutas de .env de forma absoluta y cuenta con un decodificador inteligente
-             para solucionar problemas de formato de archivos creados en Windows/PowerShell.
-             Sincroniza y escribe dinámicamente tanto las tareas diarias como el desglose de estados en index
-             .html.
+MÓDULO: extract_and_audit.py (Versión Integrada de Producción - Flujo Tripartito Móvil)
+DESCRIPCIÓN: Extrae y audita la consistencia utilizando peticiones HTTP nativas.
+             Sincroniza y escribe dinámicamente los bloques independientes de 
+             Ayer, Hoy y Mañana en index.html, y automatiza los comandos de Git 
+             para actualizar GitHub Pages de forma invisible para tu celular.
 AUTOR: Tu Mentor de Programación & Analista de Ciberseguridad
 """
 
@@ -15,7 +12,7 @@ import os
 import sys
 import time
 import json  # Requerido para formatear de forma segura el conteo de estados para JS
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 import requests
@@ -35,7 +32,6 @@ def cargar_env_binario_robusto(ruta):
         with open(ruta, "rb") as f:
             raw_data = f.read()
         
-        # Detectar la codificación de forma binaria estricta
         if raw_data.startswith(b'\xff\xfe'):
             contenido = raw_data.decode('utf-16-le', errors='ignore')
         elif raw_data.startswith(b'\xfe\xff'):
@@ -43,7 +39,6 @@ def cargar_env_binario_robusto(ruta):
         elif raw_data.startswith(b'\xef\xbb\xbf'):
             contenido = raw_data.decode('utf-8-sig', errors='ignore')
         else:
-            # Si hay bytes nulos alternados, probablemente sea UTF-16 sin BOM explícito
             if b'\x00' in raw_data and len(raw_data) % 2 == 0:
                 try:
                     contenido = raw_data.decode('utf-16', errors='ignore')
@@ -55,7 +50,6 @@ def cargar_env_binario_robusto(ruta):
                 except UnicodeDecodeError:
                     contenido = raw_data.decode('latin-1', errors='ignore')
         
-        # Limpiar caracteres nulos y normalizar saltos de línea
         contenido = contenido.replace('\x00', '')
         
         for linea in contenido.splitlines():
@@ -64,30 +58,25 @@ def cargar_env_binario_robusto(ruta):
                 continue
             if "=" in linea:
                 clave, valor = linea.split("=", 1)
-                # Remover caracteres no imprimibles u ocultos de la clave (como BOMs colados)
                 clave = ''.join(c for c in clave.strip() if c.isprintable())
                 valor = valor.strip().strip('"').strip("'")
                 os.environ[clave] = valor
     except Exception as e:
         print(f"⚠️ Error al decodificar manualmente el archivo .env: {e}")
 
-# Ejecutamos primero nuestro extractor binario robusto diseñado para Windows
+# Ejecutamos nuestro extractor binario robusto diseñado para Windows
 cargar_env_binario_robusto(env_path)
-
-# Cargamos dotenv como respaldo secundario para variables estándar
 load_dotenv(dotenv_path=env_path)
 
 NOTION_API_KEY = os.getenv("NOTION_API_KEY")
 DB_RECORDATORIOS_DIARIOS = os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS")
 
-# Configuración del bucle de fondo (3 horas = 10800 segundos)
-INTERVALO_SEGUNDOS = 10800
+INTERVALO_SEGUNDOS = 10800  # 3 Horas
 
 if not NOTION_API_KEY or not DB_RECORDATORIOS_DIARIOS:
     print("❌ [ERROR]: Faltan credenciales válidas en tu archivo .env")
     print(f"🔍 Directorio de búsqueda absoluto del .env:\n   👉 '{env_path}'")
     
-    # --- DIAGNÓSTICO SEGURO DE VARIABLES DETECTADAS EN TU .ENV ---
     print("\n🔑 [DIAGNÓSTICO SEGURO DE CLAVES EN .ENV]:")
     try:
         if env_path.exists():
@@ -107,35 +96,40 @@ if not NOTION_API_KEY or not DB_RECORDATORIOS_DIARIOS:
             if claves_encontradas:
                 print("   Python detectó que escribiste estas variables en tu archivo:")
                 for c in claves_encontradas:
-                    # Limpiamos caracteres no imprimibles para el print de diagnóstico
                     c_limpia = ''.join(char for char in c if char.isprintable())
                     print(f"   • Variable: '{c_limpia}'")
-                print("\n💡 NOTA: Tu script de Python espera exactamente 'NOTION_API_KEY' y 'NOTION_DB_HABITS'.")
-                print("Si tienen un nombre ligeramente diferente o espacios adicionales, el script no podrá leerlas.")
-            else:
-                print("   ⚠️ El archivo .env parece estar vacío o no tiene el formato 'CLAVE=VALOR'.")
+                print(f"\n💡 NOTA: Tu script espera exactamente 'NOTION_API_KEY' y 'NOTION_DB_RECORDATORIOS_DIARIOS'.")
         else:
-            print("   ❌ El archivo .env no es accesible o no existe en la ruta de búsqueda.")
+            print("   ❌ El archivo .env no es accesible o no existe.")
     except Exception as e:
-        print(f"   ❌ No se pudo realizar el diagnóstico seguro del archivo .env: {e}")
-    print("================================================================\n")
+        print(f"   ❌ No se pudo realizar el diagnóstico: {e}")
     sys.exit(1)
 
-def es_de_hoy(fecha_str):
-    """Verifica si un string de fecha (formato ISO o YYYY-MM-DD) pertenece al día de hoy."""
+def evaluar_bloque_temporal(fecha_str):
+    """Evalúa si una fecha corresponde a 'AYER', 'HOY' o 'MAÑANA' relativo al tiempo actual."""
     if not fecha_str:
-        return False
+        return None
     try:
         solo_fecha = fecha_str.split("T")[0]
         fecha_dt = datetime.strptime(solo_fecha, "%Y-%m-%d").date()
+        
         hoy = datetime.now().date()
-        return fecha_dt == hoy
+        ayer = hoy - timedelta(days=1)
+        manana = hoy + timedelta(days=1)
+        
+        if fecha_dt == hoy:
+            return "HOY"
+        elif fecha_dt == ayer:
+            return "AYER"
+        elif fecha_dt == manana:
+            return "MANANA"
+        return None
     except Exception as e:
-        print(f"⚠️ Error al evaluar la fecha de la página ({fecha_str}): {e}")
-        return False
+        print(f"⚠️ Error al evaluar ventana temporal para la fecha ({fecha_str}): {e}")
+        return None
 
-def auditar_consistencia_diaria():
-    print(f"\n🔄 [{datetime.now().strftime('%H:%M:%S')}] Iniciando extracción de datos diarios desde Notion...")
+def auditar_consistencia_tripartita():
+    print(f"\n🔄 [{datetime.now().strftime('%H:%M:%S')}] Iniciando extracción desde Notion para index.html...")
     
     url = f"https://api.notion.com/v1/databases/{DB_RECORDATORIOS_DIARIOS}/query"
     headers = {
@@ -144,11 +138,10 @@ def auditar_consistencia_diaria():
         "Content-Type": "application/json"
     }
     data = {
-        "page_size": 30
+        "page_size": 100  # Margen ampliado para capturar registros contiguos
     }
     
     try:
-        # 🛡️ SESIÓN HERMÉTICA (CIERRE AUTOMÁTICO DE SOCKETS)
         with requests.Session() as session:
             session.headers.update(headers)
             response = session.post(url, json=data)
@@ -156,18 +149,23 @@ def auditar_consistencia_diaria():
             results = response.json().get("results", [])
             
         if not results:
-            print("⚠️  [AUDITORÍA]: Conexión exitosa, pero la base de datos está vacía.")
+            print("⚠️  [AUDITORÍA]: Base de datos vacía o inaccesible.")
             return
 
-        print(f"📊 Se detectaron {len(results)} registros totales en Notion.")
+        print(f"📊 Se extrajeron {len(results)} registros totales de Notion.")
+        
+        # Estructuras independientes para alimentar los 3 bloques visuales de tu cel
+        conteo_ayer = {}
+        conteo_hoy = {}
+        conteo_manana = {}
         
         tareas_consistentes_hoy = 0
-        conteo_estados = {}  # Diccionario para agrupar y contar tareas de hoy por estado
+        total_tareas_hoy = 0
+        
         columna_estado = None
         columna_fecha = None
         columna_consistencia = None
         
-        # Inspección del primer registro para identificar las columnas por tipo y nombre
         primer_registro = results[0].get("properties", {})
         for nombre_columna, info_columna in primer_registro.items():
             tipo = info_columna.get("type")
@@ -186,8 +184,7 @@ def auditar_consistencia_diaria():
             if "consistencia" in nombre_lower:
                 columna_consistencia = nombre_columna
 
-        # Filtrar páginas que corresponden estrictamente al DÍA DE HOY
-        paginas_filtradas = []
+        # Procesar y clasificar dinámicamente en los bloques independientes
         for pagina in results:
             props = pagina.get("properties", {})
             fecha_pagina = None
@@ -201,17 +198,10 @@ def auditar_consistencia_diaria():
             if not fecha_pagina:
                 fecha_pagina = pagina.get("created_time")
                 
-            if es_de_hoy(fecha_pagina):
-                paginas_filtradas.append(pagina)
-
-        total_tareas_hoy = len(paginas_filtradas)
-        print(f"📅 Registros que pertenecen al día de hoy: {total_tareas_hoy}")
-
-        # Procesar filas y calcular estadísticas de consistencia diaria
-        for pagina in paginas_filtradas:
-            props = pagina.get("properties", {})
-            
-            # Obtención dinámica del Estado
+            bloque = evaluar_bloque_temporal(fecha_pagina)
+            if not bloque:
+                continue
+                
             estado_val = "Vacío"
             if columna_estado:
                 status_data = props.get(columna_estado, {})
@@ -221,105 +211,96 @@ def auditar_consistencia_diaria():
                 elif tipo_status == "select" and status_data.get("select"):
                     estado_val = status_data["select"].get("name")
             
-            # Agrupar en el contador estadístico diario
-            conteo_estados[estado_val] = conteo_estados.get(estado_val, 0) + 1
-            
-            # Obtención dinámica de la Consistencia (Parser multitipo)
-            val_consistencia = 0
-            if columna_consistencia:
-                cons_data = props.get(columna_consistencia, {})
-                tipo_cons = cons_data.get("type")
+            # Distribución analítica por diccionario temporal
+            if bloque == "AYER":
+                conteo_ayer[estado_val] = conteo_ayer.get(estado_val, 0) + 1
+            elif bloque == "MANANA":
+                conteo_manana[estado_val] = conteo_manana.get(estado_val, 0) + 1
+            elif bloque == "HOY":
+                conteo_hoy[estado_val] = conteo_hoy.get(estado_val, 0) + 1
+                total_tareas_hoy += 1
                 
-                if tipo_cons == "number":
-                    val_consistencia = cons_data.get("number", 0)
-                elif tipo_cons == "formula":
-                    formula_data = cons_data.get("formula", {})
-                    formula_type = formula_data.get("type")
-                    if formula_type == "number":
-                        val_consistencia = formula_data.get("number", 0)
-                    elif formula_type == "boolean":
-                        val_consistencia = 1 if formula_data.get("boolean") else 0
-                    elif formula_type == "string":
-                        try:
-                            val_consistencia = float(formula_data.get("string", "0"))
-                        except ValueError:
-                            val_consistencia = 0
-                elif tipo_cons == "checkbox":
-                    val_consistencia = 1 if cons_data.get("checkbox") else 0
-                elif tipo_cons == "select":
-                    select_option = cons_data.get("select") or {}
-                    option_name = select_option.get("name", "0")
-                    try:
-                        val_consistencia = float(option_name)
-                    except ValueError:
-                        val_consistencia = 0
+                # Evaluación estricta de consistencia de Hoy
+                val_consistencia = 0
+                if columna_consistencia:
+                    cons_data = props.get(columna_consistencia, {})
+                    tipo_cons = cons_data.get("type")
+                    if tipo_cons == "number":
+                        val_consistencia = cons_data.get("number", 0)
+                    elif tipo_cons == "formula":
+                        f_data = cons_data.get("formula", {})
+                        if f_data.get("type") == "number":
+                            val_consistencia = f_data.get("number", 0)
+                        elif f_data.get("type") == "boolean":
+                            val_consistencia = 1 if f_data.get("boolean") else 0
+                    elif tipo_cons == "checkbox":
+                        val_consistencia = 1 if cons_data.get("checkbox") else 0
 
-            # Validación de la regla de negocio: Estado "Hecha" AND Consistencia == 1
-            if estado_val == "Hecha" and float(val_consistencia) == 1.0:
-                tareas_consistentes_hoy += 1
+                if estado_val == "Hecha" and float(val_consistencia) == 1.0:
+                    tareas_consistentes_hoy += 1
 
-        tasa_constancia = (tareas_consistentes_hoy / total_tareas_hoy) * 100 if total_tareas_hoy > 0 else 0
-        print(f"🎯 Auditoría completada: {tareas_consistentes_hoy} de {total_tareas_hoy} tareas consistentes hoy ({round(tasa_constancia, 1)}%)")
+        print(f"📅 Distribución temporal calculada -> Ayer: {sum(conteo_ayer.values())} | Hoy: {total_tareas_hoy} | Mañana: {sum(conteo_manana.values())}")
 
         # ----------------------------------------------------------------
-        # 🛡️ INYECCIÓN EN EL INDEX HTML (RUTAS ABSOLUTAS)
+        # 🛡️ INYECCIÓN EN EL INDEX.HTML CON ANCLAS MÚLTIPLES
         # ----------------------------------------------------------------
         html_path = BASE_DIR / "index.html"
-        
         if not html_path.exists():
-            print(f"❌ [ERROR]: No se encontró el archivo '{html_path}' para sincronizar.")
+            print(f"❌ [ERROR]: No se encontró el archivo '{html_path}'")
             return
             
         with open(html_path, "r", encoding="utf-8") as file:
             html_content = file.read()
             
         import re
-        # 1. Inyectamos las tareas consistentes encontradas hoy
-        html_content = re.sub(
-            r"const\s+diasReales\s*=\s*\d+;", 
-            f"const diasReales = {tareas_consistentes_hoy};", 
-            html_content
-        )
-
-        # 2. Inyectamos el total dinámico para calibrar la escala
-        html_content = re.sub(
-            r"totalDias\s*=\s*\d+;", 
-            f"totalDias = {total_tareas_hoy};", 
-            html_content
-        )
-
-        # 3. Inyectamos el desglose de estados serializado en JSON
-        conteo_json = json.dumps(conteo_estados, ensure_ascii=False)
-        html_content = re.sub(
-            r"const conteoEstadosReales = \{.*?\};", 
-            f"const conteoEstadosReales = {conteo_json};", 
-            html_content
-        )
+        # Ajustes de las escalas del medidor central de Hoy
+        html_content = re.sub(r"const\s+diasReales\s*=\s*\d+;", f"const diasReales = {tareas_consistentes_hoy};", html_content)
+        html_content = re.sub(r"totalDias\s*=\s*\d+;", f"totalDias = {total_tareas_hoy};", html_content)
+        
+        # Inyección serializada JSON para tus tres bloques visuales independientes
+        html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\};", f"const conteoAyer = {json.dumps(conteo_ayer, ensure_ascii=False)};", html_content)
+        html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\};", f"const conteoHoy = {json.dumps(conteo_hoy, ensure_ascii=False)};", html_content)
+        
+        # Compatibilidad por si el ancla visual todavía conserva el nombre genérico viejo
+        if "const conteoHoy =" not in html_content:
+            html_content = re.sub(r"const\s+conteoEstadosReales\s*=\s*\{.*?\};", f"const conteoHoy = {json.dumps(conteo_hoy, ensure_ascii=False)};", html_content)
+            
+        html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\};", f"const conteoManana = {json.dumps(conteo_manana, ensure_ascii=False)};", html_content)
 
         with open(html_path, "w", encoding="utf-8") as file:
             file.write(html_content)
-            
-        print(f"✅ [SINCRONIZACIÓN EXITOSA]: El reporte '{html_path.name}' ha sido actualizado con éxito.")
+        print("✅ [SINCRONIZACIÓN LOCAL]: Archivo index.html inyectado con éxito.")
+
+        # ----------------------------------------------------------------
+        # 🚀 AUTOMATIZACIÓN INVISIBLE DE GIT (SUBIDA A TU ENLACE MÓVIL)
+        # ----------------------------------------------------------------
+        print("📤 Desplegando actualización a GitHub Pages automáticamente...")
+        try:
+            os.system("git add index.html")
+            commit_msg = f'git commit -m "update: sincronización automática móvil {datetime.now().strftime("%d/%m %H:%M")}"'
+            os.system(commit_msg)
+            os.system("git push origin main_fa")
+            print("🎉 [PIPELINE EXITOSO]: Datos enviados en silencio a tu celular.")
+        except Exception as git_err:
+            print(f"⚠️ Alerta en Git (El archivo se guardó local pero no subió): {git_err}")
 
     except Exception as e:
         print(f"❌ Error crítico durante el pipeline de auditoría: {e}")
 
 if __name__ == "__main__":
     print("================================================================")
-    print("🛡️  NOTION FLOW AUDITOR - SERVICIO DE FONDO DIARIO ACTIVO")
-    print(f"⏰ El servicio se actualizará automáticamente cada {INTERVALO_SEGUNDOS} segundos.")
-    print("👉 Presiona [Ctrl + C] en esta terminal para apagar el servicio de forma limpia.")
+    print("🛡️  NOTION FLOW AUDITOR - PIPELINE TRÍPTICO MÓVIL")
+    print(f"⏰ Actualización automatizada activa cada {INTERVALO_SEGUNDOS} segundos.")
     print("================================================================")
     
     while True:
         try:
-            auditar_consistencia_diaria()
+            auditar_consistencia_tripartita()
             print(f"💤 Esperando {INTERVALO_SEGUNDOS} segundos para el próximo ciclo...")
             time.sleep(INTERVALO_SEGUNDOS)
         except KeyboardInterrupt:
-            print("\n🛑 [SERVICIO DETENIDO]: Finalizando el proceso de fondo de manera segura...")
+            print("\n🛑 [SERVICIO DETENIDO]: Finalizando de forma limpia...")
             break
         except Exception as e:
             print(f"\n❌ Error en el bucle principal: {e}")
-            print("🔄 Esperando 10 segundos antes de reintentar...")
             time.sleep(10)
