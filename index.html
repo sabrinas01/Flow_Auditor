@@ -39,12 +39,12 @@
                         <i class="fa-solid fa-square-poll-vertical text-notion-accentLight"></i> Notion Flow Auditor
                     </h1>
                     <p class="text-xs text-slate-400 mt-1">Reporte de Consistencia Diaria Real</p>
-                </div>
-                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 text-left sm:text-right">
-                    <!-- Botón de Actualizar Dashboard (UX Premium) -->
-                    <button id="btn-actualizar" onclick="activarActualizacion()" class="bg-gradient-to-r from-notion-accent to-notion-accentLight hover:from-notion-accentLight hover:to-red-700 text-white border border-notion-border px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all duration-300 shadow-lg shadow-notion-accent/20">
+                    <!-- Botón de Actualizar Dashboard (UX Premium - Trasladado abajo del título izquierdo según image_08ce1e.png) -->
+                    <button id="btn-actualizar" onclick="activarActualizacion()" class="mt-3 bg-gradient-to-r from-notion-accent to-notion-accentLight hover:from-notion-accentLight hover:to-red-700 text-white border border-notion-border px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all duration-300 shadow-lg shadow-notion-accent/20">
                         <i id="icono-actualizar" class="fa-solid fa-rotate"></i> <span id="texto-actualizar">Actualizar Dashboard</span>
                     </button>
+                </div>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 text-left sm:text-right">
                     <div class="flex flex-col items-start sm:items-end gap-2">
                         <div>
                             <span class="text-[10px] text-slate-500 uppercase font-bold block tracking-wider">Día Evaluado</span>
@@ -182,7 +182,7 @@
 
     <script>
         // Declaramos el total de tareas de Hoy de forma global
-        let totalDias = 17; 
+        let totalDias = 0; 
 
         // 1. CALCULAR DINÁMICAMENTE EL DÍA DE HOY
         function actualizarDiaActual() {
@@ -287,14 +287,14 @@
             actualizarDiaActual();
             
             // ANCLAS DE CONTROL TÉCNICO: Python modificará estas líneas exactas en cada ciclo
-            const ultimaActualizacionStr = "21/06/2026 15:40:48";
-            const totalPeticionesExitosas = 2;
+            const ultimaActualizacionStr = "Esperando ciclo...";
+            const totalPeticionesExitosas = 0;
             
             // ANCLAS DE DATOS REALES TEMPORALES
-            const diasReales = 5;
-            totalDias = 17;
-            const conteoAyer = {"Hecha": 16, "❌ Fallida / Vencida": 14, "⏭️ No necesaria": 4};
-            const conteoHoy = {"Hecha": 5, "En ejecución": 2, "Sin empezar": 5, "❌ Fallida / Vencida": 3, "⏭️ No necesaria": 2};
+            const diasReales = 0;
+            totalDias = 0;
+            const conteoAyer = {};
+            const conteoHoy = {};
             const conteoManana = {};
             
             // Inyección de Métricas de Control Solicitadas por Sabry
