@@ -1,0 +1,38 @@
+name: Flujo de Sincronización Automática
+
+on:
+  schedule:
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests python-dotenv
+
+      - name: Run Notion Flow Auditor
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS }}
+        run: python extract_and_audit.py
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "Notion Daemon Cloud"
+          git config --global user.email "daemon@bitacorait.com"
+          git add index.html peticiones_contador.txt
+          git diff-index --quiet HEAD || (git commit -m "update: sync automático cloud de hábitos ☁️" && git push origin HEAD:main_fa)
