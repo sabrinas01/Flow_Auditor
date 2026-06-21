@@ -304,3 +304,48 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"\n❌ Error en el bucle principal: {e}")
             time.sleep(10)
+
+            # ----------------------------------------------------------------
+        # 📈 SISTEMA DE PERSISTENCIA PARA EL CONTADOR DE PETICIONES
+        # ----------------------------------------------------------------
+        contador_path = BASE_DIR / "peticiones_contador.txt"
+        total_peticiones = 1  # Inicia el ciclo actual
+        
+        if contador_path.exists():
+            try:
+                with open(contador_path, "r", encoding="utf-8") as c_file:
+                    total_peticiones = int(c_file.read().strip()) + 1
+            except Exception:
+                pass
+                
+        with open(contador_path, "w", encoding="utf-8") as c_file:
+            c_file.write(str(total_peticiones))
+
+        # ----------------------------------------------------------------
+        # 🛡️ INYECCIÓN INTEGRAL EN EL INDEX.HTML
+        # ----------------------------------------------------------------
+        html_path = BASE_DIR / "index.html"
+        if not html_path.exists():
+            print(f"❌ [ERROR]: No se encontró el archivo '{html_path}'")
+            return
+            
+        with open(html_path, "r", encoding="utf-8") as file:
+            html_content = file.read()
+            
+        import re
+        now_str = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        
+        # 1. Inyección de Bloques de Control Técnico Técnicos Solicitados
+        html_content = re.sub(r'const\s+ultimaActualizacionStr\s*=\s*".*?";', f'const ultimaActualizacionStr = "{now_str}";', html_content)
+        html_content = re.sub(r'const\s+totalPeticionesExitosas\s*=\s*\d+;', f'const totalPeticionesExitosas = {total_peticiones};', html_content)
+        
+        # 2. Inyección de Datos Reales Temporales de Notion
+        html_content = re.sub(r"const\s+diasReales\s*=\s*\d+;", f"const diasReales = {tareas_consistentes_hoy};", html_content)
+        html_content = re.sub(r"totalDias\s*=\s*\d+;", f"totalDias = {total_tareas_hoy};", html_content)
+        html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\};", f"const conteoAyer = {json.dumps(conteo_ayer, ensure_ascii=False)};", html_content)
+        html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\};", f"const conteoHoy = {json.dumps(conteo_hoy, ensure_ascii=False)};", html_content)
+        html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\};", f"const conteoManana = {json.dumps(conteo_manana, ensure_ascii=False)};", html_content)
+
+        with open(html_path, "w", encoding="utf-8") as file:
+            file.write(html_content)
+        print(f"✅ [CONTROL TÉCNICO INYECTADO]: Sincro: {now_str} | Peticiones Totales: {total_peticiones}")
