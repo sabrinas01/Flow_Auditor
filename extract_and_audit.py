@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-MÓDULO: extract_and_audit.py (Versión 3.3 - Monitoreo Técnico Persistente)
+MÓDULO: extract_and_audit.py (Versión 3.3 - Monitoreo Técnico Persistente y Híbrido Cloud)
 DESCRIPCIÓN: Extrae y audita la consistencia utilizando peticiones HTTP nativas.
              Sincroniza y escribe dinámicamente los bloques independientes de 
              Ayer, Hoy y Mañana en index.html, e inyecta métricas de control
              como la fecha/hora de sincronización y el contador de peticiones exitosas.
-             Automatiza los comandos de Git para actualizar tu celular en silencio.
+             Soporta ejecución híbrida: bucle local continuo o ejecución única en GitHub Actions.
 AUTOR: Tu Mentor de Programación & Analista de Ciberseguridad
 """
 
@@ -65,9 +65,10 @@ def cargar_env_binario_robusto(ruta):
     except Exception as e:
         print(f"⚠️ Error al decodificar manualmente el archivo .env: {e}")
 
-# Ejecutamos nuestro extractor binario robusto diseñado para Windows
-cargar_env_binario_robusto(env_path)
-load_dotenv(dotenv_path=env_path)
+# Ejecutamos nuestro extractor binario robusto diseñado para Windows (solo si no estamos en la nube)
+if os.getenv("GITHUB_ACTIONS") != "true":
+    cargar_env_binario_robusto(env_path)
+    load_dotenv(dotenv_path=env_path)
 
 NOTION_API_KEY = os.getenv("NOTION_API_KEY")
 DB_RECORDATORIOS_DIARIOS = os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS")
@@ -75,7 +76,7 @@ DB_RECORDATORIOS_DIARIOS = os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS")
 INTERVALO_SEGUNDOS = 10800  # 3 Horas
 
 if not NOTION_API_KEY or not DB_RECORDATORIOS_DIARIOS:
-    print("❌ [ERROR]: Faltan credenciales válidas en tu archivo .env")
+    print("❌ [ERROR]: Faltan credenciales válidas en tu archivo .env o variables de entorno de GitHub.")
     print(f"🔍 Directorio de búsqueda absoluto del .env:\n   👉 '{env_path}'")
     sys.exit(1)
 
@@ -87,11 +88,9 @@ def evaluar_bloque_temporal(fecha_str):
     if not fecha_str:
         return None
     try:
-        # Extraer estrictamente la porción de fecha ignorando horas y sufijos 'Z' o posiciones UTC
         solo_fecha = fecha_str.split("T")[0].strip()
         fecha_dt = datetime.strptime(solo_fecha, "%Y-%m-%d").date()
         
-        # Tiempo de referencia del sistema local
         hoy = datetime.now().date()
         ayer = hoy - timedelta(days=1)
         manana = hoy + timedelta(days=1)
@@ -117,7 +116,7 @@ def auditar_consistencia_tripartita():
         "Content-Type": "application/json"
     }
     data = {
-        "page_size": 100  # Margen para capturar ayer, hoy y mañana contiguos
+        "page_size": 100
     }
     
     try:
@@ -133,7 +132,6 @@ def auditar_consistencia_tripartita():
 
         print(f"📊 Se extrajeron {len(results)} registros totales de Notion.")
         
-        # Estructuras independientes para alimentar los 3 bloques visuales de tu cel
         conteo_ayer = {}
         conteo_hoy = {}
         conteo_manana = {}
@@ -215,10 +213,10 @@ def auditar_consistencia_tripartita():
         print(f"📅 Distribución temporal exacta -> Ayer: {sum(conteo_ayer.values())} | Hoy: {total_tareas_hoy} | Mañana: {sum(conteo_manana.values())}")
 
         # ----------------------------------------------------------------
-        # 📈 SISTEMA DE PERSISTENCIA PARA EL CONTADOR DE PETICIONES (Se incrementa $+1$)
+        # 📈 SISTEMA DE PERSISTENCIA PARA EL CONTADOR DE PETICIONES
         # ----------------------------------------------------------------
         contador_path = BASE_DIR / "peticiones_contador.txt"
-        total_peticiones = 1  # Inicia si no hay archivo previo
+        total_peticiones = 1
         
         if contador_path.exists():
             try:
@@ -244,7 +242,7 @@ def auditar_consistencia_tripartita():
         import re
         now_str = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         
-        # Inyección de Métricas Técnicas Solicitadas por Sabry
+        # Inyección de Métricas Técnicas
         html_content = re.sub(r'const\s+ultimaActualizacionStr\s*=\s*".*?";', f'const ultimaActualizacionStr = "{now_str}";', html_content)
         html_content = re.sub(r'const\s+totalPeticionesExitosas\s*=\s*\d+;', f'const totalPeticionesExitosas = {total_peticiones};', html_content)
         
@@ -260,25 +258,35 @@ def auditar_consistencia_tripartita():
         print(f"✅ [CONTROL TÉCNICO INYECTADO]: Sincro: {now_str} | Peticiones Totales: {total_peticiones}")
 
         # ----------------------------------------------------------------
-        # 🚀 AUTOMATIZACIÓN DE GIT TOLERANTE A ONEDRIVE (SAFE PIPELINE)
+        # 🚀 AUTOMATIZACIÓN DE GIT TOLERANTE A ONEDRIVE (SÓLO SI ES LOCAL)
         # ----------------------------------------------------------------
-        print("📤 Sincronizando con GitHub Pages...")
-        try:
-            time.sleep(1)  # Pausa de descompresión anti-bloqueo OneDrive
-            os.system("git add index.html")
-            time.sleep(1)
-            commit_msg = f'git commit -m "update: sincro {now_str} | peticiones: {total_peticiones}"'
-            os.system(commit_msg)
-            time.sleep(1)
-            os.system("git push origin main_fa")
-            print("🎉 [PIPELINE EXITOSO]: Actualización enviada con éxito a tu celular.")
-        except Exception as git_err:
-            print(f"⚠️ Alerta en Git: {git_err}")
+        if os.getenv("GITHUB_ACTIONS") != "true":
+            print("📤 Sincronizando con GitHub Pages...")
+            try:
+                time.sleep(1)
+                os.system("git add index.html peticiones_contador.txt")
+                time.sleep(1)
+                commit_msg = f'git commit -m "update: sincro {now_str} | peticiones: {total_peticiones}"'
+                os.system(commit_msg)
+                time.sleep(1)
+                os.system("git push origin main_fa")
+                print("🎉 [PIPELINE EXITOSO]: Actualización enviada con éxito a tu celular.")
+            except Exception as git_err:
+                print(f"⚠️ Alerta en Git: {git_err}")
+        else:
+            print("⚙️ Ejecutándose en GitHub Actions. La actualización del archivo e historial de commits se gestiona mediante el pipeline nativo.")
 
     except Exception as e:
         print(f"❌ Error crítico durante el pipeline de auditoría: {e}")
 
 if __name__ == "__main__":
+    # Si estamos en la nube, se ejecuta UNA VEZ y el workflow de GitHub se encarga de apagar el contenedor
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        print("☁️ [ENTORNO CI/CD DETECTADO]: Ejecutando ciclo único para GitHub Actions.")
+        auditar_consistencia_tripartita()
+        sys.exit(0)
+        
+    # Si estamos en local, corre el bucle continuo tradicional de fondo
     print("================================================================")
     print("🛡️  NOTION FLOW AUDITOR - PIPELINE TRÍPTICO MÓVIL V3.3")
     print(f"⏰ Actualización automatizada activa cada {INTERVALO_SEGUNDOS} segundos.")
