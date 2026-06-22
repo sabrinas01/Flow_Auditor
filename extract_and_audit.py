@@ -167,4 +167,142 @@ def auditar_consistencia_tripartita():
             fecha_pagina = None
             
             if columna_fecha:
-                date_data = props.get(col
+                date_data = props.get(columna_fecha, {}) or {}
+                if date_data.get("type") == "date":
+                    date_inner = date_data.get("date") or {}
+                    fecha_pagina = date_inner.get("start")
+            
+            if not fecha_pagina:
+                fecha_pagina = pagina.get("created_time")
+                
+            bloque = evaluar_bloque_temporal(fecha_pagina)
+            if not bloque:
+                continue
+                
+            estado_val = "Vacío"
+            if columna_estado:
+                status_data = props.get(columna_estado, {})
+                tipo_status = status_data.get("type")
+                if tipo_status == "status" and status_data.get("status"):
+                    estado_val = status_data["status"].get("name")
+                elif tipo_status == "select" and status_data.get("select"):
+                    estado_val = status_data["select"].get("name")
+            
+            if bloque == "AYER":
+                conteo_ayer[estado_val] = conteo_ayer.get(estado_val, 0) + 1
+            elif bloque == "MANANA":
+                conteo_manana[estado_val] = conteo_manana.get(estado_val, 0) + 1
+            elif bloque == "HOY":
+                conteo_hoy[estado_val] = conteo_hoy.get(estado_val, 0) + 1
+                total_tareas_hoy += 1
+                
+                val_consistencia = 0
+                if columna_consistencia:
+                    cons_data = props.get(columna_consistencia, {})
+                    tipo_cons = cons_data.get("type")
+                    if tipo_cons == "number":
+                        val_consistencia = cons_data.get("number", 0)
+                    elif tipo_cons == "formula":
+                        f_data = cons_data.get("formula", {})
+                        if f_data.get("type") == "number": val_consistencia = f_data.get("number", 0)
+                        elif f_data.get("type") == "boolean": val_consistencia = 1 if f_data.get("boolean") else 0
+                    elif tipo_cons == "checkbox":
+                        val_consistencia = 1 if cons_data.get("checkbox") else 0
+
+                if estado_val == "Hecha" and float(val_consistencia) == 1.0:
+                    tareas_consistentes_hoy += 1
+
+        print(f"📅 Distribución temporal exacta -> Ayer: {sum(conteo_ayer.values())} | Hoy: {total_tareas_hoy} | Mañana: {sum(conteo_manana.values())}")
+
+        # ----------------------------------------------------------------
+        # 📈 SISTEMA DE PERSISTENCIA PARA EL CONTADOR DE PETICIONES
+        # ----------------------------------------------------------------
+        contador_path = BASE_DIR / "peticiones_contador.txt"
+        total_peticiones = 1
+        
+        if contador_path.exists():
+            try:
+                with open(contador_path, "r", encoding="utf-8") as c_file:
+                    total_peticiones = int(c_file.read().strip()) + 1
+            except Exception:
+                pass
+                
+        with open(contador_path, "w", encoding="utf-8") as c_file:
+            c_file.write(str(total_peticiones))
+
+        # ----------------------------------------------------------------
+        # 🛡️ INYECCIÓN EN EL INDEX.HTML CON METADATOS TÉCNICOS
+        # ----------------------------------------------------------------
+        html_path = BASE_DIR / "index.html"
+        if not html_path.exists():
+            print(f"❌ [ERROR]: No se encontró el archivo '{html_path}'")
+            return
+            
+        with open(html_path, "r", encoding="utf-8") as file:
+            html_content = file.read()
+            
+        import re
+        now_str = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        
+        # Inyección de Métricas Técnicas
+        html_content = re.sub(r'const\s+ultimaActualizacionStr\s*=\s*".*?";', f'const ultimaActualizacionStr = "{now_str}";', html_content)
+        html_content = re.sub(r'const\s+totalPeticionesExitosas\s*=\s*\d+;', f'const totalPeticionesExitosas = {total_peticiones};', html_content)
+        
+        # Inyección de Datos de Notion
+        html_content = re.sub(r"const\s+diasReales\s*=\s*\d+;", f"const diasReales = {tareas_consistentes_hoy};", html_content)
+        html_content = re.sub(r"totalDias\s*=\s*\d+;", f"totalDias = {total_tareas_hoy};", html_content)
+        html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\};", f"const conteoAyer = {json.dumps(conteo_ayer, ensure_ascii=False)};", html_content)
+        html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\};", f"const conteoHoy = {json.dumps(conteo_hoy, ensure_ascii=False)};", html_content)
+        html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\};", f"const conteoManana = {json.dumps(conteo_manana, ensure_ascii=False)};", html_content)
+
+        with open(html_path, "w", encoding="utf-8") as file:
+            file.write(html_content)
+        print(f"✅ [CONTROL TÉCNICO INYECTADO]: Sincro: {now_str} | Peticiones Totales: {total_peticiones}")
+
+    except Exception as e:
+        print(f"❌ Error crítico durante el pipeline de auditoría: {e}")
+        return
+
+    # ----------------------------------------------------------------
+    # 🚀 AUTOMATIZACIÓN DE GIT UNIFICADA A LA RAMA MAIN (SÓLO LOCAL)
+    # ----------------------------------------------------------------
+    if os.getenv("GITHUB_ACTIONS") != "true":
+        print("📤 Sincronizando local con la rama unificada main de GitHub...")
+        try:
+            time.sleep(1)
+            os.system("git add index.html peticiones_contador.txt")
+            time.sleep(1)
+            commit_msg = f'git commit -m "update: sincro {now_str} | peticiones: {total_peticiones}"'
+            os.system(commit_msg)
+            time.sleep(1)
+            os.system("git push origin main")
+            print("🎉 [PIPELINE EXITOSO]: Actualización enviada con éxito a tu repositorio central.")
+        except Exception as git_err:
+            print(f"⚠️ Alerta en Git: {git_err}")
+    else:
+        print("⚙️ Ejecutándose en GitHub Actions. La actualización del archivo e historial de commits se gestiona mediante el pipeline nativo.")
+
+if __name__ == "__main__":
+    # Si estamos en la nube, se ejecuta UNA VEZ y el workflow de GitHub se encarga de apagar el contenedor
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        print("☁️ [ENTORNO CI/CD DETECTADO]: Ejecutando ciclo único para GitHub Actions.")
+        auditar_consistencia_tripartita()
+        sys.exit(0)
+        
+    # Si estamos en local, corre el bucle continuo tradicional de fondo
+    print("================================================================")
+    print("🛡️  NOTION FLOW AUDITOR - PIPELINE TRÍPTICO MÓVIL V3.5")
+    print(f"⏰ Actualización automatizada activa cada {INTERVALO_SEGUNDOS} segundos.")
+    print("================================================================")
+    
+    while True:
+        try:
+            auditar_consistencia_tripartita()
+            print(f"💤 Esperando {INTERVALO_SEGUNDOS} segundos para el próximo ciclo...")
+            time.sleep(INTERVALO_SEGUNDOS)
+        except KeyboardInterrupt:
+            print("\n🛑 [SERVICIO DETENIDO]: Finalizando de forma limpia...")
+            break
+        except Exception as e:
+            print(f"\n❌ Error en el bucle principal: {e}")
+            time.sleep(10)
