@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-MÓDULO: extract_and_audit.py (Versión 3.8 - Serverless Seguro Doble Zona Horaria)
+MÓDULO: extract_and_audit.py (Versión 3.9 - Estética Restaurada y Próxima Sincro)
 """
 
 import os
@@ -48,7 +48,6 @@ def evaluar_bloque_temporal(fecha_str):
     try:
         solo_fecha = fecha_str.split("T")[0].strip()
         fecha_dt = datetime.strptime(solo_fecha, "%Y-%m-%d").date()
-        # Para el análisis de bloques temporales en Argentina, basamos 'hoy' en la hora local (UTC-3)
         hoy_local = (datetime.utcnow() - timedelta(hours=3)).date()
         ayer = hoy_local - timedelta(days=1)
         manana = hoy_local + timedelta(days=1)
@@ -111,11 +110,15 @@ def auditar_consistencia_tripartita():
             except: pass
         with open(contador_path, "w", encoding="utf-8") as cf: cf.write(str(total_peticiones))
 
-        # CÁLCULO DE TIEMPOS EXACTOS (Doble Zona Horaria)
+        # CÁLCULO DE HUSOS HORARIOS Y COMPUTE DE PRÓXIMA ACCIÓN (CRON DE 1 HORA)
         ahora_utc = datetime.utcnow()
         ahora_argentina = ahora_utc - timedelta(hours=3) # GTM -3 Estricto
         
+        # Como corre al inicio de cada hora (cron: '0 * * * *'), sumamos 1 hora al reloj actual y fijamos minutos en 0
+        proxima_sincro_arg = (ahora_argentina + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
+        
         str_local = ahora_argentina.strftime("%d/%m/%Y %H:%M:%S")
+        str_next = proxima_sincro_arg.strftime("%d/%m/%Y %H:%M:%S")
         str_server = ahora_utc.strftime("%d/%m/%Y %H:%M:%S")
 
         # INYECCIÓN EN HTML
@@ -124,6 +127,7 @@ def auditar_consistencia_tripartita():
         
         import re
         html_content = re.sub(r'const\s+timestampLocalStr\s*=\s*".*?";', f'const timestampLocalStr = "{str_local}";', html_content)
+        html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?";', f'const timestampNextStr = "{str_next}";', html_content)
         html_content = re.sub(r'const\s+timestampServerStr\s*=\s*".*?";', f'const timestampServerStr = "{str_server}";', html_content)
         html_content = re.sub(r'const\s+totalPeticionesExitosas\s*=\s*\d+;', f'const totalPeticionesExitosas = {total_peticiones};', html_content)
         html_content = re.sub(r"totalDias\s*=\s*\d+;", f"totalDias = {total_tareas_hoy};", html_content)
@@ -134,7 +138,7 @@ def auditar_consistencia_tripartita():
         html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\};", f"const conteoManana = {json.dumps(conteo_manana, ensure_ascii=False)};", html_content)
 
         with open(html_path, "w", encoding="utf-8") as file: file.write(html_content)
-        print(f"✅ Sincro Realizada -> ART: {str_local} | UTC: {str_server}")
+        print(f"✅ Sincro Realizada -> ART: {str_local} | Próxima: {str_next}")
 
     except Exception as e:
         print(f"❌ Error en pipeline: {e}")

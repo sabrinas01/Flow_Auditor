@@ -10,8 +10,6 @@
             --card-bg: #16161a;
             --text-main: #d8d8d3;
             --text-muted: #71717a;
-            --accent-green: #367e6d;
-            --accent-dark-green: #0f3627;
             --accent-red: #8b263e;
             --accent-dark-red: #3a101a;
             --border-color: #2b2b2b;
@@ -58,9 +56,9 @@
         }
 
         .btn-update {
-            background-color: var(--accent-dark-green);
-            color: var(--accent-green);
-            border: 1px solid var(--accent-green);
+            background-color: var(--accent-dark-red);
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
             padding: 8px 16px;
             border-radius: 6px;
             font-size: 0.85rem;
@@ -70,8 +68,8 @@
         }
 
         .btn-update:hover {
-            background-color: var(--accent-green);
-            color: var(--bg-color);
+            background-color: var(--accent-red);
+            color: var(--text-main);
         }
 
         .telemetry-grid {
@@ -129,11 +127,8 @@
             padding: 8px 12px;
             border-radius: 6px;
             font-size: 0.85rem;
-            border-left: 3px solid var(--text-muted);
+            border-left: 3px solid var(--accent-red);
         }
-
-        .task-item.hecha { border-left-color: var(--accent-green); }
-        .task-item.progreso { border-left-color: #cca43b; }
 
         .task-count {
             font-weight: bold;
@@ -145,13 +140,17 @@
 
     <header>
         <div class="header-top">
-            <span class="brand-title">🛡️ Notion Flow Auditor</span>
+            <span class="brand-title">📊 Notion Flow Auditor</span>
             <button class="btn-update" onclick="window.location.reload();">Actualizar Pantalla</button>
         </div>
         <div class="telemetry-grid">
             <div class="telemetry-row">
-                <span>Sincro Local (ART UTC-3):</span>
+                <span>Última Sincronización (ART UTC-3):</span>
                 <span id="telemetry-time-local" style="color: var(--text-main);">--/--/---- --:--:--</span>
+            </div>
+            <div class="telemetry-row">
+                <span>Próxima Sincronización (ART UTC-3):</span>
+                <span id="telemetry-time-next" style="color: #cca43b; font-weight: 600;">--/--/---- --:--:--</span>
             </div>
             <div class="telemetry-row">
                 <span>Servidor Cloud (UTC):</span>
@@ -183,9 +182,10 @@
 
     <script>
         // METADATOS TÉCNICOS INYECTADOS DINÁMICAMENTE POR EL EXTRACTOR DE PYTHON
-        const timestampLocalStr = "22/06/2026 12:10:11";
-        const timestampServerStr = "22/06/2026 15:10:11";
-        const totalPeticionesExitosas = 11;
+        const timestampLocalStr = "22/06/2026 13:07:10";
+        const timestampNextStr = "22/06/2026 14:00:00";
+        const timestampServerStr = "22/06/2026 16:07:10";
+        const totalPeticionesExitosas = 12;
         const diasReales = 0;
         let totalDias = 11;
         const totalAyer = 34;
@@ -198,12 +198,13 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("telemetry-time-local").innerText = timestampLocalStr;
+            document.getElementById("telemetry-time-next").innerText = timestampNextStr;
             document.getElementById("telemetry-time-server").innerText = timestampServerStr;
             document.getElementById("telemetry-requests").innerText = totalPeticionesExitosas;
 
-            document.getElementById("title-ayer").innerHTML = `Ayer <span>(${totalAyer} ${totalAyer === 1 ? 'tarea' : 'tareas'})</span>`;
-            document.getElementById("title-hoy").innerHTML = `Hoy <span>(${totalDias} ${totalDias === 1 ? 'tarea' : 'tareas'})</span>`;
-            document.getElementById("title-manana").innerHTML = `Mañana <span>(${totalManana} ${totalManana === 1 ? 'tarea' : 'tareas'})</span>`;
+            document.getElementById("title-ayer").innerHTML = `Ayer <span>(${totalAyer} tareas)</span>`;
+            document.getElementById("title-hoy").innerHTML = `Hoy <span>(${totalDias} tareas)</span>`;
+            document.getElementById("title-manana").innerHTML = `Mañana <span>(${totalManana} tareas)</span>`;
 
             renderizarSeccion("list-ayer", conteoAyer);
             renderizarSeccion("list-hoy", conteoHoy);
@@ -213,17 +214,13 @@
         function renderizarSeccion(containerId, data) {
             const container = document.getElementById(containerId);
             if (!data || Object.keys(data).length === 0) {
-                container.innerHTML = `<div class="task-item" style="color: var(--text-muted);">Sin tareas registradas</div>`;
+                container.innerHTML = `<div class="task-item" style="color: var(--text-muted); border-left-color: var(--text-muted);">Sin tareas registradas</div>`;
                 return;
             }
 
             container.innerHTML = Object.entries(data).map(([estado, cantidad]) => {
-                let claseEstado = '';
-                if (estado.toLowerCase() === 'hecha') claseEstado = 'hecha';
-                else if (estado.toLowerCase() === 'en progreso' || estado.toLowerCase() === 'progreso') claseEstado = 'progreso';
-
                 return `
-                    <div class="task-item ${claseEstado}">
+                    <div class="task-item">
                         <span>${estado}</span>
                         <span class="task-count">${cantidad}</span>
                     </div>
