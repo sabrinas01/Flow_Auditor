@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-MÓDULO: extract_and_audit.py (Versión 5.0 - Motor de Sincronización Serverless)
+MÓDULO: extract_and_audit.py (Versión 5.1 - Motor de Sincronización Serverless Avanzado)
 """
 
 import os
@@ -66,7 +66,7 @@ def auditar_consistencia_tripartita():
             if not fecha_p: fecha_p = pagina.get("created_time")
             
             bloque = evaluar_bloque_temporal(fecha_p)
-            if not bloque: continue
+            if not geopolitical_match := bloque: continue
             
             est_val = "Sin empezar"
             if columna_estado:
@@ -90,7 +90,7 @@ def auditar_consistencia_tripartita():
             except: pass
         with open(contador_path, "w", encoding="utf-8") as cf: cf.write(str(total_peticiones))
 
-        # Alineación estricta de relojes a la hora en punto
+        # Alineación de relojes
         ahora_utc = datetime.utcnow()
         ahora_argentina = ahora_utc - timedelta(hours=3)
         proxima_sincro = (ahora_argentina + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
@@ -99,18 +99,19 @@ def auditar_consistencia_tripartita():
         str_next = proxima_sincro.strftime("%d/%m/%Y %H:%M:%S")
         str_server = ahora_utc.strftime("%d/%m/%Y %H:%M:%S")
 
-        # Lectura e Inyección avanzada mediante Reemplazo de Expresiones Regulares
+        # Lectura e Inyección avanzada mediante Expresiones Regulares Flexibles
         html_path = BASE_DIR / "index.html"
         with open(html_path, "r", encoding="utf-8") as file: html_content = file.read()
         
-        html_content = re.sub(r'const\s+timestampLocalStr\s*=\s*".*?";', f'const timestampLocalStr = "{str_local}";', html_content)
-        html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?";', f'const timestampNextStr = "{str_next}";', html_content)
-        html_content = re.sub(r'const\s+timestampServerStr\s*=\s*".*?";', f'const timestampServerStr = "{str_server}";', html_content)
-        html_content = re.sub(r'const\s+totalPeticionesExitosas\s*=\s*\d+;', f'const totalPeticionesExitosas = {total_peticiones};', html_content)
+        # Parche de Flexibilidad: Machea variaciones de espacios en blanco antes y después del "=" y ";"
+        html_content = re.sub(r'const\s+timestampLocalStr\s*=\s*".*?"\s*;', f'const timestampLocalStr = "{str_local}";', html_content)
+        html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?"\s*;', f'const timestampNextStr = "{str_next}";', html_content)
+        html_content = re.sub(r'const\s+timestampServerStr\s*=\s*".*?"\s*;', f'const timestampServerStr = "{str_server}";', html_content)
+        html_content = re.sub(r'const\s+totalPeticionesExitosas\s*=\s*\d+\s*;', f'const totalPeticionesExitosas = {total_peticiones};', html_content)
         
-        html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\};", f"const conteoAyer = {json.dumps(conteo_ayer, ensure_ascii=False)};", html_content)
-        html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\};", f"const conteoHoy = {json.dumps(conteo_hoy, ensure_ascii=False)};", html_content)
-        html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\};", f"const conteoManana = {json.dumps(conteo_manana, ensure_ascii=False)};", html_content)
+        html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\}\s*;", f"const conteoAyer = {json.dumps(conteo_ayer, ensure_ascii=False)};", html_content)
+        html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\}\s*;", f"const conteoHoy = {json.dumps(conteo_hoy, ensure_ascii=False)};", html_content)
+        html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\}\s*;", f"const conteoManana = {json.dumps(conteo_manana, ensure_ascii=False)};", html_content)
 
         with open(html_path, "w", encoding="utf-8") as file: file.write(html_content)
         print("✅ index.html sincronizado y actualizado de forma robusta.")

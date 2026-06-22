@@ -342,41 +342,8 @@
         });
 
         function procesarSeccionMetrica(prefijo, data) {
-            // Sumar el volumen bruto sumando todas las tareas del JSON enviado por Python
             const total = Object.values(data).reduce((a, b) => a + b, 0);
-            
-            // Buscar equivalentes semánticos de completado en los flujos de Bitácora IT
             const hechas = data["Hecha"] || data["Completada"] || data["Done"] || 0;
             const tasa = total > 0 ? (hechas / total * 100.0) : 0.0;
 
-            // Inyectar valores reales calculados del lado del cliente
             document.getElementById(`total-${prefijo}-lbl`).innerText = `${total} tareas`;
-            document.getElementById(`hechas-${prefijo}-val`).innerText = `${hechas} / ${total}`;
-            document.getElementById(`consistencia-${prefijo}-val`).innerText = `${tasa.toFixed(1)}%`;
-
-            // Pintar las filas correspondientes
-            renderizarFilasEstados(`list-${prefijo}`, data);
-
-            // Regla de Negocio: Lanzamiento inteligente de Alertas de Consistencia (<70%)
-            const alertBox = document.getElementById(`alert-${prefijo}`);
-            if (tasa < 70.0 && total > 0) {
-                alertBox.innerText = `⚠️ Consistencia por debajo del umbral del 70%. Se sugiere revisión de fricción de flujos.`;
-                alertBox.style.display = "block";
-            } else {
-                alertBox.style.display = "none";
-            }
-        }
-
-        function renderizarFilasEstados(containerId, data) {
-            const container = document.getElementById(containerId);
-            if (!data || Object.keys(data).length === 0) {
-                container.innerHTML = `<div class="task-item" style="color: var(--text-muted); border-left-color: var(--text-muted);">Sin tareas registradas</div>`;
-                return;
-            }
-            container.innerHTML = Object.entries(data).map(([estado, cantidad]) => {
-                return `<div class="task-item"><span>${estado}</span><span class="task-count">${cantidad}</span></div>`;
-            }).join('');
-        }
-    </script>
-</body>
-</html>
