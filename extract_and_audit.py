@@ -60,13 +60,15 @@ def auditar_consistencia_tripartita():
                 if info.get("type") in ["status", "select"] and n_col.lower() in ["estado", "status"]: columna_estado = n_col
                 if info.get("type") == "date": columna_fecha = n_col
 
-        for pagina in results:
-            props = pagina.get("properties", {})
-            fecha_p = props.get(columna_fecha, {}).get("date", {}).get("start") if columna_fecha else None
-            if not fecha_p: fecha_p = pagina.get("created_time")
+                for pagina in results:
+                    props = pagina.get("properties", {})
+                    fecha_p = props.get(columna_fecha, {}).get("date", {}).get("start") if columna_fecha else None
+                    if not fecha_p: fecha_p = pagina.get("created_time")
 
-            bloque = evaluar_bloque_temporal(fecha_p)
-            if not bloque: continue           
+                    bloque = evaluar_bloque_temporal(fecha_p)
+                    if not bloque: continue  # ← Fixed line
+
+     
 
             
             est_val = "Sin empezar"
