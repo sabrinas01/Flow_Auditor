@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-10Sincro Cloud Ejecutada
-=======
-11
->>>>>>> ecc0910 (update: sincro 22/06/2026 12:10:11 | peticiones: 11)
+1

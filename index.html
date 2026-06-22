@@ -214,7 +214,7 @@
         function renderizarSeccion(containerId, data) {
             const container = document.getElementById(containerId);
             if (!data || Object.keys(data).length === 0) {
-                container.innerHTML = `<div class="task-item" style="color: var(--text-muted); border-left-color: var(--text-muted);">Sin tareas registradas</div>`;
+                container.innerHTML = `<div class="task-item" style="color: var(--text-muted);">Sin tareas registradas</div>`;
                 return;
             }
 
