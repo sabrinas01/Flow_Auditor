@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-MÓDULO: extract_and_audit.py (Versión 3.4 - Monitoreo Técnico Persistente y Híbrido Cloud)
+MÓDULO: extract_and_audit.py (Versión 3.5 - Monitoreo Técnico Persistente y Híbrido Cloud)
 DESCRIPCIÓN: Extrae y audita la consistencia utilizando peticiones HTTP nativas.
              Sincroniza y escribe dinámicamente los bloques independientes de 
              Ayer, Hoy y Mañana en index.html, e inyecta métricas de control
@@ -167,73 +167,4 @@ def auditar_consistencia_tripartita():
             fecha_pagina = None
             
             if columna_fecha:
-                date_data = props.get(columna_fecha, {}) or {}
-                if date_data.get("type") == "date":
-                    date_inner = date_data.get("date") or {}
-                    fecha_pagina = date_inner.get("start")
-            
-            if not fecha_pagina:
-                fecha_pagina = pagina.get("created_time")
-                
-            bloque = evaluar_bloque_temporal(fecha_pagina)
-            if not bloque:
-                continue
-                
-            estado_val = "Vacío"
-            if columna_estado:
-                status_data = props.get(columna_estado, {})
-                tipo_status = status_data.get("type")
-                if tipo_status == "status" and status_data.get("status"):
-                    estado_val = status_data["status"].get("name")
-                elif tipo_status == "select" and status_data.get("select"):
-                    estado_val = status_data["select"].get("name")
-            
-            if bloque == "AYER":
-                conteo_ayer[estado_val] = conteo_ayer.get(estado_val, 0) + 1
-            elif bloque == "MANANA":
-                conteo_manana[estado_val] = conteo_manana.get(estado_val, 0) + 1
-            elif bloque == "HOY":
-                conteo_hoy[estado_val] = conteo_hoy.get(estado_val, 0) + 1
-                total_tareas_hoy += 1
-                
-                val_consistencia = 0
-                if columna_consistencia:
-                    cons_data = props.get(columna_consistencia, {})
-                    tipo_cons = cons_data.get("type")
-                    if tipo_cons == "number":
-                        val_consistencia = cons_data.get("number", 0)
-                    elif tipo_cons == "formula":
-                        f_data = cons_data.get("formula", {})
-                        if f_data.get("type") == "number": val_consistencia = f_data.get("number", 0)
-                        elif f_data.get("type") == "boolean": val_consistencia = 1 if f_data.get("boolean") else 0
-                    elif tipo_cons == "checkbox":
-                        val_consistencia = 1 if cons_data.get("checkbox") else 0
-
-                if estado_val == "Hecha" and float(val_consistencia) == 1.0:
-                    tareas_consistentes_hoy += 1
-
-        print(f"📅 Distribución temporal exacta -> Ayer: {sum(conteo_ayer.values())} | Hoy: {total_tareas_hoy} | Mañana: {sum(conteo_manana.values())}")
-
-        # ----------------------------------------------------------------
-        # 📈 SISTEMA DE PERSISTENCIA PARA EL CONTADOR DE PETICIONES
-        # ----------------------------------------------------------------
-        contador_path = BASE_DIR / "peticiones_contador.txt"
-        total_peticiones = 1
-        
-        if contador_path.exists():
-            try:
-                with open(contador_path, "r", encoding="utf-8") as c_file:
-                    total_peticiones = int(c_file.read().strip()) + 1
-            except Exception:
-                pass
-                
-        with open(contador_path, "w", encoding="utf-8") as c_file:
-            c_file.write(str(total_peticiones))
-
-        # ----------------------------------------------------------------
-        # 🛡️ INYECCIÓN EN EL INDEX.HTML CON METADATOS TÉCNICOS
-        # ----------------------------------------------------------------
-        html_path = BASE_DIR / "index.html"
-        if not html_path.exists():
-            print(f"❌ [ERROR]: No se encontró el archivo '{html_path}'")
-            return
+                date_data = props.get(col
