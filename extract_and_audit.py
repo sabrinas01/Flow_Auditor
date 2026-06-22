@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-MÓDULO: extract_and_audit.py (Versión 5.1 - Motor de Sincronización Serverless Avanzado)
+MÓDULO: extract_and_audit.py (Versión 5.2 - Core Definitivo de Producción)
 """
 
 import os
@@ -60,16 +60,13 @@ def auditar_consistencia_tripartita():
                 if info.get("type") in ["status", "select"] and n_col.lower() in ["estado", "status"]: columna_estado = n_col
                 if info.get("type") == "date": columna_fecha = n_col
 
-                for pagina in results:
-                    props = pagina.get("properties", {})
-                    fecha_p = props.get(columna_fecha, {}).get("date", {}).get("start") if columna_fecha else None
-                    if not fecha_p: fecha_p = pagina.get("created_time")
-
-                    bloque = evaluar_bloque_temporal(fecha_p)
-                    if not bloque: continue  # ← Fixed line
-
-     
-
+        for pagina in results:
+            props = pagina.get("properties", {})
+            fecha_p = props.get(columna_fecha, {}).get("date", {}).get("start") if columna_fecha else None
+            if not fecha_p: fecha_p = pagina.get("created_time")
+            
+            bloque = evaluar_bloque_temporal(fecha_p)
+            if not bloque: continue
             
             est_val = "Sin empezar"
             if columna_estado:
@@ -93,7 +90,7 @@ def auditar_consistencia_tripartita():
             except: pass
         with open(contador_path, "w", encoding="utf-8") as cf: cf.write(str(total_peticiones))
 
-        # Alineación de relojes
+        # Alineación de husos horarios (Argentina UTC-3)
         ahora_utc = datetime.utcnow()
         ahora_argentina = ahora_utc - timedelta(hours=3)
         proxima_sincro = (ahora_argentina + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
@@ -106,12 +103,13 @@ def auditar_consistencia_tripartita():
         html_path = BASE_DIR / "index.html"
         with open(html_path, "r", encoding="utf-8") as file: html_content = file.read()
         
-        # Parche de Flexibilidad: Machea variaciones de espacios en blanco antes y después del "=" y ";"
+        # Parche de Flexibilidad Absoluta para marcas de tiempo e indicadores numéricos
         html_content = re.sub(r'const\s+timestampLocalStr\s*=\s*".*?"\s*;', f'const timestampLocalStr = "{str_local}";', html_content)
         html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?"\s*;', f'const timestampNextStr = "{str_next}";', html_content)
         html_content = re.sub(r'const\s+timestampServerStr\s*=\s*".*?"\s*;', f'const timestampServerStr = "{str_server}";', html_content)
         html_content = re.sub(r'const\s+totalPeticionesExitosas\s*=\s*\d+\s*;', f'const totalPeticionesExitosas = {total_peticiones};', html_content)
         
+        # Inyección de Estructuras JSON para procesamiento dinámico del lado del Cliente
         html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\}\s*;", f"const conteoAyer = {json.dumps(conteo_ayer, ensure_ascii=False)};", html_content)
         html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\}\s*;", f"const conteoHoy = {json.dumps(conteo_hoy, ensure_ascii=False)};", html_content)
         html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\}\s*;", f"const conteoManana = {json.dumps(conteo_manana, ensure_ascii=False)};", html_content)

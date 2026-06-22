@@ -314,14 +314,14 @@
 
     <script>
         // VARIABLES INYECTADAS DINÁMICAMENTE POR EL EXTRACTOR DE PYTHON
-        const timestampLocalStr = "22/06/2026 20:13:12";
-        const timestampNextStr = "22/06/2026 21:00:00";
-        const timestampServerStr = "22/06/2026 23:13:12";
-        const totalPeticionesExitosas = 1;
+        const timestampLocalStr = "22/06/2026 13:30:00";
+        const timestampNextStr = "22/06/2026 14:00:00";
+        const timestampServerStr = "22/06/2026 16:30:00";
+        const totalPeticionesExitosas = 12;
 
         // ESTRUCTURAS JSON DE DISTRIBUCIÓN POR ESTADOS
-        const conteoAyer = {};
-        const conteoHoy = {};
+        const conteoAyer = {"Hecha": 16, "Fallida / Vencida": 14, "No necesaria": 4};
+        const conteoHoy = {"Sin empezar": 4, "Hecha": 14, "No necesaria": 4, "Fallida / Vencida": 8};
         const conteoManana = {};
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -342,6 +342,7 @@
         });
 
         function procesarSeccionMetrica(prefijo, data) {
+            // Sumar el volumen de forma dinámica para blindar el frontend
             const total = Object.values(data).reduce((a, b) => a + b, 0);
             const hechas = data["Hecha"] || data["Completada"] || data["Done"] || 0;
             const tasa = total > 0 ? (hechas / total * 100.0) : 0.0;

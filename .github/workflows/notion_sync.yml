@@ -31,7 +31,6 @@ jobs:
           NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS }}
         run: python extract_and_audit.py
 
-
       - name: Commit and Push Changes
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -39,7 +38,7 @@ jobs:
           
           git add index.html peticiones_contador.txt || true
           
-          # Control estricto de cambios: Evita loops infinitos si no hay mutación
+          # Control estricto de cambios: Evita loops infinitos si no hay mutación real
           git diff --quiet && git diff --staged --quiet || git commit -m "auto: actualización horaria de consistencia de flujos"
           
           git push origin main --force
