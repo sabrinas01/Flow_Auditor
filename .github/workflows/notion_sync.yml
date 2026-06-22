@@ -30,9 +30,11 @@ jobs:
           NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS }}
         run: python extract_and_audit.py
 
-      - name: Commit and Push Changes
-        run: |
-          git config --global user.name "Notion Daemon Cloud"
-          git config --global user.email "daemon@bitacorait.com"
-          git add index.html peticiones_contador.txt
-          git diff-index --quiet HEAD || (git commit -m "update: sync automático cloud de hábitos ☁️" && git push origin HEAD:main)
+      # 4. Mapeamos de forma redundante los secretos por si se guardaron con nombres diferentes
+      - name: Run Notion Flow Auditor
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY || secrets.NOTION_TOKEN }}
+          NOTION_TOKEN: ${{ secrets.NOTION_API_KEY || secrets.NOTION_TOKEN }}
+          NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS || secrets.NOTION_DATABASE_ID || secrets.NOTION_DB_ID }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS || secrets.NOTION_DATABASE_ID || secrets.NOTION_DB_ID }}
+        run: python extract_and_audit.py
