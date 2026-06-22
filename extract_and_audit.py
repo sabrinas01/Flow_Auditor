@@ -64,9 +64,10 @@ def auditar_consistencia_tripartita():
             props = pagina.get("properties", {})
             fecha_p = props.get(columna_fecha, {}).get("date", {}).get("start") if columna_fecha else None
             if not fecha_p: fecha_p = pagina.get("created_time")
-            
+
             bloque = evaluar_bloque_temporal(fecha_p)
-            if not geopolitical_match := bloque: continue
+            if not bloque: continue           
+
             
             est_val = "Sin empezar"
             if columna_estado:
