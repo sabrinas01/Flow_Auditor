@@ -2,8 +2,8 @@ name: Flujo de Sincronización Automática
 
 on:
   schedule:
-    - cron: '0 * * * *' # 👈 Corre solo en la nube de forma estricta al inicio de cada hora (24/7)
-  workflow_dispatch: # Te permite forzarlo manualmente si querés desde la web de GitHub
+    - cron: '0 * * * *' # Corre de forma autónoma cada 1 hora (24/7)
+  workflow_dispatch: # Te permite forzar el encendido manual si lo deseas
 
 jobs:
   build:
@@ -38,6 +38,5 @@ jobs:
           git config --global user.email "daemon@bitacorait.com"
           echo "Sincro Cloud Realizada" >> peticiones_contador.txt
           git add index.html peticiones_contador.txt
-          # Hacemos el commit y forzamos el push usando HEAD:main para asegurar impacto
           git commit -m "update: sync seguro cloud de hábitos ☁️"
           git push origin HEAD:main --force
