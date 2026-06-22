@@ -6,13 +6,17 @@
     <title>Notion Flow Auditor</title>
     <style>
         :root {
-            --bg-color: #0f0f11;
-            --card-bg: #16161a;
-            --text-main: #d8d8d3;
-            --text-muted: #71717a;
-            --accent-red: #8b263e;
-            --accent-dark-red: #3a101a;
-            --border-color: #2b2b2b;
+            --bg-color: #08080a;
+            --card-bg: #111115;
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent-red: #b91c1c;
+            --accent-light-red: #ef4444;
+            --accent-bg-red: #2d1216;
+            --warning-bg: #271a0c;
+            --warning-border: #b45309;
+            --warning-text: #f59e0b;
+            --border-color: #1f1f23;
         }
 
         * {
@@ -25,7 +29,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            padding: 16px;
+            padding: 20px 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -34,105 +38,166 @@
 
         header {
             width: 100%;
-            max-width: 500px;
-            margin-bottom: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
+            max-width: 480px;
+            margin-bottom: 24px;
         }
 
         .header-top {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .logo-box {
+            background-color: var(--accent-red);
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
         }
 
         .brand-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            letter-spacing: -0.025em;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
         }
 
         .btn-update {
-            background-color: var(--accent-dark-red);
-            color: var(--accent-red);
-            border: 1px solid var(--accent-red);
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 0.85rem;
+            width: 100%;
+            background-color: var(--accent-red);
+            color: var(--text-main);
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            transition: background-color 0.2s;
         }
 
         .btn-update:hover {
-            background-color: var(--accent-red);
-            color: var(--text-main);
+            background-color: var(--accent-light-red);
         }
 
-        .telemetry-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            border-top: 1px solid var(--border-color);
-            padding-top: 12px;
-        }
-
-        .telemetry-row {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        main {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .column-card {
-            background: var(--card-bg);
+        .metadata-section {
+            background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 16px;
-        }
-
-        .column-card h2 {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-        }
-
-        .tasks-list {
+            padding: 14px;
+            margin-bottom: 24px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
 
-        .task-item {
+        .metadata-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            background: var(--bg-color);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            border-left: 3px solid var(--accent-red);
         }
 
-        .task-count {
-            font-weight: bold;
+        .metadata-row span:last-child {
             color: var(--text-main);
+        }
+
+        .alert-card {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .alert-title {
+            color: var(--warning-text);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .alert-text {
+            color: #fcd34d;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        main {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .metric-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #f59e0b;
+        }
+
+        .metric-value.white {
+            color: var(--text-main);
+        }
+
+        .metric-subtext {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .metric-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background-color: var(--accent-bg-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-light-red);
+            font-size: 1.2rem;
         }
     </style>
 </head>
@@ -140,93 +205,86 @@
 
     <header>
         <div class="header-top">
-            <span class="brand-title">📊 Notion Flow Auditor</span>
-            <button class="btn-update" onclick="window.location.reload();">Actualizar Pantalla</button>
+            <div class="logo-box">📊</div>
+            <span class="brand-title">Notion Flow Auditor</span>
         </div>
-        <div class="telemetry-grid">
-            <div class="telemetry-row">
-                <span>Última Sincronización (ART UTC-3):</span>
-                <span id="telemetry-time-local" style="color: var(--text-main);">--/--/---- --:--:--</span>
+        <div class="subtitle">Reporte de Consistencia Diaria Real</div>
+
+        <button class="btn-update" onclick="window.location.reload();">
+            🔄 Actualizar Dashboard
+        </button>
+
+        <div class="metadata-section">
+            <div class="metadata-row">
+                <span>Sincro Local (ART UTC-3):</span>
+                <span id="sync-local">--/--/---- --:--:--</span>
             </div>
-            <div class="telemetry-row">
-                <span>Próxima Sincronización (ART UTC-3):</span>
-                <span id="telemetry-time-next" style="color: #cca43b; font-weight: 600;">--/--/---- --:--:--</span>
+            <div class="metadata-row">
+                <span>Próxima Sincro (ART UTC-3):</span>
+                <span id="sync-next" style="color: #f59e0b; font-weight: bold;">--/--/---- --:--:--</span>
             </div>
-            <div class="telemetry-row">
+            <div class="metadata-row">
                 <span>Servidor Cloud (UTC):</span>
-                <span id="telemetry-time-server">--/--/---- --:--:--</span>
+                <span id="sync-server">--/--/---- --:--:--</span>
             </div>
-            <div class="telemetry-row" style="margin-top: 4px; border-top: 1px dashed var(--border-color); padding-top: 4px;">
+            <div class="metadata-row" style="margin-top: 4px; border-top: 1px dashed #2b2b30; padding-top: 4px;">
                 <span>Peticiones Acumuladas:</span>
-                <span id="telemetry-requests">0</span>
+                <span id="sync-requests">0</span>
             </div>
         </div>
     </header>
 
+    <div class="alert-card" id="alert-box" style="display: none;">
+        <div class="alert-title">⚠️ Requiere ajuste ⚠️</div>
+        <div class="alert-text" id="alert-message"></div>
+    </div>
+
     <main>
-        <div class="column-card">
-            <h2 id="title-ayer">Ayer</h2>
-            <div class="tasks-list" id="list-ayer"></div>
+        <div class="metric-card">
+            <div class="metric-label">Tasa de Constancia (Hoy)</div>
+            <div class="metric-value" id="constancia-val">0.0%</div>
+            <div class="metric-subtext">Regla: Estado 'Hecha' + Consistencia=1</div>
+            <div class="metric-icon">🎯</div>
         </div>
 
-        <div class="column-card">
-            <h2 id="title-hoy">Hoy</h2>
-            <div class="tasks-list" id="list-hoy"></div>
-        </div>
-
-        <div class="column-card">
-            <h2 id="title-manana">Mañana</h2>
-            <div class="tasks-list" id="list-manana"></div>
+        <div class="metric-card">
+            <div class="metric-label">Tareas Completadas</div>
+            <div class="metric-value white" id="completadas-val">0 / 0</div>
+            <div class="metric-subtext">Tareas que cumplen el criterio compuesto hoy</div>
+            <div class="metric-icon">📅</div>
         </div>
     </main>
 
     <script>
-        // METADATOS TÉCNICOS INYECTADOS DINÁMICAMENTE POR EL EXTRACTOR DE PYTHON
-        const timestampLocalStr = "22/06/2026 13:30:07";
+        // VARIABLES INYECTADAS DINÁMICAMENTE POR EL EXTRACTOR DE PYTHON
+        const timestampLocalStr = "22/06/2026 13:30:00";
         const timestampNextStr = "22/06/2026 14:00:00";
-        const timestampServerStr = "22/06/2026 16:30:07";
-        const totalPeticionesExitosas = 2;
-        const diasReales = 0;
-        let totalDias = 12;
-        const totalAyer = 34;
-        const totalManana = 0;
-
-        // ESTRUCTURAS JSON DE DISTRIBUCIÓN POR ESTADOS
-        const conteoAyer = {"Hecha": 19, "❌ Fallida / Vencida": 11, "⏭️ No necesaria": 4};
-        const conteoHoy = {"Sin empezar": 6, "Hecha": 3, "⏭️ No necesaria": 2, "❌ Fallida / Vencida": 1};
-        const conteoManana = {};
+        const timestampServerStr = "22/06/2026 16:30:00";
+        const totalPeticionesExitosas = 12;
+        const tasaConstanciaHoy = 60.0;
+        const tareasHechasHoy = 6;
+        const totalTareasHoy = 10;
 
         document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("telemetry-time-local").innerText = timestampLocalStr;
-            document.getElementById("telemetry-time-next").innerText = timestampNextStr;
-            document.getElementById("telemetry-time-server").innerText = timestampServerStr;
-            document.getElementById("telemetry-requests").innerText = totalPeticionesExitosas;
+            // Actualizar telemetría
+            document.getElementById("sync-local").innerText = timestampLocalStr;
+            document.getElementById("sync-next").innerText = timestampNextStr;
+            document.getElementById("sync-server").innerText = timestampServerStr;
+            document.getElementById("sync-requests").innerText = totalPeticionesExitosas;
 
-            document.getElementById("title-ayer").innerHTML = `Ayer <span>(${totalAyer} tareas)</span>`;
-            document.getElementById("title-hoy").innerHTML = `Hoy <span>(${totalDias} tareas)</span>`;
-            document.getElementById("title-manana").innerHTML = `Mañana <span>(${totalManana} tareas)</span>`;
+            // Actualizar métricas visuales
+            document.getElementById("constancia-val").innerText = `${tasaConstanciaHoy.toFixed(1)}%`;
+            document.getElementById("completadas-val").innerText = `${tareasHechasHoy} / ${totalTareasHoy}`;
 
-            renderizarSeccion("list-ayer", conteoAyer);
-            renderizarSeccion("list-hoy", conteoHoy);
-            renderizarSeccion("list-manana", conteoManana);
-        });
-
-        function renderizarSeccion(containerId, data) {
-            const container = document.getElementById(containerId);
-            if (!data || Object.keys(data).length === 0) {
-                container.innerHTML = `<div class="task-item" style="color: var(--text-muted);">Sin tareas registradas</div>`;
-                return;
+            // Lógica inteligente de alertas de consistencia
+            const alertBox = document.getElementById("alert-box");
+            if (tasaConstanciaHoy < 70.0) {
+                document.getElementById("alert-message").innerText = `Tu tasa de constancia diaria es del ${tasaConstanciaHoy.toFixed(1)}%. Se encuentra por debajo del umbral recomendado del 70%. Tu mentor te sugiere revisar si estás experimentando demasiada fricción para completar tus bitácoras hoy.`;
+                alertBox.style.display = "block";
+            } else {
+                alertBox.style.display = "none";
             }
-
-            container.innerHTML = Object.entries(data).map(([estado, cantidad]) => {
-                return `
-                    <div class="task-item">
-                        <span>${estado}</span>
-                        <span class="task-count">${cantidad}</span>
-                    </div>
-                `;
-            }).join('');
-        }
+        });
     </script>
 </body>
 </html>
