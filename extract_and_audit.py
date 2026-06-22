@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-MÓDULO: extract_and_audit.py (Versión 3.3 - Monitoreo Técnico Persistente y Híbrido Cloud)
+MÓDULO: extract_and_audit.py (Versión 3.4 - Monitoreo Técnico Persistente y Híbrido Cloud)
 DESCRIPCIÓN: Extrae y audita la consistencia utilizando peticiones HTTP nativas.
              Sincroniza y escribe dinámicamente los bloques independientes de 
              Ayer, Hoy y Mañana en index.html, e inyecta métricas de control
@@ -70,14 +70,16 @@ if os.getenv("GITHUB_ACTIONS") != "true":
     cargar_env_binario_robusto(env_path)
     load_dotenv(dotenv_path=env_path)
 
-NOTION_API_KEY = os.getenv("NOTION_API_KEY")
-DB_RECORDATORIOS_DIARIOS = os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS")
+# LÓGICA DE AUTENTICACIÓN HÍBRIDA (Soporta múltiples variantes de nombres para entornos locales y remotos)
+NOTION_API_KEY = os.getenv("NOTION_API_KEY") or os.getenv("NOTION_TOKEN")
+DB_RECORDATORIOS_DIARIOS = os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS") or os.getenv("NOTION_DATABASE_ID")
 
 INTERVALO_SEGUNDOS = 10800  # 3 Horas
 
 if not NOTION_API_KEY or not DB_RECORDATORIOS_DIARIOS:
     print("❌ [ERROR]: Faltan credenciales válidas en tu archivo .env o variables de entorno de GitHub.")
     print(f"🔍 Directorio de búsqueda absoluto del .env:\n   👉 '{env_path}'")
+    print(f"DEBUG - API Key detectada: {bool(NOTION_API_KEY)} | DB ID detectada: {bool(DB_RECORDATORIOS_DIARIOS)}")
     sys.exit(1)
 
 def evaluar_bloque_temporal(fecha_str):
@@ -235,71 +237,3 @@ def auditar_consistencia_tripartita():
         if not html_path.exists():
             print(f"❌ [ERROR]: No se encontró el archivo '{html_path}'")
             return
-            
-        with open(html_path, "r", encoding="utf-8") as file:
-            html_content = file.read()
-            
-        import re
-        now_str = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        
-        # Inyección de Métricas Técnicas
-        html_content = re.sub(r'const\s+ultimaActualizacionStr\s*=\s*".*?";', f'const ultimaActualizacionStr = "{now_str}";', html_content)
-        html_content = re.sub(r'const\s+totalPeticionesExitosas\s*=\s*\d+;', f'const totalPeticionesExitosas = {total_peticiones};', html_content)
-        
-        # Inyección de Datos de Notion
-        html_content = re.sub(r"const\s+diasReales\s*=\s*\d+;", f"const diasReales = {tareas_consistentes_hoy};", html_content)
-        html_content = re.sub(r"totalDias\s*=\s*\d+;", f"totalDias = {total_tareas_hoy};", html_content)
-        html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\};", f"const conteoAyer = {json.dumps(conteo_ayer, ensure_ascii=False)};", html_content)
-        html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\};", f"const conteoHoy = {json.dumps(conteo_hoy, ensure_ascii=False)};", html_content)
-        html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\};", f"const conteoManana = {json.dumps(conteo_manana, ensure_ascii=False)};", html_content)
-
-        with open(html_path, "w", encoding="utf-8") as file:
-            file.write(html_content)
-        print(f"✅ [CONTROL TÉCNICO INYECTADO]: Sincro: {now_str} | Peticiones Totales: {total_peticiones}")
-
-        # ----------------------------------------------------------------
-        # 🚀 AUTOMATIZACIÓN DE GIT TOLERANTE A ONEDRIVE (SÓLO SI ES LOCAL)
-        # ----------------------------------------------------------------
-        if os.getenv("GITHUB_ACTIONS") != "true":
-            print("📤 Sincronizando con GitHub Pages...")
-            try:
-                time.sleep(1)
-                os.system("git add index.html peticiones_contador.txt")
-                time.sleep(1)
-                commit_msg = f'git commit -m "update: sincro {now_str} | peticiones: {total_peticiones}"'
-                os.system(commit_msg)
-                time.sleep(1)
-                os.system("git push origin main_fa")
-                print("🎉 [PIPELINE EXITOSO]: Actualización enviada con éxito a tu celular.")
-            except Exception as git_err:
-                print(f"⚠️ Alerta en Git: {git_err}")
-        else:
-            print("⚙️ Ejecutándose en GitHub Actions. La actualización del archivo e historial de commits se gestiona mediante el pipeline nativo.")
-
-    except Exception as e:
-        print(f"❌ Error crítico durante el pipeline de auditoría: {e}")
-
-if __name__ == "__main__":
-    # Si estamos en la nube, se ejecuta UNA VEZ y el workflow de GitHub se encarga de apagar el contenedor
-    if os.getenv("GITHUB_ACTIONS") == "true":
-        print("☁️ [ENTORNO CI/CD DETECTADO]: Ejecutando ciclo único para GitHub Actions.")
-        auditar_consistencia_tripartita()
-        sys.exit(0)
-        
-    # Si estamos en local, corre el bucle continuo tradicional de fondo
-    print("================================================================")
-    print("🛡️  NOTION FLOW AUDITOR - PIPELINE TRÍPTICO MÓVIL V3.3")
-    print(f"⏰ Actualización automatizada activa cada {INTERVALO_SEGUNDOS} segundos.")
-    print("================================================================")
-    
-    while True:
-        try:
-            auditar_consistencia_tripartita()
-            print(f"💤 Esperando {INTERVALO_SEGUNDOS} segundos para el próximo ciclo...")
-            time.sleep(INTERVALO_SEGUNDOS)
-        except KeyboardInterrupt:
-            print("\n🛑 [SERVICIO DETENIDO]: Finalizando de forma limpia...")
-            break
-        except Exception as e:
-            print(f"\n❌ Error en el bucle principal: {e}")
-            time.sleep(10)
