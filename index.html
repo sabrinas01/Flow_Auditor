@@ -87,12 +87,25 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
+            text-decoration: none;
             transition: background-color 0.2s;
         }
 
         .btn-update:hover {
             background-color: var(--accent-light-red);
+        }
+
+        .btn-refresh {
+            width: 100%;
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin-bottom: 20px;
         }
 
         .metadata-section {
@@ -117,87 +130,102 @@
             color: var(--text-main);
         }
 
-        .alert-card {
-            background-color: var(--warning-bg);
-            border: 1px solid var(--warning-border);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 480px;
-        }
-
-        .alert-title {
-            color: var(--warning-text);
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .alert-text {
-            color: #fcd34d;
-            font-size: 0.85rem;
-            line-height: 1.4;
-        }
-
         main {
             width: 100%;
             max-width: 480px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 20px;
         }
 
-        .metric-card {
+        .section-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 14px;
             padding: 20px;
-            position: relative;
         }
 
-        .metric-label {
-            font-size: 0.75rem;
+        .section-header {
+            font-size: 1.1rem;
             font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
         }
 
-        .metric-value {
-            font-size: 2.4rem;
+        .section-header span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+
+        .tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-color);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            border-left: 3px solid var(--accent-red);
+        }
+
+        .task-count {
+            font-weight: bold;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 14px;
+        }
+
+        .metric-subbox {
+            background: var(--bg-color);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .metric-subbox-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            letter-spacing: 0.03em;
+        }
+
+        .metric-subbox-value {
+            font-size: 1.3rem;
             font-weight: 800;
             color: #f59e0b;
         }
 
-        .metric-value.white {
+        .metric-subbox-value.white {
             color: var(--text-main);
         }
 
-        .metric-subtext {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 6px;
-        }
-
-        .metric-icon {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 44px;
-            height: 44px;
+        .alert-card {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
             border-radius: 10px;
-            background-color: var(--accent-bg-red);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--accent-light-red);
-            font-size: 1.2rem;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: #fcd34d;
+            line-height: 1.4;
         }
     </style>
 </head>
@@ -210,21 +238,22 @@
         </div>
         <div class="subtitle">Reporte de Consistencia Diaria Real</div>
 
-        <button class="btn-update" onclick="window.location.reload();">
-            🔄 Actualizar Dashboard
-        </button>
+        <a href="https://app.notion.com/p/a61a38bb7a6e8251a38601779b0bd382?v=50da38bb7a6e82369cc9088797549db6&source=copy_link" target="_blank" class="btn-update">
+            🚀 Abrir Espacio en Notion
+        </a>
+        <button class="btn-refresh" onclick="window.location.reload();">🔄 Actualizar Pantalla</button>
 
         <div class="metadata-section">
             <div class="metadata-row">
-                <span>Sincro Local (ART UTC-3):</span>
+                <span>Última Actualización (ART UTC-3):</span>
                 <span id="sync-local">--/--/---- --:--:--</span>
             </div>
             <div class="metadata-row">
-                <span>Próxima Sincro (ART UTC-3):</span>
+                <span>Próxima Actualización (ART UTC-3):</span>
                 <span id="sync-next" style="color: #f59e0b; font-weight: bold;">--/--/---- --:--:--</span>
             </div>
             <div class="metadata-row">
-                <span>Servidor Cloud (UTC):</span>
+                <span>Última Sincro en Servidor (UTC):</span>
                 <span id="sync-server">--/--/---- --:--:--</span>
             </div>
             <div class="metadata-row" style="margin-top: 4px; border-top: 1px dashed #2b2b30; padding-top: 4px;">
@@ -234,24 +263,51 @@
         </div>
     </header>
 
-    <div class="alert-card" id="alert-box" style="display: none;">
-        <div class="alert-title">⚠️ Requiere ajuste ⚠️</div>
-        <div class="alert-text" id="alert-message"></div>
-    </div>
-
     <main>
-        <div class="metric-card">
-            <div class="metric-label">Tasa de Constancia (Hoy)</div>
-            <div class="metric-value" id="constancia-val">0.0%</div>
-            <div class="metric-subtext">Regla: Estado 'Hecha' + Consistencia=1</div>
-            <div class="metric-icon">🎯</div>
+        <div class="section-card">
+            <div class="section-header">
+                <div>Tareas de Ayer</div>
+                <span id="total-ayer-lbl">0 tareas</span>
+            </div>
+            <div class="tasks-list" id="list-ayer"></div>
+            <div class="metrics-grid">
+                <div class="metric-subbox">
+                    <div class="metric-subbox-label">Completadas</div>
+                    <div class="metric-subbox-value white" id="hechas-ayer-val">0 / 0</div>
+                </div>
+                <div class="metric-subbox">
+                    <div class="metric-subbox-label">Consistencia</div>
+                    <div class="metric-subbox-value" id="consistencia-ayer-val">0.0%</div>
+                </div>
+            </div>
+            <div class="alert-card" id="alert-ayer" style="display: none;"></div>
         </div>
 
-        <div class="metric-card">
-            <div class="metric-label">Tareas Completadas</div>
-            <div class="metric-value white" id="completadas-val">0 / 0</div>
-            <div class="metric-subtext">Tareas que cumplen el criterio compuesto hoy</div>
-            <div class="metric-icon">📅</div>
+        <div class="section-card">
+            <div class="section-header">
+                <div>Tareas de Hoy</div>
+                <span id="total-hoy-lbl">0 tareas</span>
+            </div>
+            <div class="tasks-list" id="list-hoy"></div>
+            <div class="metrics-grid">
+                <div class="metric-subbox">
+                    <div class="metric-subbox-label">Completadas</div>
+                    <div class="metric-subbox-value white" id="hechas-hoy-val">0 / 0</div>
+                </div>
+                <div class="metric-subbox">
+                    <div class="metric-subbox-label">Consistencia</div>
+                    <div class="metric-subbox-value" id="consistencia-hoy-val">0.0%</div>
+                </div>
+            </div>
+            <div class="alert-card" id="alert-hoy" style="display: none;"></div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">
+                <div>Tareas para Mañana</div>
+                <span id="total-manana-lbl" style="font-size: 1.1rem; font-weight: bold; color: var(--text-main);">0 tareas</span>
+            </div>
+            <div class="tasks-list" id="list-manana"></div>
         </div>
     </main>
 
@@ -261,30 +317,70 @@
         const timestampNextStr = "22/06/2026 14:00:00";
         const timestampServerStr = "22/06/2026 16:30:00";
         const totalPeticionesExitosas = 12;
-        const tasaConstanciaHoy = 60.0;
-        const tareasHechasHoy = 6;
-        const totalTareasHoy = 10;
+        
+        const totalAyer = 34;
+        const hechasAyer = 16;
+        const tasaAyer = 47.0;
+        
+        const totalHoy = 11;
+        const hechasHoy = 6;
+        const tasaHoy = 60.0;
+        
+        const totalManana = 0;
+
+        // ESTRUCTURAS JSON DE DISTRIBUCIÓN POR ESTADOS
+        const conteoAyer = {"Hecha": 16, "Fallida / Vencida": 14, "No necesaria": 4};
+        const conteoHoy = {"Sin empezar": 4, "Hecha": 14, "No necesaria": 4, "Fallida / Vencida": 8};
+        const conteoManana = {};
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Actualizar telemetría
+            // Render de Telemetría
             document.getElementById("sync-local").innerText = timestampLocalStr;
             document.getElementById("sync-next").innerText = timestampNextStr;
             document.getElementById("sync-server").innerText = timestampServerStr;
             document.getElementById("sync-requests").innerText = totalPeticionesExitosas;
 
-            // Actualizar métricas visuales
-            document.getElementById("constancia-val").innerText = `${tasaConstanciaHoy.toFixed(1)}%`;
-            document.getElementById("completadas-val").innerText = `${tareasHechasHoy} / ${totalTareasHoy}`;
+            // Render de Contadores de Cabecera
+            document.getElementById("total-ayer-lbl").innerText = `${totalAyer} tareas`;
+            document.getElementById("total-hoy-lbl").innerText = `${totalHoy} tareas`;
+            document.getElementById("total-manana-lbl").innerText = `${totalManana} tareas`;
 
-            // Lógica inteligente de alertas de consistencia
-            const alertBox = document.getElementById("alert-box");
-            if (tasaConstanciaHoy < 70.0) {
-                document.getElementById("alert-message").innerText = `Tu tasa de constancia diaria es del ${tasaConstanciaHoy.toFixed(1)}%. Se encuentra por debajo del umbral recomendado del 70%. Tu mentor te sugiere revisar si estás experimentando demasiada fricción para completar tus bitácoras hoy.`;
-                alertBox.style.display = "block";
-            } else {
-                alertBox.style.display = "none";
-            }
+            // Render de Sub-bloques de Métricas
+            document.getElementById("hechas-ayer-val").innerText = `${hechasAyer} / ${totalAyer}`;
+            document.getElementById("consistencia-ayer-val").innerText = `${tasaAyer.toFixed(1)}%`;
+            document.getElementById("hechas-hoy-val").innerText = `${hechasHoy} / ${totalHoy}`;
+            document.getElementById("consistencia-hoy-val").innerText = `${tasaHoy.toFixed(1)}%`;
+
+            // Renderizado de Grupos por Estado
+            renderizarSeccion("list-ayer", conteoAyer);
+            renderizarSeccion("list-hoy", conteoHoy);
+            renderizarSeccion("list-manana", conteoManana);
+
+            # Evaluador de Umbral de Alertas
+            evaluarAlerta("alert-ayer", tasaAyer);
+            evaluarAlerta("alert-hoy", tasaHoy);
         });
+
+        function evaluarAlerta(id, tasa) {
+            const box = document.getElementById(id);
+            if (tasa < 70.0 && tasa > 0) {
+                box.innerText = `⚠️ Consistencia por debajo del umbral del 70%. Se sugiere revisión de fricción de flujos.`;
+                box.style.display = "block";
+            } else {
+                box.style.display = "none";
+            }
+        }
+
+        function renderizarSeccion(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!data || Object.keys(data).length === 0) {
+                container.innerHTML = `<div class="task-item" style="color: var(--text-muted); border-left-color: var(--text-muted);">Sin tareas registradas</div>`;
+                return;
+            }
+            container.innerHTML = Object.entries(data).map(([estado, cantidad]) => {
+                return `<div class="task-item"><span>${estado}</span><span class="task-count">${cantidad}</span></div>`;
+            }).join('');
+        }
     </script>
 </body>
 </html>

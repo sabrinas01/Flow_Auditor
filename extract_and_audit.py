@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-MÓDULO: extract_and_audit.py (Versión 4.0 - Inyección de Métricas Grandes)
+MÓDULO: extract_and_audit.py (Versión 4.1 - Auditoría Completa Cruzada)
 """
 
 import os
@@ -15,18 +15,29 @@ import requests
 BASE_DIR = Path(__file__).resolve().parent
 env_path = BASE_DIR / ".env"
 
-if os.getenv("GITHUB_ACTIONS") != "true":
-    if env_path.exists():
-        load_dotenv(dotenv_path=env_path)
+if os.getenv("GITHUB_ACTIONS") != "true" and env_path.exists():
+    load_dotenv(dotenv_path=env_path)
 
 NOTION_API_KEY = os.getenv("NOTION_API_KEY") or os.getenv("NOTION_TOKEN")
 DB_RECORDATORIOS_DIARIOS = os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS") or os.getenv("NOTION_DATABASE_ID")
 
 if not NOTION_API_KEY or not DB_RECORDATORIOS_DIARIOS:
-    print("❌ Error: Faltan credenciales válidas en las variables de entorno.")
+    print("❌ Error: Faltan credenciales válidas.")
     sys.exit(1)
 
-def ejecutar_auditoria():
+def evaluar_bloque_temporal(fecha_str):
+    if not fecha_str: return None
+    try:
+        solo_fecha = fecha_str.split("T")[0].strip()
+        fecha_dt = datetime.strptime(solo_fecha, "%Y-%m-%d").date()
+        hoy_local = (datetime.utcnow() - timedelta(hours=3)).date()
+        if fecha_dt == hoy_local: return "HOY"
+        elif fecha_dt == (hoy_local - timedelta(days=1)): return "AYER"
+        elif fecha_dt == (hoy_local + timedelta(days=1)): return "MANANA"
+        return None
+    except: return None
+
+def auditar_consistencia_tripartita():
     url = f"https://api.notion.com/v1/databases/{DB_RECORDATORIOS_DIARIOS}/query"
     headers = {
         "Authorization": f"Bearer {NOTION_API_KEY}",
@@ -39,37 +50,46 @@ def ejecutar_auditoria():
         response.raise_for_status()
         results = response.json().get("results", [])
         
-        total_hoy = 0
-        hechas_hoy = 0
-        columna_estado = None
-        columna_fecha = None
+        conteo_ayer, conteo_hoy, conteo_manana = {}, {}, {}
+        hechas_ayer, hechas_hoy = 0, 0
         
+        columna_estado, columna_fecha = None, None
         if results:
             for n_col, info in results[0].get("properties", {}).items():
                 if info.get("type") in ["status", "select"] and n_col.lower() in ["estado", "status"]: columna_estado = n_col
                 if info.get("type") == "date": columna_fecha = n_col
 
-        hoy_local = (datetime.utcnow() - timedelta(hours=3)).date()
-
         for pagina in results:
             props = pagina.get("properties", {})
-            fecha_str = props.get(columna_fecha, {}).get("date", {}).get("start") if columna_fecha else None
-            if not fecha_str: fecha_str = pagina.get("created_time")
+            fecha_p = props.get(columna_fecha, {}).get("date", {}).get("start") if columna_fecha else None
+            if not fecha_p: fecha_p = pagina.get("created_time")
             
-            if fecha_str:
-                solo_fecha = fecha_str.split("T")[0].strip()
-                if datetime.strptime(solo_fecha, "%Y-%m-%d").date() == hoy_local:
-                    total_hoy += 1
-                    est_val = "Vacío"
-                    if columna_estado:
-                        st_data = props.get(columna_estado, {})
-                        if st_data.get("type") == "status" and st_data.get("status"): est_val = st_data["status"].get("name")
-                        elif st_data.get("type") == "select" and st_data.get("select"): est_val = st_data["select"].get("name")
-                    
-                    if est_val.lower() in ["hecha", "completada", "done"]:
-                        hechas_hoy += 1
+            bloque = evaluar_bloque_temporal(fecha_p)
+            if not bloque: continue
+            
+            est_val = "Vacío"
+            if columna_estado:
+                st_data = props.get(columna_estado, {})
+                if st_data.get("type") == "status" and st_data.get("status"): est_val = st_data["status"].get("name")
+                elif st_data.get("type") == "select" and st_data.get("select"): est_val = st_data["select"].get("name")
+            
+            is_hecha = est_val.lower() in ["hecha", "completada", "done"]
+            
+            if bloque == "AYER":
+                conteo_ayer[est_val] = conteo_ayer.get(est_val, 0) + 1
+                if is_hecha: hechas_ayer += 1
+            elif bloque == "HOY":
+                conteo_hoy[est_val] = conteo_hoy.get(est_val, 0) + 1
+                if is_hecha: hechas_hoy += 1
+            elif bloque == "MANANA":
+                conteo_manana[est_val] = conteo_manana.get(est_val, 0) + 1
 
-        tasa_constancia = (hechas_hoy / total_hoy * 100.0) if total_hoy > 0 else 100.0
+        tot_ayer = sum(conteo_ayer.values())
+        tot_hoy = sum(conteo_hoy.values())
+        tot_manana = sum(conteo_manana.values())
+        
+        tasa_ayer = (hechas_ayer / tot_ayer * 100.0) if tot_ayer > 0 else 0.0
+        tasa_hoy = (hechas_hoy / tot_hoy * 100.0) if tot_hoy > 0 else 0.0
 
         # Contador de peticiones
         contador_path = BASE_DIR / "peticiones_contador.txt"
@@ -89,23 +109,34 @@ def ejecutar_auditoria():
         str_next = proxima_sincro.strftime("%d/%m/%Y %H:%M:%S")
         str_server = ahora_utc.strftime("%d/%m/%Y %H:%M:%S")
 
-        # Inyección exacta mediante Regex
         html_path = BASE_DIR / "index.html"
         with open(html_path, "r", encoding="utf-8") as file: html_content = file.read()
         
+        # Inyección avanzada por Regex
         html_content = re.sub(r'const\s+timestampLocalStr\s*=\s*".*?";', f'const timestampLocalStr = "{str_local}";', html_content)
         html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?";', f'const timestampNextStr = "{str_next}";', html_content)
         html_content = re.sub(r'const\s+timestampServerStr\s*=\s*".*?";', f'const timestampServerStr = "{str_server}";', html_content)
         html_content = re.sub(r'const\s+totalPeticionesExitosas\s*=\s*\d+;', f'const totalPeticionesExitosas = {total_peticiones};', html_content)
-        html_content = re.sub(r'const\s+tasaConstanciaHoy\s*=\s*[\d.]+;', f'const tasaConstanciaHoy = {tasa_constancia};', html_content)
-        html_content = re.sub(r'const\s+tareasHechasHoy\s*=\s*\d+;', f'const tareasHechasHoy = {hechas_hoy};', html_content)
-        html_content = re.sub(r'const\s+totalTareasHoy\s*=\s*\d+;', f'const totalTareasHoy = {total_hoy};', html_content)
+        
+        html_content = re.sub(r'const\s+totalAyer\s*=\s*\d+;', f'const totalAyer = {tot_ayer};', html_content)
+        html_content = re.sub(r'const\s+hechasAyer\s*=\s*\d+;', f'const hechasAyer = {hechas_ayer};', html_content)
+        html_content = re.sub(r'const\s+tasaAyer\s*=\s*[\d.]+;', f'const tasaAyer = {tasa_ayer};', html_content)
+        
+        html_content = re.sub(r'const\s+totalHoy\s*=\s*\d+;', f'const totalHoy = {tot_hoy};', html_content)
+        html_content = re.sub(r'const\s+hechasHoy\s*=\s*\d+;', f'const hechasHoy = {hechas_hoy};', html_content)
+        html_content = re.sub(r'const\s+tasaHoy\s*=\s*[\d.]+;', f'const tasaHoy = {tasa_hoy};', html_content)
+        
+        html_content = re.sub(r'const\s+totalManana\s*=\s*\d+;', f'const totalManana = {tot_manana};', html_content)
+        
+        html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\};", f"const conteoAyer = {json.dumps(conteo_ayer, ensure_ascii=False)};", html_content)
+        html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\};", f"const conteoHoy = {json.dumps(conteo_hoy, ensure_ascii=False)};", html_content)
+        html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\};", f"const conteoManana = {json.dumps(conteo_manana, ensure_ascii=False)};", html_content)
 
         with open(html_path, "w", encoding="utf-8") as file: file.write(html_content)
-        print(f"✅ Sincronización Realizada -> {tasa_constancia}%")
+        print("✅ Pipeline unificado completado con éxito.")
 
     except Exception as e:
-        print(f"❌ Error en pipeline: {e}")
+        print(f"❌ Error: {e}")
 
 if __name__ == "__main__":
-    ejecutar_auditoria()
+    auditar_consistencia_tripartita()
