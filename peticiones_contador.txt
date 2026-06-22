@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-4
-=======
-3Sincro Cloud Realizada
->>>>>>> 9e7a7a3090dd59fc87c8a635f6a4d93f1bdb0c3e
+1
