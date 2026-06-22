@@ -27,16 +27,13 @@ jobs:
       - name: Run Notion Flow Auditor
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY || secrets.NOTION_TOKEN }}
-          NOTION_TOKEN: ${{ secrets.NOTION_API_KEY || secrets.NOTION_TOKEN }}
           NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS || secrets.NOTION_DATABASE_ID || secrets.NOTION_DB_ID }}
-          NOTION_DATABASE_ID: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS || secrets.NOTION_DATABASE_ID || secrets.NOTION_DB_ID }}
         run: python extract_and_audit.py
 
       - name: Commit and Push Changes
         run: |
-          git config --global user.name "Notion Daemon Cloud"
-          git config --global user.email "daemon@bitacorait.com"
-          echo "Sincro Cloud Realizada" >> peticiones_contador.txt
-          git add index.html peticiones_contador.txt
-          git commit -m "update: sync seguro cloud de hábitos ☁️"
-          git push origin HEAD:main --force
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add index.html peticiones_contador.txt || true
+          git commit -m "auto: actualización horaria de consistencia de flujos" || echo "Sin cambios para commitear"
+          git push origin main --force
