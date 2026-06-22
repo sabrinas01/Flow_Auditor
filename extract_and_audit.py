@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-MÓDULO: extract_and_audit.py (Versión 3.5 - Monitoreo Técnico Persistente y Híbrido Cloud)
+MÓDULO: extract_and_audit.py (Versión 3.6 - Monitoreo Técnico Persistente y Híbrido Cloud)
 DESCRIPCIÓN: Extrae y audita la consistencia utilizando peticiones HTTP nativas.
              Sincroniza y escribe dinámicamente los bloques independientes de 
              Ayer, Hoy y Mañana en index.html, e inyecta métricas de control
-             como la fecha/hora de sincronización y el contador de peticiones exitosas.
-             Soporta ejecución híbrida: bucle local continuo o ejecución única en GitHub Actions.
+             como los contadores totales de tareas por sección temporal.
 AUTOR: Tu Mentor de Programación & Analista de Ciberseguridad
 """
 
@@ -244,13 +243,20 @@ def auditar_consistencia_tripartita():
         import re
         now_str = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         
-        # Inyección de Métricas Técnicas
+        total_tareas_ayer = sum(conteo_ayer.values())
+        total_tareas_manana = sum(conteo_manana.values())
+        
+        # Inyección de Métricas Técnicas Colectivas
         html_content = re.sub(r'const\s+ultimaActualizacionStr\s*=\s*".*?";', f'const ultimaActualizacionStr = "{now_str}";', html_content)
         html_content = re.sub(r'const\s+totalPeticionesExitosas\s*=\s*\d+;', f'const totalPeticionesExitosas = {total_peticiones};', html_content)
         
-        # Inyección de Datos de Notion
+        # Inyección de Datos Numéricos de Control
         html_content = re.sub(r"const\s+diasReales\s*=\s*\d+;", f"const diasReales = {tareas_consistentes_hoy};", html_content)
         html_content = re.sub(r"totalDias\s*=\s*\d+;", f"totalDias = {total_tareas_hoy};", html_content)
+        html_content = re.sub(r"const\s+totalAyer\s*=\s*\d+;", f"const totalAyer = {total_tareas_ayer};", html_content)
+        html_content = re.sub(r"const\s+totalManana\s*=\s*\d+;", f"const totalManana = {total_tareas_manana};", html_content)
+        
+        # Inyección de Estructuras de Datos JSON para Renderizado Dinámico
         html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\};", f"const conteoAyer = {json.dumps(conteo_ayer, ensure_ascii=False)};", html_content)
         html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\};", f"const conteoHoy = {json.dumps(conteo_hoy, ensure_ascii=False)};", html_content)
         html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\};", f"const conteoManana = {json.dumps(conteo_manana, ensure_ascii=False)};", html_content)
@@ -283,15 +289,13 @@ def auditar_consistencia_tripartita():
         print("⚙️ Ejecutándose en GitHub Actions. La actualización del archivo e historial de commits se gestiona mediante el pipeline nativo.")
 
 if __name__ == "__main__":
-    # Si estamos en la nube, se ejecuta UNA VEZ y el workflow de GitHub se encarga de apagar el contenedor
     if os.getenv("GITHUB_ACTIONS") == "true":
         print("☁️ [ENTORNO CI/CD DETECTADO]: Ejecutando ciclo único para GitHub Actions.")
         auditar_consistencia_tripartita()
         sys.exit(0)
         
-    # Si estamos en local, corre el bucle continuo tradicional de fondo
     print("================================================================")
-    print("🛡️  NOTION FLOW AUDITOR - PIPELINE TRÍPTICO MÓVIL V3.5")
+    print("🛡️  NOTION FLOW AUDITOR - PIPELINE TRÍPTICO MÓVIL V3.6")
     print(f"⏰ Actualización automatizada activa cada {INTERVALO_SEGUNDOS} segundos.")
     print("================================================================")
     
