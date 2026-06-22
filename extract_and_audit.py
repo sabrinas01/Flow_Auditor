@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-MÓDULO: extract_and_audit.py (Versión 4.1 - Auditoría Completa Cruzada)
+MÓDULO: extract_and_audit.py (Versión 4.2 - Core Estable)
 """
 
 import os
@@ -112,7 +112,7 @@ def auditar_consistencia_tripartita():
         html_path = BASE_DIR / "index.html"
         with open(html_path, "r", encoding="utf-8") as file: html_content = file.read()
         
-        # Inyección avanzada por Regex
+        # Inyección Regex Avanzada
         html_content = re.sub(r'const\s+timestampLocalStr\s*=\s*".*?";', f'const timestampLocalStr = "{str_local}";', html_content)
         html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?";', f'const timestampNextStr = "{str_next}";', html_content)
         html_content = re.sub(r'const\s+timestampServerStr\s*=\s*".*?";', f'const timestampServerStr = "{str_server}";', html_content)
@@ -133,7 +133,7 @@ def auditar_consistencia_tripartita():
         html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\};", f"const conteoManana = {json.dumps(conteo_manana, ensure_ascii=False)};", html_content)
 
         with open(html_path, "w", encoding="utf-8") as file: file.write(html_content)
-        print("✅ Pipeline unificado completado con éxito.")
+        print("✅ Pipeline finalizado con éxito.")
 
     except Exception as e:
         print(f"❌ Error: {e}")

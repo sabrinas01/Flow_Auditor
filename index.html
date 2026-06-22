@@ -78,7 +78,7 @@
             background-color: var(--accent-red);
             color: var(--text-main);
             border: none;
-            padding: 12px;
+            padding: 14px;
             border-radius: 8px;
             font-size: 0.95rem;
             font-weight: 600;
@@ -87,6 +87,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            margin-top: 24px;
             margin-bottom: 12px;
             text-decoration: none;
             transition: background-color 0.2s;
@@ -113,7 +114,6 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 14px;
-            margin-bottom: 24px;
             font-size: 0.8rem;
             color: var(--text-muted);
             display: flex;
@@ -238,9 +238,6 @@
         </div>
         <div class="subtitle">Reporte de Consistencia Diaria Real</div>
 
-        <a href="https://app.notion.com/p/a61a38bb7a6e8251a38601779b0bd382?v=50da38bb7a6e82369cc9088797549db6&source=copy_link" target="_blank" class="btn-update">
-            🚀 Abrir Espacio en Notion
-        </a>
         <button class="btn-refresh" onclick="window.location.reload();">🔄 Actualizar Pantalla</button>
 
         <div class="metadata-section">
@@ -309,28 +306,32 @@
             </div>
             <div class="tasks-list" id="list-manana"></div>
         </div>
+
+        <a href="https://app.notion.com/p/a61a38bb7a6e8251a38601779b0bd382?v=50da38bb7a6e82369cc9088797549db6&source=copy_link" target="_blank" class="btn-update">
+            🚀 Ir a Recordatorios diarios
+        </a>
     </main>
 
     <script>
         // VARIABLES INYECTADAS DINÁMICAMENTE POR EL EXTRACTOR DE PYTHON
-        const timestampLocalStr = "22/06/2026 13:44:24";
+        const timestampLocalStr = "22/06/2026 13:30:00";
         const timestampNextStr = "22/06/2026 14:00:00";
-        const timestampServerStr = "22/06/2026 16:44:24";
-        const totalPeticionesExitosas = 4;
+        const timestampServerStr = "22/06/2026 16:30:00";
+        const totalPeticionesExitosas = 12;
         
         const totalAyer = 34;
-        const hechasAyer = 19;
-        const tasaAyer = 55.88235294117647;
+        const hechasAyer = 16;
+        const tasaAyer = 47.0;
         
-        const totalHoy = 12;
-        const hechasHoy = 3;
-        const tasaHoy = 25.0;
+        const totalHoy = 11;
+        const hechasHoy = 6;
+        const tasaHoy = 60.0;
         
         const totalManana = 0;
 
         // ESTRUCTURAS JSON DE DISTRIBUCIÓN POR ESTADOS
-        const conteoAyer = {"Hecha": 19, "❌ Fallida / Vencida": 11, "⏭️ No necesaria": 4};
-        const conteoHoy = {"Sin empezar": 6, "Hecha": 3, "⏭️ No necesaria": 2, "❌ Fallida / Vencida": 1};
+        const conteoAyer = {"Hecha": 16, "Fallida / Vencida": 14, "No necesaria": 4};
+        const conteoHoy = {"Sin empezar": 4, "Hecha": 14, "No necesaria": 4, "Fallida / Vencida": 8};
         const conteoManana = {};
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -356,7 +357,7 @@
             renderizarSeccion("list-hoy", conteoHoy);
             renderizarSeccion("list-manana", conteoManana);
 
-            # Evaluador de Umbral de Alertas
+            // Evaluador de Umbral de Alertas
             evaluarAlerta("alert-ayer", tasaAyer);
             evaluarAlerta("alert-hoy", tasaHoy);
         });
