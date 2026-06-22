@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-MÓDULO: extract_and_audit.py (Versión 3.9 - Estética Restaurada y Próxima Sincro)
+MÓDULO: extract_and_audit.py (Versión 3.9 - Estética Restaurada Estricta)
 """
 
 import os
@@ -112,9 +112,7 @@ def auditar_consistencia_tripartita():
 
         # CÁLCULO DE HUSOS HORARIOS Y COMPUTE DE PRÓXIMA ACCIÓN (CRON DE 1 HORA)
         ahora_utc = datetime.utcnow()
-        ahora_argentina = ahora_utc - timedelta(hours=3) # GTM -3 Estricto
-        
-        # Como corre al inicio de cada hora (cron: '0 * * * *'), sumamos 1 hora al reloj actual y fijamos minutos en 0
+        ahora_argentina = ahora_utc - timedelta(hours=3)
         proxima_sincro_arg = (ahora_argentina + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
         
         str_local = ahora_argentina.strftime("%d/%m/%Y %H:%M:%S")
@@ -138,7 +136,7 @@ def auditar_consistencia_tripartita():
         html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\};", f"const conteoManana = {json.dumps(conteo_manana, ensure_ascii=False)};", html_content)
 
         with open(html_path, "w", encoding="utf-8") as file: file.write(html_content)
-        print(f"✅ Sincro Realizada -> ART: {str_local} | Próxima: {str_next}")
+        print(f"✅ Sincro Realizada -> ART: {str_local}")
 
     except Exception as e:
         print(f"❌ Error en pipeline: {e}")
