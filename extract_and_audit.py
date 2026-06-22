@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-MÓDULO: extract_and_audit.py (Versión 4.2 - Core Estable)
+MÓDULO: extract_and_audit.py (Versión 4.3 - Control Estricto de Excepciones)
 """
 
 import os
@@ -18,11 +18,12 @@ env_path = BASE_DIR / ".env"
 if os.getenv("GITHUB_ACTIONS") != "true" and env_path.exists():
     load_dotenv(dotenv_path=env_path)
 
+# Captura limpia y directa de variables de entorno
 NOTION_API_KEY = os.getenv("NOTION_API_KEY") or os.getenv("NOTION_TOKEN")
-DB_RECORDATORIOS_DIARIOS = os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS") or os.getenv("NOTION_DATABASE_ID")
+DB_RECORDATORIOS_DIARIOS = os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS") or os.getenv("NOTION_DATABASE_ID") or os.getenv("NOTION_DB_ID")
 
 if not NOTION_API_KEY or not DB_RECORDATORIOS_DIARIOS:
-    print("❌ Error: Faltan credenciales válidas.")
+    print("❌ [ERROR CRÍTICO]: Faltan credenciales válidas en las variables de entorno.")
     sys.exit(1)
 
 def evaluar_bloque_temporal(fecha_str):
@@ -35,7 +36,8 @@ def evaluar_bloque_temporal(fecha_str):
         elif fecha_dt == (hoy_local - timedelta(days=1)): return "AYER"
         elif fecha_dt == (hoy_local + timedelta(days=1)): return "MANANA"
         return None
-    except: return None
+    except:
+        return None
 
 def auditar_consistencia_tripartita():
     url = f"https://api.notion.com/v1/databases/{DB_RECORDATORIOS_DIARIOS}/query"
@@ -49,6 +51,7 @@ def auditar_consistencia_tripartita():
         response = requests.post(url, json={"page_size": 100}, headers=headers)
         response.raise_for_status()
         results = response.json().get("results", [])
+        print(f"📦 [LOG CLOUD]: La API de Notion devolvió {len(results)} registros totales.")
         
         conteo_ayer, conteo_hoy, conteo_manana = {}, {}, {}
         hechas_ayer, hechas_hoy = 0, 0
@@ -112,6 +115,8 @@ def auditar_consistencia_tripartita():
         html_path = BASE_DIR / "index.html"
         with open(html_path, "r", encoding="utf-8") as file: html_content = file.read()
         
+        original_content = html_content
+
         # Inyección Regex Avanzada
         html_content = re.sub(r'const\s+timestampLocalStr\s*=\s*".*?";', f'const timestampLocalStr = "{str_local}";', html_content)
         html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?";', f'const timestampNextStr = "{str_next}";', html_content)
@@ -132,11 +137,15 @@ def auditar_consistencia_tripartita():
         html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\};", f"const conteoHoy = {json.dumps(conteo_hoy, ensure_ascii=False)};", html_content)
         html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\};", f"const conteoManana = {json.dumps(conteo_manana, ensure_ascii=False)};", html_content)
 
+        if html_content == original_content:
+            print("⚠️ [ADVERTENCIA]: Las expresiones regulares no alteraron el HTML (los valores ya eran idénticos o no hubo coincidencia).")
+
         with open(html_path, "w", encoding="utf-8") as file: file.write(html_content)
-        print("✅ Pipeline finalizado con éxito.")
+        print("✅ Pipeline finalizado con éxito en index.html.")
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"❌ [ERROR CRÍTICO EN PIPELINE]: {e}")
+        sys.exit(1) # Forzamos el código de salida 1 para que rompa el GitHub Action si algo falla
 
 if __name__ == "__main__":
     auditar_consistencia_tripartita()
