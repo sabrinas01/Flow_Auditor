@@ -347,3 +347,30 @@
             const tasa = total > 0 ? (hechas / total * 100.0) : 0.0;
 
             document.getElementById(`total-${prefijo}-lbl`).innerText = `${total} tareas`;
+            document.getElementById(`hechas-${prefijo}-val`).innerText = `${hechas} / ${total}`;
+            document.getElementById(`consistencia-${prefijo}-val`).innerText = `${tasa.toFixed(1)}%`;
+
+            renderizarFilasEstados(`list-${prefijo}`, data);
+
+            const alertBox = document.getElementById(`alert-${prefijo}`);
+            if (tasa < 70.0 && total > 0) {
+                alertBox.innerText = `⚠️ Consistencia por debajo del umbral del 70%. Se sugiere revisión de fricción de flujos.`;
+                alertBox.style.display = "block";
+            } else {
+                alertBox.style.display = "none";
+            }
+        }
+
+        function renderizarFilasEstados(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!data || Object.keys(data).length === 0) {
+                container.innerHTML = `<div class="task-item" style="color: var(--text-muted); border-left-color: var(--text-muted);">Sin tareas registradas</div>`;
+                return;
+            }
+            container.innerHTML = Object.entries(data).map(([estado, cantidad]) => {
+                return `<div class="task-item"><span>${estado}</span><span class="task-count">${cantidad}</span></div>`;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
