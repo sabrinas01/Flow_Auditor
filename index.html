@@ -313,24 +313,24 @@
 
     <script>
         // VARIABLES INYECTADAS DINÁMICAMENTE POR EL EXTRACTOR DE PYTHON
-        const timestampLocalStr = "22/06/2026 13:30:00";
+        const timestampLocalStr = "22/06/2026 13:44:24";
         const timestampNextStr = "22/06/2026 14:00:00";
-        const timestampServerStr = "22/06/2026 16:30:00";
-        const totalPeticionesExitosas = 12;
+        const timestampServerStr = "22/06/2026 16:44:24";
+        const totalPeticionesExitosas = 4;
         
         const totalAyer = 34;
-        const hechasAyer = 16;
-        const tasaAyer = 47.0;
+        const hechasAyer = 19;
+        const tasaAyer = 55.88235294117647;
         
-        const totalHoy = 11;
-        const hechasHoy = 6;
-        const tasaHoy = 60.0;
+        const totalHoy = 12;
+        const hechasHoy = 3;
+        const tasaHoy = 25.0;
         
         const totalManana = 0;
 
         // ESTRUCTURAS JSON DE DISTRIBUCIÓN POR ESTADOS
-        const conteoAyer = {"Hecha": 16, "Fallida / Vencida": 14, "No necesaria": 4};
-        const conteoHoy = {"Sin empezar": 4, "Hecha": 14, "No necesaria": 4, "Fallida / Vencida": 8};
+        const conteoAyer = {"Hecha": 19, "❌ Fallida / Vencida": 11, "⏭️ No necesaria": 4};
+        const conteoHoy = {"Sin empezar": 6, "Hecha": 3, "⏭️ No necesaria": 2, "❌ Fallida / Vencida": 1};
         const conteoManana = {};
 
         document.addEventListener("DOMContentLoaded", () => {
