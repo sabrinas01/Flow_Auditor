@@ -2,8 +2,8 @@ name: Flujo de Sincronización Automática
 
 on:
   schedule:
-    - cron: '0 */3 * * *'
-  workflow_dispatch:
+    - cron: '0 * * * *' # 👈 Corre solo en la nube de forma estricta al inicio de cada hora (24/7)
+  workflow_dispatch: # Te permite forzarlo manualmente si querés desde la web de GitHub
 
 jobs:
   build:
@@ -36,8 +36,7 @@ jobs:
         run: |
           git config --global user.name "Notion Daemon Cloud"
           git config --global user.email "daemon@bitacorait.com"
-          # Forzamos la modificación del contador para romper la inercia de Git
-          echo "Sincro Cloud Ejecutada" >> peticiones_contador.txt
+          echo "Sincro Cloud Realizada" >> peticiones_contador.txt
           git add index.html peticiones_contador.txt
-          git commit -m "update: sync automático cloud de hábitos ☁️"
+          git commit -m "update: sync seguro cloud de hábitos ☁️"
           git push origin HEAD:main

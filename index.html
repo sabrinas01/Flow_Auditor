@@ -1,323 +1,235 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-black text-slate-100">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notion Auditor - Reporte Diario</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        notion: {
-                            dark: '#080506',       // Negro profundo con un sutil matiz cálido
-                            card: '#120d0e',       // Negro mate con un leve tinte vino
-                            border: '#2a1616',     // Borde vino oscuro personalizado por Sabry
-                            accent: '#6b111c',     // Bordó / Vino principal
-                            accentLight: '#a22538', // Vino brillante para contrastes y textos destacados
-                            accentGlow: 'rgba(107, 17, 28, 0.15)'
-                        }
-                    }
-                }
-            }
+    <title>Notion Flow Auditor</title>
+    <style>
+        :root {
+            --bg-color: #0f0f11;
+            --card-bg: #16161a;
+            --text-main: #d8d8d3;
+            --text-muted: #71717a;
+            --accent-green: #367e6d;
+            --accent-dark-green: #0f3627;
+            --accent-red: #8b263e;
+            --accent-dark-red: #3a101a;
+            --border-color: #2b2b2b;
         }
-    </script>
-    <!-- FontAwesome para Iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .brand-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .btn-update {
+            background-color: var(--accent-dark-green);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-update:hover {
+            background-color: var(--accent-green);
+            color: var(--bg-color);
+        }
+
+        .telemetry-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+
+        .telemetry-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        main {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .column-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .column-card h2 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            border-left: 3px solid var(--text-muted);
+        }
+
+        .task-item.hecha { border-left-color: var(--accent-green); }
+        .task-item.progreso { border-left-color: #cca43b; }
+
+        .task-count {
+            font-weight: bold;
+            color: var(--text-main);
+        }
+    </style>
 </head>
-<body class="h-full flex flex-col font-sans overflow-y-auto antialiased p-6 bg-notion-dark">
+<body>
 
-    <div class="max-w-3xl mx-auto w-full flex-1 flex flex-col justify-between">
-        
-        <div>
-            <!-- Cabecera del Dashboard -->
-            <header class="mb-8 border-b border-notion-border pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-                        <i class="fa-solid fa-square-poll-vertical text-notion-accentLight"></i> Notion Flow Auditor
-                    </h1>
-                    <p class="text-xs text-slate-400 mt-1">Reporte de Consistencia Diaria Real</p>
-                    <!-- Botón de Actualizar Dashboard (UX Premium - Trasladado abajo del título izquierdo según image_08ce1e.png) -->
-                    <!-- Versión Corregida con el Evento Onclick Reinyectado -->
-                    <button id="btn-actualizar" onclick="activarActualizacion()" class="bg-gradient-to-r from-notion-accent to-notion-accentLight hover:from-notion-accentLight hover:to-red-700 text-white border border-notion-border px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all duration-300 shadow-lg shadow-notion-accent/20 mt-3">
-                        <i id="icono-actualizar" class="fa-solid fa-rotate"></i> 
-                        <span id="texto-actualizar">Actualizar Dashboard</span>
-                    </button>
-                </div>
-                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 text-left sm:text-right">
-                    <div class="flex flex-col items-start sm:items-end gap-2">
-                        <div>
-                            <span class="text-[10px] text-slate-500 uppercase font-bold block tracking-wider">Día Evaluado</span>
-                            <span id="semana-rango" class="text-xs font-mono text-notion-accentLight bg-notion-accent/10 px-3 py-1.5 rounded-lg border border-notion-border mt-1 inline-block">
-                                Calculando día...
-                            </span>
-                        </div>
-                        <!-- Bloque de Monitoreo Técnico Solicitado -->
-                        <div class="text-[10px] font-mono text-slate-400 space-y-0.5 mt-1 bg-black/40 p-2 rounded-lg border border-notion-border/40 text-left sm:text-right w-full sm:w-auto">
-                            <div>Sincro: <span id="ultima-sincro" class="text-white font-bold">--:--:--</span></div>
-                            <div>Peticiones API: <span id="total-peticiones" class="text-notion-accentLight font-bold">0</span></div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Sección de Alerta Condicional (Lógica de Rendimiento del 70% enfocada en Hoy) -->
-            <div id="alerta-contenedor" class="p-5 border rounded-xl mb-8 flex gap-4 items-start transition-all duration-300">
-                <div class="text-xl mt-0.5">
-                    <i id="alerta-icono" class="fa-solid"></i>
-                </div>
-                <div>
-                    <h4 id="alerta-titulo" class="font-bold text-sm text-white mb-1">Cargando análisis...</h4>
-                    <p id="alerta-mensaje" class="text-xs opacity-90 leading-relaxed">Analizando tus datos de Notion en tránsito...</p>
-                </div>
+    <header>
+        <div class="header-top">
+            <span class="brand-title">🛡️ Notion Flow Auditor</span>
+            <button class="btn-update" onclick="window.location.reload();">Actualizar Pantalla</button>
+        </div>
+        <div class="telemetry-grid">
+            <div class="telemetry-row">
+                <span>Sincro Local (ART UTC-3):</span>
+                <span id="telemetry-time-local" style="color: var(--text-main);">--/--/---- --:--:--</span>
             </div>
-
-            <!-- Indicadores Clave de Rendimiento (KPIs de Consistencia de Hoy) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                <!-- Tarjeta de Tasa de Constancia -->
-                <div class="bg-notion-card border border-notion-border p-6 rounded-xl flex items-center justify-between shadow-lg shadow-black/50">
-                    <div>
-                        <span class="text-xs text-slate-400 font-medium uppercase tracking-wider">Tasa de Constancia (Hoy)</span>
-                        <h3 id="tasa-valor" class="text-4xl font-black mt-2 transition-all duration-300">0%</h3>
-                        <p class="text-[10px] text-slate-500 mt-1.5">Regla: Estado 'Hecha' + Consistencia=1</p>
-                    </div>
-                    <div class="bg-notion-accent/10 text-notion-accentLight p-4 rounded-xl border border-notion-border">
-                        <i class="fa-solid fa-gauge-high text-2xl"></i>
-                    </div>
-                </div>
-
-                <!-- Tarjeta de Tareas Completadas -->
-                <div class="bg-notion-card border border-notion-border p-6 rounded-xl flex items-center justify-between shadow-lg shadow-black/50">
-                    <div>
-                        <span class="text-xs text-slate-400 font-medium uppercase tracking-wider font-bold">Tareas Completadas</span>
-                        <h3 id="dias-valor" class="text-4xl font-bold mt-2 text-slate-100">0 / 0</h3>
-                        <p class="text-[10px] text-slate-500 mt-1.5">Tareas que cumplen el criterio compuesto hoy</p>
-                    </div>
-                    <div class="bg-zinc-900/40 text-slate-300 p-4 rounded-xl border border-notion-border">
-                        <i class="fa-regular fa-calendar-check text-2xl"></i>
-                    </div>
-                </div>
+            <div class="telemetry-row">
+                <span>Servidor Cloud (UTC):</span>
+                <span id="telemetry-time-server">--/--/---- --:--:--</span>
             </div>
-
-            <!-- BLOQUES TEMPORALES TRIPARTITOS (Ayer, Hoy y Mañana) -->
-            <div class="space-y-6 mb-8">
-                
-                <!-- 1. BLOQUE: AYER -->
-                <div class="bg-notion-card border border-notion-border p-5 rounded-xl shadow-lg shadow-black/50">
-                    <div class="flex justify-between items-center mb-4">
-                        <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                            <i class="fa-solid fa-clock-rotate-left text-slate-500"></i> Tareas de Ayer
-                        </h4>
-                        <span id="badge-ayer" class="text-[10px] text-slate-400 font-semibold font-mono bg-zinc-900 px-2.5 py-0.5 rounded border border-notion-border/40">
-                            0 Tareas Totales
-                        </span>
-                    </div>
-                    <div id="contenedor-ayer" class="space-y-3">
-                        <!-- Se inyecta dinámicamente -->
-                    </div>
-                </div>
-
-                <!-- 2. BLOQUE: HOY (RECORDATORIOS DIARIOS) -->
-                <div class="bg-notion-card border border-notion-border p-6 rounded-xl shadow-lg shadow-black/50 relative overflow-hidden ring-1 ring-notion-accent/20">
-                    <div class="flex justify-between items-center mb-4">
-                        <h4 class="font-bold text-sm text-white flex items-center gap-2">
-                            <i class="fa-solid fa-list-check text-notion-accentLight"></i> Tareas de Hoy
-                        </h4>
-                        <span class="text-[10px] text-notion-accentLight font-bold uppercase tracking-wider bg-notion-accent/10 px-2.5 py-1 rounded border border-notion-border">
-                            Recordatorios Diarios
-                        </span>
-                    </div>
-                    <div id="contenedor-hoy" class="space-y-4">
-                        <!-- Se inyecta dinámicamente -->
-                    </div>
-                </div>
-
-                <!-- 3. BLOQUE: MAÑANA -->
-                <div class="bg-notion-card border border-notion-border p-5 rounded-xl shadow-lg shadow-black/50">
-                    <div class="flex justify-between items-center mb-4">
-                        <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                            <i class="fa-solid fa-arrow-right text-notion-accentLight"></i> Planificación para Mañana
-                        </h4>
-                        <span id="badge-manana" class="text-[10px] text-slate-400 font-semibold font-mono bg-zinc-900 px-2.5 py-0.5 rounded border border-notion-border/40">
-                            0 Tareas Totales
-                        </span>
-                    </div>
-                    <div id="contenedor-manana" class="space-y-3">
-                        <!-- Se inyecta dinámicamente -->
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Panel de Control Interactivo (Slider de Pruebas calibrado para Hoy) -->
-            <div class="bg-notion-card border border-notion-border p-6 rounded-xl mb-8 shadow-lg shadow-black/50">
-                <h4 class="font-bold text-sm text-white mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-notion-accentLight"></i> Panel de Pruebas de Consistencia (Interactivo)
-                </h4>
-                <p class="text-xs text-slate-400 mb-6">
-                    Como estás desarrollando de forma local, utiliza este deslizador para simular cómo reacciona el diseño de tu Dashboard según la tasa de registro diario que obtenga tu script de Python para el bloque de **Hoy**.
-                </p>
-                <div class="space-y-4">
-                    <div class="flex justify-between text-xs font-semibold">
-                        <span class="text-slate-300">Simular Tasa de Tareas Diaria (Hoy):</span>
-                        <span id="slider-label" class="text-notion-accentLight text-sm">0 / 0 Tareas (0%)</span>
-                    </div>
-                    <input type="range" id="tasa-slider" min="0" max="10" value="0" class="w-full h-2 bg-neutral-900 rounded-lg appearance-none cursor-pointer accent-notion-accentLight border border-notion-border">
-                    <div class="flex justify-between text-[10px] text-slate-500 px-1">
-                        <span>0 Tareas (0%)</span>
-                        <span id="slider-mid-label">0 Tareas (70%) - Umbral</span>
-                        <span id="slider-max-label">0 Tareas (100%)</span>
-                    </div>
-                </div>
+            <div class="telemetry-row" style="margin-top: 4px; border-top: 1px dashed var(--border-color); padding-top: 4px;">
+                <span>Peticiones Acumuladas:</span>
+                <span id="telemetry-requests">0</span>
             </div>
         </div>
+    </header>
 
-        <!-- Pie de página de ciberseguridad con tu firma personalizada Sabry -->
-        <footer class="text-center text-[10px] text-slate-600 border-t border-notion-border pt-5 mt-8 flex flex-col sm:flex-row justify-between gap-2">
-            <span>🛡️ Datos locales protegidos mediante cifrado TLS 1.3 de extremo a extremo con Notion</span>
-            <span class="font-medium text-slate-400">Hecho por bitacorait By Sabry</span>
-        </footer>
+    <main>
+        <div class="column-card">
+            <h2 id="title-ayer">Ayer</h2>
+            <div class="tasks-list" id="list-ayer"></div>
+        </div>
 
-    </div>
+        <div class="column-card">
+            <h2 id="title-hoy">Hoy</h2>
+            <div class="tasks-list" id="list-hoy"></div>
+        </div>
+
+        <div class="column-card">
+            <h2 id="title-manana">Mañana</h2>
+            <div class="tasks-list" id="list-manana"></div>
+        </div>
+    </main>
 
     <script>
-        // Declaramos el total de tareas de Hoy de forma global
-        let totalDias = 11; 
+        // METADATOS TÉCNICOS INYECTADOS DINÁMICAMENTE POR EL EXTRACTOR DE PYTHON
+        const timestampLocalStr = "22/06/2026 12:10:11";
+        const timestampServerStr = "22/06/2026 15:10:11";
+        const totalPeticionesExitosas = 11;
+        const diasReales = 0;
+        let totalDias = 11;
+        const totalAyer = 34;
+        const totalManana = 0;
 
-        // 1. CALCULAR DINÁMICAMENTE EL DÍA DE HOY
-        function actualizarDiaActual() {
-            const hoy = new Date();
-            const dd = String(hoy.getDate()).padStart(2, '0');
-            const mm = String(hoy.getMonth() + 1).padStart(2, '0');
-            const yyyy = hoy.getFullYear();
-            
-            document.getElementById('semana-rango').innerText = `${dd}/${mm}/${yyyy}`;
-        }
+        // ESTRUCTURAS JSON DE DISTRIBUCIÓN POR ESTADOS
+        const conteoAyer = {"Hecha": 16, "Fallida / Vencida": 14, "No necesaria": 4};
+        const conteoHoy = {"Sin empezar": 4, "Hecha": 14, "No necesaria": 4, "Fallida / Vencida": 8};
+        const conteoManana = {};
 
-        // 2. RENDERIZAR REUTILIZABLE PARA CUALQUIER CONTENEDOR TEMPORAL
-        function renderizarBloqueEstados(conteo, idContenedor, idBadge = null) {
-            const contenedor = document.getElementById(idContenedor);
-            contenedor.innerHTML = '';
-            
-            const totalTareas = Object.values(conteo).reduce((sum, val) => sum + val, 0);
-            
-            if (idBadge) {
-                document.getElementById(idBadge).innerText = `${totalTareas} Tarea(s) en Total`;
-            }
-            
-            if (totalTareas === 0) {
-                contenedor.innerHTML = '<p class="text-xs text-slate-500 italic py-1">No se detectaron tareas para este bloque temporal.</p>';
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("telemetry-time-local").innerText = timestampLocalStr;
+            document.getElementById("telemetry-time-server").innerText = timestampServerStr;
+            document.getElementById("telemetry-requests").innerText = totalPeticionesExitosas;
+
+            document.getElementById("title-ayer").innerHTML = `Ayer <span>(${totalAyer} ${totalAyer === 1 ? 'tarea' : 'tareas'})</span>`;
+            document.getElementById("title-hoy").innerHTML = `Hoy <span>(${totalDias} ${totalDias === 1 ? 'tarea' : 'tareas'})</span>`;
+            document.getElementById("title-manana").innerHTML = `Mañana <span>(${totalManana} ${totalManana === 1 ? 'tarea' : 'tareas'})</span>`;
+
+            renderizarSeccion("list-ayer", conteoAyer);
+            renderizarSeccion("list-hoy", conteoHoy);
+            renderizarSeccion("list-manana", conteoManana);
+        });
+
+        function renderizarSeccion(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!data || Object.keys(data).length === 0) {
+                container.innerHTML = `<div class="task-item" style="color: var(--text-muted);">Sin tareas registradas</div>`;
                 return;
             }
 
-            for (const [estado, cantidad] of Object.entries(conteo)) {
-                const porcentaje = ((cantidad / totalTareas) * 100).toFixed(1);
-                contenedor.innerHTML += `
-                    <div class="space-y-1">
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="text-slate-300 flex items-center gap-2">
-                                <span class="w-1 h-1 rounded-full bg-notion-accentLight"></span> ${estado}
-                            </span>
-                            <span class="text-slate-400 font-mono text-[10px] bg-black/50 border border-notion-border/30 px-1.5 py-0.5 rounded">
-                                ${cantidad} (${porcentaje}%)
-                            </span>
-                        </div>
-                        <div class="w-full bg-black border border-notion-border/20 rounded-full h-1.5 overflow-hidden">
-                            <div class="bg-gradient-to-r from-notion-accent to-notion-accentLight h-full rounded-full transition-all duration-500" style="width: ${porcentaje}%"></div>
-                        </div>
+            container.innerHTML = Object.entries(data).map(([estado, cantidad]) => {
+                let claseEstado = '';
+                if (estado.toLowerCase() === 'hecha') claseEstado = 'hecha';
+                else if (estado.toLowerCase() === 'en progreso' || estado.toLowerCase() === 'progreso') claseEstado = 'progreso';
+
+                return `
+                    <div class="task-item ${claseEstado}">
+                        <span>${estado}</span>
+                        <span class="task-count">${cantidad}</span>
                     </div>
                 `;
-            }
+            }).join('');
         }
-
-        // 3. ACTUALIZAR INTERFAZ Y ALERTAS EN BASE AL RENDIMIENTO DEL DÍA DE HOY
-        function actualizarDashboard(diasCumplidos) {
-            const tasa = totalDias > 0 ? ((diasCumplidos / totalDias) * 100).toFixed(1) : 0;
-
-            // Actualizar textos e indicadores de valor
-            document.getElementById('tasa-valor').innerText = `${tasa}%`;
-            document.getElementById('dias-valor').innerText = `${diasCumplidos} / ${totalDias}`;
-            document.getElementById('slider-label').innerText = `${diasCumplidos} / ${totalDias} Tareas (${tasa}%)`;
-
-            const alertaContenedor = document.getElementById('alerta-contenedor');
-            const alertaIcono = document.getElementById('alerta-icono');
-            const alertaTitulo = document.getElementById('alerta-titulo');
-            const alertaMensaje = document.getElementById('alerta-mensaje');
-            const tasaValor = document.getElementById('tasa-valor');
-
-            if (tasa >= 70.0) {
-                alertaContenedor.className = "p-5 border rounded-xl mb-8 flex gap-4 items-start transition-all duration-300 bg-notion-accent/20 border-notion-accentLight/30 text-notion-accentLight shadow-lg shadow-notion-accent/5";
-                alertaIcono.className = "fa-solid fa-circle-check text-xl text-notion-accentLight";
-                alertaTitulo.innerText = "¡Todo en orden! 🎉";
-                alertaMensaje.innerText = `Tu tasa de constancia diaria es del ${tasa}%. Estás manteniendo un excelente ritmo de registro hoy en Notion. ¡Buen trabajo conservando tus hábitos!`;
-                tasaValor.className = "text-4xl font-black mt-2 text-notion-accentLight transition-all duration-300";
-            } else {
-                alertaContenedor.className = "p-5 border rounded-xl mb-8 flex gap-4 items-start transition-all duration-300 bg-amber-500/5 border-amber-500/10 text-amber-500/80";
-                alertaIcono.className = "fa-solid fa-triangle-exclamation text-xl text-amber-500/80";
-                alertaTitulo.innerText = "Requiere ajuste ⚠️";
-                alertaMensaje.innerText = `Tu tasa de constancia diaria es del ${tasa}%. Se encuentra por debajo del umbral recomendado del 70%. Tu mentor te sugiere revisar si estás experimentando demasiada fricción para completar tus bitácoras hoy.`;
-                tasaValor.className = "text-4xl font-black mt-2 text-amber-500/80 transition-all duration-300";
-            }
-        }
-
-        // 4. ANIMACIÓN Y RECARGA DE PÁGINA (UX PREMIUM)
-        function activarActualizacion() {
-            const boton = document.getElementById('btn-actualizar');
-            const icono = document.getElementById('icono-actualizar');
-            const texto = document.getElementById('texto-actualizar');
-
-            boton.disabled = true;
-            boton.classList.add('opacity-75', 'cursor-not-allowed');
-            icono.classList.add('fa-spin');
-            texto.innerText = 'Sincronizando...';
-
-            setTimeout(() => {
-                window.location.reload();
-            }, 1200);
-        }
-
-        // Event listener para el slider interactivo enfocado en Hoy
-        const slider = document.getElementById('tasa-slider');
-        slider.addEventListener('input', (e) => {
-            actualizarDashboard(parseInt(e.target.value));
-        });
-
-        // Inicializar el dashboard en carga
-        window.onload = function() {
-            actualizarDiaActual();
-            
-            // ANCLAS DE CONTROL TÉCNICO: Python modificará estas líneas exactas en cada ciclo
-            const ultimaActualizacionStr = "22/06/2026 12:06:25";
-            const totalPeticionesExitosas = 10;
-            
-            // ANCLAS DE DATOS REALES TEMPORALES
-            const diasReales = 0;
-            totalDias = 11;
-            const conteoAyer = {"Hecha": 19, "❌ Fallida / Vencida": 11, "⏭️ No necesaria": 4};
-            const conteoHoy = {"Sin empezar": 11};
-            const conteoManana = {};
-            
-            // Inyección de Métricas de Control Solicitadas por Sabry
-            document.getElementById('ultima-sincro').innerText = ultimaActualizacionStr;
-            document.getElementById('total-peticiones').innerText = totalPeticionesExitosas;
-            
-            // Configurar el slider dinámicamente con los datos inyectados de Hoy
-            const slider = document.getElementById('tasa-slider');
-            slider.max = totalDias;
-            slider.value = diasReales;
-            
-            document.getElementById('slider-max-label').innerText = `${totalDias} Tareas (100%)`;
-            document.getElementById('slider-mid-label').innerText = `${Math.round(totalDias * 0.7)} Tareas (70%) - Umbral`;
-            
-            // Renderizar los tres bloques de forma independiente
-            renderizarBloqueEstados(conteoAyer, 'contenedor-ayer', 'badge-ayer');
-            renderizarBloqueEstados(conteoHoy, 'contenedor-hoy');
-            renderizarBloqueEstados(conteoManana, 'contenedor-manana', 'badge-manana');
-            
-            actualizarDashboard(diasReales);
-        };
     </script>
 </body>
 </html>
