@@ -38,5 +38,6 @@ jobs:
           git config --global user.email "daemon@bitacorait.com"
           echo "Sincro Cloud Realizada" >> peticiones_contador.txt
           git add index.html peticiones_contador.txt
+          # Hacemos el commit y forzamos el push usando HEAD:main para asegurar impacto
           git commit -m "update: sync seguro cloud de hábitos ☁️"
-          git push origin HEAD:main
+          git push origin HEAD:main --force
