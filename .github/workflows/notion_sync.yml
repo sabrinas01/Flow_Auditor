@@ -3,13 +3,14 @@ name: Flujo de Sincronización Automática
 on:
   schedule:
     - cron: '0 * * * *' # Corre de forma autónoma cada 1 hora (24/7)
-  workflow_dispatch: # Te permite forzar el encendido manual si lo deseas
+  workflow_dispatch: # Permite forzar el encendido manual desde la web
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -26,8 +27,8 @@ jobs:
 
       - name: Run Notion Flow Auditor
         env:
-          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY || secrets.NOTION_TOKEN }}
-          NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS || secrets.NOTION_DATABASE_ID || secrets.NOTION_DB_ID }}
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS }}
         run: python extract_and_audit.py
 
       - name: Commit and Push Changes
@@ -37,7 +38,7 @@ jobs:
           
           git add index.html peticiones_contador.txt || true
           
-          # CONTROL ESTRICTO: Si no hay cambios reales en el HTML, el flujo frena acá y da ROJO
+          # Control estricto de cambios: Evita loops infinitos si no hay mutación
           git diff --quiet && git diff --staged --quiet || git commit -m "auto: actualización horaria de consistencia de flujos"
           
           git push origin main --force
