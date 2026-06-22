@@ -34,13 +34,9 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git add index.html peticiones_contador.txt || true
-          git commit -m "auto: actualización horaria de consistencia de flujos" || echo "Sin cambios para commitear"
-          git push origin main --force
-
-          # LÍNEAS DE AUDITORÍA: Ver qué modificó el script realmente en la nube
           git status
           
           git add index.html peticiones_contador.txt || true
           git commit -m "auto: actualización horaria de consistencia de flujos" || echo "Sin cambios para commitear"
           git push origin main --force
+        
