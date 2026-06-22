@@ -35,4 +35,4 @@ jobs:
           git config --global user.name "Notion Daemon Cloud"
           git config --global user.email "daemon@bitacorait.com"
           git add index.html peticiones_contador.txt
-          git diff-index --quiet HEAD || (git commit -m "update: sync automático cloud de hábitos ☁️" && git push origin HEAD:main_fa)
+          git diff-index --quiet HEAD || (git commit -m "update: sync automático cloud de hábitos ☁️" && git push origin HEAD:main)
