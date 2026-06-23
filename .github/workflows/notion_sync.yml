@@ -25,6 +25,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests python-dotenv
 
+      - name: Verify Secrets
+        run: |
+          if [ -z "$NOTION_API_KEY" ]; then
+            echo "❌ ERROR: NOTION_API_KEY is not set"
+            exit 1
+          fi
+          if [ -z "$NOTION_DB_RECORDATORIOS_DIARIOS" ]; then
+            echo "❌ ERROR: NOTION_DB_RECORDATORIOS_DIARIOS is not set"
+            exit 1
+          fi
+          echo "✅ Secrets loaded successfully"
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS }}
+
       - name: Run Notion Flow Auditor
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
