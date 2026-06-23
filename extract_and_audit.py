@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-MÓDULO: extract_and_audit.py (Versión 5.2 - Core Definitivo de Producción)
+MÓDULO: extract_and_audit.py (Versión 5.3 - Validación Robusta de Credenciales)
 """
 
 import os
@@ -18,12 +18,41 @@ env_path = BASE_DIR / ".env"
 if os.getenv("GITHUB_ACTIONS") != "true" and env_path.exists():
     load_dotenv(dotenv_path=env_path)
 
+# Validación mejorada: Intenta múltiples nombres de variables y verifica que no sean literales
 NOTION_API_KEY = os.getenv("NOTION_API_KEY") or os.getenv("NOTION_TOKEN")
 DB_RECORDATORIOS_DIARIOS = os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS") or os.getenv("NOTION_DATABASE_ID") or os.getenv("NOTION_DB_ID")
 
-if not NOTION_API_KEY or not DB_RECORDATORIOS_DIARIOS:
-    print("❌ [ERROR CRÍTICO]: Faltan credenciales válidas en las variables de entorno.")
-    sys.exit(1)
+# Validación crítica: Detecta si las variables contienen valores literales de secretos sin resolver
+def validar_credenciales():
+    """Valida que las credenciales sean válidas y no contengan marcas de secretos sin resolver."""
+    
+    if not NOTION_API_KEY or not DB_RECORDATORIOS_DIARIOS:
+        print("❌ [ERROR CRÍTICO]: Faltan credenciales válidas en las variables de entorno.")
+        sys.exit(1)
+    
+    # Detectar patrones de secretos sin resolver (por ejemplo: ${{ secrets.xxx }})
+    if "${{" in NOTION_API_KEY or "}}" in NOTION_API_KEY:
+        print("❌ [ERROR CRÍTICO]: NOTION_API_KEY contiene marcas de secreto sin resolver.")
+        print(f"   Valor detectado: {NOTION_API_KEY[:50]}...")
+        print("   Verifica que el secreto 'NOTION_API_KEY' esté configurado en GitHub Settings > Secrets.")
+        sys.exit(1)
+    
+    if "${{" in DB_RECORDATORIOS_DIARIOS or "}}" in DB_RECORDATORIOS_DIARIOS:
+        print("❌ [ERROR CRÍTICO]: NOTION_DB_RECORDATORIOS_DIARIOS contiene marcas de secreto sin resolver.")
+        print(f"   Valor detectado: {DB_RECORDATORIOS_DIARIOS[:50]}...")
+        print("   Verifica que el secreto 'NOTION_DB_RECORDATORIOS_DIARIOS' esté configurado en GitHub Settings > Secrets.")
+        sys.exit(1)
+    
+    # Validar longitudes mínimas razonables
+    if len(NOTION_API_KEY) < 20:
+        print("❌ [ERROR CRÍTICO]: NOTION_API_KEY parece inválida (demasiado corta).")
+        sys.exit(1)
+    
+    if len(DB_RECORDATORIOS_DIARIOS) < 32:
+        print("❌ [ERROR CRÍTICO]: NOTION_DB_RECORDATORIOS_DIARIOS parece inválida (demasiado corta).")
+        sys.exit(1)
+    
+    print("✅ Credenciales validadas correctamente.")
 
 def evaluar_bloque_temporal(fecha_str):
     if not fecha_str: return None
@@ -39,6 +68,9 @@ def evaluar_bloque_temporal(fecha_str):
         return None
 
 def auditar_consistencia_tripartita():
+    # Validar credenciales antes de hacer cualquier solicitud
+    validar_credenciales()
+    
     url = f"https://api.notion.com/v1/databases/{DB_RECORDATORIOS_DIARIOS}/query"
     headers = {
         "Authorization": f"Bearer {NOTION_API_KEY}",
@@ -117,6 +149,14 @@ def auditar_consistencia_tripartita():
         with open(html_path, "w", encoding="utf-8") as file: file.write(html_content)
         print("✅ index.html sincronizado y actualizado de forma robusta.")
 
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 401:
+            print("❌ [ERROR CRÍTICO EN PIPELINE]: 401 Unauthorized - Verifica que los secretos sean válidos.")
+            print("   - NOTION_API_KEY debe ser un token válido de Notion")
+            print("   - NOTION_DB_RECORDATORIOS_DIARIOS debe ser el ID válido de la base de datos")
+        else:
+            print(f"❌ [ERROR CRÍTICO EN PIPELINE]: {e}")
+        sys.exit(1)
     except Exception as e:
         print(f"❌ [ERROR CRÍTICO EN PIPELINE]: {e}")
         sys.exit(1)
