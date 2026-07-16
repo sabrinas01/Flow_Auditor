@@ -7,7 +7,8 @@ DESCRIPCIÓN: Consume los datos reales de la API de Notion, lee el archivo de pl
              métricas de Notion por medio de expresiones regulares y compila
              el archivo dashboard.html local sin redundancia de código HTML.
              Se calcula dinámicamente la próxima hora de sincronización sumando exactamente
-             1 hora (60 minutos) a la última sincronización local ART real.
+             1 hora (60 minutos) a la hora local real de tu sistema operativo Windows,
+             asegurando la sincronización de la fecha real actual.
 AUTOR: Tu Mentor de Programación y Ciberseguridad (IT Functional Analyst Sabrina)
 """
 
@@ -49,11 +50,13 @@ def validar_credenciales():
     print("✅ Credenciales de Bitácora IT validadas correctamente.")
 
 # =====================================================================
-# 2. PROCESAMIENTO HORARIO (GMT-3 SAN JUAN, ARGENTINA)
+# 2. PROCESAMIENTO HORARIO LOCAL DINÁMICO (REAL TIME DE TU PC)
 # =====================================================================
+# Obtenemos directamente la hora local de tu computadora de manera nativa.
+# Esto asegura que al compilarse localmente hoy, 16 de julio de 2026, la fecha 
+# coincida perfectamente con tu barra de tareas de Windows.
+arg_now = datetime.datetime.now()
 utc_now = datetime.datetime.utcnow()
-gmt3_offset = datetime.timedelta(hours=3)
-arg_now = utc_now - gmt3_offset
 
 fecha_hoy = arg_now.date()
 fecha_ayer = fecha_hoy - datetime.timedelta(days=1)
@@ -62,7 +65,7 @@ fecha_manana = fecha_hoy + datetime.timedelta(days=1)
 timestamp_local_argentina = arg_now.strftime("%d/%m/%Y %H:%M:%S")
 timestamp_server_utc = utc_now.strftime("%d/%m/%Y %H:%M:%S")
 
-# CÁCULO DINÁMICO RELATIVO: Se suma exactamente 1 hora (60 minutos) a la última sincronización ART real
+# Sincronización ajustada estrictamente a 1 hora (60 minutos) relativa desde la ejecución local
 proxima_sincro_arg = (arg_now + datetime.timedelta(hours=1)).strftime("%d/%m/%Y %H:%M:%S")
 
 # =====================================================================
@@ -201,7 +204,7 @@ def construir_interfaz_html(conteo_ayer, conteo_hoy, conteo_manana, total_raw):
         f.write(html_content)
         
     print("\n🖥️  [DASHBOARD LOCAL GENERADO CON ÉXITO]")
-    print("👉 El script leyó el archivo maestro 'index.html' y compiló 'dashboard.html' sin duplicar código.")
+    print("👉 El script leyó el archivo maestro 'index.html' y compiló 'dashboard.html' con la fecha de hoy.")
     print("👉 Abre 'dashboard.html' directamente en tu navegador para visualizar las métricas locales reales.")
 
 # =====================================================================
