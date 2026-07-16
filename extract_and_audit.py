@@ -26,7 +26,11 @@ if os.getenv("GITHUB_ACTIONS") != "true" and env_path.exists():
 
 # Resolución de variables tolerante a múltiples nomenclaturas redundantes
 NOTION_API_KEY = os.getenv("NOTION_API_KEY") or os.getenv("NOTION_TOKEN")
-DB_RECORDATORIOS_DIARIOS = os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS") or os.getenv("NOTION_DATABASE_ID") or os.getenv("NOTION_DB_ID")
+DB_RECORDATORIOS_DIARIOS = (
+    os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS")
+    or os.getenv("NOTION_DATABASE_ID")
+    or os.getenv("NOTION_DB_ID")
+)
 
 def validar_credenciales():
     # Valida los secretos cargados en memoria previniendo fallos sintácticos en el pipeline.
@@ -49,7 +53,6 @@ def validar_credenciales():
     
     print("✅ Credenciales de Bitácora IT validadas y autorizadas correctamente.")
 
-
 def evaluar_bloque_temporal(fecha_str):
     """Evalúa la marca temporal de la tarea mapeándola a las ventanas cronológicas."""
     if not fecha_str:
@@ -69,10 +72,8 @@ def evaluar_bloque_temporal(fecha_str):
         return None
     except:
         return None
-
-
 def auditar_consistencia_tripartita():
-    """Ejecuta el pipeline de sincronización principal contra la base de datos de Notion."""
+    """Ejecuta el pipeline de Sincronización principal contra la base de datos de Notion."""
     validar_credenciales()
 
     url = f"https://api.notion.com/v1/databases/{DB_RECORDATORIOS_DIARIOS}/query"
@@ -95,28 +96,28 @@ def auditar_consistencia_tripartita():
         # Detección dinámica de esquema de columnas
         if results:
             for n_col, info in results[0].get("properties", {}).items():
-                if info.get("type") in ["status", "select"] and n_col.lower() in ["estado", "status"]:
+                if info.get("type") in ["status", "select"] and n_col.lower() in ["estado", "status"]: 
                     columna_estado = n_col
-                if info.get("type") == "date":
+                if info.get("type") == "date": 
                     columna_fecha = n_col
 
-        # Mapeo y agrupamiento dinámico por estados en base a la ventana de ara
+        # Mapeo y agrupamiento dinámico por estados en base a la ventana de tiempo
         for pagina in results:
             props = pagina.get("properties", {})
             fecha_p = props.get(columna_fecha, {}).get("date", {}).get("start") if columna_fecha else None
-            if not fecha_p:
+            if not fecha_p: 
                 fecha_p = pagina.get("created_time")
                 
             bloque = evaluar_bloque_temporal(fecha_p)
-            if not bloque:
+            if not bloque: 
                 continue
                 
             est_val = "Sin empezar"
             if columna_estado:
                 st_data = props.get(columna_estado, {})
-                if st_data.get("type") == "status" and st_data.get("status"):
+                if st_data.get("type") == "status" and st_data.get("status"): 
                     est_val = st_data["status"].get("name", "Sin empezar")
-                elif st_data.get("type") == "select" and st_data.get("select"):
+                elif st_data.get("type") == "select" and st_data.get("select"): 
                     est_val = st_data["select"].get("name", "Sin empezar")
             
             if bloque == "AYER":
@@ -129,7 +130,7 @@ def auditar_consistencia_tripartita():
         # Generación de marcas de tiempo del diagnóstico de infraestructura
         ahora_utc = datetime.utcnow()
         ahora_argentina = ahora_utc - timedelta(hours=3)
-        # Sincronización predictiva exacta ajustada a 1 hora (60 minutos)
+        # Sincronización predictiva exacta ajustada a 1 hora (60 minutos) de forma dinámica relativa
         proxima_sincro = (ahora_argentina + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
         
         str_local = ahora_argentina.strftime("%d/%m/%Y %H:%M:%S")
@@ -138,7 +139,7 @@ def auditar_consistencia_tripartita():
 
         # Lectura del frontend maestro index.html para realizar la inyección dinámica
         html_path = BASE_DIR / "index.html"
-        with open(html_path, "r", encoding="utf-8") as file:
+        with open(html_path, "r", encoding="utf-8") as file: 
             html_content = file.read()
         
         # Reemplazo de constantes mediante expresiones regulares tolerantes a espacios (\s*)
@@ -152,7 +153,7 @@ def auditar_consistencia_tripartita():
         html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\}\s*;", f"const conteoManana = {json.dumps(conteo_manana, ensure_ascii=False)};", html_content)
 
         # Sobrescribir index.html de forma atómica y segura
-        with open(html_path, "w", encoding="utf-8") as file:
+        with open(html_path, "w", encoding="utf-8") as file: 
             file.write(html_content)
             
         print("✅ Frontend index.html sincronizado y actualizado con éxito de forma horaria.")
