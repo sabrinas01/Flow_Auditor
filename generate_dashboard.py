@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 """
 MÓDULO: generate_dashboard.py (Versión 3.3 - Arquitectura Desacoplada y DRY)
-DESCRIPCIÓN: Consume datos reales de la API de Notion, lee el archivo index.html como
-             plantilla maestra, inyecta dinámicamente las métricas de consistencia
-             e infraestructura por medio de expresiones regulares y compila el archivo
-             dashboard.html local. Se eliminó la inyección y el contador de peticiones.
+DESCRIPCIÓN: Consume los datos reales de la API de Notion, lee el archivo de plantilla
+             index.html existente en la raíz del proyecto, inyecta dinámicamente las
+             métricas de Notion por medio de expresiones regulares y compila
+             el archivo dashboard.html local sin redundancia de código HTML.
+             Se calcula dinámicamente la próxima hora de sincronización sumando exactamente
+             1 hora (60 minutos) a la última sincronización local ART real.
 AUTOR: Tu Mentor de Programación y Ciberseguridad (IT Functional Analyst Sabrina)
 """
 
@@ -37,7 +39,7 @@ def validar_credenciales():
         sys.exit(1)
         
     if "${{" in NOTION_API_KEY or "}}" in NOTION_API_KEY:
-        sys.stderr.write("❌ [ERROR CRÍTICO]: El token contiene marcas de secretos de GitHub sin resolver.\n")
+        sys.stderr.write("❌ [ERROR CRÍTICO]: El token contiene marcas de secreto sin resolver de GitHub.\n")
         sys.exit(1)
         
     if len(NOTION_API_KEY) < 20 or len(DB_RECORDATORIOS_DIARIOS) < 32:
@@ -60,11 +62,11 @@ fecha_manana = fecha_hoy + datetime.timedelta(days=1)
 timestamp_local_argentina = arg_now.strftime("%d/%m/%Y %H:%M:%S")
 timestamp_server_utc = utc_now.strftime("%d/%m/%Y %H:%M:%S")
 
-# Sincronización local ajustada estrictamente a 1 hora (60 minutos) para la v3.3
+# CÁCULO DINÁMICO RELATIVO: Se suma exactamente 1 hora (60 minutos) a la última sincronización ART real
 proxima_sincro_arg = (arg_now + datetime.timedelta(hours=1)).strftime("%d/%m/%Y %H:%M:%S")
 
 # =====================================================================
-# 3. EXTRACCIÓN DE DADOS DESDE NOTION (SEGURO)
+# 3. EXTRACCIÓN DE DATOS MEDIANTE CLIENTE SEGURO (NOTION API)
 # =====================================================================
 def extraer_datos_reales():
     """Conecta de forma segura a Notion y extrae el set cronológico de tareas."""
@@ -77,7 +79,7 @@ def extraer_datos_reales():
         "Content-Type": "application/json"
     }
     
-    # Filtro dinámico simplificado para limitar peticiones de red y latencia
+    # Filtro optimizado para resguardar cuotas de red
     query_payload = {
         "filter": {
             "and": [
@@ -97,6 +99,7 @@ def extraer_datos_reales():
         }
     }
     
+    # Cierre hermético de sockets TCP mediante Session context manager
     try:
         with requests.Session() as session:
             response = session.post(url, headers=headers, json=query_payload, timeout=15)
@@ -105,11 +108,11 @@ def extraer_datos_reales():
             print(f"📦 [CONEXIÓN EXITOSA]: API de Notion devolvió {len(results)} registros.")
             return results
     except Exception as e:
-        sys.stderr.write(f"❌ Error al consultar la API de Notion: {e}\n")
+        sys.stderr.write(f"❌ Error al consultar Notion API: {e}\n")
         sys.exit(1)
 
 # =====================================================================
-# 4. PARSER Y NORMALIZACIÓN DE ESTADOS
+# 4. PARSER Y PROCESAMIENTO DE LAS PROPIEDADES DE NOTION
 # =====================================================================
 def normalizar_datos(paginas):
     """Mapea y clasifica los registros en bloques temporales respetando el SRS v3.3."""
@@ -120,7 +123,7 @@ def normalizar_datos(paginas):
     columna_estado = None
     columna_fecha = None
     
-    # Detección dinámica de esquema de columnas
+    # Detección dinámica de nombres de columna para evitar rupturas de base de datos
     if paginas:
         for n_col, info in paginas[0].get("properties", {}).items():
             if info.get("type") in ["status", "select"] and n_col.lower() in ["estado", "status"]: 
@@ -131,7 +134,7 @@ def normalizar_datos(paginas):
     for pagina in paginas:
         props = pagina.get("properties", {})
         
-        # Extraer Fecha
+        # 1. Extraer Fecha
         fecha_p = props.get(columna_fecha, {}).get("date", {}).get("start") if columna_fecha else None
         if not fecha_p: 
             fecha_p = pagina.get("created_time")
@@ -140,7 +143,7 @@ def normalizar_datos(paginas):
             
         task_date_str = fecha_p.split("T")[0].strip()
         
-        # Extraer Estado de manera tolerante (Se reemplaza el tag de selección)
+        # 2. Extraer Estado de manera tolerante
         estado = "Sin empezar"
         if columna_estado:
             st_data = props.get(columna_estado, {})
@@ -150,7 +153,7 @@ def normalizar_datos(paginas):
             elif stype == "select" and st_data.get("select"):
                 estado = st_data["select"].get("name", "Sin empezar")
 
-        # Clasificar en los contenedores agrupados
+        # 3. Clasificar en los diccionarios de recuentos directos (v5.4 compatible)
         if task_date_str == fecha_ayer.isoformat():
             conteo_ayer[estado] = conteo_ayer.get(estado, 0) + 1
         elif task_date_str == fecha_hoy.isoformat():
@@ -161,10 +164,10 @@ def normalizar_datos(paginas):
     return conteo_ayer, conteo_hoy, conteo_manana
 
 # =====================================================================
-# 5. COMPILACIÓN DE INTERFAZ LOCAL (MANUAL DE MARCA POMELLI)
+# 5. COMPILACIÓN DE INTERFAZ LOCAL (UTILIZANDO EL TEMPLATE MASTER)
 # =====================================================================
 def construir_interfaz_html(conteo_ayer, conteo_hoy, conteo_manana, total_raw):
-    """Lee el index.html como plantilla maestra y compila el dashboard.html local."""
+    """Lee el index.html como plantilla maestra y compila el archivo dashboard.html local."""
     
     html_template_path = BASE_DIR / "index.html"
     if not html_template_path.exists():
@@ -179,7 +182,7 @@ def construir_interfaz_html(conteo_ayer, conteo_hoy, conteo_manana, total_raw):
     json_hoy = json.dumps(conteo_hoy, ensure_ascii=False)
     json_manana = json.dumps(conteo_manana, ensure_ascii=False)
     
-    # Expresiones Regulares oñandúva variables JS y las actualiza (Español limpio)
+    # Sustituciones utilizando expresiones regulares robustas y tolerantes a espacios
     reemplazos = [
         (r'const\s+timestampLocalStr\s*=\s*".*?"\s*;', f'const timestampLocalStr = "{timestamp_local_argentina}";'),
         (r'const\s+timestampNextStr\s*=\s*".*?"\s*;', f'const timestampNextStr = "{proxima_sincro_arg}";'),
@@ -205,7 +208,7 @@ def construir_interfaz_html(conteo_ayer, conteo_hoy, conteo_manana, total_raw):
 # 6. ORQUESTADOR DE EJECUCIÓN (PIPELINE)
 # =====================================================================
 def ejecutar_pipeline():
-    print("🚀 Sincronizando y compilando Dashboard Local (v3.3)...")
+    print("🚀 Iniciando compilación de Dashboard Local (v3.3)...")
     paginas = extraer_datos_reales()
     
     if not paginas:
