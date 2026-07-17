@@ -55,29 +55,7 @@ index.html   (dashboard estático)
 - GitHub Actions (automatización)
 - HTML / Tailwind / JavaScript (dashboard)
 
-## Instalación
 
-```bash
-git clone https://github.com/tu-usuario/nfa.git
-cd nfa
-pip install -r requirements.txt
-```
-
-## Configuración
-
-Crear un archivo `.env`:
-
-```
-NOTION_TOKEN=tu_token_aca
-NOTION_DATABASE_ID=tu_database_id
-```
-
-## Uso
-
-```bash
-python extract_and_audit.py   # extrae y audita datos de Notion
-python generate_dashboard.py  # regenera index.html
-```
 
 ## Aprendizajes técnicos
 
@@ -86,5 +64,4 @@ python generate_dashboard.py  # regenera index.html
 
 ## Autoría
 
-Desarrollado por Sabry.
-```
+Desarrollado por Sabry @bitacorait
