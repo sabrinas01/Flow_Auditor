@@ -200,7 +200,7 @@
                             <p class="text-xs font-medium text-amber-100/95 leading-relaxed mt-1.5 italic">
                                 "Linda, es momento de ajustar prioridades y analizar si son necesarias tantas tareas. No seas dura contigo, cielo. 🧠✨"
                             </p>
-                            <span class="inline-block mt-2 text-[9px] font-bold text-gray-500 uppercase tracking-widest font-mono">— Bitácora IT Control</span>
+                            <span class="inline-block mt-2 text-[9px] font-bold text-gray-500 uppercase tracking-widest font-mono">— Con amor 💚 SabryOff</span>
                         </div>
                     </div>
                 </div>
@@ -391,13 +391,8 @@
             cache[key] = parseFloat(hoyConsistencia);
 
             // Mock de respaldo para primer render
-            if (Object.keys(cache).length <= 1) {
-                cache["02/07/2026"] = 85.0; // Lunes
-                cache["01/07/2026"] = 55.0; // Martes
-                cache["30/06/2026"] = 92.0; // Miércoles
-                cache["29/06/2026"] = 62.0; // Jueves
-                cache["28/06/2026"] = 45.0; // Viernes
-                cache["27/06/2026"] = 68.0; // Sábado
+            if (Object.keys(cache).length <= 1)
+            {
                 localStorage.setItem("nfa_weekly_cache", JSON.stringify(cache));
             } else {
                 localStorage.setItem("nfa_weekly_cache", JSON.stringify(cache));
