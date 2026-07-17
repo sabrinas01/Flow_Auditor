@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -51,22 +51,15 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          
+
           # Agregamos index.html de forma segura al área de preparación (stage)
           git add index.html || true
-          
-          # Comprobamos explícitamente si hay cambios staged reales para evitar fallos de commits vacíos
+
+          # Comprobamos explícitamente si hay cambios staged reales para evitar commits vacíos
           if ! git diff --staged --quiet; then
             git commit -m "auto: actualización horaria de consistencia de flujos"
             git push origin main --force
             echo "✅ Cambios confirmados y desplegados de forma exitosa en GitHub Pages."
           else
             echo "⚠️ No se detectaron cambios en index.html, omitiendo commit de forma segura."
-          git add index.html
-          
-          # Hacemos commit únicamente si se detectan diferencias reales en el área de preparación.
-          # Si no hay cambios, el comando de comparación se cierra con éxito sin ejecutar un commit vacío.
-          git diff --staged --quiet || git commit -m "auto: actualización horaria de consistencia de flujos"
-          
-          # Empuje forzado controlado para mitigar desfases asíncronos locales con el entorno local de Windows
-          git push origin main --force
+          fi
