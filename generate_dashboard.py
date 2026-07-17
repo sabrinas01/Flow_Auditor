@@ -53,8 +53,8 @@ def validar_credenciales():
 # 2. PROCESAMIENTO HORARIO LOCAL DINÁMICO (REAL TIME DE TU PC)
 # =====================================================================
 # Obtenemos directamente la hora local de tu computadora de manera nativa.
-# Esto asegura que al compilarse localmente hoy, 16 de julio de 2026, la fecha 
-# coincida perfectamente con tu barra de tareas de Windows.
+# Esto asegura que al compilarse localmente, la fecha coincida perfectamente 
+# con tu barra de tareas de Windows de forma dinámica y real.
 arg_now = datetime.datetime.now()
 utc_now = datetime.datetime.utcnow()
 
@@ -204,7 +204,7 @@ def construir_interfaz_html(conteo_ayer, conteo_hoy, conteo_manana, total_raw):
         f.write(html_content)
         
     print("\n🖥️  [DASHBOARD LOCAL GENERADO CON ÉXITO]")
-    print("👉 El script leyó el archivo maestro 'index.html' y compiló 'dashboard.html' con la fecha de hoy.")
+    print("👉 El script leyó el archivo maestro 'index.html' y compiló 'dashboard.html' con la fecha real actual.")
     print("👉 Abre 'dashboard.html' directamente en tu navegador para visualizar las métricas locales reales.")
 
 # =====================================================================

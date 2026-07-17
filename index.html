@@ -48,428 +48,428 @@
 </head>
 <body class="flex flex-col min-h-screen text-gray-200 font-sans antialiased pb-8">
 
-<!-- =================================================== -->
-<!-- VARIABLES INYECTADAS DINÁMICAMENTE POR EL BACKEND -->
-<!-- =================================================== -->
-<script>
-    // Declaración estricta compatible con las expresiones regulares de tu script de Python v5.4
-    const timestampLocalStr = "03/07/2026 18:05:56";
-    const timestampNextStr = "03/07/2026 19:00:00";
-    const timestampServerStr = "03/07/2026 21:05:56";
+    <!-- =================================================== -->
+    <!-- VARIABLES INYECTADAS DINÁMICAMENTE POR EL BACKEND -->
+    <!-- =================================================== -->
+    <script>
+        // Declaración estricta compatible con las expresiones regulares de tu script de Python v5.4
+        const timestampLocalStr = "03/07/2026 18:05:56";
+        const timestampNextStr = "03/07/2026 19:00:00";
+        const timestampServerStr = "03/07/2026 21:05:56";
 
-    // Estructuras JSON reales de distribución por estados (Notion DB) - Telemetría de peticiones eliminada
-    const conteoAyer = {"Hecha": 21, "❌ Fallida / Vencida": 11, "⏭️ No necesaria": 2};
-    const conteoHoy = {"Sin empezar": 15, "❌ Fallida / Vencida": 1, "⏭️ No necesaria": 2, "Hecha": 3};
-    const conteoManana = {};
-</script>
+        // Estructuras JSON reales de distribución por estados (Notion DB) - Telemetría de peticiones eliminada
+        const conteoAyer = {"Hecha": 21, "❌ Fallida / Vencida": 11, "⏭️ No necesaria": 2};
+        const conteoHoy = {"Sin empezar": 15, "❌ Fallida / Vencida": 1, "⏭️ No necesaria": 2, "Hecha": 3};
+        const conteoManana = {};
+    </script>
 
-<!-- =================================================== -->
-<!-- CABECERA (HEADER DE CONTROL PREMIUM) -->
-<!-- =================================================== -->
-<header class="sticky top-0 z-40 bg-brandJet/95 backdrop-blur-md border-b border-gray-800/60 px-4 py-3.5">
-    <div class="max-w-[480px] mx-auto flex items-center justify-between">
-        <div class="flex items-center space-x-2.5">
-            <!-- Isotipo Premium de Bitácora IT -->
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brandTuscany to-brandSoftRed flex items-center justify-center shadow-lg shadow-brandTuscany/20">
-                <svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+    <!-- =================================================== -->
+    <!-- CABECERA (HEADER DE CONTROL PREMIUM) -->
+    <!-- =================================================== -->
+    <header class="sticky top-0 z-40 bg-brandJet/95 backdrop-blur-md border-b border-gray-800/60 px-4 py-3.5">
+        <div class="max-w-[480px] mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+                <!-- Isotipo Premium de Bitácora IT -->
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brandTuscany to-brandSoftRed flex items-center justify-center shadow-lg shadow-brandTuscany/20">
+                    <svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-sm font-bold tracking-tight text-white leading-none">Notion Flow Auditor</h1>
+                    <span class="text-[10px] font-medium text-brandSoftRed tracking-wider uppercase">Bitácora IT</span>
+                </div>
             </div>
+            
+            <div class="flex items-center space-x-3">
+                <div class="text-right hidden sm:block">
+                    <p class="text-[9px] text-gray-500 font-mono">HORA DEL SERVIDOR</p>
+                    <p id="header-utc-time" class="text-[11px] text-gray-300 font-mono font-medium">--:--:-- UTC</p>
+                </div>
+                <!-- Botón de actualización de pantalla con animación táctil -->
+                <button id="btn-refresh" class="p-2.5 rounded-xl bg-brandObsidian border border-gray-800 hover:border-brandSoftRed active:scale-95 transition-all duration-150 group" onclick="recargarDashboard()">
+                    <svg id="icon-refresh" class="w-4 h-4 text-gray-400 group-hover:text-brandSoftRed transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.253 8H18" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor móvil estático optimizado para celulares -->
+    <main class="flex-grow w-full max-w-[480px] mx-auto px-4 mt-5 space-y-5">
+
+        <!-- =================================================== -->
+        <!-- SECCIÓN I: TAREAS DE AYER -->
+        <!-- =================================================== -->
+        <section class="bg-brandObsidian rounded-2xl border border-brandBorder p-5 shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1.5 h-full bg-gray-600"></div>
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase font-roboto">Tareas de ayer</h2>
+                    <p class="text-lg font-bold text-white mt-0.5">Bitácora de Cierre</p>
+                </div>
+                <span id="total-ayer-lbl" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-gray-800 text-gray-300">0 tareas</span>
+            </div>
+
+            <!-- Listado de Estados de Ayer -->
+            <div id="list-ayer" class="space-y-2 mb-4">
+                <!-- Se inyectan las filas dinámicamente -->
+            </div>
+
+            <!-- KPIs de Consistencia de Ayer -->
+            <div class="grid grid-cols-2 gap-3.5 border-t border-brandBorder pt-4">
+                <div class="bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center">
+                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Completadas</p>
+                    <p id="hechas-ayer-val" class="text-lg font-extrabold text-white mt-0.5 font-roboto">0 / 0</p>
+                </div>
+                <div class="bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center">
+                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Consistencia</p>
+                    <p id="consistencia-ayer-val" class="text-lg font-extrabold text-brandSoftRed mt-0.5 font-roboto">0.0%</p>
+                </div>
+            </div>
+            
+            <div id="alert-ayer" class="hidden mt-3 bg-brandClementine/10 border border-brandClementine/30 rounded-xl p-3 text-[11px] text-brandClementine font-medium"></div>
+        </section>
+
+        <!-- =================================================== -->
+        <!-- SECCIÓN II: TAREAS DE HOY -->
+        <!-- =================================================== -->
+        <section class="bg-brandObsidian rounded-2xl border border-brandBorder p-5 shadow-xl relative overflow-hidden">
+            <div id="hoy-accent-bar" class="absolute top-0 left-0 w-1.5 h-full bg-brandTuscany transition-colors"></div>
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase font-roboto">Tareas de hoy</h2>
+                    <p class="text-lg font-bold text-white mt-0.5">Progreso Operativo</p>
+                </div>
+                <span id="total-hoy-lbl" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-brandTuscany/10 text-brandSoftRed border border-brandTuscany/20">0 tareas</span>
+            </div>
+
+            <!-- Listado de Estados de Hoy -->
+            <div id="list-hoy" class="space-y-2 mb-4">
+                <!-- Se inyectan las filas dinámicamente -->
+            </div>
+
+            <!-- KPIs de Consistencia de Hoy -->
+            <div class="grid grid-cols-2 gap-3.5 border-t border-brandBorder pt-4">
+                <div class="bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center">
+                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Completadas</p>
+                    <p id="hechas-hoy-val" class="text-lg font-extrabold text-white mt-0.5 font-roboto">0 / 0</p>
+                </div>
+                <div id="hoy-consistencia-card" class="bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center transition-colors">
+                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Consistencia</p>
+                    <p id="consistencia-hoy-val" class="text-lg font-extrabold text-brandSoftRed mt-0.5 font-roboto">0.0%</p>
+                </div>
+            </div>
+
+            <div id="alert-hoy" class="hidden mt-3 bg-brandClementine/10 border border-brandClementine/30 rounded-xl p-3 text-[11px] text-brandClementine font-medium"></div>
+        </section>
+
+        <!-- =================================================== -->
+        <!-- SECCIÓN III: BALANCE SEMANAL Y BIENESTAR -->
+        <!-- =================================================== -->
+        <section class="bg-brandObsidian rounded-2xl border border-brandBorder p-5 shadow-xl space-y-4">
             <div>
-                <h1 class="text-sm font-bold tracking-tight text-white leading-none">Notion Flow Auditor</h1>
-                <span class="text-[10px] font-medium text-brandSoftRed tracking-wider uppercase">Bitácora IT</span>
+                <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase font-roboto">Balance Semanal</h2>
+                <p class="text-lg font-bold text-white mt-0.5">Analítica de Consistencia</p>
             </div>
-        </div>
-        
-        <div class="flex items-center space-x-3">
-            <div class="text-right hidden sm:block">
-                <p class="text-[9px] text-gray-500 font-mono">HORA DEL SERVIDOR</p>
-                <p id="header-utc-time" class="text-[11px] text-gray-300 font-mono font-medium">--:--:-- UTC</p>
+
+            <!-- Tabla Dinámica del Historial de los últimos 7 días -->
+            <div class="overflow-hidden border border-gray-800/60 rounded-xl">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-brandJet border-b border-gray-850">
+                            <th class="p-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Fecha / Día</th>
+                            <th class="p-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wider text-right">Consistencia (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weekly-table-body" class="divide-y divide-gray-850 font-roboto text-xs">
+                        <!-- Filas dinámicas mediante JS -->
+                    </tbody>
+                </table>
             </div>
-            <!-- Botón de actualización de pantalla con animación táctil -->
-            <button id="btn-refresh" class="p-2.5 rounded-xl bg-brandObsidian border border-gray-800 hover:border-brandSoftRed active:scale-95 transition-all duration-150 group" onclick="recargarDashboard()">
-                <svg id="icon-refresh" class="w-4 h-4 text-gray-400 group-hover:text-brandSoftRed transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.253 8H18" />
-                </svg>
-            </button>
-        </div>
-    </div>
-</header>
 
-<!-- Contenedor móvil estático optimizado para celulares -->
-<main class="flex-grow w-full max-w-[480px] mx-auto px-4 mt-5 space-y-5">
-
-    <!-- =================================================== -->
-    <!-- SECCIÓN I: TAREAS DE AYER -->
-    <!-- =================================================== -->
-    <section class="bg-brandObsidian rounded-2xl border border-brandBorder p-5 shadow-xl relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-1.5 h-full bg-gray-600"></div>
-        <div class="flex justify-between items-start mb-4">
-            <div>
-                <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase font-roboto">Tareas de ayer</h2>
-                <p class="text-lg font-bold text-white mt-0.5">Bitácora de Cierre</p>
-            </div>
-            <span id="total-ayer-lbl" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-gray-800 text-gray-300">0 tareas</span>
-        </div>
-
-        <!-- Listado de Estados de Ayer -->
-        <div id="list-ayer" class="space-y-2 mb-4">
-            <!-- Se inyectan las filas dinámicamente -->
-        </div>
-
-        <!-- KPIs de Consistencia de Ayer -->
-        <div class="grid grid-cols-2 gap-3.5 border-t border-brandBorder pt-4">
-            <div class="bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center">
-                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Completadas</p>
-                <p id="hechas-ayer-val" class="text-lg font-extrabold text-white mt-0.5 font-roboto">0 / 0</p>
-            </div>
-            <div class="bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center">
-                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Consistencia</p>
-                <p id="consistencia-ayer-val" class="text-lg font-extrabold text-brandSoftRed mt-0.5 font-roboto">0.0%</p>
-            </div>
-        </div>
-        
-        <div id="alert-ayer" class="hidden mt-3 bg-brandClementine/10 border border-brandClementine/30 rounded-xl p-3 text-[11px] text-brandClementine font-medium"></div>
-    </section>
-
-    <!-- =================================================== -->
-    <!-- SECCIÓN II: TAREAS DE HOY -->
-    <!-- =================================================== -->
-    <section class="bg-brandObsidian rounded-2xl border border-brandBorder p-5 shadow-xl relative overflow-hidden">
-        <div id="hoy-accent-bar" class="absolute top-0 left-0 w-1.5 h-full bg-brandTuscany transition-colors"></div>
-        <div class="flex justify-between items-start mb-4">
-            <div>
-                <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase font-roboto">Tareas de hoy</h2>
-                <p class="text-lg font-bold text-white mt-0.5">Progreso Operativo</p>
-            </div>
-            <span id="total-hoy-lbl" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-brandTuscany/10 text-brandSoftRed border border-brandTuscany/20">0 tareas</span>
-        </div>
-
-        <!-- Listado de Estados de Hoy -->
-        <div id="list-hoy" class="space-y-2 mb-4">
-            <!-- Se inyectan las filas dinámicamente -->
-        </div>
-
-        <!-- KPIs de Consistencia de Hoy -->
-        <div class="grid grid-cols-2 gap-3.5 border-t border-brandBorder pt-4">
-            <div class="bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center">
-                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Completadas</p>
-                <p id="hechas-hoy-val" class="text-lg font-extrabold text-white mt-0.5 font-roboto">0 / 0</p>
-            </div>
-            <div id="hoy-consistencia-card" class="bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center transition-colors">
-                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Consistencia</p>
-                <p id="consistencia-hoy-val" class="text-lg font-extrabold text-brandSoftRed mt-0.5 font-roboto">0.0%</p>
-            </div>
-        </div>
-
-        <div id="alert-hoy" class="hidden mt-3 bg-brandClementine/10 border border-brandClementine/30 rounded-xl p-3 text-[11px] text-brandClementine font-medium"></div>
-    </section>
-
-    <!-- =================================================== -->
-    <!-- SECCIÓN III: BALANCE SEMANAL Y BIENESTAR -->
-    <!-- =================================================== -->
-    <section class="bg-brandObsidian rounded-2xl border border-brandBorder p-5 shadow-xl space-y-4">
-        <div>
-            <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase font-roboto">Balance Semanal</h2>
-            <p class="text-lg font-bold text-white mt-0.5">Analítica de Consistencia</p>
-        </div>
-
-        <!-- Tabla Dinámica del Historial de los últimos 7 días -->
-        <div class="overflow-hidden border border-gray-800/60 rounded-xl">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-brandJet border-b border-gray-850">
-                        <th class="p-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Fecha / Día</th>
-                        <th class="p-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wider text-right">Consistencia (%)</th>
-                    </tr>
-                </thead>
-                <tbody id="weekly-table-body" class="divide-y divide-gray-850 font-roboto text-xs">
-                    <!-- Filas dinámicas mediante JS -->
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Alerta Mental / Empática de la Mentora de Bienestar (PRD V3.3) -->
-        <div id="wellness-alert-card" class="hidden transform transition-all duration-500">
-            <div class="bg-gradient-to-tr from-brandObsidian to-brandJet border-2 border-brandClementine/40 rounded-2xl p-4 shadow-2xl relative overflow-hidden">
-                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-brandClementine/5 rounded-full blur-xl"></div>
-                <div class="flex items-start space-x-3.5">
-                    <div class="p-2.5 bg-brandClementine/10 rounded-xl text-brandClementine border border-brandClementine/20 mt-1">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h4 class="text-xs font-bold text-brandClementine uppercase tracking-widest font-roboto">Feedback de Mentora</h4>
-                        <p class="text-xs font-medium text-amber-100/95 leading-relaxed mt-1.5 italic">
-                            "Linda, es momento de ajustar prioridades y analizar si son necesarias tantas tareas. No seas dura contigo, cielo. 🧠✨"
-                        </p>
-                        <span class="inline-block mt-2 text-[9px] font-bold text-gray-500 uppercase tracking-widest font-mono">— Bitácora IT Control</span>
+            <!-- Alerta Mental / Empática de la Mentora de Bienestar (PRD V3.3) -->
+            <div id="wellness-alert-card" class="hidden transform transition-all duration-500">
+                <div class="bg-gradient-to-tr from-brandObsidian to-brandJet border-2 border-brandClementine/40 rounded-2xl p-4 shadow-2xl relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-brandClementine/5 rounded-full blur-xl"></div>
+                    <div class="flex items-start space-x-3.5">
+                        <div class="p-2.5 bg-brandClementine/10 rounded-xl text-brandClementine border border-brandClementine/20 mt-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-brandClementine uppercase tracking-widest font-roboto">Feedback de Mentora</h4>
+                            <p class="text-xs font-medium text-amber-100/95 leading-relaxed mt-1.5 italic">
+                                "Linda, es momento de ajustar prioridades y analizar si son necesarias tantas tareas. No seas dura contigo, cielo. 🧠✨"
+                            </p>
+                            <span class="inline-block mt-2 text-[9px] font-bold text-gray-500 uppercase tracking-widest font-mono">— Bitácora IT Control</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- =================================================== -->
-    <!-- SECCIÓN IV: TAREAS PARA MAÑANA -->
-    <!-- =================================================== -->
-    <section class="bg-brandObsidian rounded-2xl border border-brandBorder p-5 shadow-xl relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-900"></div>
-        <div class="flex justify-between items-start mb-4">
-            <div>
-                <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase font-roboto">Tareas para mañana</h2>
-                <p class="text-lg font-bold text-white mt-0.5">Planificación del Futuro</p>
+        <!-- =================================================== -->
+        <!-- SECCIÓN IV: TAREAS PARA MAÑANA -->
+        <!-- =================================================== -->
+        <section class="bg-brandObsidian rounded-2xl border border-brandBorder p-5 shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-900"></div>
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase font-roboto">Tareas para mañana</h2>
+                    <p class="text-lg font-bold text-white mt-0.5">Planificación del Futuro</p>
+                </div>
+                <span id="total-manana-lbl" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-blue-950/20 text-blue-400 border border-blue-900/30">0 tareas</span>
             </div>
-            <span id="total-manana-lbl" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-blue-950/20 text-blue-400 border border-blue-900/30">0 tareas</span>
-        </div>
 
-        <div id="list-manana" class="space-y-2">
-            <!-- Se inyectan las filas dinámicamente -->
-        </div>
-    </section>
-
-    <!-- Botón de Redirección Oficial a Notion DB -->
-    <a href="https://app.notion.com/p/a61a38bb7a6e8251a38601779b0bd382?v=50da38bb7a6e82369cc9088797549db6&source=copy_link" 
-       target="_blank" 
-       class="w-full py-4 bg-gradient-to-r from-brandTuscany to-brandSoftRed hover:brightness-110 active:scale-[0.98] rounded-xl text-center text-xs font-bold tracking-widest text-white shadow-lg transition-all duration-150 flex items-center justify-center space-x-2">
-        <span>🚀 IR A RECORDATORIOS DIARIOS</span>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-        </svg>
-    </a>
-
-    <!-- Pie de página técnico súper compacto que absorbe las métricas relativas de forma discreta -->
-    <footer class="text-[10px] text-gray-500 font-roboto pt-2 space-y-1">
-        <div class="flex justify-between items-center px-1">
-            <div class="flex items-center space-x-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-brandSoftRed animate-pulse"></span>
-                <span>GitHub Pages Release: <strong class="text-gray-300 font-semibold font-mono">v5.4</strong></span>
+            <div id="list-manana" class="space-y-2">
+                <!-- Se inyectan las filas dinámicamente -->
             </div>
-            <span class="font-mono text-gray-400">Sincro ART: <strong id="footer-sync-time" class="text-gray-300 font-normal">--/--/-- --:--:--</strong></span>
-        </div>
-        <div class="flex justify-between items-center px-1 text-[9px] text-gray-600">
-            <span>Próxima actualización: <strong id="footer-next-time" class="font-semibold text-brandClementine">--/--/-- --:--:--</strong></span>
-            <span>Bitácora IT &copy; 2026</span>
-        </div>
-    </footer>
+        </section>
 
-</main>
+        <!-- Botón de Redirección Oficial a Notion DB -->
+        <a href="https://app.notion.com/p/a61a38bb7a6e8251a38601779b0bd382?v=50da38bb7a6e82369cc9088797549db6&source=copy_link" 
+           target="_blank" 
+           class="w-full py-4 bg-gradient-to-r from-brandTuscany to-brandSoftRed hover:brightness-110 active:scale-[0.98] rounded-xl text-center text-xs font-bold tracking-widest text-white shadow-lg transition-all duration-150 flex items-center justify-center space-x-2">
+            <span>🚀 IR A RECORDATORIOS DIARIOS</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+        </a>
+
+        <!-- Pie de página técnico súper compacto que absorbe las métricas relativas de forma discreta -->
+        <footer class="text-[10px] text-gray-500 font-roboto pt-2 space-y-1">
+            <div class="flex justify-between items-center px-1">
+                <div class="flex items-center space-x-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brandSoftRed animate-pulse"></span>
+                    <span>GitHub Pages Release: <strong class="text-gray-300 font-semibold font-mono">v5.4</strong></span>
+                </div>
+                <span class="font-mono text-gray-400">Sincro ART: <strong id="footer-sync-time" class="text-gray-300 font-normal">--/--/-- --:--:--</strong></span>
+            </div>
+            <div class="flex justify-between items-center px-1 text-[9px] text-gray-600">
+                <span>Próxima actualización: <strong id="footer-next-time" class="font-semibold text-brandClementine">--/--/-- --:--:--</strong></span>
+                <span>Bitácora IT &copy; 2026</span>
+            </div>
+        </footer>
+
+    </main>
 
     <!-- =================================================== -->
-<!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
-<!-- =================================================== -->
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        // 1. Inyectar Relojes de Telemetría
-        document.getElementById("footer-sync-time").innerText = timestampLocalStr;
-        document.getElementById("footer-next-time").innerText = timestampNextStr;
-        document.getElementById("header-utc-time").innerText = timestampServerStr.split(" ")[1] || "--:--:-- UTC";
+    <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
+    <!-- =================================================== -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // 1. Inyectar Relojes de Telemetría
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("header-utc-time").innerText = timestampServerStr.split(" ")[1] || "--:--:-- UTC";
 
-        // 2. Procesar e Inyectar Bloques Temporales Complejos
-        procesarSeccionMetrica("ayer", conteoAyer);
-        procesarSeccionMetrica("hoy", conteoHoy);
-        
-        // Sección Mañana
-        const totalManana = Object.values(conteoManana).reduce((a, b) => a + b, 0);
-        document.getElementById("total-manana-lbl").innerText = `${totalManana} Tareas`;
-        renderizarFilasEstados("list-manana", conteoManana);
-    });
-
-    /**
-     * Determina dinámicamente si el estado indica una tarea completada
-     */
-    function esEstadoCompletado(estado) {
-        const norm = estado.toLowerCase();
-        return norm.includes("hecha") || norm.includes("hecho") || norm.includes("completad") || norm.includes("done");
-    }
-
-    /**
-     * Asigna un color estético Pomelli premium al borde lateral de cada estado
-     */
-    function obtenerColorBordeEstado(estado) {
-        const norm = estado.toLowerCase();
-        if (norm.includes("hecha") || norm.includes("hecho") || norm.includes("completad") || norm.includes("done")) {
-            return "border-emerald-500/80 text-emerald-400";
-        }
-        if (norm.includes("fallida") || norm.includes("vencida") || norm.includes("fail") || norm.includes("perd")) {
-            return "border-brandSoftRed text-brandSoftRed font-medium";
-        }
-        if (norm.includes("ejecu") || norm.includes("progr") || norm.includes("progress") || norm.includes("haciendo")) {
-            return "border-blue-500 text-blue-400";
-        }
-        if (norm.includes("no neces") || norm.includes("saltad") || norm.includes("skip")) {
-            return "border-zinc-600 text-zinc-400";
-        }
-        return "border-gray-700 text-gray-300";
-    }
-
-    /**
-     * Procesa cuantitativamente los estados e inyecta KPIs matemáticos en la interfaz
-     */
-    function procesarSeccionMetrica(prefijo, data) {
-        const total = Object.values(data).reduce((a, b) => a + b, 0);
-        
-        // Sumar completados buscando cualquier alias de "Hecha"
-        let hechas = 0;
-        Object.entries(data).forEach(([estado, cantidad]) => {
-            if (esEstadoCompletado(estado)) hechas += cantidad;
+            // 2. Procesar e Inyectar Bloques Temporales Complejos
+            procesarSeccionMetrica("ayer", conteoAyer);
+            procesarSeccionMetrica("hoy", conteoHoy);
+            
+            // Sección Mañana
+            const totalManana = Object.values(conteoManana).reduce((a, b) => a + b, 0);
+            document.getElementById("total-manana-lbl").innerText = `${totalManana} Tareas`;
+            renderizarFilasEstados("list-manana", conteoManana);
         });
 
-        const tasa = total > 0 ? (hechas / total * 100.0) : 0.0;
-
-        document.getElementById(`total-${prefijo}-lbl`).innerText = `${total} tareas`;
-        document.getElementById(`hechas-${prefijo}-val`).innerText = `${hechas} / ${total}`;
-        
-        const consistenciaEl = document.getElementById(`consistencia-${prefijo}-val`);
-        consistenciaEl.innerText = `${tasa.toFixed(1)}%`;
-
-        // Aplicar colores según el umbral del 70% recomendado en el SRS
-        if (tasa >= 70.0 || total === 0) {
-            consistenciaEl.className = "text-lg font-extrabold text-emerald-500 font-roboto mt-0.5";
-        } else {
-            consistenciaEl.className = "text-lg font-extrabold text-brandClementine font-roboto mt-0.5";
+        /**
+         * Determina dinámicamente si el estado indica una tarea completada
+         */
+        function esEstadoCompletado(estado) {
+            const norm = estado.toLowerCase();
+            return norm.includes("hecha") || norm.includes("hecho") || norm.includes("completad") || norm.includes("done");
         }
 
-        renderizarFilasEstados(`list-${prefijo}`, data);
+        /**
+         * Asigna un color estético Pomelli premium al borde lateral de cada estado
+         */
+        function obtenerColorBordeEstado(estado) {
+            const norm = estado.toLowerCase();
+            if (norm.includes("hecha") || norm.includes("hecho") || norm.includes("completad") || norm.includes("done")) {
+                return "border-emerald-500/80 text-emerald-400";
+            }
+            if (norm.includes("fallida") || norm.includes("vencida") || norm.includes("fail") || norm.includes("perd")) {
+                return "border-brandSoftRed text-brandSoftRed font-medium";
+            }
+            if (norm.includes("ejecu") || norm.includes("progr") || norm.includes("progress") || norm.includes("haciendo")) {
+                return "border-blue-500 text-blue-400";
+            }
+            if (norm.includes("no neces") || norm.includes("saltad") || norm.includes("skip")) {
+                return "border-zinc-600 text-zinc-400";
+            }
+            return "border-gray-700 text-gray-300";
+        }
 
-        // Alerta individual del cuadro de hoy/ayer si cae del 70%
-        const alertBox = document.getElementById(`alert-${prefijo}`);
-        if (alertBox) {
-            if (tasa < 70.0 && total > 0) {
-                alertBox.innerHTML = `⚠️ Tasa de consistencia crítica (<strong class="font-bold text-white">${tasa.toFixed(1)}%</strong>). Reduzca la fricción del flujo.`;
-                alertBox.style.display = "block";
-                
-                if (prefijo === "hoy") {
-                    document.getElementById("hoy-accent-bar").style.backgroundColor = '#F59E0B'; // Clementine Orange
-                    document.getElementById("hoy-consistencia-card").className = "bg-brandClementine/5 rounded-xl p-3 border-2 border-brandClementine/30 text-center";
-                }
+        /**
+         * Procesa cuantitativamente los estados e inyecta KPIs matemáticos en la interfaz
+         */
+        function procesarSeccionMetrica(prefijo, data) {
+            const total = Object.values(data).reduce((a, b) => a + b, 0);
+            
+            // Sumar completados buscando cualquier alias de "Hecha"
+            let hechas = 0;
+            Object.entries(data).forEach(([estado, cantidad]) => {
+                if (esEstadoCompletado(estado)) hechas += cantidad;
+            });
+
+            const tasa = total > 0 ? (hechas / total * 100.0) : 0.0;
+
+            document.getElementById(`total-${prefijo}-lbl`).innerText = `${total} tareas`;
+            document.getElementById(`hechas-${prefijo}-val`).innerText = `${hechas} / ${total}`;
+            
+            const consistenciaEl = document.getElementById(`consistencia-${prefijo}-val`);
+            consistenciaEl.innerText = `${tasa.toFixed(1)}%`;
+
+            // Aplicar colores según el umbral del 70% recomendado en el SRS
+            if (tasa >= 70.0 || total === 0) {
+                consistenciaEl.className = "text-lg font-extrabold text-emerald-500 font-roboto mt-0.5";
             } else {
-                alertBox.style.display = "none";
-                if (prefijo === "hoy") {
-                    document.getElementById("hoy-accent-bar").style.backgroundColor = '#B91C1C'; // Rojo Toscano
-                    document.getElementById("hoy-consistencia-card").className = "bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center";
+                consistenciaEl.className = "text-lg font-extrabold text-brandClementine font-roboto mt-0.5";
+            }
+
+            renderizarFilasEstados(`list-${prefijo}`, data);
+
+            // Alerta individual del cuadro de hoy/ayer si cae del 70%
+            const alertBox = document.getElementById(`alert-${prefijo}`);
+            if (alertBox) {
+                if (tasa < 70.0 && total > 0) {
+                    alertBox.innerHTML = `⚠️ Tasa de consistencia crítica (<strong class="font-bold text-white">${tasa.toFixed(1)}%</strong>). Reduzca la fricción del flujo.`;
+                    alertBox.style.display = "block";
+                    
+                    if (prefijo === "hoy") {
+                        document.getElementById("hoy-accent-bar").style.backgroundColor = '#F59E0B'; // Clementine Orange
+                        document.getElementById("hoy-consistencia-card").className = "bg-brandClementine/5 rounded-xl p-3 border-2 border-brandClementine/30 text-center";
+                    }
+                } else {
+                    alertBox.style.display = "none";
+                    if (prefijo === "hoy") {
+                        document.getElementById("hoy-accent-bar").style.backgroundColor = '#B91C1C'; // Rojo Toscano
+                        document.getElementById("hoy-consistencia-card").className = "bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center";
+                    }
                 }
+            }
+
+            // Gestionar caché para el Módulo Semanal de Bienestar
+            if (prefijo === "hoy") {
+                gestionarModuloSemanal(tasa.toFixed(1));
             }
         }
 
-        // Gestionar caché para el Módulo Semanal de Bienestar
-        if (prefijo === "hoy") {
-            gestionarModuloSemanal(tasa.toFixed(1));
-        }
-    }
+        /**
+         * Renderizar la lista de estados preservando nombres, emoticones y cantidades
+         */
+        function renderizarFilasEstados(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!data || Object.keys(data).length === 0) {
+                container.innerHTML = `<div class="task-item bg-brandJet/40 text-gray-500 border-l-[3px] border-gray-700 py-3 px-4 rounded-xl text-center text-xs">Sin planificación registrada</div>`;
+                return;
+            }
 
-    /**
-     * Renderizar la lista de estados preservando nombres, emoticones y cantidades
-     */
-    function renderizarFilasEstados(containerId, data) {
-        const container = document.getElementById(containerId);
-        if (!data || Object.keys(data).length === 0) {
-            container.innerHTML = `<div class="task-item bg-brandJet/40 text-gray-500 border-l-[3px] border-gray-700 py-3 px-4 rounded-xl text-center text-xs">Sin planificación registrada</div>`;
-            return;
-        }
-
-        // Mapeamos a divs premium con estilos responsivos
-        container.innerHTML = Object.entries(data).map(([estado, cantidad]) => {
-            const borderClass = obtenerColorBordeEstado(estado);
-            return `
-                <div class="flex justify-between items-center bg-brandJet/50 border-l-[3px] ${borderClass} py-2.5 px-4 rounded-xl text-xs">
-                    <span class="font-semibold tracking-tight truncate pr-2 font-roboto">${estado}</span>
-                    <span class="font-mono font-bold text-white">${cantidad}</span>
-                </div>
-            `;
-        }).join('');
-    }
-
-    /**
-     * Persistencia y control histórico en local para el Balance Semanal (PRD 4.3)
-     */
-    function gestionarModuloSemanal(hoyConsistencia) {
-        let cache = {};
-        try {
-            cache = JSON.parse(localStorage.getItem("nfa_weekly_cache") || "{}");
-        } catch (e) {
-            cache = {};
+            // Mapeamos a divs premium con estilos responsivos
+            container.innerHTML = Object.entries(data).map(([estado, cantidad]) => {
+                const borderClass = obtenerColorBordeEstado(estado);
+                return `
+                    <div class="flex justify-between items-center bg-brandJet/50 border-l-[3px] ${borderClass} py-2.5 px-4 rounded-xl text-xs">
+                        <span class="font-semibold tracking-tight truncate pr-2 font-roboto">${estado}</span>
+                        <span class="font-mono font-bold text-white">${cantidad}</span>
+                    </div>
+                `;
+            }).join('');
         }
 
-        const key = timestampLocalStr.split(" ")[0];
-        cache[key] = parseFloat(hoyConsistencia);
+        /**
+         * Persistencia y control histórico en local para el Balance Semanal (PRD 4.3)
+         */
+        function gestionarModuloSemanal(hoyConsistencia) {
+            let cache = {};
+            try {
+                cache = JSON.parse(localStorage.getItem("nfa_weekly_cache") || "{}");
+            } catch (e) {
+                cache = {};
+            }
 
-        // Mock inteligente para primer render
-        if (Object.keys(cache).length <= 1) {
-            cache["02/07/2026"] = 85.0; // Lunes
-            cache["01/07/2026"] = 55.0; // Martes
-            cache["30/06/2026"] = 92.0; // Miércoles
-            cache["29/06/2026"] = 62.0; // Jueves
-            cache["28/06/2026"] = 45.0; // Viernes
-            cache["27/06/2026"] = 68.0; // Sábado
-            localStorage.setItem("nfa_weekly_cache", JSON.stringify(cache));
-        } else {
-            localStorage.setItem("nfa_weekly_cache", JSON.stringify(cache));
+            const key = timestampLocalStr.split(" ")[0];
+            cache[key] = parseFloat(hoyConsistencia);
+
+            // Mock de respaldo para primer render
+            if (Object.keys(cache).length <= 1) {
+                cache["02/07/2026"] = 85.0; // Lunes
+                cache["01/07/2026"] = 55.0; // Martes
+                cache["30/06/2026"] = 92.0; // Miércoles
+                cache["29/06/2026"] = 62.0; // Jueves
+                cache["28/06/2026"] = 45.0; // Viernes
+                cache["27/06/2026"] = 68.0; // Sábado
+                localStorage.setItem("nfa_weekly_cache", JSON.stringify(cache));
+            } else {
+                localStorage.setItem("nfa_weekly_cache", JSON.stringify(cache));
+            }
+
+            renderizarTablaSemanal(cache);
         }
 
-        renderizarTablaSemanal(cache);
-    }
+        /**
+         * Renderizar la tabla semanal y calcular la Alerta de Bienestar de la Mentora
+         */
+        function renderizarTablaSemanal(cache) {
+            const tableBody = document.getElementById("weekly-table-body");
+            tableBody.innerHTML = "";
 
-    /**
-     * Renderizar la tabla semanal y calcular la Alerta de Bienestar de la Mentora
-     */
-    function renderizarTablaSemanal(cache) {
-        const tableBody = document.getElementById("weekly-table-body");
-        tableBody.innerHTML = "";
+            const sortedKeys = Object.keys(cache).sort((a, b) => {
+                const parseDate = (str) => {
+                    const parts = str.split("/");
+                    return new Date(parts[2], parts[1]-1, parts[0]);
+                };
+                return parseDate(b) - parseDate(a);
+            }).slice(0, 7); // Últimos 7 días
 
-        const sortedKeys = Object.keys(cache).sort((a, b) => {
-            const parseDate = (str) => {
-                const parts = str.split("/");
-                return new Date(parts[2], parts[1]-1, parts[0]);
-            };
-            return parseDate(b) - parseDate(a);
-        }).slice(0, 7); // Últimos 7 días
+            let diasBajosCount = 0;
 
-        let diasBajosCount = 0;
+            sortedKeys.forEach(key => {
+                const value = cache[key] || 0.0;
+                const esBajo = value < 70.0;
+                if (esBajo) diasBajosCount++;
 
-        sortedKeys.forEach(key => {
-            const value = cache[key] || 0.0;
-            const esBajo = value < 70.0;
-            if (esBajo) diasBajosCount++;
+                const bgBadge = value >= 70.0 ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-amber-500/10 text-brandClementine border border-brandClementine/20";
+                
+                const tr = document.createElement("tr");
+                tr.className = "border-b border-gray-850/40 hover:bg-brandJet/30 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3 text-gray-300 font-medium">${key}</td>
+                    <td class="p-3 text-right">
+                        <span class="px-2 py-0.5 rounded text-[11px] font-bold font-mono ${bgBadge}">${value.toFixed(1)}%</span>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
 
-            const bgBadge = value >= 70.0 ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-amber-500/10 text-brandClementine border border-brandClementine/20";
-            
-            const tr = document.createElement("tr");
-            tr.className = "border-b border-gray-850/40 hover:bg-brandJet/30 transition-colors";
-            tr.innerHTML = `
-                <td class="p-3 text-gray-300 font-medium">${key}</td>
-                <td class="p-3 text-right">
-                    <span class="px-2 py-0.5 rounded text-[11px] font-bold font-mono ${bgBadge}">${value.toFixed(1)}%</span>
-                </td>
-            `;
-            tableBody.appendChild(tr);
-        });
-
-        const alertCard = document.getElementById("wellness-alert-card");
-        if (diasBajosCount >= 4) {
-            alertCard.classList.remove("hidden");
-        } else {
-            alertCard.classList.add("hidden");
+            const alertCard = document.getElementById("wellness-alert-card");
+            if (diasBajosCount >= 4) {
+                alertCard.classList.remove("hidden");
+            } else {
+                alertCard.classList.add("hidden");
+            }
         }
-    }
 
-    /**
-     * Gatilla animación de refresco al presionar botón en cabecera
-     */
-    function recargarDashboard() {
-        const icon = document.getElementById("icon-refresh");
-        const btn = document.getElementById("btn-refresh");
+        /**
+         * Gatilla animación de refresco al presionar botón en cabecera
+         */
+        function recargarDashboard() {
+            const icon = document.getElementById("icon-refresh");
+            const btn = document.getElementById("btn-refresh");
 
-        icon.classList.add("spin-animation");
-        btn.disabled = true;
+            icon.classList.add("spin-animation");
+            btn.disabled = true;
 
-        setTimeout(() => {
-            icon.classList.remove("spin-animation");
-            btn.disabled = false;
-            location.reload(); 
-        }, 1200);
-    }
-</script>
+            setTimeout(() => {
+                icon.classList.remove("spin-animation");
+                btn.disabled = false;
+                location.reload(); 
+            }, 1200);
+        }
+    </script>
 </body>
 </html>
