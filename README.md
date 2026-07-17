@@ -1,21 +1,90 @@
-#🛡️ Notion Flow Auditor
-¡Bienvenido a Notion Flow Auditor! Este es un microservicio local de auditoría y visualización de consistencia diaria, diseñado para extraer datos en tiempo real de tu base de datos de Notion, procesar tus hábitos bajo reglas de negocio estrictas y proyectarlos en un dashboard interactivo de alta fidelidad visual.
-Desarrollado con un enfoque de seguridad por diseño (security by design), este sistema protege tus credenciales privadas mediante aislamiento de entorno y garantiza conexiones de red herméticas.
+# 📋 NFA — Notion Flow Auditor
 
-#🎨 Características Clave
+> Herramienta de auditoría y visualización de consistencia diaria sobre una base de datos de Notion.
 
-*Diseño Premium "Human-Tech": Interfaz web moderna basada en negros profundos y acentos en tonos borgoña/vino, optimizada para ofrecer una experiencia visual relajante y profesional.
+## Contexto
 
-*Lógica de Consistencia Estricta: Evalúa tus registros diarios mediante un filtro compuesto AND (el estado de la tarea debe ser exactamente "Hecha" y la propiedad "Consistencia" debe ser igual a 1).
+NFA nace para resolver un problema concreto de seguimiento personal: verificar de forma objetiva si las tareas diarias registradas en Notion cumplen con un criterio de consistencia definido, y comunicar ese estado en un dashboard claro, sin depender de revisar la base de datos manualmente.
 
-*Mapeo Dinámico de Estados: Agrupa y contabiliza automáticamente el estado real de tus recordatorios diarios en barras de progreso proporcionales.
+Este proyecto forma parte de mi portfolio como analista técnico-funcional: documenta el proceso completo desde el levantamiento de requisitos hasta la implementación.
 
-*Escala Autocalibrable: El dashboard adapta dinámicamente sus rangos, marcas, slider de pruebas y alertas de rendimiento (umbral del 70%) al volumen real de tareas extraídas por el motor (procesando correctamente desde 1 hasta 13 o más tareas).
+## 📑 Documentación del proyecto
 
-*Robustez ante Windows: Backend equipado con un decodificador binario inteligente que neutraliza corrupciones de codificación (UTF-16 LE, BOM) introducidas accidentalmente al crear archivos en PowerShell.
+| Documento | Descripción |
+|---|---|
+| [SRS](docs/SRS.md) | Especificación de requisitos de software |
+| [PRD](docs/PRD.md) | Documento de requisitos del producto |
+| [Flujograma](docs/flujograma.png) | Diagrama de flujo del proceso de auditoría |
 
-*Cierre Seguro de Conexiones: Uso de administradores de sesiones HTTP (requests.Session) para asegurar que las conexiones TLS 1.3 con la API de Notion se destruyan inmediatamente tras completar cada ciclo.
+## Reglas de negocio
 
-#Diseñado y desarrollado con pasión por:
-Hecho por bitacorait By Sabry 🚀
-Mentoría técnica de ciberseguridad y desarrollo: Tu Coach de Programación(Prompt de Gemini)
+La consistencia de una tarea se determina mediante un filtro compuesto AND:
+
+- El campo **Estado** debe ser exactamente `"Hecha"`
+- La propiedad **Consistencia** debe ser igual a `1`
+
+Solo si ambas condiciones se cumplen, la tarea se contabiliza como consistente en el dashboard.
+
+## Arquitectura
+
+```
+Notion API
+    │
+    ▼
+extract_and_audit.py   (GitHub Actions, corre cada hora)
+    │  extrae y audita tareas según reglas de negocio
+    ▼
+generate_dashboard.py
+    │  reescribe index.html con los datos actualizados
+    ▼
+index.html   (dashboard estático)
+```
+
+## Características
+
+- Sincronización horaria automática vía GitHub Actions
+- Evaluación de consistencia mediante regla compuesta (Estado + Consistencia)
+- Escala de visualización que se adapta al volumen real de tareas extraídas
+- Alertas de rendimiento a partir de un umbral del 70%
+- Manejo de encoding para archivos generados en entorno Windows (UTF-16 LE, BOM)
+
+## Stack técnico
+
+- Python (extracción y procesamiento)
+- Notion API
+- GitHub Actions (automatización)
+- HTML / Tailwind / JavaScript (dashboard)
+
+## Instalación
+
+```bash
+git clone https://github.com/tu-usuario/nfa.git
+cd nfa
+pip install -r requirements.txt
+```
+
+## Configuración
+
+Crear un archivo `.env`:
+
+```
+NOTION_TOKEN=tu_token_aca
+NOTION_DATABASE_ID=tu_database_id
+```
+
+## Uso
+
+```bash
+python extract_and_audit.py   # extrae y audita datos de Notion
+python generate_dashboard.py  # regenera index.html
+```
+
+## Aprendizajes técnicos
+
+- Manejo de corrupciones de encoding (UTF-16 LE, BOM) generadas al crear archivos desde PowerShell en Windows
+- Uso de `requests.Session` para gestionar el ciclo de vida de las conexiones HTTP contra la API de Notion
+
+## Autoría
+
+Desarrollado por Sabry.
+```
