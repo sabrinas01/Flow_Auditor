@@ -35,7 +35,7 @@ El sistema opera bajo un flujo híbrido seguro:
 
 ### 3.1. Usuario Único (Analista de Flujo Personal)
 
-**Perfil:** Sabrina, IT Functional Analyst en Bitácora IT.
+**Perfil:** Sabrina Sanso
 
 **Necesidades Clave:**
 
@@ -100,7 +100,6 @@ El diseño del dashboard sigue los lineamientos del Manual de Identidad Visual C
 ### 5.1. Cabecera (Header de Control)
 
 - **Botón "Actualizar Dashboard":** Gatilla una animación de giro del icono de refresco y bloquea la interacción por 1.2 segundos mientras recarga de forma limpia los datos del navegador.
-- **Última Sincronización del Servidor (UTC):** Al lado del botón de actualización, se muestra la marca temporal del runtime del servidor en formato estrictamente estandarizado: YYYY-MM-DD HH:mm:ss UTC.
 
 ### 5.2. Sección I: Tareas de ayer
 
@@ -134,7 +133,7 @@ Ubicado de forma compacta en el pie de página con tipografía Roboto reducida:
 
 ### 5.7. Sección VI: Navegación de Cierre y Trazabilidad
 
-- **Botón de Acción "Ir a recordatorios diarios":** Elemento de interacción fijo centrado que redirige al espacio de trabajo de Notion. URL: [Mis Recordatorios varios V0](https://app.notion.com/p/858a38bb7a6e83f993ab81719a72e505?pvs=21)
+- **Botón de Acción "Ir a recordatorios diarios":** Elemento de interacción fijo centrado que redirige al espacio de trabajo de Notion.
 - **Indicador de Versión GitHub Release:** Campo posicionado abajo de todo, alineado a la izquierda, exactamente debajo de la base del botón, que renderiza la versión inyectada dinámicamente desde el tag del release de GitHub (Ej. v3.3).
 
 ---
@@ -168,8 +167,7 @@ Ubicado de forma compacta en el pie de página con tipografía Roboto reducida:
 
 **Entonces** el dashboard renderizado en el navegador móvil debe:
 
-1. Mostrar en la cabecera superior la hora exacta de la compilación en formato UTC del servidor al lado de un botón "Actualizar Dashboard" animado.
-2. Calcular de forma relativa la Próxima Actualización y renderizar en el footer exactamente: 17:15:30 ART (Sincronización Local + 1 hora).
+1. Calcular de forma relativa la Próxima Actualización y renderizar en el footer exactamente: 17:15:30 ART (Sincronización Local + 1 hora).
 3. Habilitar en el bloque de "Balance Semanal" la tabla dinámica con el historial y desplegar de forma visible la caja con el mensaje literal de la mentora: "Linda, es momento de ajustar prioridades y analizar si son necesarias tantas tareas. No seas dura contigo, cielo. 🧠✨".
-4. Mostrar abajo a la izquierda, debajo de la base del botón del footer, la versión inyectada dinámicamente (v3.3).
+4. Mostrar abajo a la izquierda, debajo de la base del botón del footer, la versión inyectada dinámicamente.
 5. Mapear y agrupar el panel de distribución cuantitativo de hoy respetando el orden jerárquico que inicia en Sin empezar y concluye en Fallida / Vencida.
