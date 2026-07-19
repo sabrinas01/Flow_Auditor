@@ -207,23 +207,6 @@
             </div>
         </section>
 
-        <!-- =================================================== -->
-        <!-- SECCIÓN IV: TAREAS PARA MAÑANA -->
-        <!-- =================================================== -->
-        <section class="bg-brandObsidian rounded-2xl border border-brandBorder p-5 shadow-xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-900"></div>
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase font-roboto">Tareas para mañana</h2>
-                    <p class="text-lg font-bold text-white mt-0.5">Planificación del Futuro</p>
-                </div>
-                <span id="total-manana-lbl" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-blue-950/20 text-blue-400 border border-blue-900/30">0 tareas</span>
-            </div>
-
-            <div id="list-manana" class="space-y-2">
-                <!-- Se inyectan las filas dinámicamente -->
-            </div>
-        </section>
 
         <!-- Botón de Redirección Oficial a Notion DB -->
         <a href="https://app.notion.com/p/a61a38bb7a6e8251a38601779b0bd382?v=50da38bb7a6e82369cc9088797549db6&source=copy_link" 
@@ -265,10 +248,6 @@
             procesarSeccionMetrica("ayer", conteoAyer);
             procesarSeccionMetrica("hoy", conteoHoy);
             
-            // Sección Mañana
-            const totalManana = Object.values(conteoManana).reduce((a, b) => a + b, 0);
-            document.getElementById("total-manana-lbl").innerText = `${totalManana} Tareas`;
-            renderizarFilasEstados("list-manana", conteoManana);
         });
 
         /**
