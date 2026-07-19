@@ -55,13 +55,6 @@ index.html   (dashboard estático)
 - GitHub Actions (automatización)
 - HTML / Tailwind / JavaScript (dashboard)
 
-
-
-## Aprendizajes técnicos
-
-- Manejo de corrupciones de encoding (UTF-16 LE, BOM) generadas al crear archivos desde PowerShell en Windows
-- Uso de `requests.Session` para gestionar el ciclo de vida de las conexiones HTTP contra la API de Notion
-
 ## Autoría
 
 Desarrollado por Sabry @bitacorait
