@@ -12,9 +12,9 @@ Este proyecto forma parte de mi portfolio como analista técnico-funcional: docu
 
 | Documento | Descripción |
 |---|---|
-| [PRD](https://github.com/sabrinas01/Flow_Auditor/blob/e940283959d388d4e28ab19337748ea8f76412fb/PRD.md) | Documento de requisitos del producto |
-| [SRS](https://github.com/sabrinas01/Flow_Auditor/blob/e940283959d388d4e28ab19337748ea8f76412fb/SRS.md) | Especificación de requisitos de software |
-| [Flujograma](https://github.com/sabrinas01/Flow_Auditor/blob/e940283959d388d4e28ab19337748ea8f76412fb/Flujograma%20NFA_V1.pdf) | Diagrama de flujo del proceso de auditoría |
+| [PRD](https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/PRD.md) | Documento de requisitos del producto |
+| [SRS](https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/SRS.md) | Especificación de requisitos de software |
+| [Flujograma](https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/Flujograma) | Carpeta con versiones del flujograma|
 
 ## Reglas de negocio
 
