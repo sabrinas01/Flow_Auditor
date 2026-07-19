@@ -15,6 +15,7 @@ Este proyecto forma parte de mi portfolio como analista técnico-funcional: docu
 | [PRD](https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/PRD.md) | Documento de requisitos del producto |
 | [SRS](https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/SRS.md) | Especificación de requisitos de software |
 | [Flujograma](https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/Flujograma) | Carpeta con versiones del flujograma|
+| [Historias de usuario] (https://app.notion.com/p/35ea38bb7a6e8062952be3e22adfa927?v=35ea38bb7a6e81ad9cb5000cb74ba0ac&source=copy_link)| Enlace a pagina de notion con las historias de usuario|
 
 ## Reglas de negocio
 
