@@ -16,6 +16,7 @@ Este proyecto forma parte de mi portfolio como analista técnico-funcional: docu
 | [SRS](https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/SRS.md) | Especificación de requisitos de software |
 | [Flujograma](https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/Flujograma) | Carpeta con versiones del flujograma|
 | [Historias de usuario] (https://app.notion.com/p/35ea38bb7a6e8062952be3e22adfa927?v=35ea38bb7a6e81ad9cb5000cb74ba0ac&source=copy_link)| Enlace a pagina de notion con las historias de usuario|
+| [Libro de marca] (https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/Notion%20Flow%20Auditor%20Brandbook%20by%20Pomelli.pdf) | Archivo generado por la herramienta Pomelli de Google Labs |
 | [Sistema de diseño actualizado] (https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/DESIGN.md) | Archivo generado por la herramienta Stich de Google Labs |
 
 ## Reglas de negocio

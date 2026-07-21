@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Notion Flow Auditor - Bitácora IT</title>
-    <!-- Importación de Fuentes Oficiales del Brand Book Pomelli -->
+    <!-- Tipografías del Design System "Obsidian Metric System" (DESIGN.md) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Framework CSS Tailwind para maquetación ágil -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -15,16 +15,41 @@
             theme: {
                 extend: {
                     colors: {
-                        brandJet: '#08080A',       // Negro azabache
-                        brandObsidian: '#111115',  // Obsidiana Black
-                        brandTuscany: '#B91C1C',   // Rojo Toscano
-                        brandSoftRed: '#EF4444',    // Rojo suave
-                        brandClementine: '#F59E0B', // Clementine Orange (alertas < 70%)
-                        brandBorder: '#1F1F23'     // Borde industrial oscuro
+                        // Paleta "Obsidian Metric System" (DESIGN.md)
+                        obsBg: '#131313',
+                        obsSurfaceLowest: '#0e0e0e',
+                        obsSurfaceLow: '#1c1b1b',
+                        obsSurface: '#201f1f',
+                        obsSurfaceHigh: '#2a2a2a',
+                        obsSurfaceHighest: '#353534',
+                        obsOnSurface: '#e5e2e1',
+                        obsOnSurfaceVariant: '#e2beba',
+                        obsOutline: '#a98985',
+                        obsOutlineVariant: '#5a413d',
+                        obsPrimary: '#ffb4aa',
+                        obsOnPrimary: '#690004',
+                        obsPrimaryContainer: '#ff5f52',
+                        obsOnPrimaryContainer: '#640004',
+                        obsSecondary: '#ffb961',
+                        obsOnSecondary: '#472a00',
+                        obsSecondaryContainer: '#e49102',
+                        obsOnSecondaryContainer: '#533200',
+                        obsTertiary: '#83da85',
+                        obsOnTertiary: '#00390e',
+                        obsTertiaryContainer: '#53a759',
+                        obsOnTertiaryContainer: '#00360d',
+                        obsError: '#ffb4ab',
+                        obsOnError: '#690005',
+                        obsErrorContainer: '#93000a',
+                        obsOnErrorContainer: '#ffdad6'
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        roboto: ['Roboto', 'sans-serif']
+                        manrope: ['Manrope', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif']
+                    },
+                    borderRadius: {
+                        'obs-main': '1rem',
+                        'obs-inner': '0.5rem'
                     }
                 }
             }
@@ -32,7 +57,7 @@
     </script>
     <style>
         body {
-            background-color: #08080A;
+            background-color: #131313;
             -webkit-tap-highlight-color: transparent;
             font-feature-settings: "cv02", "cv03", "cv04", "cv11";
         }
@@ -46,45 +71,45 @@
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen text-gray-200 font-sans antialiased pb-8">
+<body class="flex flex-col min-h-screen text-obsOnSurface font-sans antialiased pb-8">
 
     <!-- =================================================== -->
     <!-- VARIABLES INYECTADAS DINÁMICAMENTE POR EL BACKEND -->
     <!-- =================================================== -->
     <script>
         // Declaración estricta compatible con las expresiones regulares de tu script de Python v5.4
-        const timestampLocalStr = "21/07/2026 18:08:51";
-        const timestampNextStr = "21/07/2026 19:08:51";
-        const timestampServerStr = "21/07/2026 21:08:51";
+        const timestampLocalStr = "19/07/2026 19:51:34";
+        const timestampNextStr = "19/07/2026 20:51:34";
+        const timestampServerStr = "19/07/2026 22:51:34";
 
         // Estructuras JSON reales de distribución por estados (Notion DB) - Telemetría de peticiones eliminada
-        const conteoAyer = {"Hecha": 16, "❌ Fallida / Vencida": 9, "⏭️ No necesaria": 2};
-        const conteoHoy = {"Sin empezar": 7, "❌ Fallida / Vencida": 4, "Hecha": 7, "⏭️ No necesaria": 2};
+        const conteoAyer = {"Sin empezar": 14, "Hecha": 9, "⏭️ No necesaria": 1, "❌ Fallida / Vencida": 3};
+        const conteoHoy = {"Sin empezar": 5, "Hecha": 5, "⏭️ No necesaria": 5, "❌ Fallida / Vencida": 5};
         const conteoManana = {};
     </script>
 
     <!-- =================================================== -->
     <!-- CABECERA (HEADER DE CONTROL PREMIUM) -->
     <!-- =================================================== -->
-    <header class="sticky top-0 z-40 bg-brandJet/95 backdrop-blur-md border-b border-gray-800/60 px-4 py-3.5">
+    <header class="sticky top-0 z-40 bg-obsBg/95 backdrop-blur-md border-b border-obsOutlineVariant/30 px-4 py-3.5">
         <div class="max-w-[480px] mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-2.5">
                 <!-- Isotipo Premium de Bitácora IT -->
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brandTuscany to-brandSoftRed flex items-center justify-center shadow-lg shadow-brandTuscany/20">
-                    <svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-8 h-8 rounded-obs-inner bg-gradient-to-tr from-obsPrimaryContainer to-obsPrimary flex items-center justify-center shadow-lg shadow-obsPrimary/20">
+                    <svg class="w-4.5 h-4.5 text-obsOnPrimary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-sm font-bold tracking-tight text-white leading-none">Notion Flow Auditor</h1>
-                    <span class="text-[10px] font-medium text-brandSoftRed tracking-wider uppercase">Bitácora IT</span>
+                    <h1 class="text-sm font-bold font-manrope tracking-tight text-obsOnSurface leading-none">Notion Flow Auditor</h1>
+                    <span class="text-[10px] font-medium text-obsPrimary tracking-wider uppercase">Bitácora IT</span>
                 </div>
             </div>
-            
+
             <div class="flex items-center space-x-3">
                 <!-- Botón de actualización de pantalla con animación táctil -->
-                <button id="btn-refresh" class="p-2.5 rounded-xl bg-brandObsidian border border-gray-800 hover:border-brandSoftRed active:scale-95 transition-all duration-150 group" onclick="recargarDashboard()">
-                    <svg id="icon-refresh" class="w-4 h-4 text-gray-400 group-hover:text-brandSoftRed transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button id="btn-refresh" class="p-2.5 rounded-obs-inner bg-obsSurfaceLow border border-obsOutlineVariant/40 hover:border-obsPrimary active:scale-95 transition-all duration-150 group" onclick="recargarDashboard()">
+                    <svg id="icon-refresh" class="w-4 h-4 text-obsOutline group-hover:text-obsPrimary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.253 8H18" />
                     </svg>
                 </button>
@@ -98,14 +123,14 @@
         <!-- =================================================== -->
         <!-- SECCIÓN I: TAREAS DE AYER -->
         <!-- =================================================== -->
-        <section class="bg-brandObsidian rounded-2xl border border-brandBorder p-5 shadow-xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-1.5 h-full bg-gray-600"></div>
+        <section class="bg-obsSurfaceLow rounded-obs-main border border-obsOutlineVariant/30 p-5 shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1.5 h-full bg-obsSurfaceHigh"></div>
             <div class="flex justify-between items-start mb-4">
                 <div>
-                    <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase font-roboto">Tareas de ayer</h2>
-                    <p class="text-lg font-bold text-white mt-0.5">Bitácora de Ayer</p>
+                    <h2 class="text-xs font-bold text-obsOutline tracking-wider uppercase font-sans">Tareas de ayer</h2>
+                    <p class="text-lg font-bold font-manrope text-obsOnSurface mt-0.5">Bitácora de Ayer</p>
                 </div>
-                <span id="total-ayer-lbl" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-gray-800 text-gray-300">0 tareas</span>
+                <span id="total-ayer-lbl" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-obsSurfaceHigh text-obsOnSurface">0 tareas</span>
             </div>
 
             <!-- Listado de Estados de Ayer -->
@@ -114,31 +139,31 @@
             </div>
 
             <!-- KPIs de Consistencia de Ayer -->
-            <div class="grid grid-cols-2 gap-3.5 border-t border-brandBorder pt-4">
-                <div class="bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center">
-                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Completadas</p>
-                    <p id="hechas-ayer-val" class="text-lg font-extrabold text-white mt-0.5 font-roboto">0 / 0</p>
+            <div class="grid grid-cols-2 gap-3.5 border-t border-obsOutlineVariant/30 pt-4">
+                <div class="bg-obsSurfaceLowest/60 rounded-obs-inner p-3 border border-obsOutlineVariant/20 text-center">
+                    <p class="text-[9px] text-obsOutline font-bold uppercase tracking-wider">Completadas</p>
+                    <p id="hechas-ayer-val" class="text-lg font-extrabold text-obsOnSurface mt-0.5 font-sans">0 / 0</p>
                 </div>
-                <div class="bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center">
-                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Consistencia</p>
-                    <p id="consistencia-ayer-val" class="text-lg font-extrabold text-brandSoftRed mt-0.5 font-roboto">0.0%</p>
+                <div class="bg-obsSurfaceLowest/60 rounded-obs-inner p-3 border border-obsOutlineVariant/20 text-center">
+                    <p class="text-[9px] text-obsOutline font-bold uppercase tracking-wider">Consistencia</p>
+                    <p id="consistencia-ayer-val" class="text-lg font-extrabold text-obsPrimary mt-0.5 font-sans">0.0%</p>
                 </div>
             </div>
-            
-            <div id="alert-ayer" class="hidden mt-3 bg-brandClementine/10 border border-brandClementine/30 rounded-xl p-3 text-[11px] text-brandClementine font-medium"></div>
+
+            <div id="alert-ayer" class="hidden mt-3 bg-obsSecondary/10 border border-obsSecondary/30 rounded-obs-inner p-3 text-[11px] text-obsSecondary font-medium"></div>
         </section>
 
         <!-- =================================================== -->
         <!-- SECCIÓN II: TAREAS DE HOY -->
         <!-- =================================================== -->
-        <section class="bg-brandObsidian rounded-2xl border border-brandBorder p-5 shadow-xl relative overflow-hidden">
-            <div id="hoy-accent-bar" class="absolute top-0 left-0 w-1.5 h-full bg-brandTuscany transition-colors"></div>
+        <section class="bg-obsSurfaceLow rounded-obs-main border border-obsOutlineVariant/30 p-5 shadow-xl relative overflow-hidden">
+            <div id="hoy-accent-bar" class="absolute top-0 left-0 w-1.5 h-full bg-obsPrimaryContainer transition-colors"></div>
             <div class="flex justify-between items-start mb-4">
                 <div>
-                    <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase font-roboto">Tareas de hoy</h2>
-                    <p class="text-lg font-bold text-white mt-0.5">Progreso de hoy</p>
+                    <h2 class="text-xs font-bold text-obsOutline tracking-wider uppercase font-sans">Tareas de hoy</h2>
+                    <p class="text-lg font-bold font-manrope text-obsOnSurface mt-0.5">Progreso de hoy</p>
                 </div>
-                <span id="total-hoy-lbl" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-brandTuscany/10 text-brandSoftRed border border-brandTuscany/20">0 tareas</span>
+                <span id="total-hoy-lbl" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-obsPrimary/10 text-obsPrimary border border-obsPrimary/20">0 tareas</span>
             </div>
 
             <!-- Listado de Estados de Hoy -->
@@ -147,39 +172,39 @@
             </div>
 
             <!-- KPIs de Consistencia de Hoy -->
-            <div class="grid grid-cols-2 gap-3.5 border-t border-brandBorder pt-4">
-                <div class="bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center">
-                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Completadas</p>
-                    <p id="hechas-hoy-val" class="text-lg font-extrabold text-white mt-0.5 font-roboto">0 / 0</p>
+            <div class="grid grid-cols-2 gap-3.5 border-t border-obsOutlineVariant/30 pt-4">
+                <div class="bg-obsSurfaceLowest/60 rounded-obs-inner p-3 border border-obsOutlineVariant/20 text-center">
+                    <p class="text-[9px] text-obsOutline font-bold uppercase tracking-wider">Completadas</p>
+                    <p id="hechas-hoy-val" class="text-lg font-extrabold text-obsOnSurface mt-0.5 font-sans">0 / 0</p>
                 </div>
-                <div id="hoy-consistencia-card" class="bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center transition-colors">
-                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Consistencia</p>
-                    <p id="consistencia-hoy-val" class="text-lg font-extrabold text-brandSoftRed mt-0.5 font-roboto">0.0%</p>
+                <div id="hoy-consistencia-card" class="bg-obsSurfaceLowest/60 rounded-obs-inner p-3 border border-obsOutlineVariant/20 text-center transition-colors">
+                    <p class="text-[9px] text-obsOutline font-bold uppercase tracking-wider">Consistencia</p>
+                    <p id="consistencia-hoy-val" class="text-lg font-extrabold text-obsPrimary mt-0.5 font-sans">0.0%</p>
                 </div>
             </div>
 
-            <div id="alert-hoy" class="hidden mt-3 bg-brandClementine/10 border border-brandClementine/30 rounded-xl p-3 text-[11px] text-brandClementine font-medium"></div>
+            <div id="alert-hoy" class="hidden mt-3 bg-obsSecondary/10 border border-obsSecondary/30 rounded-obs-inner p-3 text-[11px] text-obsSecondary font-medium"></div>
         </section>
 
         <!-- =================================================== -->
         <!-- SECCIÓN III: BALANCE SEMANAL Y BIENESTAR -->
         <!-- =================================================== -->
-        <section class="bg-brandObsidian rounded-2xl border border-brandBorder p-5 shadow-xl space-y-4">
+        <section class="bg-obsSurfaceLow rounded-obs-main border border-obsOutlineVariant/30 p-5 shadow-xl space-y-4">
             <div>
-                <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase font-roboto">Balance Semanal</h2>
-                <p class="text-lg font-bold text-white mt-0.5">Analítica de Consistencia</p>
+                <h2 class="text-xs font-bold text-obsOutline tracking-wider uppercase font-sans">Balance Semanal</h2>
+                <p class="text-lg font-bold font-manrope text-obsOnSurface mt-0.5">Analítica de Consistencia</p>
             </div>
 
             <!-- Tabla Dinámica del Historial de los últimos 7 días -->
-            <div class="overflow-hidden border border-gray-800/60 rounded-xl">
+            <div class="overflow-hidden border border-obsOutlineVariant/30 rounded-obs-inner">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-brandJet border-b border-gray-850">
-                            <th class="p-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Fecha / Día</th>
-                            <th class="p-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wider text-right">Consistencia (%)</th>
+                        <tr class="bg-obsSurfaceLowest border-b border-obsOutlineVariant/30">
+                            <th class="p-3 text-[10px] font-semibold text-obsOutline uppercase tracking-wider">Fecha / Día</th>
+                            <th class="p-3 text-[10px] font-semibold text-obsOutline uppercase tracking-wider text-right">Consistencia (%)</th>
                         </tr>
                     </thead>
-                    <tbody id="weekly-table-body" class="divide-y divide-gray-850 font-roboto text-xs">
+                    <tbody id="weekly-table-body" class="divide-y divide-obsOutlineVariant/20 font-sans text-xs">
                         <!-- Filas dinámicas mediante JS -->
                     </tbody>
                 </table>
@@ -187,20 +212,20 @@
 
             <!-- Alerta Mental / Empática de la Mentora de Bienestar (PRD V3.3) -->
             <div id="wellness-alert-card" class="hidden transform transition-all duration-500">
-                <div class="bg-gradient-to-tr from-brandObsidian to-brandJet border-2 border-brandClementine/40 rounded-2xl p-4 shadow-2xl relative overflow-hidden">
-                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-brandClementine/5 rounded-full blur-xl"></div>
+                <div class="bg-gradient-to-tr from-obsSurfaceLow to-obsBg border-2 border-obsSecondary/40 rounded-obs-main p-4 shadow-2xl relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-obsSecondary/5 rounded-full blur-xl"></div>
                     <div class="flex items-start space-x-3.5">
-                        <div class="p-2.5 bg-brandClementine/10 rounded-xl text-brandClementine border border-brandClementine/20 mt-1">
+                        <div class="p-2.5 bg-obsSecondary/10 rounded-obs-inner text-obsSecondary border border-obsSecondary/20 mt-1">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                         </div>
                         <div>
-                            <h4 class="text-xs font-bold text-brandClementine uppercase tracking-widest font-roboto">Feedback de Mentora</h4>
-                            <p class="text-xs font-medium text-amber-100/95 leading-relaxed mt-1.5 italic">
+                            <h4 class="text-xs font-bold font-manrope text-obsSecondary uppercase tracking-widest">Feedback de Mentora</h4>
+                            <p class="text-xs font-medium text-obsSecondary/90 leading-relaxed mt-1.5 italic">
                                 "Linda, es momento de ajustar prioridades y analizar si son necesarias tantas tareas. No seas dura contigo, cielo. 🧠✨"
                             </p>
-                            <span class="inline-block mt-2 text-[9px] font-bold text-gray-500 uppercase tracking-widest font-mono">— Con amor 💚 SabryOff</span>
+                            <span class="inline-block mt-2 text-[9px] font-bold text-obsOutline uppercase tracking-widest font-mono">— Con amor 💚 SabryOff</span>
                         </div>
                     </div>
                 </div>
@@ -209,9 +234,9 @@
 
 
         <!-- Botón de Redirección Oficial a Notion DB -->
-        <a href="https://app.notion.com/p/a61a38bb7a6e8251a38601779b0bd382?v=50da38bb7a6e82369cc9088797549db6&source=copy_link" 
-           target="_blank" 
-           class="w-full py-4 bg-gradient-to-r from-brandTuscany to-brandSoftRed hover:brightness-110 active:scale-[0.98] rounded-xl text-center text-xs font-bold tracking-widest text-white shadow-lg transition-all duration-150 flex items-center justify-center space-x-2">
+        <a href="https://app.notion.com/p/a61a38bb7a6e8251a38601779b0bd382?v=50da38bb7a6e82369cc9088797549db6&source=copy_link"
+           target="_blank"
+           class="w-full py-4 bg-gradient-to-r from-obsPrimaryContainer to-obsPrimary hover:brightness-110 active:scale-[0.98] rounded-obs-inner text-center text-xs font-bold font-manrope tracking-widest text-obsOnPrimary shadow-lg transition-all duration-150 flex items-center justify-center space-x-2">
             <span>🚀 IR A RECORDATORIOS DIARIOS</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -219,16 +244,16 @@
         </a>
 
         <!-- Pie de página técnico súper compacto que absorbe las métricas relativas de forma discreta -->
-        <footer class="text-[10px] text-gray-500 font-roboto pt-2 space-y-1">
+        <footer class="text-[10px] text-obsOutline font-sans pt-2 space-y-1">
             <div class="flex justify-between items-center px-1">
                 <div class="flex items-center space-x-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-brandSoftRed animate-pulse"></span>
-                    <span>GitHub Pages Release: <strong class="text-gray-300 font-semibold font-mono">v5.4</strong></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-obsPrimary animate-pulse"></span>
+                    <span>GitHub Pages Release: <strong class="text-obsOnSurface font-semibold font-mono">v5.4</strong></span>
                 </div>
-                <span class="font-mono text-gray-400">Sincro ART: <strong id="footer-sync-time" class="text-gray-300 font-normal">--/--/-- --:--:--</strong></span>
+                <span class="font-mono text-obsOutline">Sincro ART: <strong id="footer-sync-time" class="text-obsOnSurface font-normal">--/--/-- --:--:--</strong></span>
             </div>
-            <div class="flex justify-between items-center px-1 text-[9px] text-gray-600">
-                <span>Próxima actualización: <strong id="footer-next-time" class="font-semibold text-brandClementine">--/--/-- --:--:--</strong></span>
+            <div class="flex justify-between items-center px-1 text-[9px] text-obsOutlineVariant">
+                <span>Próxima actualización: <strong id="footer-next-time" class="font-semibold text-obsSecondary">--/--/-- --:--:--</strong></span>
                 <span>Bitácora IT &copy; 2026</span>
             </div>
         </footer>
@@ -247,7 +272,7 @@
             // 2. Procesar e Inyectar Bloques Temporales Complejos
             procesarSeccionMetrica("ayer", conteoAyer);
             procesarSeccionMetrica("hoy", conteoHoy);
-            
+
         });
 
         /**
@@ -259,23 +284,23 @@
         }
 
         /**
-         * Asigna un color estético Pomelli premium al borde lateral de cada estado
+         * Asigna un color estético del Obsidian Metric System al borde lateral de cada estado
          */
         function obtenerColorBordeEstado(estado) {
             const norm = estado.toLowerCase();
             if (norm.includes("hecha") || norm.includes("hecho") || norm.includes("completad") || norm.includes("done")) {
-                return "border-emerald-500/80 text-emerald-400";
+                return "border-obsTertiary/80 text-obsTertiary";
             }
             if (norm.includes("fallida") || norm.includes("vencida") || norm.includes("fail") || norm.includes("perd")) {
-                return "border-brandSoftRed text-brandSoftRed font-medium";
+                return "border-obsError text-obsError font-medium";
             }
             if (norm.includes("ejecu") || norm.includes("progr") || norm.includes("progress") || norm.includes("haciendo")) {
-                return "border-blue-500 text-blue-400";
+                return "border-obsOnSurfaceVariant text-obsOnSurfaceVariant";
             }
             if (norm.includes("no neces") || norm.includes("saltad") || norm.includes("skip")) {
-                return "border-zinc-600 text-zinc-400";
+                return "border-obsOutlineVariant text-obsOutline";
             }
-            return "border-gray-700 text-gray-300";
+            return "border-obsOutlineVariant text-obsOnSurface";
         }
 
         /**
@@ -283,7 +308,7 @@
          */
         function procesarSeccionMetrica(prefijo, data) {
             const total = Object.values(data).reduce((a, b) => a + b, 0);
-            
+
             // Sumar completados buscando cualquier alias de "Hecha"
             let hechas = 0;
             Object.entries(data).forEach(([estado, cantidad]) => {
@@ -294,15 +319,15 @@
 
             document.getElementById(`total-${prefijo}-lbl`).innerText = `${total} tareas`;
             document.getElementById(`hechas-${prefijo}-val`).innerText = `${hechas} / ${total}`;
-            
+
             const consistenciaEl = document.getElementById(`consistencia-${prefijo}-val`);
             consistenciaEl.innerText = `${tasa.toFixed(1)}%`;
 
             // Aplicar colores según el umbral del 70% recomendado en el SRS
             if (tasa >= 70.0 || total === 0) {
-                consistenciaEl.className = "text-lg font-extrabold text-emerald-500 font-roboto mt-0.5";
+                consistenciaEl.className = "text-lg font-extrabold text-obsTertiary font-sans mt-0.5";
             } else {
-                consistenciaEl.className = "text-lg font-extrabold text-brandClementine font-roboto mt-0.5";
+                consistenciaEl.className = "text-lg font-extrabold text-obsSecondary font-sans mt-0.5";
             }
 
             renderizarFilasEstados(`list-${prefijo}`, data);
@@ -311,18 +336,18 @@
             const alertBox = document.getElementById(`alert-${prefijo}`);
             if (alertBox) {
                 if (tasa < 70.0 && total > 0) {
-                    alertBox.innerHTML = `⚠️ Tasa de consistencia crítica (<strong class="font-bold text-white">${tasa.toFixed(1)}%</strong>). Reduzca la fricción del flujo.`;
+                    alertBox.innerHTML = `⚠️ Tasa de consistencia crítica (<strong class="font-bold text-obsOnSurface">${tasa.toFixed(1)}%</strong>). Reduzca la fricción del flujo.`;
                     alertBox.style.display = "block";
-                    
+
                     if (prefijo === "hoy") {
-                        document.getElementById("hoy-accent-bar").style.backgroundColor = '#F59E0B'; // Clementine Orange
-                        document.getElementById("hoy-consistencia-card").className = "bg-brandClementine/5 rounded-xl p-3 border-2 border-brandClementine/30 text-center";
+                        document.getElementById("hoy-accent-bar").style.backgroundColor = '#ffb961'; // obsSecondary
+                        document.getElementById("hoy-consistencia-card").className = "bg-obsSecondary/5 rounded-obs-inner p-3 border-2 border-obsSecondary/30 text-center";
                     }
                 } else {
                     alertBox.style.display = "none";
                     if (prefijo === "hoy") {
-                        document.getElementById("hoy-accent-bar").style.backgroundColor = '#B91C1C'; // Rojo Toscano
-                        document.getElementById("hoy-consistencia-card").className = "bg-brandJet/50 rounded-xl p-3 border border-gray-950 text-center";
+                        document.getElementById("hoy-accent-bar").style.backgroundColor = '#ff5f52'; // obsPrimaryContainer
+                        document.getElementById("hoy-consistencia-card").className = "bg-obsSurfaceLowest/60 rounded-obs-inner p-3 border border-obsOutlineVariant/20 text-center";
                     }
                 }
             }
@@ -339,7 +364,7 @@
         function renderizarFilasEstados(containerId, data) {
             const container = document.getElementById(containerId);
             if (!data || Object.keys(data).length === 0) {
-                container.innerHTML = `<div class="task-item bg-brandJet/40 text-gray-500 border-l-[3px] border-gray-700 py-3 px-4 rounded-xl text-center text-xs">Sin planificación registrada</div>`;
+                container.innerHTML = `<div class="task-item bg-obsSurfaceLowest/50 text-obsOutline border-l-[3px] border-obsOutlineVariant py-3 px-4 rounded-obs-inner text-center text-xs">Sin planificación registrada</div>`;
                 return;
             }
 
@@ -347,9 +372,9 @@
             container.innerHTML = Object.entries(data).map(([estado, cantidad]) => {
                 const borderClass = obtenerColorBordeEstado(estado);
                 return `
-                    <div class="flex justify-between items-center bg-brandJet/50 border-l-[3px] ${borderClass} py-2.5 px-4 rounded-xl text-xs">
-                        <span class="font-semibold tracking-tight truncate pr-2 font-roboto">${estado}</span>
-                        <span class="font-mono font-bold text-white">${cantidad}</span>
+                    <div class="flex justify-between items-center bg-obsSurfaceLowest/60 border-l-[3px] ${borderClass} py-2.5 px-4 rounded-obs-inner text-xs">
+                        <span class="font-semibold tracking-tight truncate pr-2 font-sans">${estado}</span>
+                        <span class="font-mono font-bold text-obsOnSurface">${cantidad}</span>
                     </div>
                 `;
             }).join('');
@@ -402,12 +427,12 @@
                 const esBajo = value < 70.0;
                 if (esBajo) diasBajosCount++;
 
-                const bgBadge = value >= 70.0 ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-amber-500/10 text-brandClementine border border-brandClementine/20";
-                
+                const bgBadge = value >= 70.0 ? "bg-obsTertiary/10 text-obsTertiary border border-obsTertiary/20" : "bg-obsSecondary/10 text-obsSecondary border border-obsSecondary/20";
+
                 const tr = document.createElement("tr");
-                tr.className = "border-b border-gray-850/40 hover:bg-brandJet/30 transition-colors";
+                tr.className = "border-b border-obsOutlineVariant/20 hover:bg-obsSurfaceLowest/40 transition-colors";
                 tr.innerHTML = `
-                    <td class="p-3 text-gray-300 font-medium">${key}</td>
+                    <td class="p-3 text-obsOnSurface font-medium">${key}</td>
                     <td class="p-3 text-right">
                         <span class="px-2 py-0.5 rounded text-[11px] font-bold font-mono ${bgBadge}">${value.toFixed(1)}%</span>
                     </td>
@@ -436,7 +461,7 @@
             setTimeout(() => {
                 icon.classList.remove("spin-animation");
                 btn.disabled = false;
-                location.reload(); 
+                location.reload();
             }, 1200);
         }
     </script>
