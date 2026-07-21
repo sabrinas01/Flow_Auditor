@@ -156,6 +156,20 @@ def auditar_consistencia_tripartita():
         html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?"\s*;', f'const timestampNextStr = "{str_next}";', html_content)
         html_content = re.sub(r'const\s+timestampServerStr\s*=\s*".*?"\s*;', f'const timestampServerStr = "{str_server}";', html_content)
 
+        import subprocess
+
+        def obtener_version_actual():
+            """Obtiene el último tag de Git como versión, o 'dev' si no hay tags."""
+            try:
+                version = subprocess.check_output(
+                    ["git", "describe", "--tags", "--abbrev=0"],
+                    cwd=BASE_DIR,
+                    stderr=subprocess.DEVNULL
+                ).decode().strip()
+                return version
+            except subprocess.CalledProcessError:
+                return "dev"
+
         # Serialización de estructuras JSON limpias, escapando "</" para evitar
         # que un estado de Notion cierre el bloque <script> prematuramente (XSS/HTML injection)
         json_ayer = json.dumps(conteo_ayer, ensure_ascii=False).replace("</", "<\\/")
@@ -165,6 +179,9 @@ def auditar_consistencia_tripartita():
         html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\}\s*;", f"const conteoAyer = {json_ayer};", html_content)
         html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\}\s*;", f"const conteoHoy = {json_hoy};", html_content)
         html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\}\s*;", f"const conteoManana = {json_manana};", html_content)
+
+        app_version = obtener_version_actual()
+        html_content = re.sub(r'const\s+appVersionStr\s*=\s*".*?"\s*;', f'const appVersionStr = "{app_version}";', html_content)
 
         # Sobrescribir index.html de forma atómica y segura
         with open(html_path, "w", encoding="utf-8") as file:

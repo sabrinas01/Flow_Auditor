@@ -78,7 +78,8 @@
     <!-- =================================================== -->
     <script>
         // Declaración estricta compatible con las expresiones regulares de tu script de Python v5.4
-        const timestampLocalStr = "19/07/2026 19:51:34"; // Tu script inyectará aquí
+        const timestampLocalStr = "19/07/2026 19:51:34"; 
+        const appVersionStr = "v5.4";// Tu script inyectará aquí
         const timestampNextStr = "19/07/2026 20:51:34";
         const timestampServerStr = "19/07/2026 22:51:34";
 
@@ -248,7 +249,7 @@
             <div class="flex justify-between items-center px-1">
                 <div class="flex items-center space-x-1.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-obsPrimary animate-pulse"></span>
-                    <span>GitHub Pages Release: <strong class="text-obsOnSurface font-semibold font-mono">v5.4</strong></span>
+                    <span>GitHub Pages Release: <strong id="footer-version" class="text-gray-300 font-semibold font-mono">v5.4</strong></span>
                 </div>
                 <span class="font-mono text-obsOutline">Sincro ART: <strong id="footer-sync-time" class="text-obsOnSurface font-normal">--/--/-- --:--:--</strong></span>
             </div>
@@ -268,6 +269,7 @@
             // 1. Inyectar Relojes de Telemetría
             document.getElementById("footer-sync-time").innerText = timestampLocalStr;
             document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
 
             // 2. Procesar e Inyectar Bloques Temporales Complejos
             procesarSeccionMetrica("ayer", conteoAyer);
