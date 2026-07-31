@@ -18,8 +18,8 @@ Ejemplo de entrada para un mockup (Search UI v1.0)
 - date: 2026-07-31
 - source: https://www.figma.com/file/XXXX/Flow-Auditor
 - assets:
-  - docs/mockups/assets/search-ui-v1.0.png
-  - docs/mockups/assets/search-ui-v1.0.fig
+  - [(https://github.com/sabrinas01/Flow_Auditor/blob/4263baccadec2f534cc4d6a2115a788d3e06ae28/grafica)]
+
 - description:
   - Campo input con placeholder "Buscar..."
   - Comportamiento: debounce de 1.2s antes de emitir la búsqueda

@@ -34,7 +34,7 @@ Solo si ambas condiciones se cumplen, la tarea se contabiliza como consistente e
 Notion API
     │
     ▼
-extract_and_audit.py   (GitHub Actions, corre cada hora)
+extract_and_audit.py   (GitHub Actions)
     │  extrae y audita tareas según reglas de negocio
     ▼
 generate_dashboard.py
