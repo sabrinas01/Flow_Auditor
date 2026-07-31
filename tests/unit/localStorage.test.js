@@ -1,21 +1,38 @@
 /**
-
 Test de migración: simula clave antigua y comprueba migración a v1.0
-Requiere Jest (usa jsdom por defecto, por eso localStorage existe). */ const { initLocalStorage } = require('../../src/localStorage/index.js');
-describe('localStorage migrations', () => { beforeEach(() => { // limpiar antes de cada test localStorage.clear(); });
+Requiere Jest (usa jsdom por defecto, por eso localStorage existe).
+*/
+const { initLocalStorage } = require('../../src/localStorage/index.js');
 
-test('migrates 0.9 -> 1.0 when old key present', () => { const oldKey = 'flow_auditor:v0.9'; const oldValue = { _schema_version: '0.9', uiState: { lastTab: 'AYER' }, userPrefs: {} }; localStorage.setItem(oldKey, JSON.stringify(oldValue));
+describe('localStorage migrations', () => {
+  beforeEach(() => {
+    // limpiar antes de cada test
+    localStorage.clear();
+  });
 
-Code
-const result = initLocalStorage();
+  test('migrates 0.9 -> 1.0 when old key present', () => {
+    const oldKey = 'flow_auditor:v0.9';
+    const oldValue = {
+      _schema_version: '0.9',
+      uiState: { lastTab: 'AYER' },
+      userPrefs: {},
+    };
+    localStorage.setItem(oldKey, JSON.stringify(oldValue));
 
-expect(result).toBeTruthy();
-expect(result._schema_version).toBe('1.0');
-expect(result.uiState.lastViewedTab).toBe('AYER');
-// la clave antigua se elimina opcionalmente
-expect(localStorage.getItem(oldKey)).toBeNull();
-// nueva clave existe
-expect(localStorage.getItem('flow_auditor:v1.0')).not.toBeNull();
+    const result = initLocalStorage();
+
+    expect(result).toBeTruthy();
+    expect(result._schema_version).toBe('1.0');
+    expect(result.uiState.lastViewedTab).toBe('AYER');
+    // la clave antigua se elimina opcionalmente
+    expect(localStorage.getItem(oldKey)).toBeNull();
+    // nueva clave existe
+    expect(localStorage.getItem('flow_auditor:v1.0')).not.toBeNull();
+  });
+
+  test('initializes when no key exists', () => {
+    const result = initLocalStorage();
+    expect(result._schema_version).toBe('1.0');
+    expect(result.uiState.lastViewedTab).toBe('HOY');
+  });
 });
-
-test('initializes when no key exists', () => { const result = initLocalStorage(); expect(result._schema_version).toBe('1.0'); expect(result.uiState.lastViewedTab).toBe('HOY'); }); });
