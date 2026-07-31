@@ -17,6 +17,25 @@ CORRECCIONES APLICADAS (revisión de mentoría):
 4. Se restauró el print del error comentado en validar_credenciales().
 """
 
+# NOTA para Raine — Documentación breve y práctica: BOM + RAM tests
+#
+# BOM (Bill of Materials)
+# - Qué es: inventario reproducible de dependencias (paquetes, versiones y hashes).
+# - Por qué: reproducibilidad y seguridad (auditorías y detección de cambios).
+# - Qué guardar aquí: .bom/requirements.txt (o poetry.lock), y artefactos de auditoría (.bom/pip-audit.json).
+# - Comprobaciones CI: regenerar BOM en CI y fallar si difiere del archivo versionado; ejecutar pip-audit.
+#
+# RAM tests (tests de memoria)
+# - Objetivo: detectar regresiones en el consumo de memoria (picos y fugas).
+# - Unit tests: tracemalloc para funciones puras (no requieren red).
+# - Integration tests: arrancar el script en un subprocess y medir RSS con psutil; definir umbrales y fallar si se exceden.
+# - Notas: No llamar a la API real en unit tests; mockear requests. En integración se puede usar claves dummy largas para pasar las comprobaciones de formato y dejar que el proceso falle rápidamente si hay error de red.
+#
+# Pasos resumidos:
+# 1) Generar y commitear .bom/requirements.txt (p.ej. `pip freeze > .bom/requirements.txt`).
+# 2) Añadir tests/ (ejemplos incluidos en la rama) y workflow CI que: 1) valide BOM, 2) ejecute pip-audit, 3) corra tests de memoria.
+# 3) Ajustar umbrales de memoria a los valores reales del runner (por defecto en esta rama: unit=5MB, integration=200MB).
+
 import os
 import sys
 import json

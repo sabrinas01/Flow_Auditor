@@ -1,0 +1,6 @@
+# Placeholder: genera con `pip freeze > .bom/requirements.txt` localmente y commitea
+# Este archivo se mantiene versionado como referencia de BOM.
+#
+# Ejemplo:
+# flask==2.2.5
+# requests==2.31.0

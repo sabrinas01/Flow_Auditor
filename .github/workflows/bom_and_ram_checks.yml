@@ -1,0 +1,43 @@
+name: BOM and RAM checks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  bom_checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Instalar herramientas
+        run: |
+          python -m pip install --upgrade pip
+          pip install pip-audit
+      - name: Generar BOM temporal y comparar
+        run: |
+          pip freeze > .bom/requirements_ci.txt
+          git --no-pager diff --exit-code .bom/requirements_ci.txt .bom/requirements.txt || (echo "BOM desactualizado" && exit 1)
+      - name: Ejecutar pip-audit
+        run: |
+          pip-audit --json -o .bom/pip-audit.json || true
+
+  ram_tests:
+    runs-on: ubuntu-latest
+    needs: bom_checks
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Instalar deps de test
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt psutil
+      - name: Ejecutar tests de memoria (pytest)
+        run: |
+          pytest -q -k "memory"
