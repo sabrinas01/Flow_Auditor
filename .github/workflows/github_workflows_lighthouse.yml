@@ -1,0 +1,60 @@
+name: Lighthouse audit
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          npm ci || npm install
+          npm install -g lighthouse
+
+      - name: Start local server (if app is static, use serve)
+        run: |
+          # Ajusta el comando a cómo se sirve tu frontend. Ejemplo con serve:
+          npm install -g serve
+          serve -s build -l 5000 & sleep 2
+        env:
+          CI: true
+
+      - name: Run Lighthouse
+        run: |
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          mkdir -p reports
+          # Ejecuta lighthouse contra http://localhost:5000 o la URL de tu app
+          lighthouse http://localhost:5000 --output html --output-path ./reports/lighthouse-${TIMESTAMP}.html --only-categories=performance,accessibility,best-practices,seo --quiet || true
+
+      - name: Upload Lighthouse report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: reports/*.html
+
+      - name: Fail if below thresholds (optional)
+        run: |
+          # Usa node script o lhci para parsear JSON y fallar si score < threshold.
+          # Ejemplo simple con lighthouse --output=json:
+          lighthouse http://localhost:5000 --output json --output-path ./reports/lh-${TIMESTAMP}.json --only-categories=performance,accessibility,best-practices,seo --quiet
+          python3 - "$TIMESTAMP" <<'PY'
+            import json,sys
+            ts = sys.argv[1]
+            j = json.load(open(f'reports/lh-{ts}.json'))
+            scores = [j['categories'][c]['score']*100 for c in ('performance','accessibility','best-practices','seo')]
+            perf,acc,bp,seo = scores
+            print("scores:", scores)
+            if perf < 70 or acc < 90:
+                print("Lighthouse thresholds not met")
+                sys.exit(1)
+          PY
