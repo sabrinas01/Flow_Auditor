@@ -45,6 +45,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import requests
 
+
 BASE_DIR = Path(__file__).resolve().parent
 env_path = BASE_DIR / ".env"
 
@@ -58,25 +59,27 @@ DB_RECORDATORIOS_DIARIOS = os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS") or os.ge
 
 
 def validar_credenciales():
-    """Valida los secretos cargados en memoria previniendo fallos sintácticos en el pipeline."""
-    if not NOTION_API_KEY or not DB_RECORDATORIOS_DIARIOS:
-        print("❌ [ERROR CRÍTICO]: Faltan credenciales obligatorias en el entorno de ejecución.")
+    try:
+        # Uso de helper interno para resolución robusta de variables de entorno
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS
+        NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
+        DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
+    except (EnvironmentError, ValueError) as e:
+        print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
 
-    # Previene el despliegue accidental con sintaxis de variables sin resolver
-    if "${{" in NOTION_API_KEY or "}}" in NOTION_API_KEY:
-        print("❌ [ERROR CRÍTICO]: NOTION_API_KEY contiene marcas de secretos de GitHub sin resolver.")
-        sys.exit(1)
 
-    if "${{" in DB_RECORDATORIOS_DIARIOS or "}}" in DB_RECORDATORIOS_DIARIOS:
-        print("❌ [ERROR CRÍTICO]: DB_RECORDATORIOS_DIARIOS contiene marcas de secretos de GitHub sin resolver.")
-        sys.exit(1)
-
-    if len(NOTION_API_KEY) < 20 or len(DB_RECORDATORIOS_DIARIOS) < 32:
-        print("❌ [ERROR CRÍTICO]: Estructura o longitud de las credenciales de Notion incorrectas.")
-        sys.exit(1)
-
-    print("✅ Credenciales de Bitácora IT validadas y autorizadas correctamente.")
+def get_env_var(keys, required=False, min_length=0):
+    """Devuelve el primer valor de entorno presente en 'keys'. Lanza error si es requerido y no existe o demasiado corto."""
+    for k in keys:
+        v = os.getenv(k)
+        if v:
+            if min_length and len(v) < min_length:
+                raise ValueError(f"La variable {k} debe tener al menos {min_length} caracteres.")
+            return v
+    if required:
+        raise EnvironmentError(f"Falta variable de entorno. Buscadas: {keys}")
+    return None
 
 
 def evaluar_bloque_temporal(fecha_str):
