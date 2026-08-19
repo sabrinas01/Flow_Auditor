@@ -180,10 +180,11 @@ def construir_interfaz_html(conteo_ayer, conteo_hoy, conteo_manana, total_raw):
     with open(html_template_path, "r", encoding="utf-8") as f:
         html_content = f.read()
         
-    # Convertir las estructuras a cadenas JSON limpias
-    json_ayer = json.dumps(conteo_ayer, ensure_ascii=False)
-    json_hoy = json.dumps(conteo_hoy, ensure_ascii=False)
-    json_manana = json.dumps(conteo_manana, ensure_ascii=False)
+    # Convertir las estructuras a cadenas JSON limpias, escapando "</" para evitar
+    # que un estado de Notion cierre el bloque <script> prematuramente (XSS/HTML injection)
+    json_ayer = json.dumps(conteo_ayer, ensure_ascii=False).replace("</", "<\\/")
+    json_hoy = json.dumps(conteo_hoy, ensure_ascii=False).replace("</", "<\\/")
+    json_manana = json.dumps(conteo_manana, ensure_ascii=False).replace("</", "<\\/")
     
     # Sustituciones utilizando expresiones regulares robustas y tolerantes a espacios
     reemplazos = [

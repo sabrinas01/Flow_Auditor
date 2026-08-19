@@ -38,13 +38,14 @@ key_detectada = os.getenv("NOTION_API_KEY")
 db_detectada = os.getenv("NOTION_DB_HABITS")
 
 if key_detectada:
-    # Mostramos solo el inicio para validar que existe sin exponer tu seguridad
-    print(f"   • NOTION_API_KEY: ✅ Detectada (Empieza con '{key_detectada[:10]}...')")
+    # No se imprime ningún fragmento del secreto: este script está pensado para
+    # compartir su salida al pedir ayuda, y hasta un prefijo corto es información sensible.
+    print("   • NOTION_API_KEY: ✅ Detectada")
 else:
     print("   • NOTION_API_KEY: ❌ No detectada o vacía")
 
 if db_detectada:
-    print(f"   • NOTION_DB_HABITS: ✅ Detectada (ID: '{db_detectada[:8]}...')")
+    print("   • NOTION_DB_HABITS: ✅ Detectada")
 else:
     print("   • NOTION_DB_HABITS: ❌ No detectada o vacía")
 

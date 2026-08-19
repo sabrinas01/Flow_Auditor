@@ -263,6 +263,19 @@
     <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
     <!-- =================================================== -->
     <script>
+        /**
+         * Escapa caracteres HTML especiales antes de interpolar texto (p.ej. nombres de
+         * estado provenientes de Notion) dentro de innerHTML, para prevenir XSS.
+         */
+        function escapeHtml(texto) {
+            return String(texto)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             // 1. Inyectar Relojes de Telemetría
             document.getElementById("footer-sync-time").innerText = timestampLocalStr;
@@ -373,7 +386,7 @@
                 const borderClass = obtenerColorBordeEstado(estado);
                 return `
                     <div class="flex justify-between items-center bg-obsSurfaceLowest/60 border-l-[3px] ${borderClass} py-2.5 px-4 rounded-obs-inner text-xs">
-                        <span class="font-semibold tracking-tight truncate pr-2 font-sans">${estado}</span>
+                        <span class="font-semibold tracking-tight truncate pr-2 font-sans">${escapeHtml(estado)}</span>
                         <span class="font-mono font-bold text-obsOnSurface">${cantidad}</span>
                     </div>
                 `;
