@@ -34,3 +34,14 @@ def test_get_env_var_min_length_validation(monkeypatch):
 
 	with pytest.raises(ValueError):
 		get_env_var(["SHORT"], required=True, min_length=10)
+
+
+def test_get_env_var_falls_back_when_first_key_empty_or_missing(monkeypatch):
+	monkeypatch.delenv("A", raising=False)
+	monkeypatch.setenv("A", "")
+	monkeypatch.delenv("B", raising=False)
+	monkeypatch.setenv("B", "value_b")
+
+	# "A" is present but empty, so it should be treated as not found
+	# and the search should fall back to "B"
+	assert get_env_var(["A", "B"]) == "value_b"
