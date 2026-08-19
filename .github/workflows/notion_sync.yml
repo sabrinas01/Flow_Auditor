@@ -49,19 +49,23 @@ jobs:
           NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS || secrets.NOTION_DATABASE_ID || secrets.NOTION_DB_ID }}
         run: python extract_and_audit.py
 
-      - name: Commit and Push Changes
+      - name: Publish updated index.html to the gh-pages branch
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
-          # Agregamos index.html de forma segura al área de preparación (stage)
-          git add index.html || true
+          # El bot nunca escribe en 'main': publica en 'gh-pages', una rama que solo él
+          # mantiene, reconstruida cada corrida a partir del 'main' actual + index.html
+          # actualizado. Así un --force acá no puede pisar commits humanos ni ajenos,
+          # porque nadie más comitea en esta rama.
+          git checkout -B gh-pages
+          git add index.html
 
           # Comprobamos explícitamente si hay cambios staged reales para evitar commits vacíos
           if ! git diff --staged --quiet; then
             git commit -m "auto: actualización horaria de consistencia de flujos"
-            git push origin main --force
-            echo "✅ Cambios confirmados y desplegados de forma exitosa en GitHub Pages."
+            git push origin gh-pages --force
+            echo "✅ Cambios confirmados y desplegados de forma exitosa en GitHub Pages (rama gh-pages)."
           else
             echo "⚠️ No se detectaron cambios en index.html, omitiendo commit de forma segura."
           fi
