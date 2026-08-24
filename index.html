@@ -303,23 +303,15 @@
     <!-- =================================================== -->
     <script src="./src/utils/debounce.js"></script>
     <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
 
     <!-- =================================================== -->
     <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
     <!-- =================================================== -->
     <script>
-        /**
-         * Escapa caracteres HTML especiales antes de interpolar texto (p.ej. nombres de
-         * estado provenientes de Notion) dentro de innerHTML, para prevenir XSS.
-         */
-        function escapeHtml(texto) {
-            return String(texto)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#39;");
-        }
+        // escapeHtml, esEstadoCompletado, obtenerEstiloEstado, calcularMetricas,
+        // generarUltimos7Dias y calcularResumenSemanal viven en
+        // src/utils/dashboard_logic.js (testeadas con Jest en tests/unit/).
 
         document.addEventListener("DOMContentLoaded", () => {
             // 0. Inicializar estado versionado en localStorage (crea o migra el
@@ -337,47 +329,11 @@
         });
 
         /**
-         * Determina dinámicamente si el estado indica una tarea completada
-         */
-        function esEstadoCompletado(estado) {
-            const norm = estado.toLowerCase();
-            return norm.includes("hecha") || norm.includes("hecho") || norm.includes("completad") || norm.includes("done");
-        }
-
-        /**
-         * Asigna el estilo (pill de color + ícono opcional) del Design System "Obsidian Refined"
-         * según la categoría semántica del estado.
-         */
-        function obtenerEstiloEstado(estado) {
-            const norm = estado.toLowerCase();
-            if (esEstadoCompletado(estado)) {
-                return { pill: "left-pill-green", textClass: "text-[#53a759] font-semibold", icon: null, iconClass: "" };
-            }
-            if (norm.includes("fallida") || norm.includes("vencida") || norm.includes("fail") || norm.includes("perd")) {
-                return { pill: "left-pill-red", textClass: "text-[#ff5f52] font-bold", icon: "close", iconClass: "text-[#ff5f52]" };
-            }
-            if (norm.includes("no neces") || norm.includes("saltad") || norm.includes("skip")) {
-                return { pill: "left-pill-blue", textClass: "text-on-surface font-semibold", icon: "fast_forward", iconClass: "text-white" };
-            }
-            if (norm.includes("ejecu") || norm.includes("progr") || norm.includes("haciendo")) {
-                return { pill: "left-pill-blue", textClass: "text-on-surface font-semibold", icon: "hourglass_top", iconClass: "text-white" };
-            }
-            return { pill: "left-pill-blue", textClass: "text-on-surface font-semibold", icon: null, iconClass: "" };
-        }
-
-        /**
-         * Procesa cuantitativamente los estados e inyecta KPIs matemáticos en la interfaz
+         * Procesa cuantitativamente los estados e inyecta KPIs matemáticos en la interfaz.
+         * El cálculo (total/hechas/tasa/umbral) vive en calcularMetricas() — acá solo DOM.
          */
         function procesarSeccionMetrica(prefijo, data) {
-            const total = Object.values(data).reduce((a, b) => a + b, 0);
-
-            // Sumar completados buscando cualquier alias de "Hecha"
-            let hechas = 0;
-            Object.entries(data).forEach(([estado, cantidad]) => {
-                if (esEstadoCompletado(estado)) hechas += cantidad;
-            });
-
-            const tasa = total > 0 ? (hechas / total * 100.0) : 0.0;
+            const { total, hechas, tasa, consistenciaOk, alerta } = calcularMetricas(data);
 
             document.getElementById(`total-${prefijo}-lbl`).innerText = `${total} tareas`;
             document.getElementById(`hechas-${prefijo}-val`).innerText = `${hechas} / ${total}`;
@@ -386,7 +342,7 @@
             consistenciaEl.innerText = `${tasa.toFixed(1)}%`;
 
             // Aplicar colores según el umbral del 70% recomendado en el SRS
-            consistenciaEl.className = (tasa >= 70.0 || total === 0)
+            consistenciaEl.className = consistenciaOk
                 ? "text-metric-xl font-metric-xl text-[#83da85]"
                 : "text-metric-xl font-metric-xl text-[#e49102]";
 
@@ -395,7 +351,7 @@
             // Alerta individual del cuadro de hoy/ayer si cae del 70%
             const alertBox = document.getElementById(`alert-${prefijo}`);
             if (alertBox) {
-                if (tasa < 70.0 && total > 0) {
+                if (alerta) {
                     document.getElementById(`alert-${prefijo}-text`).innerHTML = `Tasa de consistencia crítica (<strong>${tasa.toFixed(1)}%</strong>). Reduzca la fricción del flujo.`;
                     alertBox.classList.remove("hidden");
                     alertBox.classList.add("flex");
@@ -476,25 +432,11 @@
             // Generamos las 7 fechas naturales consecutivas terminando hoy, en vez de
             // tomar solo las fechas presentes en caché (eso dejaba huecos cuando el
             // dashboard no se abría todos los días).
-            const [diaHoy, mesHoy, anioHoy] = timestampLocalStr.split(" ")[0].split("/").map(Number);
-            const hoyDate = new Date(anioHoy, mesHoy - 1, diaHoy);
+            // Cálculo (qué días, cuáles bajan de 70%) vive en dashboard_logic.js — acá solo DOM.
+            const ultimos7Dias = generarUltimos7Dias(timestampLocalStr.split(" ")[0]);
+            const { filas, mostrarAlerta } = calcularResumenSemanal(cache, ultimos7Dias);
 
-            const ultimos7Dias = [];
-            for (let i = 0; i < 7; i++) {
-                const fecha = new Date(hoyDate);
-                fecha.setDate(fecha.getDate() - i);
-                const dd = String(fecha.getDate()).padStart(2, "0");
-                const mm = String(fecha.getMonth() + 1).padStart(2, "0");
-                ultimos7Dias.push(`${dd}/${mm}/${fecha.getFullYear()}`);
-            }
-
-            let diasBajosCount = 0;
-
-            ultimos7Dias.forEach(key => {
-                const tieneDato = Object.prototype.hasOwnProperty.call(cache, key);
-                const value = tieneDato ? cache[key] : null;
-                if (tieneDato && value < 70.0) diasBajosCount++;
-
+            filas.forEach(({ key, tieneDato, value }) => {
                 let celdaValor;
                 if (!tieneDato) {
                     celdaValor = `<span class="px-3 py-1 rounded bg-[#232326] text-[#8e8e93] text-[13px] font-bold border border-[#2a2a2a]">Sin dato</span>`;
@@ -516,7 +458,7 @@
             });
 
             const alertCard = document.getElementById("wellness-alert-card");
-            if (diasBajosCount >= 4) {
+            if (mostrarAlerta) {
                 alertCard.classList.remove("hidden");
             } else {
                 alertCard.classList.add("hidden");

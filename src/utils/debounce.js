@@ -47,15 +47,23 @@ function debounce(func, wait = 1200, options = { leading: false, trailing: true 
   }
 
   function wrapper(...args) {
+    const esPrimeraLlamadaDelCiclo = !timeout;
     lastArgs = args;
     lastThis = this;
 
-    if (!timeout) {
-      if (options.leading) {
-        invokeFunc();
-      }
-      startTimer();
+    // Debounce real: cada llamada reinicia el temporizador, en vez de dejar
+    // correr el primero y solo aprovechar los args más recientes al final
+    // (eso permitía que llamadas separadas por más de `wait` se ejecutaran
+    // dos veces en vez de colapsar en una sola).
+    if (timeout) {
+      clearTimeout(timeout);
     }
+
+    if (options.leading && esPrimeraLlamadaDelCiclo) {
+      invokeFunc();
+    }
+
+    startTimer();
 
     return result;
   }
