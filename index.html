@@ -123,6 +123,10 @@
         .left-pill-green { border-left: 3px solid #53a759; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
         .left-pill-red { border-left: 3px solid #ff5f52; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
 
+        #sidebar {
+            transition: transform 0.3s ease;
+        }
+
         /* Animación premium de rotación para refrescar el dashboard */
         .spin-animation {
             animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -151,6 +155,37 @@
         const conteoManana = {};
     </script>
 
+    <!-- =================================================== -->
+    <!-- SIDEBAR (oculto por defecto, se activa con el menú) -->
+    <!-- =================================================== -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-surface-container-low border-r border-outline-variant/40 w-64 -translate-x-full">
+        <div class="flex items-center gap-3 mb-8 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo Bitácora IT" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-primary text-headline-md leading-tight">Sabri</h2>
+                <p class="text-on-surface-variant font-body-sm text-body-sm">Productivity Lead</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="index.html" class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all">
+                <span class="material-symbols-outlined">calendar_today</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <span class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/50 rounded-lg cursor-not-allowed" title="Próximamente">
+                <span class="material-symbols-outlined">list_alt</span>
+                <span>Recordatorios varios</span>
+            </span>
+        </nav>
+    </aside>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
     <main class="min-h-screen">
         <!-- =================================================== -->
         <!-- TOP APP BAR -->
@@ -158,6 +193,9 @@
         <header class="bg-[#0e0e0e] border-b border-outline-variant/30 sticky top-0 z-40">
             <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
                 <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
                     <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
                         <img src="./grafica/logo 1-1 NF.png" alt="Logo Notion Flow Auditor" class="w-full h-full object-cover">
                     </div>
@@ -187,27 +225,34 @@
                             <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE AYER</p>
                             <h2 class="text-headline-md font-headline-md text-white">Bitácora de Ayer</h2>
                         </div>
-                        <span id="total-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 tareas</span>
-                    </div>
-
-                    <div id="list-ayer" class="space-y-3">
-                        <!-- Se inyectan las filas dinámicamente -->
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
-                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
-                            <p id="hechas-ayer-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
-                        </div>
-                        <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#e49102]/20 text-center">
-                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
-                            <p id="consistencia-ayer-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
+                        <div class="flex items-center gap-2">
+                            <span id="total-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 tareas</span>
+                            <button type="button" onclick="toggleBloque('ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-ayer">
+                                <span id="chevron-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div id="alert-ayer" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
-                        <span class="material-symbols-outlined text-[#e49102] text-[20px]">warning</span>
-                        <p class="text-[13px] text-[#e49102] font-semibold" id="alert-ayer-text"></p>
+                    <div id="content-ayer" class="flex flex-col gap-6">
+                        <div id="list-ayer" class="space-y-3">
+                            <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
+                                <p id="hechas-ayer-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
+                            </div>
+                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#e49102]/20 text-center">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
+                                <p id="consistencia-ayer-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
+                            </div>
+                        </div>
+
+                        <div id="alert-ayer" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
+                            <span class="material-symbols-outlined text-[#e49102] text-[20px]">warning</span>
+                            <p class="text-[13px] text-[#e49102] font-semibold" id="alert-ayer-text"></p>
+                        </div>
                     </div>
                 </article>
 
@@ -218,27 +263,34 @@
                             <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE HOY</p>
                             <h2 class="text-headline-md font-headline-md text-white">Progreso de hoy</h2>
                         </div>
-                        <span id="total-hoy-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 tareas</span>
-                    </div>
-
-                    <div id="list-hoy" class="space-y-3">
-                        <!-- Se inyectan las filas dinámicamente -->
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
-                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
-                            <p id="hechas-hoy-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
-                        </div>
-                        <div id="hoy-consistencia-card" class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center transition-colors">
-                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
-                            <p id="consistencia-hoy-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
+                        <div class="flex items-center gap-2">
+                            <span id="total-hoy-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 tareas</span>
+                            <button type="button" onclick="toggleBloque('hoy')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-hoy">
+                                <span id="chevron-hoy" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div id="alert-hoy" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
-                        <span class="material-symbols-outlined text-[#e49102] text-[20px]">report_problem</span>
-                        <p class="text-[13px] text-[#e49102] font-semibold" id="alert-hoy-text"></p>
+                    <div id="content-hoy" class="flex flex-col gap-6">
+                        <div id="list-hoy" class="space-y-3">
+                            <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
+                                <p id="hechas-hoy-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
+                            </div>
+                            <div id="hoy-consistencia-card" class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center transition-colors">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
+                                <p id="consistencia-hoy-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
+                            </div>
+                        </div>
+
+                        <div id="alert-hoy" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
+                            <span class="material-symbols-outlined text-[#e49102] text-[20px]">report_problem</span>
+                            <p class="text-[13px] text-[#e49102] font-semibold" id="alert-hoy-text"></p>
+                        </div>
                     </div>
                 </article>
             </section>
@@ -539,6 +591,36 @@
                 alertCard.classList.remove("hidden");
             } else {
                 alertCard.classList.add("hidden");
+            }
+        }
+
+        /**
+         * Colapsa/expande el contenido de un bloque (Ayer/Hoy), rotando el chevron.
+         */
+        function toggleBloque(prefijo) {
+            const content = document.getElementById(`content-${prefijo}`);
+            const chevron = document.getElementById(`chevron-${prefijo}`);
+            const boton = chevron.closest("button");
+
+            const colapsado = content.classList.toggle("hidden");
+            chevron.style.transform = colapsado ? "rotate(-90deg)" : "rotate(0deg)";
+            boton.setAttribute("aria-expanded", String(!colapsado));
+        }
+
+        /**
+         * Abre/cierra el menú lateral de navegación
+         */
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = sidebar.classList.contains('-translate-x-full') === false;
+
+            if (isOpen) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            } else {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
             }
         }
 
