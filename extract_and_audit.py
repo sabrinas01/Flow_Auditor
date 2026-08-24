@@ -1,6 +1,8 @@
 """
-MÓDULO: extract_and_audit.py (Versión 5.4 - Sincronización Horaria y Limpieza de Red)
+MÓDULO: extract_and_audit.py — Sincronización Horaria y Limpieza de Red
 DESCRIPCIÓN: Script extractor backend seguro que corre en GitHub Actions de forma horaria.
+No hardcodees un número de versión acá: la versión real que ve el usuario
+sale del último tag de git (ver obtener_version_actual()) y de PRD/SRS.
 Conecta con la API de Notion, clasifica las tareas cronológicamente
 en tres bloques (Ayer, Hoy, Mañana) bajo huso GMT-3 y reescribe
 dinámicamente el archivo index.html usando expresiones regulares.

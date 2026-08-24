@@ -5,7 +5,7 @@
 * **Marca Asociada:** Bitácora IT
 * **Rol de Gobierno:** IT Functional Analyst (Sabrina) & Mentor Técnico de IA
 * **Estado:** Listo para Desarrollo (Base Lineal Validada)
-* **Versión:** 3.9
+* **Versión:** 4.0
 * **Zona Horaria de Referencia:** GMT -3 (San Juan, Argentina)
 
 ## 🎯 2. Visión General y Contexto
@@ -67,4 +67,5 @@ Tasa = (Tareas "Hecha" AND fórmula "consistencia"=1 / Total de Tareas Creadas) 
 | **v3.6** | Agosto 2026 | Corrección de alcance: "Tareas para mañana" no pertenece a Recordatorios Diarios — se revierte de `index.html` y pasa a ser alcance del futuro módulo Recordatorios Varios (HU ya creada en Notion). Ver `SRS.md` v3.6 — `SRS-FR-M3-303` reescrito. |
 | **v3.7** | Agosto 2026 | Las cards de Ayer y Hoy ahora colapsan/expanden de forma independiente; se agregan tests con HTTP mockeado (conexión exitosa y fallos 401/500) para `extract_and_audit.py`. Ver `SRS.md` v3.7. |
 | **v3.8** | Agosto 2026 | El `.env` local ahora se normaliza automáticamente si tiene BOM (UTF-8-SIG o UTF-16, comunes al generarlo desde PowerShell en Windows), cerrando `SRS-FR-M1-104`. Ver `SRS.md` v3.8. |
-| **v3.9** *(Actual)* | Agosto 2026 | Se elimina el componente React huérfano (`SearchBar.js`, incompatible con el stack estático) y se reescriben `debounce.js`/`src_localStorage_index.js` a vanilla JS, conectándolos de verdad a `index.html`. Ver `SRS.md` v3.9. |
+| **v3.9** | Agosto 2026 | Se elimina el componente React huérfano (`SearchBar.js`, incompatible con el stack estático) y se reescriben `debounce.js`/`src_localStorage_index.js` a vanilla JS, conectándolos de verdad a `index.html`. Ver `SRS.md` v3.9. |
+| **v4.0** *(Actual)* | Agosto 2026 | Se resuelve la versión desincronizada: producción mostraba `v1.0.0`. Se eliminan los números hardcodeados sueltos y se establece que el tag de git es la única fuente de verdad de la versión en producción. Se tagea `v4.0`. Ver `SRS.md` v4.0. |

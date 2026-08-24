@@ -143,9 +143,9 @@
     <!-- VARIABLES INYECTADAS DINÁMICAMENTE POR EL BACKEND -->
     <!-- =================================================== -->
     <script>
-        // Declaración estricta compatible con las expresiones regulares de tu script de Python v5.4
+        // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
         const timestampLocalStr = "18/08/2026 20:20:23";
-        const appVersionStr = "v1.0.0";// Tu script inyectará aquí
+        const appVersionStr = "dev";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
         const timestampNextStr = "18/08/2026 21:20:23";
         const timestampServerStr = "18/08/2026 23:20:23";
 
@@ -364,7 +364,7 @@
                 <div class="space-y-4">
                     <div class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
-                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">v5.4</span></p>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">dev</span></p>
                     </div>
                     <div class="flex flex-wrap gap-x-8 gap-y-2">
                         <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
