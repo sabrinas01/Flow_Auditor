@@ -36,6 +36,7 @@ CORRECCIONES APLICADAS (revisión de mentoría):
 # 2) Añadir tests/ (ejemplos incluidos en la rama) y workflow CI que: 1) valide BOM, 2) ejecute pip-audit, 3) corra tests de memoria.
 # 3) Ajustar umbrales de memoria a los valores reales del runner (por defecto en esta rama: unit=5MB, integration=200MB).
 
+import io
 import os
 import sys
 import json
@@ -51,9 +52,31 @@ from src.utils.env_helper import get_env_var
 BASE_DIR = Path(__file__).resolve().parent
 env_path = BASE_DIR / ".env"
 
+
+def cargar_env_local(ruta_env):
+    """Carga variables desde un archivo .env local, detectando y normalizando
+    BOM (Byte Order Mark) de UTF-8-SIG o UTF-16 LE/BE antes de parsearlo.
+    Windows (PowerShell, Notepad) suele generar .env con estas firmas, y
+    python-dotenv no las normaliza solo -> SRS-FR-M1-104.
+    """
+    contenido_crudo = ruta_env.read_bytes()
+
+    if contenido_crudo.startswith(b"\xff\xfe") or contenido_crudo.startswith(b"\xfe\xff"):
+        encoding = "utf-16"
+        print("[ADVERTENCIA] BOM detectado en .env (UTF-16) — normalizado automáticamente")
+    elif contenido_crudo.startswith(b"\xef\xbb\xbf"):
+        encoding = "utf-8-sig"
+        print("[ADVERTENCIA] BOM detectado en .env (UTF-8) — normalizado automáticamente")
+    else:
+        encoding = "utf-8"
+
+    texto_normalizado = contenido_crudo.decode(encoding)
+    load_dotenv(stream=io.StringIO(texto_normalizado))
+
+
 # Cargar configuración de variables de entorno si estamos en entorno local
 if os.getenv("GITHUB_ACTIONS") != "true" and env_path.exists():
-    load_dotenv(dotenv_path=env_path)
+    cargar_env_local(env_path)
 
 # Resolución de variables tolerante a múltiples nomenclaturas redundantes
 NOTION_API_KEY = os.getenv("NOTION_API_KEY") or os.getenv("NOTION_TOKEN")
