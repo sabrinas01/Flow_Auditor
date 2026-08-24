@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-MÓDULO: test_api_integration.py
-DESCRIPCIÓN: Verifica la conexión con Notion y mapea dinámicamente las propiedades 
-             de tus bases de datos para evitar errores de nombres (Mayúsculas/Acentos).
+MÓDULO: notion_schema_check.py
+DESCRIPCIÓN: Script de diagnóstico MANUAL (no es un test de pytest — por eso vive
+             en scripts/, no en tests/). Verifica la conexión con Notion y mapea
+             dinámicamente las propiedades de tus bases de datos para evitar errores
+             de nombres (Mayúsculas/Acentos). Requiere notion_client instalado
+             (pip install notion-client) y un .env local válido.
+Uso: python scripts/notion_schema_check.py
 AUTOR: Tu Mentor de Programación & Analista de Ciberseguridad
 """
 
