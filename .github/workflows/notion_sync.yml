@@ -61,8 +61,6 @@ jobs:
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS }}
-          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
-          NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
         run: |
           if [ -n "$NOTION_TOKEN" ] && [ -z "$NOTION_API_KEY" ]; then
             export NOTION_API_KEY="$NOTION_TOKEN"
