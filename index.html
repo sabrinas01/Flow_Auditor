@@ -225,27 +225,34 @@
                             <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE AYER</p>
                             <h2 class="text-headline-md font-headline-md text-white">Bitácora de Ayer</h2>
                         </div>
-                        <span id="total-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 tareas</span>
-                    </div>
-
-                    <div id="list-ayer" class="space-y-3">
-                        <!-- Se inyectan las filas dinámicamente -->
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
-                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
-                            <p id="hechas-ayer-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
-                        </div>
-                        <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#e49102]/20 text-center">
-                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
-                            <p id="consistencia-ayer-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
+                        <div class="flex items-center gap-2">
+                            <span id="total-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 tareas</span>
+                            <button type="button" onclick="toggleBloque('ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-ayer">
+                                <span id="chevron-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div id="alert-ayer" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
-                        <span class="material-symbols-outlined text-[#e49102] text-[20px]">warning</span>
-                        <p class="text-[13px] text-[#e49102] font-semibold" id="alert-ayer-text"></p>
+                    <div id="content-ayer" class="flex flex-col gap-6">
+                        <div id="list-ayer" class="space-y-3">
+                            <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
+                                <p id="hechas-ayer-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
+                            </div>
+                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#e49102]/20 text-center">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
+                                <p id="consistencia-ayer-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
+                            </div>
+                        </div>
+
+                        <div id="alert-ayer" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
+                            <span class="material-symbols-outlined text-[#e49102] text-[20px]">warning</span>
+                            <p class="text-[13px] text-[#e49102] font-semibold" id="alert-ayer-text"></p>
+                        </div>
                     </div>
                 </article>
 
@@ -256,27 +263,34 @@
                             <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE HOY</p>
                             <h2 class="text-headline-md font-headline-md text-white">Progreso de hoy</h2>
                         </div>
-                        <span id="total-hoy-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 tareas</span>
-                    </div>
-
-                    <div id="list-hoy" class="space-y-3">
-                        <!-- Se inyectan las filas dinámicamente -->
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
-                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
-                            <p id="hechas-hoy-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
-                        </div>
-                        <div id="hoy-consistencia-card" class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center transition-colors">
-                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
-                            <p id="consistencia-hoy-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
+                        <div class="flex items-center gap-2">
+                            <span id="total-hoy-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 tareas</span>
+                            <button type="button" onclick="toggleBloque('hoy')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-hoy">
+                                <span id="chevron-hoy" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div id="alert-hoy" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
-                        <span class="material-symbols-outlined text-[#e49102] text-[20px]">report_problem</span>
-                        <p class="text-[13px] text-[#e49102] font-semibold" id="alert-hoy-text"></p>
+                    <div id="content-hoy" class="flex flex-col gap-6">
+                        <div id="list-hoy" class="space-y-3">
+                            <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
+                                <p id="hechas-hoy-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
+                            </div>
+                            <div id="hoy-consistencia-card" class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center transition-colors">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
+                                <p id="consistencia-hoy-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
+                            </div>
+                        </div>
+
+                        <div id="alert-hoy" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
+                            <span class="material-symbols-outlined text-[#e49102] text-[20px]">report_problem</span>
+                            <p class="text-[13px] text-[#e49102] font-semibold" id="alert-hoy-text"></p>
+                        </div>
                     </div>
                 </article>
             </section>
@@ -578,6 +592,19 @@
             } else {
                 alertCard.classList.add("hidden");
             }
+        }
+
+        /**
+         * Colapsa/expande el contenido de un bloque (Ayer/Hoy), rotando el chevron.
+         */
+        function toggleBloque(prefijo) {
+            const content = document.getElementById(`content-${prefijo}`);
+            const chevron = document.getElementById(`chevron-${prefijo}`);
+            const boton = chevron.closest("button");
+
+            const colapsado = content.classList.toggle("hidden");
+            chevron.style.transform = colapsado ? "rotate(-90deg)" : "rotate(0deg)";
+            boton.setAttribute("aria-expanded", String(!colapsado));
         }
 
         /**
