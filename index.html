@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Notion Flow Auditor</title>
-    <!-- Tipografías del Design System "Obsidian Metric System" (DESIGN.md) -->
+    <title>Bitácora IT - Notion Flow Auditor</title>
+    <!-- Tipografías del Design System "Obsidian Refined" (Stitch) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <!-- Framework CSS Tailwind para maquetación ágil -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -15,41 +16,83 @@
             theme: {
                 extend: {
                     colors: {
-                        // Paleta "Obsidian Metric System" (DESIGN.md)
-                        obsBg: '#131313',
-                        obsSurfaceLowest: '#0e0e0e',
-                        obsSurfaceLow: '#1c1b1b',
-                        obsSurface: '#201f1f',
-                        obsSurfaceHigh: '#2a2a2a',
-                        obsSurfaceHighest: '#353534',
-                        obsOnSurface: '#e5e2e1',
-                        obsOnSurfaceVariant: '#e2beba',
-                        obsOutline: '#a98985',
-                        obsOutlineVariant: '#5a413d',
-                        obsPrimary: '#ffb4aa',
-                        obsOnPrimary: '#690004',
-                        obsPrimaryContainer: '#ff5f52',
-                        obsOnPrimaryContainer: '#640004',
-                        obsSecondary: '#ffb961',
-                        obsOnSecondary: '#472a00',
-                        obsSecondaryContainer: '#e49102',
-                        obsOnSecondaryContainer: '#533200',
-                        obsTertiary: '#83da85',
-                        obsOnTertiary: '#00390e',
-                        obsTertiaryContainer: '#53a759',
-                        obsOnTertiaryContainer: '#00360d',
-                        obsError: '#ffb4ab',
-                        obsOnError: '#690005',
-                        obsErrorContainer: '#93000a',
-                        obsOnErrorContainer: '#ffdad6'
-                    },
-                    fontFamily: {
-                        manrope: ['Manrope', 'sans-serif'],
-                        sans: ['Inter', 'sans-serif']
+                        // Paleta "Obsidian Refined" (Material 3 tokens, vía Stitch)
+                        "on-surface-variant": "#e2beba",
+                        "inverse-surface": "#e5e2e1",
+                        "on-error": "#690005",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-primary-fixed-variant": "#910a0e",
+                        "secondary-container": "#e49102",
+                        "tertiary-container": "#53a759",
+                        "surface-container-low": "#1c1b1b",
+                        "on-surface": "#e5e2e1",
+                        "on-primary": "#690004",
+                        "surface-tint": "#ffb4aa",
+                        "outline-variant": "#5a413d",
+                        "on-secondary": "#472a00",
+                        "primary-container": "#ff5f52",
+                        "surface": "#131313",
+                        "error-container": "#93000a",
+                        "on-primary-fixed": "#410002",
+                        "secondary-fixed": "#ffddb9",
+                        "primary-fixed": "#ffdad5",
+                        "on-background": "#e5e2e1",
+                        "on-tertiary": "#00390e",
+                        "surface-container-highest": "#353534",
+                        "secondary-fixed-dim": "#ffb961",
+                        "background": "#131313",
+                        "on-tertiary-fixed": "#002105",
+                        "on-tertiary-container": "#00360d",
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#83da85",
+                        "inverse-primary": "#b32822",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "tertiary-fixed": "#9ff79f",
+                        "outline": "#a98985",
+                        "surface-dim": "#131313",
+                        "on-tertiary-fixed-variant": "#005318",
+                        "inverse-on-surface": "#313030",
+                        "primary": "#ffb4aa",
+                        "error": "#ffb4ab",
+                        "on-secondary-fixed-variant": "#663e00",
+                        "secondary": "#ffb961",
+                        "on-secondary-container": "#533200",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-variant": "#353534",
+                        "surface-container": "#201f1f",
+                        "surface-bright": "#393939",
+                        "on-primary-container": "#640004",
+                        "tertiary-fixed-dim": "#83da85",
+                        "on-secondary-fixed": "#2b1700"
                     },
                     borderRadius: {
-                        'obs-main': '1rem',
-                        'obs-inner': '0.5rem'
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "1rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        "section-margin": "2.5rem",
+                        "stack-gap": "1.25rem",
+                        "item-gap": "0.75rem",
+                        "container-padding": "1.5rem",
+                        "grid-gutter": "1.5rem"
+                    },
+                    fontFamily: {
+                        "label-caps": ["Inter", "sans-serif"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "display-lg": ["Manrope", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-md": ["Manrope", "sans-serif"],
+                        "metric-xl": ["Inter", "sans-serif"]
+                    },
+                    fontSize: {
+                        "label-caps": ["11px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "700" }],
+                        "body-sm": ["13px", { lineHeight: "18px", fontWeight: "500" }],
+                        "display-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "800" }],
+                        "body-md": ["14px", { lineHeight: "20px", fontWeight: "500" }],
+                        "headline-md": ["24px", { lineHeight: "32px", fontWeight: "800" }],
+                        "metric-xl": ["26px", { lineHeight: "34px", fontWeight: "700" }]
                     }
                 }
             }
@@ -57,10 +100,29 @@
     </script>
     <style>
         body {
-            background-color: #131313;
+            background-color: #0e0e0e;
+            color: #e5e2e1;
             -webkit-tap-highlight-color: transparent;
             font-feature-settings: "cv02", "cv03", "cv04", "cv11";
         }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #141416;
+            border: 1px solid #232326;
+        }
+        .status-row {
+            background: #1c1c1f;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+        .status-row:hover { background: #232326; }
+
+        .left-pill-blue { border-left: 3px solid #00aaff; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-green { border-left: 3px solid #53a759; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-red { border-left: 3px solid #ff5f52; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+
         /* Animación premium de rotación para refrescar el dashboard */
         .spin-animation {
             animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -71,14 +133,14 @@
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen text-obsOnSurface font-sans antialiased pb-8">
+<body class="font-body-md text-body-md overflow-x-hidden antialiased">
 
     <!-- =================================================== -->
     <!-- VARIABLES INYECTADAS DINÁMICAMENTE POR EL BACKEND -->
     <!-- =================================================== -->
     <script>
         // Declaración estricta compatible con las expresiones regulares de tu script de Python v5.4
-        const timestampLocalStr = "18/08/2026 20:20:23"; 
+        const timestampLocalStr = "18/08/2026 20:20:23";
         const appVersionStr = "v1.0.0";// Tu script inyectará aquí
         const timestampNextStr = "18/08/2026 21:20:23";
         const timestampServerStr = "18/08/2026 23:20:23";
@@ -89,174 +151,180 @@
         const conteoManana = {};
     </script>
 
-    <!-- =================================================== -->
-    <!-- CABECERA (HEADER DE CONTROL PREMIUM) -->
-    <!-- =================================================== -->
-    <header class="sticky top-0 z-40 bg-obsBg/95 backdrop-blur-md border-b border-obsOutlineVariant/30 px-4 py-3.5">
-        <div class="max-w-[480px] mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-2.5">
-                <!-- Isotipo Premium de nfa -->
-                <div class="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center shadow-lg shadow-brandTuscany/20 flex-shrink-0">
-                    <img src="./grafica/logo 1-1 NF.png" alt="Logo Notion Flow Auditor" class="w-full h-full object-cover" >
-                </div>
-                <div>
-                    <h1 class="text-sm font-bold font-manrope tracking-tight text-obsOnSurface leading-none">Notion Flow Auditor</h1>
-                    <span class="text-[10px] font-medium text-obsPrimary tracking-wider uppercase">Dashboard Personal</span>
-                </div>
-            </div>
-
-            <div class="flex items-center space-x-3">
-                <!-- Botón de actualización de pantalla con animación táctil -->
-                <button id="btn-refresh" class="p-2.5 rounded-obs-inner bg-obsSurfaceLow border border-obsOutlineVariant/40 hover:border-obsPrimary active:scale-95 transition-all duration-150 group" onclick="recargarDashboard()">
-                    <svg id="icon-refresh" class="w-4 h-4 text-obsOutline group-hover:text-obsPrimary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.253 8H18" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Contenedor móvil estático optimizado para celulares -->
-    <main class="flex-grow w-full max-w-[480px] mx-auto px-4 mt-5 space-y-5">
-
+    <main class="min-h-screen">
         <!-- =================================================== -->
-        <!-- SECCIÓN I: TAREAS DE AYER -->
+        <!-- TOP APP BAR -->
         <!-- =================================================== -->
-        <section class="bg-obsSurfaceLow rounded-obs-main border border-obsOutlineVariant/30 p-5 shadow-xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-1.5 h-full bg-obsSurfaceHigh"></div>
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h2 class="text-xs font-bold text-obsOutline tracking-wider uppercase font-sans">Tareas de ayer</h2>
-                    <p class="text-lg font-bold font-manrope text-obsOnSurface mt-0.5">Bitácora de Ayer</p>
-                </div>
-                <span id="total-ayer-lbl" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-obsSurfaceHigh text-obsOnSurface">0 tareas</span>
-            </div>
-
-            <!-- Listado de Estados de Ayer -->
-            <div id="list-ayer" class="space-y-2 mb-4">
-                <!-- Se inyectan las filas dinámicamente -->
-            </div>
-
-            <!-- KPIs de Consistencia de Ayer -->
-            <div class="grid grid-cols-2 gap-3.5 border-t border-obsOutlineVariant/30 pt-4">
-                <div class="bg-obsSurfaceLowest/60 rounded-obs-inner p-3 border border-obsOutlineVariant/20 text-center">
-                    <p class="text-[9px] text-obsOutline font-bold uppercase tracking-wider">Completadas</p>
-                    <p id="hechas-ayer-val" class="text-lg font-extrabold text-obsOnSurface mt-0.5 font-sans">0 / 0</p>
-                </div>
-                <div class="bg-obsSurfaceLowest/60 rounded-obs-inner p-3 border border-obsOutlineVariant/20 text-center">
-                    <p class="text-[9px] text-obsOutline font-bold uppercase tracking-wider">Consistencia</p>
-                    <p id="consistencia-ayer-val" class="text-lg font-extrabold text-obsPrimary mt-0.5 font-sans">0.0%</p>
-                </div>
-            </div>
-
-            <div id="alert-ayer" class="hidden mt-3 bg-obsSecondary/10 border border-obsSecondary/30 rounded-obs-inner p-3 text-[11px] text-obsSecondary font-medium"></div>
-        </section>
-
-        <!-- =================================================== -->
-        <!-- SECCIÓN II: TAREAS DE HOY -->
-        <!-- =================================================== -->
-        <section class="bg-obsSurfaceLow rounded-obs-main border border-obsOutlineVariant/30 p-5 shadow-xl relative overflow-hidden">
-            <div id="hoy-accent-bar" class="absolute top-0 left-0 w-1.5 h-full bg-obsPrimaryContainer transition-colors"></div>
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h2 class="text-xs font-bold text-obsOutline tracking-wider uppercase font-sans">Tareas de hoy</h2>
-                    <p class="text-lg font-bold font-manrope text-obsOnSurface mt-0.5">Progreso de hoy</p>
-                </div>
-                <span id="total-hoy-lbl" class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-obsPrimary/10 text-obsPrimary border border-obsPrimary/20">0 tareas</span>
-            </div>
-
-            <!-- Listado de Estados de Hoy -->
-            <div id="list-hoy" class="space-y-2 mb-4">
-                <!-- Se inyectan las filas dinámicamente -->
-            </div>
-
-            <!-- KPIs de Consistencia de Hoy -->
-            <div class="grid grid-cols-2 gap-3.5 border-t border-obsOutlineVariant/30 pt-4">
-                <div class="bg-obsSurfaceLowest/60 rounded-obs-inner p-3 border border-obsOutlineVariant/20 text-center">
-                    <p class="text-[9px] text-obsOutline font-bold uppercase tracking-wider">Completadas</p>
-                    <p id="hechas-hoy-val" class="text-lg font-extrabold text-obsOnSurface mt-0.5 font-sans">0 / 0</p>
-                </div>
-                <div id="hoy-consistencia-card" class="bg-obsSurfaceLowest/60 rounded-obs-inner p-3 border border-obsOutlineVariant/20 text-center transition-colors">
-                    <p class="text-[9px] text-obsOutline font-bold uppercase tracking-wider">Consistencia</p>
-                    <p id="consistencia-hoy-val" class="text-lg font-extrabold text-obsPrimary mt-0.5 font-sans">0.0%</p>
-                </div>
-            </div>
-
-            <div id="alert-hoy" class="hidden mt-3 bg-obsSecondary/10 border border-obsSecondary/30 rounded-obs-inner p-3 text-[11px] text-obsSecondary font-medium"></div>
-        </section>
-
-        <!-- =================================================== -->
-        <!-- SECCIÓN III: BALANCE SEMANAL Y BIENESTAR -->
-        <!-- =================================================== -->
-        <section class="bg-obsSurfaceLow rounded-obs-main border border-obsOutlineVariant/30 p-5 shadow-xl space-y-4">
-            <div>
-                <h2 class="text-xs font-bold text-obsOutline tracking-wider uppercase font-sans">Balance Semanal</h2>
-                <p class="text-lg font-bold font-manrope text-obsOnSurface mt-0.5">Analítica de Consistencia</p>
-            </div>
-
-            <!-- Tabla Dinámica del Historial de los últimos 7 días -->
-            <div class="overflow-hidden border border-obsOutlineVariant/30 rounded-obs-inner">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-obsSurfaceLowest border-b border-obsOutlineVariant/30">
-                            <th class="p-3 text-[10px] font-semibold text-obsOutline uppercase tracking-wider">Fecha / Día</th>
-                            <th class="p-3 text-[10px] font-semibold text-obsOutline uppercase tracking-wider text-right">Consistencia (%)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="weekly-table-body" class="divide-y divide-obsOutlineVariant/20 font-sans text-xs">
-                        <!-- Filas dinámicas mediante JS -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Alerta Mental / Empática de la Mentora de Bienestar (PRD V3.3) -->
-            <div id="wellness-alert-card" class="hidden transform transition-all duration-500">
-                <div class="bg-gradient-to-tr from-obsSurfaceLow to-obsBg border-2 border-obsSecondary/40 rounded-obs-main p-4 shadow-2xl relative overflow-hidden">
-                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-obsSecondary/5 rounded-full blur-xl"></div>
-                    <div class="flex items-start space-x-3.5">
-                        <div class="p-2.5 bg-obsSecondary/10 rounded-obs-inner text-obsSecondary border border-obsSecondary/20 mt-1">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold font-manrope text-obsSecondary uppercase tracking-widest">Feedback de Mentora</h4>
-                            <p class="text-xs font-medium text-obsSecondary/90 leading-relaxed mt-1.5 italic">
-                                "Linda, es momento de ajustar prioridades y analizar si son necesarias tantas tareas. No seas dura contigo, cielo. 🧠✨"
-                            </p>
-                            <span class="inline-block mt-2 text-[9px] font-bold text-obsOutline uppercase tracking-widest font-mono">— Con amor 💚 SabryOff</span>
-                        </div>
+        <header class="bg-[#0e0e0e] border-b border-outline-variant/30 sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo Notion Flow Auditor" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">NOTION FLOW AUDITOR</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">DASHBOARD PERSONAL</p>
                     </div>
                 </div>
-            </div>
-        </section>
-
-
-        <!-- Botón de Redirección Oficial a Notion DB -->
-        <a href="https://app.notion.com/p/a61a38bb7a6e8251a38601779b0bd382?v=50da38bb7a6e82369cc9088797549db6&source=copy_link"
-           target="_blank"
-           class="w-full py-4 bg-gradient-to-r from-obsPrimaryContainer to-obsPrimary hover:brightness-110 active:scale-[0.98] rounded-obs-inner text-center text-xs font-bold font-manrope tracking-widest text-obsOnPrimary shadow-lg transition-all duration-150 flex items-center justify-center space-x-2">
-            <span>🚀 IR A RECORDATORIOS DIARIOS</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-        </a>
-
-        <!-- Pie de página técnico súper compacto que absorbe las métricas relativas de forma discreta -->
-        <footer class="text-[10px] text-obsOutline font-sans pt-2 space-y-1">
-            <div class="flex justify-between items-center px-1">
-                <div class="flex items-center space-x-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-obsPrimary animate-pulse"></span>
-                    <span>GitHub Pages Release: <strong id="footer-version" class="text-gray-300 font-semibold font-mono">v5.4</strong></span>
+                <div class="flex items-center gap-3">
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
                 </div>
-                <span class="font-mono text-obsOutline">Sincro ART: <strong id="footer-sync-time" class="text-obsOnSurface font-normal">--/--/-- --:--:--</strong></span>
             </div>
-            <div class="flex justify-between items-center px-1 text-[9px] text-obsOutlineVariant">
-                <span>Próxima actualización: <strong id="footer-next-time" class="font-semibold text-obsSecondary">--/--/-- --:--:--</strong></span>
-                <span>Bitácora IT &copy; 2026</span>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- =================================================== -->
+            <!-- HERO STATS ROW: AYER / HOY -->
+            <!-- =================================================== -->
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-grid-gutter">
+
+                <!-- Bitácora de Ayer -->
+                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE AYER</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Bitácora de Ayer</h2>
+                        </div>
+                        <span id="total-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 tareas</span>
+                    </div>
+
+                    <div id="list-ayer" class="space-y-3">
+                        <!-- Se inyectan las filas dinámicamente -->
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
+                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
+                            <p id="hechas-ayer-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
+                        </div>
+                        <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#e49102]/20 text-center">
+                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
+                            <p id="consistencia-ayer-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
+                        </div>
+                    </div>
+
+                    <div id="alert-ayer" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
+                        <span class="material-symbols-outlined text-[#e49102] text-[20px]">warning</span>
+                        <p class="text-[13px] text-[#e49102] font-semibold" id="alert-ayer-text"></p>
+                    </div>
+                </article>
+
+                <!-- Progreso de Hoy -->
+                <article id="hoy-card" class="glass-card rounded-xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6 transition-colors">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE HOY</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Progreso de hoy</h2>
+                        </div>
+                        <span id="total-hoy-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 tareas</span>
+                    </div>
+
+                    <div id="list-hoy" class="space-y-3">
+                        <!-- Se inyectan las filas dinámicamente -->
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
+                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
+                            <p id="hechas-hoy-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
+                        </div>
+                        <div id="hoy-consistencia-card" class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center transition-colors">
+                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
+                            <p id="consistencia-hoy-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
+                        </div>
+                    </div>
+
+                    <div id="alert-hoy" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
+                        <span class="material-symbols-outlined text-[#e49102] text-[20px]">report_problem</span>
+                        <p class="text-[13px] text-[#e49102] font-semibold" id="alert-hoy-text"></p>
+                    </div>
+                </article>
+            </section>
+
+            <!-- =================================================== -->
+            <!-- BALANCE SEMANAL Y BIENESTAR -->
+            <!-- =================================================== -->
+            <section class="glass-card rounded-xl overflow-hidden p-8 space-y-6">
+                <div class="space-y-1">
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">BALANCE SEMANAL</p>
+                    <h2 class="text-headline-md font-headline-md text-white">Analítica de Consistencia</h2>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-[#232326]">
+                                <th class="px-2 py-4 text-[10px] font-label-caps text-[#8e8e93] uppercase">Fecha / Día</th>
+                                <th class="px-2 py-4 text-[10px] font-label-caps text-[#8e8e93] uppercase text-right">Consistencia (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="weekly-table-body" class="divide-y divide-[#232326]">
+                            <!-- Filas dinámicas mediante JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Alerta Mental / Empática de la Mentora de Bienestar (PRD V3.3) -->
+                <div id="wellness-alert-card" class="hidden">
+                    <section class="bg-black/30 rounded-xl p-8 border border-[#e49102]/40 relative overflow-hidden group mt-4">
+                        <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                            <span class="material-symbols-outlined text-[100px] text-white">forum</span>
+                        </div>
+                        <div class="flex items-start gap-6 relative z-10">
+                            <div class="bg-[#e49102]/10 p-4 rounded-xl border border-[#e49102]/30">
+                                <span class="material-symbols-outlined text-[#e49102] text-2xl">warning</span>
+                            </div>
+                            <div class="space-y-4 flex-grow">
+                                <p class="text-[11px] font-label-caps text-[#e49102] tracking-widest">FEEDBACK DE MENTORA</p>
+                                <blockquote class="text-[18px] font-headline-md italic text-white leading-relaxed font-bold">
+                                    "Linda, es momento de ajustar prioridades y analizar si son necesarias tantas tareas. No seas dura contigo, cielo. 🧠✨"
+                                </blockquote>
+                                <div class="flex items-center gap-2 text-[10px] font-label-caps text-[#8e8e93]">
+                                    <span>— CON AMOR</span>
+                                    <span class="text-[#53a759] material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                                    <span>SABRYOFF</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+            <!-- Botón de Redirección Oficial a Notion DB -->
+            <section class="flex flex-col items-center py-4">
+                <a href="https://app.notion.com/p/a61a38bb7a6e8251a38601779b0bd382?v=50da38bb7a6e82369cc9088797549db6&source=copy_link"
+                   target="_blank"
+                   class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[16px] py-4 px-10 rounded-xl flex items-center gap-3 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
+                    <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+                    <span>Ir a recordatorios diarios</span>
+                    <span class="material-symbols-outlined text-[20px]">open_in_new</span>
+                </a>
+            </section>
+        </div>
+
+        <!-- =================================================== -->
+        <!-- FOOTER -->
+        <!-- =================================================== -->
+        <footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">v5.4</span></p>
+                    </div>
+                    <div class="flex flex-wrap gap-x-8 gap-y-2">
+                        <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end gap-2 text-right">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#5a5a5e] mt-2">Bitácora IT &copy; 2026</p>
+                </div>
             </div>
         </footer>
-
     </main>
 
     <!-- =================================================== -->
@@ -285,7 +353,6 @@
             // 2. Procesar e Inyectar Bloques Temporales Complejos
             procesarSeccionMetrica("ayer", conteoAyer);
             procesarSeccionMetrica("hoy", conteoHoy);
-
         });
 
         /**
@@ -297,23 +364,24 @@
         }
 
         /**
-         * Asigna un color estético del Obsidian Metric System al borde lateral de cada estado
+         * Asigna el estilo (pill de color + ícono opcional) del Design System "Obsidian Refined"
+         * según la categoría semántica del estado.
          */
-        function obtenerColorBordeEstado(estado) {
+        function obtenerEstiloEstado(estado) {
             const norm = estado.toLowerCase();
-            if (norm.includes("hecha") || norm.includes("hecho") || norm.includes("completad") || norm.includes("done")) {
-                return "border-obsTertiary/80 text-obsTertiary";
+            if (esEstadoCompletado(estado)) {
+                return { pill: "left-pill-green", textClass: "text-[#53a759] font-semibold", icon: null, iconClass: "" };
             }
             if (norm.includes("fallida") || norm.includes("vencida") || norm.includes("fail") || norm.includes("perd")) {
-                return "border-obsError text-obsError font-medium";
-            }
-            if (norm.includes("ejecu") || norm.includes("progr") || norm.includes("progress") || norm.includes("haciendo")) {
-                return "border-obsOnSurfaceVariant text-obsOnSurfaceVariant";
+                return { pill: "left-pill-red", textClass: "text-[#ff5f52] font-bold", icon: "close", iconClass: "text-[#ff5f52]" };
             }
             if (norm.includes("no neces") || norm.includes("saltad") || norm.includes("skip")) {
-                return "border-obsOutlineVariant text-obsOutline";
+                return { pill: "left-pill-blue", textClass: "text-on-surface font-semibold", icon: "fast_forward", iconClass: "text-white" };
             }
-            return "border-obsOutlineVariant text-obsOnSurface";
+            if (norm.includes("ejecu") || norm.includes("progr") || norm.includes("haciendo")) {
+                return { pill: "left-pill-blue", textClass: "text-on-surface font-semibold", icon: "hourglass_top", iconClass: "text-white" };
+            }
+            return { pill: "left-pill-blue", textClass: "text-on-surface font-semibold", icon: null, iconClass: "" };
         }
 
         /**
@@ -337,11 +405,9 @@
             consistenciaEl.innerText = `${tasa.toFixed(1)}%`;
 
             // Aplicar colores según el umbral del 70% recomendado en el SRS
-            if (tasa >= 70.0 || total === 0) {
-                consistenciaEl.className = "text-lg font-extrabold text-obsTertiary font-sans mt-0.5";
-            } else {
-                consistenciaEl.className = "text-lg font-extrabold text-obsSecondary font-sans mt-0.5";
-            }
+            consistenciaEl.className = (tasa >= 70.0 || total === 0)
+                ? "text-metric-xl font-metric-xl text-[#83da85]"
+                : "text-metric-xl font-metric-xl text-[#e49102]";
 
             renderizarFilasEstados(`list-${prefijo}`, data);
 
@@ -349,18 +415,21 @@
             const alertBox = document.getElementById(`alert-${prefijo}`);
             if (alertBox) {
                 if (tasa < 70.0 && total > 0) {
-                    alertBox.innerHTML = `⚠️ Tasa de consistencia crítica (<strong class="font-bold text-obsOnSurface">${tasa.toFixed(1)}%</strong>). Reduzca la fricción del flujo.`;
-                    alertBox.style.display = "block";
+                    document.getElementById(`alert-${prefijo}-text`).innerHTML = `Tasa de consistencia crítica (<strong>${tasa.toFixed(1)}%</strong>). Reduzca la fricción del flujo.`;
+                    alertBox.classList.remove("hidden");
+                    alertBox.classList.add("flex");
 
                     if (prefijo === "hoy") {
-                        document.getElementById("hoy-accent-bar").style.backgroundColor = '#ffb961'; // obsSecondary
-                        document.getElementById("hoy-consistencia-card").className = "bg-obsSecondary/5 rounded-obs-inner p-3 border-2 border-obsSecondary/30 text-center";
+                        document.getElementById("hoy-card").style.borderLeftColor = "#ffb961"; // secondary (aviso)
+                        document.getElementById("hoy-consistencia-card").className = "bg-[#e49102]/5 rounded-xl p-6 border-2 border-[#e49102]/30 text-center transition-colors";
                     }
                 } else {
-                    alertBox.style.display = "none";
+                    alertBox.classList.add("hidden");
+                    alertBox.classList.remove("flex");
+
                     if (prefijo === "hoy") {
-                        document.getElementById("hoy-accent-bar").style.backgroundColor = '#ff5f52'; // obsPrimaryContainer
-                        document.getElementById("hoy-consistencia-card").className = "bg-obsSurfaceLowest/60 rounded-obs-inner p-3 border border-obsOutlineVariant/20 text-center";
+                        document.getElementById("hoy-card").style.borderLeftColor = "#ff5f52"; // primary-container (normal)
+                        document.getElementById("hoy-consistencia-card").className = "bg-[#0e0e0f] rounded-xl p-6 border border-[#232326] text-center transition-colors";
                     }
                 }
             }
@@ -377,17 +446,22 @@
         function renderizarFilasEstados(containerId, data) {
             const container = document.getElementById(containerId);
             if (!data || Object.keys(data).length === 0) {
-                container.innerHTML = `<div class="task-item bg-obsSurfaceLowest/50 text-obsOutline border-l-[3px] border-obsOutlineVariant py-3 px-4 rounded-obs-inner text-center text-xs">Sin planificación registrada</div>`;
+                container.innerHTML = `<div class="status-row left-pill-blue flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin planificación registrada</div>`;
                 return;
             }
 
-            // Mapeamos a divs premium con estilos responsivos
             container.innerHTML = Object.entries(data).map(([estado, cantidad]) => {
-                const borderClass = obtenerColorBordeEstado(estado);
+                const estilo = obtenerEstiloEstado(estado);
+                const iconoHtml = estilo.icon
+                    ? `<span class="material-symbols-outlined text-[18px] ${estilo.iconClass}" style="font-variation-settings: 'FILL' 1;">${estilo.icon}</span>`
+                    : "";
                 return `
-                    <div class="flex justify-between items-center bg-obsSurfaceLowest/60 border-l-[3px] ${borderClass} py-2.5 px-4 rounded-obs-inner text-xs">
-                        <span class="font-semibold tracking-tight truncate pr-2 font-sans">${escapeHtml(estado)}</span>
-                        <span class="font-mono font-bold text-obsOnSurface">${cantidad}</span>
+                    <div class="status-row ${estilo.pill} flex justify-between items-center px-4 py-3.5">
+                        <div class="flex items-center gap-3">
+                            ${iconoHtml}
+                            <span class="${estilo.textClass} truncate pr-2">${escapeHtml(estado)}</span>
+                        </div>
+                        <span class="text-white font-bold text-[15px]">${cantidad}</span>
                     </div>
                 `;
             }).join('');
@@ -406,14 +480,7 @@
 
             const key = timestampLocalStr.split(" ")[0];
             cache[key] = parseFloat(hoyConsistencia);
-
-            // Mock de respaldo para primer render
-            if (Object.keys(cache).length <= 1)
-            {
-                localStorage.setItem("nfa_weekly_cache", JSON.stringify(cache));
-            } else {
-                localStorage.setItem("nfa_weekly_cache", JSON.stringify(cache));
-            }
+            localStorage.setItem("nfa_weekly_cache", JSON.stringify(cache));
 
             renderizarTablaSemanal(cache);
         }
@@ -425,30 +492,44 @@
             const tableBody = document.getElementById("weekly-table-body");
             tableBody.innerHTML = "";
 
-            const sortedKeys = Object.keys(cache).sort((a, b) => {
-                const parseDate = (str) => {
-                    const parts = str.split("/");
-                    return new Date(parts[2], parts[1]-1, parts[0]);
-                };
-                return parseDate(b) - parseDate(a);
-            }).slice(0, 7); // Últimos 7 días
+            // Generamos las 7 fechas naturales consecutivas terminando hoy, en vez de
+            // tomar solo las fechas presentes en caché (eso dejaba huecos cuando el
+            // dashboard no se abría todos los días).
+            const [diaHoy, mesHoy, anioHoy] = timestampLocalStr.split(" ")[0].split("/").map(Number);
+            const hoyDate = new Date(anioHoy, mesHoy - 1, diaHoy);
+
+            const ultimos7Dias = [];
+            for (let i = 0; i < 7; i++) {
+                const fecha = new Date(hoyDate);
+                fecha.setDate(fecha.getDate() - i);
+                const dd = String(fecha.getDate()).padStart(2, "0");
+                const mm = String(fecha.getMonth() + 1).padStart(2, "0");
+                ultimos7Dias.push(`${dd}/${mm}/${fecha.getFullYear()}`);
+            }
 
             let diasBajosCount = 0;
 
-            sortedKeys.forEach(key => {
-                const value = cache[key] || 0.0;
-                const esBajo = value < 70.0;
-                if (esBajo) diasBajosCount++;
+            ultimos7Dias.forEach(key => {
+                const tieneDato = Object.prototype.hasOwnProperty.call(cache, key);
+                const value = tieneDato ? cache[key] : null;
+                if (tieneDato && value < 70.0) diasBajosCount++;
 
-                const bgBadge = value >= 70.0 ? "bg-obsTertiary/10 text-obsTertiary border border-obsTertiary/20" : "bg-obsSecondary/10 text-obsSecondary border border-obsSecondary/20";
+                let celdaValor;
+                if (!tieneDato) {
+                    celdaValor = `<span class="px-3 py-1 rounded bg-[#232326] text-[#8e8e93] text-[13px] font-bold border border-[#2a2a2a]">Sin dato</span>`;
+                } else if (value >= 70.0) {
+                    celdaValor = `<span class="px-3 py-1 rounded bg-[#53a759]/10 text-[#83da85] text-[13px] font-bold border border-[#53a759]/20">${value.toFixed(1)}%</span>`;
+                } else if (value < 30.0) {
+                    celdaValor = `<span class="px-3 py-1 rounded bg-[#ff5f52]/10 text-[#ffb4ab] text-[13px] font-bold border border-[#ff5f52]/20">${value.toFixed(1)}%</span>`;
+                } else {
+                    celdaValor = `<span class="px-3 py-1 rounded bg-[#e49102]/10 text-[#ffb961] text-[13px] font-bold border border-[#e49102]/20">${value.toFixed(1)}%</span>`;
+                }
 
                 const tr = document.createElement("tr");
-                tr.className = "border-b border-obsOutlineVariant/20 hover:bg-obsSurfaceLowest/40 transition-colors";
+                tr.className = "hover:bg-white/[0.02] transition-colors";
                 tr.innerHTML = `
-                    <td class="p-3 text-obsOnSurface font-medium">${key}</td>
-                    <td class="p-3 text-right">
-                        <span class="px-2 py-0.5 rounded text-[11px] font-bold font-mono ${bgBadge}">${value.toFixed(1)}%</span>
-                    </td>
+                    <td class="px-2 py-5 text-on-surface font-semibold">${key}</td>
+                    <td class="px-2 py-5 text-right">${celdaValor}</td>
                 `;
                 tableBody.appendChild(tr);
             });
