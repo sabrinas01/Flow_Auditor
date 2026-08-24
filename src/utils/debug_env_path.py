@@ -22,7 +22,7 @@ print(f"❓ ¿Existe un archivo llamado '.env' en esta carpeta exacta? \n   👉
 # 3. Listar archivos clave en el directorio para entender dónde estamos
 try:
     archivos = os.listdir(".")
-    print("scandal 📋 Archivos detectados en la carpeta actual:")
+    print("📋 Archivos detectados en la carpeta actual:")
     for archivo in archivos:
         if archivo.endswith(".py") or archivo == ".env" or archivo == "dashboard.html":
             print(f"   • {archivo}")
@@ -34,20 +34,24 @@ print("\n🛡️  [ANÁLISIS DE VARIABLES CARGADAS EN EL SISTEMA]:")
 from dotenv import load_dotenv
 load_dotenv()
 
-key_detectada = os.getenv("NOTION_API_KEY")
-db_detectada = os.getenv("NOTION_DB_HABITS")
+key_detectada = os.getenv("NOTION_API_KEY") or os.getenv("NOTION_TOKEN")
+db_detectada = (
+    os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS")
+    or os.getenv("NOTION_DATABASE_ID")
+    or os.getenv("NOTION_DB_ID")
+)
 
 if key_detectada:
     # No se imprime ningún fragmento del secreto: este script está pensado para
     # compartir su salida al pedir ayuda, y hasta un prefijo corto es información sensible.
-    print("   • NOTION_API_KEY: ✅ Detectada")
+    print("   • NOTION_API_KEY / NOTION_TOKEN: ✅ Detectada")
 else:
-    print("   • NOTION_API_KEY: ❌ No detectada o vacía")
+    print("   • NOTION_API_KEY / NOTION_TOKEN: ❌ No detectada o vacía")
 
 if db_detectada:
-    print("   • NOTION_DB_HABITS: ✅ Detectada")
+    print("   • NOTION_DB_RECORDATORIOS_DIARIOS / NOTION_DATABASE_ID / NOTION_DB_ID: ✅ Detectada")
 else:
-    print("   • NOTION_DB_HABITS: ❌ No detectada o vacía")
+    print("   • NOTION_DB_RECORDATORIOS_DIARIOS / NOTION_DATABASE_ID / NOTION_DB_ID: ❌ No detectada o vacía")
 
 print("\n----------------------------------------------------------------")
 print("👉 Ejecuta este script y compárteme la salida para solucionar tu ruta.")
