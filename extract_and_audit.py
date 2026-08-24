@@ -43,6 +43,7 @@ import os
 import sys
 import json
 import re
+import subprocess
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from dotenv import load_dotenv
@@ -94,6 +95,34 @@ def validar_credenciales():
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
+
+
+def obtener_version_actual():
+    """Obtiene el último tag de Git como versión, o 'dev' si no hay tags (SRS-FR-M2-204)."""
+    try:
+        version = subprocess.check_output(
+            ["git", "describe", "--tags", "--abbrev=0"],
+            cwd=BASE_DIR,
+            stderr=subprocess.DEVNULL
+        ).decode().strip()
+        return version
+    except subprocess.CalledProcessError:
+        return "dev"
+
+
+def calcular_timestamps_sincronizacion(ahora_utc):
+    """A partir de una marca UTC, calcula hora local (GMT-3) y la próxima sincronización
+    (+1 hora exacta desde la hora local, SRS-FR-M2-202/M3-304). Devuelve strings
+    formateados "DD/MM/YYYY HH:MM:SS" listos para inyectar en index.html."""
+    ahora_argentina = ahora_utc - timedelta(hours=3)
+    proxima_sincro = ahora_argentina + timedelta(hours=1)
+
+    fmt = "%d/%m/%Y %H:%M:%S"
+    return {
+        "local": ahora_argentina.strftime(fmt),
+        "proxima": proxima_sincro.strftime(fmt),
+        "servidor": ahora_utc.strftime(fmt),
+    }
 
 
 def evaluar_bloque_temporal(fecha_str):
@@ -174,13 +203,10 @@ def auditar_consistencia_tripartita():
 
         # Generación de marcas de tiempo del diagnóstico de infraestructura
         ahora_utc = datetime.now(timezone.utc)
-        ahora_argentina = ahora_utc - timedelta(hours=3)
-        # Sincronización predictiva exacta calculada de forma dinámica relativa (+1 hora exacta)
-        proxima_sincro = ahora_argentina + timedelta(hours=1)
-
-        str_local = ahora_argentina.strftime("%d/%m/%Y %H:%M:%S")
-        str_next = proxima_sincro.strftime("%d/%m/%Y %H:%M:%S")
-        str_server = ahora_utc.strftime("%d/%m/%Y %H:%M:%S")
+        timestamps = calcular_timestamps_sincronizacion(ahora_utc)
+        str_local = timestamps["local"]
+        str_next = timestamps["proxima"]
+        str_server = timestamps["servidor"]
 
         # Lectura del frontend maestro index.html para realizar la inyección dinámica
         html_path = BASE_DIR / "index.html"
@@ -191,20 +217,6 @@ def auditar_consistencia_tripartita():
         html_content = re.sub(r'const\s+timestampLocalStr\s*=\s*".*?"\s*;', f'const timestampLocalStr = "{str_local}";', html_content)
         html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?"\s*;', f'const timestampNextStr = "{str_next}";', html_content)
         html_content = re.sub(r'const\s+timestampServerStr\s*=\s*".*?"\s*;', f'const timestampServerStr = "{str_server}";', html_content)
-
-        import subprocess
-
-        def obtener_version_actual():
-            """Obtiene el último tag de Git como versión, o 'dev' si no hay tags."""
-            try:
-                version = subprocess.check_output(
-                    ["git", "describe", "--tags", "--abbrev=0"],
-                    cwd=BASE_DIR,
-                    stderr=subprocess.DEVNULL
-                ).decode().strip()
-                return version
-            except subprocess.CalledProcessError:
-                return "dev"
 
         # Serialización de estructuras JSON limpias, escapando "</" para evitar
         # que un estado de Notion cierre el bloque <script> prematuramente (XSS/HTML injection)
