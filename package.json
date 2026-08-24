@@ -1,0 +1,11 @@
+{
+  "name": "notion-flow-auditor-frontend",
+  "private": true,
+  "description": "Build del CSS estático de Tailwind para index.html (sin bundler ni framework, todo el JS sigue siendo vanilla).",
+  "scripts": {
+    "build:css": "tailwindcss -i src/styles/input.css -o styles.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}

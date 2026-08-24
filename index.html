@@ -2,102 +2,21 @@
 <html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bitácora IT - Notion Flow Auditor</title>
     <!-- Tipografías del Design System "Obsidian Refined" (Stitch) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <!-- Framework CSS Tailwind para maquetación ágil -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        // Paleta "Obsidian Refined" (Material 3 tokens, vía Stitch)
-                        "on-surface-variant": "#e2beba",
-                        "inverse-surface": "#e5e2e1",
-                        "on-error": "#690005",
-                        "surface-container-lowest": "#0e0e0e",
-                        "on-primary-fixed-variant": "#910a0e",
-                        "secondary-container": "#e49102",
-                        "tertiary-container": "#53a759",
-                        "surface-container-low": "#1c1b1b",
-                        "on-surface": "#e5e2e1",
-                        "on-primary": "#690004",
-                        "surface-tint": "#ffb4aa",
-                        "outline-variant": "#5a413d",
-                        "on-secondary": "#472a00",
-                        "primary-container": "#ff5f52",
-                        "surface": "#131313",
-                        "error-container": "#93000a",
-                        "on-primary-fixed": "#410002",
-                        "secondary-fixed": "#ffddb9",
-                        "primary-fixed": "#ffdad5",
-                        "on-background": "#e5e2e1",
-                        "on-tertiary": "#00390e",
-                        "surface-container-highest": "#353534",
-                        "secondary-fixed-dim": "#ffb961",
-                        "background": "#131313",
-                        "on-tertiary-fixed": "#002105",
-                        "on-tertiary-container": "#00360d",
-                        "on-error-container": "#ffdad6",
-                        "tertiary": "#83da85",
-                        "inverse-primary": "#b32822",
-                        "primary-fixed-dim": "#ffb4aa",
-                        "tertiary-fixed": "#9ff79f",
-                        "outline": "#a98985",
-                        "surface-dim": "#131313",
-                        "on-tertiary-fixed-variant": "#005318",
-                        "inverse-on-surface": "#313030",
-                        "primary": "#ffb4aa",
-                        "error": "#ffb4ab",
-                        "on-secondary-fixed-variant": "#663e00",
-                        "secondary": "#ffb961",
-                        "on-secondary-container": "#533200",
-                        "surface-container-high": "#2a2a2a",
-                        "surface-variant": "#353534",
-                        "surface-container": "#201f1f",
-                        "surface-bright": "#393939",
-                        "on-primary-container": "#640004",
-                        "tertiary-fixed-dim": "#83da85",
-                        "on-secondary-fixed": "#2b1700"
-                    },
-                    borderRadius: {
-                        DEFAULT: "0.25rem",
-                        lg: "0.5rem",
-                        xl: "1rem",
-                        full: "9999px"
-                    },
-                    spacing: {
-                        "section-margin": "2.5rem",
-                        "stack-gap": "1.25rem",
-                        "item-gap": "0.75rem",
-                        "container-padding": "1.5rem",
-                        "grid-gutter": "1.5rem"
-                    },
-                    fontFamily: {
-                        "label-caps": ["Inter", "sans-serif"],
-                        "body-sm": ["Inter", "sans-serif"],
-                        "display-lg": ["Manrope", "sans-serif"],
-                        "body-md": ["Inter", "sans-serif"],
-                        "headline-md": ["Manrope", "sans-serif"],
-                        "metric-xl": ["Inter", "sans-serif"]
-                    },
-                    fontSize: {
-                        "label-caps": ["11px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "700" }],
-                        "body-sm": ["13px", { lineHeight: "18px", fontWeight: "500" }],
-                        "display-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "800" }],
-                        "body-md": ["14px", { lineHeight: "20px", fontWeight: "500" }],
-                        "headline-md": ["24px", { lineHeight: "32px", fontWeight: "800" }],
-                        "metric-xl": ["26px", { lineHeight: "34px", fontWeight: "700" }]
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Antes pedía wght 100..700 (rango completo variable); la interfaz solo usa wght 400 fijo,
+         así que se fija a un único valor -> Google sirve una instancia estática mucho más liviana
+         en vez de la fuente variable completa. FILL se mantiene en 0..1 porque sí se usan ambos. -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+    <!-- CSS de Tailwind precompilado (antes: cdn.tailwindcss.com haciendo JIT en el
+         navegador — 127KB de JS + tiempo de compilación en cada carga). El tema
+         (colores/spacing/etc.) vive en tailwind.config.js; regenerar con:
+         npm install && npm run build:css -->
+    <link rel="stylesheet" href="./styles.css">
     <style>
         body {
             background-color: #0e0e0e;
@@ -143,9 +62,9 @@
     <!-- VARIABLES INYECTADAS DINÁMICAMENTE POR EL BACKEND -->
     <!-- =================================================== -->
     <script>
-        // Declaración estricta compatible con las expresiones regulares de tu script de Python v5.4
+        // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
         const timestampLocalStr = "18/08/2026 20:20:23";
-        const appVersionStr = "v1.0.0";// Tu script inyectará aquí
+        const appVersionStr = "dev";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
         const timestampNextStr = "18/08/2026 21:20:23";
         const timestampServerStr = "18/08/2026 23:20:23";
 
@@ -348,7 +267,7 @@
             <section class="flex flex-col items-center py-4">
                 <a href="https://app.notion.com/p/a61a38bb7a6e8251a38601779b0bd382?v=50da38bb7a6e82369cc9088797549db6&source=copy_link"
                    target="_blank"
-                   class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[16px] py-4 px-10 rounded-xl flex items-center gap-3 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
+                   class="bg-[#c0453b] hover:bg-[#c0453b]/90 text-white font-bold text-[16px] py-4 px-10 rounded-xl flex items-center gap-3 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
                     <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
                     <span>Ir a recordatorios diarios</span>
                     <span class="material-symbols-outlined text-[20px]">open_in_new</span>
@@ -364,7 +283,7 @@
                 <div class="space-y-4">
                     <div class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
-                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">v5.4</span></p>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">dev</span></p>
                     </div>
                     <div class="flex flex-wrap gap-x-8 gap-y-2">
                         <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
@@ -373,11 +292,17 @@
                 <div class="flex flex-col items-end gap-2 text-right">
                     <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
                     <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
-                    <p class="text-[11px] font-label-caps text-[#5a5a5e] mt-2">Bitácora IT &copy; 2026</p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Bitácora IT &copy; 2026</p>
                 </div>
             </div>
         </footer>
     </main>
+
+    <!-- =================================================== -->
+    <!-- UTILITARIOS COMPARTIDOS (vanilla, sin bundler) -->
+    <!-- =================================================== -->
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
 
     <!-- =================================================== -->
     <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
@@ -397,6 +322,10 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
+            // 0. Inicializar estado versionado en localStorage (crea o migra el
+            // esquema flow_auditor:v1.0 si hace falta) — src/utils/src_localStorage_index.js
+            initLocalStorage();
+
             // 1. Inyectar Relojes de Telemetría
             document.getElementById("footer-sync-time").innerText = timestampLocalStr;
             document.getElementById("footer-next-time").innerText = timestampNextStr;
@@ -627,18 +556,17 @@
         /**
          * Gatilla animación de refresco al presionar botón en cabecera
          */
+        // Recarga diferida 1.2s mediante el debounce compartido — src/utils/debounce.js
+        const dispararRecargaDiferida = debounce(() => {
+            document.getElementById("icon-refresh").classList.remove("spin-animation");
+            document.getElementById("btn-refresh").disabled = false;
+            location.reload();
+        }, 1200);
+
         function recargarDashboard() {
-            const icon = document.getElementById("icon-refresh");
-            const btn = document.getElementById("btn-refresh");
-
-            icon.classList.add("spin-animation");
-            btn.disabled = true;
-
-            setTimeout(() => {
-                icon.classList.remove("spin-animation");
-                btn.disabled = false;
-                location.reload();
-            }, 1200);
+            document.getElementById("icon-refresh").classList.add("spin-animation");
+            document.getElementById("btn-refresh").disabled = true;
+            dispararRecargaDiferida();
         }
     </script>
 </body>

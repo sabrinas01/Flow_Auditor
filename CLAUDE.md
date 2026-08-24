@@ -41,6 +41,25 @@ terminada:
    commit inmediato siguiente `docs(sync): ...`). Así el historial de git
    queda como la fuente de verdad de *cuándo* cambió cada versión de la doc.
 
+## Tageo de releases (versión visible en producción)
+
+El footer de `index.html` muestra el tag de git más reciente
+(`git describe --tags --abbrev=0`, ver `obtener_version_actual()` en
+`extract_and_audit.py`) — **no** el número de versión de PRD/SRS
+directamente. Para que no se desincronicen (como pasó: producción mostraba
+`v1.0.0` mientras PRD/SRS ya iban por v3.9):
+
+- Cuando un cambio en PRD/SRS es **producto/comportamiento visible**
+  (no gobernanza pura de documentación, no un typo, no un fix de CI
+  interno): crear un tag de git anotado que coincida con esa versión
+  (`git tag -a v3.X -m "..."`) y pushearlo (`git push origin v3.X`).
+- No hace falta tagear cada bump de PRD/SRS — varios de esos bumps son
+  puramente de gobernanza de documentación y no ameritan un "release".
+  Usar criterio: ¿un usuario notaría este cambio en el dashboard? Si sí,
+  tagear.
+- Nunca hardcodear un número de versión en comentarios/docstrings del
+  código (se desactualiza solo) — la fuente de verdad es el tag de git.
+
 ## Enforcement automático
 
 Hay un workflow (`.github/workflows/docs_sync_check.yml`) que falla en los PR

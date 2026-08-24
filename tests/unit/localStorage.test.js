@@ -1,8 +1,11 @@
 /**
 Test de migración: simula clave antigua y comprueba migración a v1.0
 Requiere Jest (usa jsdom por defecto, por eso localStorage existe).
+NOTA: este repo todavía no tiene Jest instalado (sin package.json de
+frontend) — este test documenta el contrato esperado pero no corre en
+CI todavía. El path del require ya apunta al archivo real.
 */
-const { initLocalStorage } = require('../../src/localStorage/index.js');
+const { initLocalStorage } = require('../../src/utils/src_localStorage_index.js');
 
 describe('localStorage migrations', () => {
   beforeEach(() => {
