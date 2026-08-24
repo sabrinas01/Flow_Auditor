@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: Notion Flow Auditor
 **Módulo:** Auditoría de Productividad y Recordatorios Diarios  
-**Versión:** 3.3 (Modelo Híbrido, Analítica Semanal y Alerta de Bienestar — Baseline Oficial)  
+**Versión:** 3.4 (Gobernanza de Documentación Versionada)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
@@ -14,7 +14,8 @@
 | :--- | :--- | :--- | :--- |
 | **v1.0** | Junio 2026 | Sabrina Sanso | MVP local inicial: script monolítico en primer plano con bucle `while True` bloqueante (`time.sleep`). |
 | **v2.0** | Junio 2026 | Sabrina Sanso | Migración CI/CD Serverless en contenedores virtuales GitHub Actions y normalización binaria de BOM Windows. |
-| **v3.3** *(Actual)* | Julio 2026 | Sabrina Sanso | **Baseline Oficial Sincronizada con PRD v3.3:**<br>- Modificación de frecuencia de sincronización invariable a 1 hora (60 minutos).<br>- Delegación estricta del cómputo matemático de métricas y tasas al cliente JavaScript en tiempo real.<br>- Incorporación de la jerarquía de 6 estados ordenada desde "Sin empezar" hasta "Fallida / Vencida".<br>- Adición del Módulo Semanal de Bienestar y Alerta Emocional con persistencia local en caché (`localStorage`).<br>- Reconfiguración del footer de diagnóstico técnico relativo y posicionamiento del campo de versión del release abajo a la izquierda. |
+| **v3.3** | Julio 2026 | Sabrina Sanso | **Baseline Oficial Sincronizada con PRD v3.3:**<br>- Modificación de frecuencia de sincronización invariable a 1 hora (60 minutos).<br>- Delegación estricta del cómputo matemático de métricas y tasas al cliente JavaScript en tiempo real.<br>- Incorporación de la jerarquía de 6 estados ordenada desde "Sin empezar" hasta "Fallida / Vencida".<br>- Adición del Módulo Semanal de Bienestar y Alerta Emocional con persistencia local en caché (`localStorage`).<br>- Reconfiguración del footer de diagnóstico técnico relativo y posicionamiento del campo de versión del release abajo a la izquierda. |
+| **v3.4** *(Actual)* | Agosto 2026 | Sabrina Sanso | **Gobernanza de Documentación Versionada:**<br>- Adición de `SRS-FR-M2-205`: gate de CI (`docs_sync_check.yml`) que bloquea PRs con cambios funcionales sin actualización correspondiente de PRD/SRS.<br>- Formalización en `CLAUDE.md` del flujo de sincronización de PRD, SRS e Historias de Usuario (Notion) ante cada cambio funcional. |
 
 ---
 
@@ -71,6 +72,7 @@ El sistema es una herramienta híbrida y asíncrona de procesamiento de flujos d
 * **SRS-FR-M2-202 (Orquestación del Ciclo de 1 Hora):** El pipeline YAML de sincronización automatizada debe autoinvocarse de forma periódica invariable cada 1 hora (60 minutos) utilizando la sintaxis cron: `0 * * * *`.
 * **SRS-FR-M2-203 (Redundancia y Robustez de Secrets):** El flujo YAML implementará compuertas lógicas condicionales (`||`) en su bloque de entorno para capturar secretos ante variaciones comunes de nomenclatura web (mapear de forma segura tanto `NOTION_API_KEY` como `NOTION_TOKEN`).
 * **SRS-FR-M2-204 (Trazabilidad de la Versión del Release):** El pipeline de Actions capturará de forma automática el número de tag activo en el repositorio Git e inyectará dicho string en el identificador de pie de página de la interfaz (Ej: `v3.3`).
+* **SRS-FR-M2-205 (Gobernanza de Documentación Versionada):** Todo Pull Request contra `main` que modifique archivos funcionales (`extract_and_audit.py`, `generate_dashboard.py`, `index.html`, `src/**` o `notion_sync.yml`) debe fallar el workflow `docs_sync_check.yml` si `Documentacion/PRD.md` y `Documentacion/SRS.md` no fueron actualizados en el mismo PR, salvo que un commit incluya la marca explícita `[skip-docs]`. Este control garantiza que el PRD, el SRS y las Historias de Usuario en Notion permanezcan versionados en sincronía con cada cambio funcional (ver `CLAUDE.md` en la raíz del repo).
 
 #### Módulo C: Frontend e Interfaz Móvil (HTML5/Tailwind/JS)
 * **SRS-FR-M3-301 (Inyección mediante Regex Tolerantes):** El parser de Python debe actualizar dinámicamente las constantes de JavaScript utilizando expresiones regulares flexibilizadas (`re.sub()`) con comodines de captura tolerantes (`\s*`) para la mutación estática segura de strings en el archivo `index.html`.

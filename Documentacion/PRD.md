@@ -5,7 +5,7 @@
 * **Marca Asociada:** Bitácora IT
 * **Rol de Gobierno:** IT Functional Analyst (Sabrina) & Mentor Técnico de IA
 * **Estado:** Listo para Desarrollo (Base Lineal Validada)
-* **Versión:** 3.3
+* **Versión:** 3.4
 * **Zona Horaria de Referencia:** GMT -3 (San Juan, Argentina)
 
 ## 🎯 2. Visión General y Contexto
@@ -61,4 +61,5 @@ Tasa = (Tareas "Hecha" AND fórmula "consistencia"=1 / Total de Tareas Creadas) 
 
 | Versión | Fecha | Descripción del cambio |
 | :--- | :--- | :--- |
-| **v3.3** *(Actual)* | Julio 2026 | Baseline oficial sincronizada con SRS v3.3 (ver `SRS.md` para el detalle técnico completo). |
+| **v3.3** | Julio 2026 | Baseline oficial sincronizada con SRS v3.3 (ver `SRS.md` para el detalle técnico completo). |
+| **v3.4** *(Actual)* | Agosto 2026 | Se formaliza la gobernanza de documentación versionada: cada cambio funcional debe actualizar PRD, SRS e Historias de Usuario (Notion) en el mismo PR, reforzado por el gate de CI `docs_sync_check.yml` (ver `SRS.md` — `SRS-FR-M2-205` — y `CLAUDE.md`). |
