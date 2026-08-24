@@ -47,6 +47,35 @@ function obtenerEstiloEstado(estado) {
 }
 
 /**
+ * Determina la posición de un estado en la jerarquía fija del PRD/SRS:
+ * 1. Sin empezar | 2. En ejecución | 3. Hecha por otra persona |
+ * 4. No necesaria | 5. Hecha | 6. Fallida / Vencida.
+ * Un estado que no matchea ninguna categoría queda al final (rank 99).
+ */
+function rankEstado(estado) {
+  const norm = estado.toLowerCase();
+  if (norm.includes("sin empezar")) return 1;
+  if (norm.includes("ejecu") || norm.includes("progr") || norm.includes("haciendo")) return 2;
+  if (norm.includes("hecha") && norm.includes("otra")) return 3; // "Hecha por otra persona"
+  if (norm.includes("no neces") || norm.includes("saltad") || norm.includes("skip")) return 4;
+  if (esEstadoCompletado(estado)) return 5; // "Hecha" genérico (ya se descartó el caso "otra persona" arriba)
+  if (norm.includes("fallida") || norm.includes("vencida") || norm.includes("fail") || norm.includes("perd")) return 6;
+  return 99;
+}
+
+/**
+ * Ordena las entradas [estado, cantidad] de un diccionario respetando la jerarquía
+ * fija de rankEstado(). Estados con el mismo rank (o desconocidos) mantienen su
+ * orden relativo original (sort estable).
+ */
+function ordenarEntradasPorJerarquia(data) {
+  return Object.entries(data)
+    .map((entrada, index) => ({ entrada, index, rank: rankEstado(entrada[0]) }))
+    .sort((a, b) => (a.rank !== b.rank ? a.rank - b.rank : a.index - b.index))
+    .map(({ entrada }) => entrada);
+}
+
+/**
  * Calcula el total, las completadas, la tasa de consistencia (%) y si corresponde
  * mostrar alerta, a partir de un diccionario {estado: cantidad}. Umbral: 70% (SRS).
  */
@@ -108,6 +137,8 @@ if (typeof module !== "undefined" && module.exports) {
     escapeHtml,
     esEstadoCompletado,
     obtenerEstiloEstado,
+    rankEstado,
+    ordenarEntradasPorJerarquia,
     calcularMetricas,
     generarUltimos7Dias,
     calcularResumenSemanal,
