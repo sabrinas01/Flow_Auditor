@@ -5,7 +5,7 @@
 * **Marca Asociada:** Bitácora IT
 * **Rol de Gobierno:** IT Functional Analyst (Sabrina) & Mentor Técnico de IA
 * **Estado:** Listo para Desarrollo (Base Lineal Validada)
-* **Versión:** 3.5
+* **Versión:** 3.6
 * **Zona Horaria de Referencia:** GMT -3 (San Juan, Argentina)
 
 ## 🎯 2. Visión General y Contexto
@@ -36,9 +36,9 @@ Tasa = (Tareas "Hecha" AND fórmula "consistencia"=1 / Total de Tareas Creadas) 
 * **Secciones:** * I: Tareas de ayer.
     * II: Tareas de hoy (Alertas < 70% en Clementine Orange).
     * III: Balance Semanal y Bienestar (Tabla 7 días + Caja de Mentora).
-    * IV: Tareas para mañana (Título y Prioridad).
     * V: Panel de Diagnóstico Técnico (Footer: última/próxima sync, volumen de tareas).
     * VI: Navegación (Botón a recordatorios diarios).
+* **Fuera de alcance de este módulo:** "Tareas para mañana" (antes Sección IV) no pertenece a Recordatorios Diarios — se implementará como parte del futuro módulo **Recordatorios Varios** (HU ya creada en Notion por Sabrina).
 * **Indicador de Versión:** Posicionado abajo a la izquierda (bajo el botón del footer), inyectado vía GitHub Releases (v3.3).
 
 ## 🔒 6. Requerimientos No Funcionales
@@ -63,4 +63,5 @@ Tasa = (Tareas "Hecha" AND fórmula "consistencia"=1 / Total de Tareas Creadas) 
 | :--- | :--- | :--- |
 | **v3.3** | Julio 2026 | Baseline oficial sincronizada con SRS v3.3 (ver `SRS.md` para el detalle técnico completo). |
 | **v3.4** | Agosto 2026 | Se formaliza la gobernanza de documentación versionada: cada cambio funcional debe actualizar PRD, SRS e Historias de Usuario (Notion) en el mismo PR, reforzado por el gate de CI `docs_sync_check.yml` (ver `SRS.md` — `SRS-FR-M2-205` — y `CLAUDE.md`). |
-| **v3.5** *(Actual)* | Agosto 2026 | Se implementa la Sección IV (§5) — "Vista previa de mañana" — que estaba especificada pero nunca renderizada en `index.html`. Alcance reducido a título/estado (sin completadas/consistencia ni colapsar/expandir), ver `SRS.md` v3.5 para el detalle. |
+| **v3.5** | Agosto 2026 | Se implementa la Sección IV (§5) — "Vista previa de mañana" — que estaba especificada pero nunca renderizada en `index.html`. Alcance reducido a título/estado (sin completadas/consistencia ni colapsar/expandir), ver `SRS.md` v3.5 para el detalle. |
+| **v3.6** *(Actual)* | Agosto 2026 | Corrección de alcance: "Tareas para mañana" no pertenece a Recordatorios Diarios — se revierte de `index.html` y pasa a ser alcance del futuro módulo Recordatorios Varios (HU ya creada en Notion). Ver `SRS.md` v3.6 — `SRS-FR-M3-303` reescrito. |

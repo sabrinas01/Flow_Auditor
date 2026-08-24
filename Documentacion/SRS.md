@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: Notion Flow Auditor
 **Módulo:** Auditoría de Productividad y Recordatorios Diarios  
-**Versión:** 3.5 (Implementación de la Sección IV — Vista Previa de Mañana)  
+**Versión:** 3.6 (Corrección de alcance: Mañana no pertenece a Recordatorios Diarios)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
@@ -16,7 +16,8 @@
 | **v2.0** | Junio 2026 | Sabrina Sanso | Migración CI/CD Serverless en contenedores virtuales GitHub Actions y normalización binaria de BOM Windows. |
 | **v3.3** | Julio 2026 | Sabrina Sanso | **Baseline Oficial Sincronizada con PRD v3.3:**<br>- Modificación de frecuencia de sincronización invariable a 1 hora (60 minutos).<br>- Delegación estricta del cómputo matemático de métricas y tasas al cliente JavaScript en tiempo real.<br>- Incorporación de la jerarquía de 6 estados ordenada desde "Sin empezar" hasta "Fallida / Vencida".<br>- Adición del Módulo Semanal de Bienestar y Alerta Emocional con persistencia local en caché (`localStorage`).<br>- Reconfiguración del footer de diagnóstico técnico relativo y posicionamiento del campo de versión del release abajo a la izquierda. |
 | **v3.4** | Agosto 2026 | Sabrina Sanso | **Gobernanza de Documentación Versionada:**<br>- Adición de `SRS-FR-M2-205`: gate de CI (`docs_sync_check.yml`) que bloquea PRs con cambios funcionales sin actualización correspondiente de PRD/SRS.<br>- Formalización en `CLAUDE.md` del flujo de sincronización de PRD, SRS e Historias de Usuario (Notion) ante cada cambio funcional. |
-| **v3.5** *(Actual)* | Agosto 2026 | Sabrina Sanso | **Implementación de Sección IV (Mañana):**<br>- `SRS-FR-M3-303` cerraba solo parcialmente: el backend calculaba e inyectaba `conteoManana` pero el frontend nunca lo renderizaba (solo Ayer y Hoy). Se agregó el tercer bloque "Vista previa de mañana" en `index.html`, reutilizando `renderizarFilasEstados()`.<br>- Alcance deliberadamente reducido respecto al resto de la estructura tripartita: sin métricas de completadas/consistencia (no aplican a tareas futuras) y sin colapsar/expandir (pendiente, ver HU en Notion). |
+| **v3.5** | Agosto 2026 | Sabrina Sanso | **Implementación de Sección IV (Mañana):**<br>- `SRS-FR-M3-303` cerraba solo parcialmente: el backend calculaba e inyectaba `conteoManana` pero el frontend nunca lo renderizaba (solo Ayer y Hoy). Se agregó el tercer bloque "Vista previa de mañana" en `index.html`, reutilizando `renderizarFilasEstados()`.<br>- Alcance deliberadamente reducido respecto al resto de la estructura tripartita: sin métricas de completadas/consistencia (no aplican a tareas futuras) y sin colapsar/expandir (pendiente, ver HU en Notion). |
+| **v3.6** *(Actual)* | Agosto 2026 | Sabrina Sanso | **Corrección de alcance — Mañana sale de Recordatorios Diarios:**<br>- Se revierte el bloque "Mañana" agregado en v3.5: `index.html` ("Recordatorios Diarios") vuelve a estructura bipartita (Ayer/Hoy).<br>- `SRS-FR-M3-303` se reescribe: la Sección "Tareas para mañana" pasa a ser alcance del futuro módulo **Recordatorios Varios** (HU ya creada en Notion por Sabrina), no de Recordatorios Diarios.<br>- El backend (`extract_and_audit.py`) sigue calculando `conteoManana` sin cambios — queda disponible para cuando se implemente Recordatorios Varios. |
 
 ---
 
@@ -78,7 +79,7 @@ El sistema es una herramienta híbrida y asíncrona de procesamiento de flujos d
 #### Módulo C: Frontend e Interfaz Móvil (HTML5/Tailwind/JS)
 * **SRS-FR-M3-301 (Inyección mediante Regex Tolerantes):** El parser de Python debe actualizar dinámicamente las constantes de JavaScript utilizando expresiones regulares flexibilizadas (`re.sub()`) con comodines de captura tolerantes (`\s*`) para la mutación estática segura de strings en el archivo `index.html`.
 * **SRS-FR-M3-302 (Cómputo en Tiempo Real del Cliente):** El motor JavaScript del cliente en el navegador móvil debe calcular dinámicamente en tiempo real los totales de tareas y las Tasas de Consistencia (%) sobre los arrays JSON planos inyectados, aplicando la fórmula: `(Tareas con Estado "Hecha" AND consistencia == 1 / Total de Tareas Creadas en el Día) * 100`.
-* **SRS-FR-M3-303 (Estructura Cronológica Tripartita):** La interfaz móvil adaptará su visualización mediante columnas o bloques dinámicos colapsables de Tailwind para renderizar por separado las secciones: I (Tareas de ayer), II (Tareas de hoy) y IV (Tareas para mañana).
+* **SRS-FR-M3-303 (Estructura Cronológica Bipartita — Recordatorios Diarios):** La interfaz móvil adaptará su visualización mediante columnas o bloques dinámicos colapsables de Tailwind para renderizar por separado las secciones: I (Tareas de ayer) y II (Tareas de hoy). La Sección "Tareas para mañana" queda **fuera de alcance de este módulo**: pertenece al futuro módulo "Recordatorios Varios" (HU ya creada en Notion), no a "Recordatorios Diarios". El backend sigue calculando `conteoManana` (reutilizable), pero `index.html` no debe renderizarlo.
 * **SRS-FR-M3-304 (Sincronización de Diagnóstico Técnico Relativo):** El panel de diagnóstico técnico del footer expondrá en tipografía secundaria *Inter* las siguientes variables dinámicas:
     1. *Última Sincronización Local:* Fecha y hora exacta convertida a la zona ART (GMT-3).
     2. *Próxima Sincronización (Dynamic ART):* Marca de tiempo calculada dinámicamente sumando estrictamente 1 hora (60 minutos) a la hora de la última sincronización real realizada, prohibiendo horas redondeadas fijas.
