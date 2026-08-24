@@ -214,9 +214,9 @@
 
         <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
             <!-- =================================================== -->
-            <!-- HERO STATS ROW: AYER / HOY -->
+            <!-- HERO STATS ROW: AYER / HOY / MAÑANA -->
             <!-- =================================================== -->
-            <section class="grid grid-cols-1 lg:grid-cols-2 gap-grid-gutter">
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-grid-gutter">
 
                 <!-- Bitácora de Ayer -->
                 <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
@@ -277,6 +277,21 @@
                     <div id="alert-hoy" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
                         <span class="material-symbols-outlined text-[#e49102] text-[20px]">report_problem</span>
                         <p class="text-[13px] text-[#e49102] font-semibold" id="alert-hoy-text"></p>
+                    </div>
+                </article>
+
+                <!-- Vista previa de Mañana -->
+                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#53a759] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE MAÑANA</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Vista previa de mañana</h2>
+                        </div>
+                        <span id="total-manana-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 tareas</span>
+                    </div>
+
+                    <div id="list-manana" class="space-y-3">
+                        <!-- Se inyectan las filas dinámicamente -->
                     </div>
                 </article>
             </section>
@@ -391,6 +406,7 @@
             // 2. Procesar e Inyectar Bloques Temporales Complejos
             procesarSeccionMetrica("ayer", conteoAyer);
             procesarSeccionMetrica("hoy", conteoHoy);
+            procesarSeccionManana(conteoManana);
         });
 
         /**
@@ -476,6 +492,17 @@
             if (prefijo === "hoy") {
                 gestionarModuloSemanal(tasa.toFixed(1));
             }
+        }
+
+        /**
+         * Procesa el bloque de "Mañana": solo vista previa (título/estado planificado),
+         * sin métricas de completadas/consistencia porque son tareas futuras que todavía
+         * no pudieron cumplirse (PRD §5, Sección IV).
+         */
+        function procesarSeccionManana(data) {
+            const total = Object.values(data).reduce((a, b) => a + b, 0);
+            document.getElementById("total-manana-lbl").innerText = `${total} tareas`;
+            renderizarFilasEstados("list-manana", data);
         }
 
         /**

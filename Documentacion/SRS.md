@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: Notion Flow Auditor
 **Módulo:** Auditoría de Productividad y Recordatorios Diarios  
-**Versión:** 3.4 (Gobernanza de Documentación Versionada)  
+**Versión:** 3.5 (Implementación de la Sección IV — Vista Previa de Mañana)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
@@ -15,7 +15,8 @@
 | **v1.0** | Junio 2026 | Sabrina Sanso | MVP local inicial: script monolítico en primer plano con bucle `while True` bloqueante (`time.sleep`). |
 | **v2.0** | Junio 2026 | Sabrina Sanso | Migración CI/CD Serverless en contenedores virtuales GitHub Actions y normalización binaria de BOM Windows. |
 | **v3.3** | Julio 2026 | Sabrina Sanso | **Baseline Oficial Sincronizada con PRD v3.3:**<br>- Modificación de frecuencia de sincronización invariable a 1 hora (60 minutos).<br>- Delegación estricta del cómputo matemático de métricas y tasas al cliente JavaScript en tiempo real.<br>- Incorporación de la jerarquía de 6 estados ordenada desde "Sin empezar" hasta "Fallida / Vencida".<br>- Adición del Módulo Semanal de Bienestar y Alerta Emocional con persistencia local en caché (`localStorage`).<br>- Reconfiguración del footer de diagnóstico técnico relativo y posicionamiento del campo de versión del release abajo a la izquierda. |
-| **v3.4** *(Actual)* | Agosto 2026 | Sabrina Sanso | **Gobernanza de Documentación Versionada:**<br>- Adición de `SRS-FR-M2-205`: gate de CI (`docs_sync_check.yml`) que bloquea PRs con cambios funcionales sin actualización correspondiente de PRD/SRS.<br>- Formalización en `CLAUDE.md` del flujo de sincronización de PRD, SRS e Historias de Usuario (Notion) ante cada cambio funcional. |
+| **v3.4** | Agosto 2026 | Sabrina Sanso | **Gobernanza de Documentación Versionada:**<br>- Adición de `SRS-FR-M2-205`: gate de CI (`docs_sync_check.yml`) que bloquea PRs con cambios funcionales sin actualización correspondiente de PRD/SRS.<br>- Formalización en `CLAUDE.md` del flujo de sincronización de PRD, SRS e Historias de Usuario (Notion) ante cada cambio funcional. |
+| **v3.5** *(Actual)* | Agosto 2026 | Sabrina Sanso | **Implementación de Sección IV (Mañana):**<br>- `SRS-FR-M3-303` cerraba solo parcialmente: el backend calculaba e inyectaba `conteoManana` pero el frontend nunca lo renderizaba (solo Ayer y Hoy). Se agregó el tercer bloque "Vista previa de mañana" en `index.html`, reutilizando `renderizarFilasEstados()`.<br>- Alcance deliberadamente reducido respecto al resto de la estructura tripartita: sin métricas de completadas/consistencia (no aplican a tareas futuras) y sin colapsar/expandir (pendiente, ver HU en Notion). |
 
 ---
 
