@@ -1,5 +1,4 @@
 -r requirements.txt
 pytest>=8.0.0
-psutil>=5.9.0
 pip-audit>=2.7.0
 pyyaml>=6.0.0

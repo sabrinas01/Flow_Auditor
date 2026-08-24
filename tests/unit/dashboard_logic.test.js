@@ -8,6 +8,8 @@ const {
   escapeHtml,
   esEstadoCompletado,
   obtenerEstiloEstado,
+  rankEstado,
+  ordenarEntradasPorJerarquia,
   calcularMetricas,
   generarUltimos7Dias,
   calcularResumenSemanal,
@@ -63,6 +65,54 @@ describe('obtenerEstiloEstado', () => {
     const estilo = obtenerEstiloEstado('Estado Inventado XYZ');
     expect(estilo.pill).toBe('left-pill-blue');
     expect(estilo.icon).toBeNull();
+  });
+});
+
+describe('rankEstado (jerarquía PRD/SRS: Sin empezar → ... → Fallida/Vencida)', () => {
+  test.each([
+    ['Sin empezar', 1],
+    ['En ejecución', 2],
+    ['Hecha por otra persona', 3],
+    ['⏭️ No necesaria', 4],
+    ['Hecha', 5],
+    ['❌ Fallida / Vencida', 6],
+    ['Estado totalmente desconocido', 99],
+  ])('%s -> rank %i', (estado, rankEsperado) => {
+    expect(rankEstado(estado)).toBe(rankEsperado);
+  });
+});
+
+describe('ordenarEntradasPorJerarquia', () => {
+  test('reordena estados desordenados según la jerarquía fija', () => {
+    const data = {
+      'Fallida / Vencida': 6,
+      'Hecha': 4,
+      'No necesaria': 4,
+      'Sin empezar': 13,
+      'Hecha por otra persona': 2,
+      'En ejecución': 1,
+    };
+    const ordenado = ordenarEntradasPorJerarquia(data).map(([estado]) => estado);
+    expect(ordenado).toEqual([
+      'Sin empezar',
+      'En ejecución',
+      'Hecha por otra persona',
+      'No necesaria',
+      'Hecha',
+      'Fallida / Vencida',
+    ]);
+  });
+
+  test('preserva el orden original entre estados desconocidos (sort estable)', () => {
+    const data = { 'Zeta rara': 1, 'Alfa rara': 2, 'Sin empezar': 3 };
+    const ordenado = ordenarEntradasPorJerarquia(data).map(([estado]) => estado);
+    expect(ordenado).toEqual(['Sin empezar', 'Zeta rara', 'Alfa rara']);
+  });
+
+  test('no pierde ni duplica cantidades al reordenar', () => {
+    const data = { 'Hecha': 4, 'Sin empezar': 13 };
+    const ordenado = ordenarEntradasPorJerarquia(data);
+    expect(ordenado).toEqual([['Sin empezar', 13], ['Hecha', 4]]);
   });
 });
 

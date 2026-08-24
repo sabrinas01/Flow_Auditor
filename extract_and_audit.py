@@ -48,8 +48,11 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from dotenv import load_dotenv
 import requests
+import psutil
 
 from src.utils.env_helper import get_env_var
+
+UMBRAL_RAM_MB = 50
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -95,6 +98,17 @@ def validar_credenciales():
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
+
+
+def verificar_consumo_ram(umbral_mb=UMBRAL_RAM_MB):
+    """Monitorea el consumo de RAM (RSS) del proceso actual y registra una alerta
+    si supera el umbral, sin detener la ejecución (SRS Escenario 4 — Validación
+    de Consumo de Recursos). Devuelve el RSS actual en MB."""
+    proceso = psutil.Process(os.getpid())
+    rss_mb = proceso.memory_info().rss / (1024 * 1024)
+    if rss_mb > umbral_mb:
+        print(f"[ALERTA] Consumo RAM > {umbral_mb}MB (actual: {rss_mb:.1f} MB) — revisando fugas de memoria")
+    return rss_mb
 
 
 def obtener_version_actual():
@@ -236,6 +250,8 @@ def auditar_consistencia_tripartita():
             file.write(html_content)
 
         print("✅ Frontend index.html sincronizado y actualizado con éxito de forma horaria.")
+
+        verificar_consumo_ram()
 
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 401:

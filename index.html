@@ -304,6 +304,7 @@
     <script src="./src/utils/debounce.js"></script>
     <script src="./src/utils/src_localStorage_index.js"></script>
     <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
 
     <!-- =================================================== -->
     <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
@@ -377,32 +378,7 @@
             }
         }
 
-        /**
-         * Renderizar la lista de estados preservando nombres, emoticones y cantidades
-         */
-        function renderizarFilasEstados(containerId, data) {
-            const container = document.getElementById(containerId);
-            if (!data || Object.keys(data).length === 0) {
-                container.innerHTML = `<div class="status-row left-pill-blue flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin planificación registrada</div>`;
-                return;
-            }
-
-            container.innerHTML = Object.entries(data).map(([estado, cantidad]) => {
-                const estilo = obtenerEstiloEstado(estado);
-                const iconoHtml = estilo.icon
-                    ? `<span class="material-symbols-outlined text-[18px] ${estilo.iconClass}" style="font-variation-settings: 'FILL' 1;">${estilo.icon}</span>`
-                    : "";
-                return `
-                    <div class="status-row ${estilo.pill} flex justify-between items-center px-4 py-3.5">
-                        <div class="flex items-center gap-3">
-                            ${iconoHtml}
-                            <span class="${estilo.textClass} truncate pr-2">${escapeHtml(estado)}</span>
-                        </div>
-                        <span class="text-white font-bold text-[15px]">${cantidad}</span>
-                    </div>
-                `;
-            }).join('');
-        }
+        // renderizarFilasEstados vive en src/utils/dom_render.js (testeada con Jest + jsdom).
 
         /**
          * Persistencia y control histórico en local para el Balance Semanal (PRD 4.3)
@@ -465,18 +441,7 @@
             }
         }
 
-        /**
-         * Colapsa/expande el contenido de un bloque (Ayer/Hoy), rotando el chevron.
-         */
-        function toggleBloque(prefijo) {
-            const content = document.getElementById(`content-${prefijo}`);
-            const chevron = document.getElementById(`chevron-${prefijo}`);
-            const boton = chevron.closest("button");
-
-            const colapsado = content.classList.toggle("hidden");
-            chevron.style.transform = colapsado ? "rotate(-90deg)" : "rotate(0deg)";
-            boton.setAttribute("aria-expanded", String(!colapsado));
-        }
+        // toggleBloque vive en src/utils/dom_render.js (testeada con Jest + jsdom).
 
         /**
          * Abre/cierra el menú lateral de navegación
