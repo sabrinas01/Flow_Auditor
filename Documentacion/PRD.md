@@ -56,3 +56,9 @@ Tasa = (Tareas "Hecha" AND fórmula "consistencia"=1 / Total de Tareas Creadas) 
 * **Dado** que el Daemon finalizó sincronización a las 14:00 y se detectaron 4 días con rendimiento < 70%.
 * **Cuando** el reloj llega a las 15:00.
 * **Entonces** debe despertar, procesar, publicar el `index.html` con la inyección de versión v3.3, mostrar la alerta de la mentora en el balance semanal y programar la próxima sincronización para las 16:00.
+
+## 🕘 9. Historial de versiones
+
+| Versión | Fecha | Descripción del cambio |
+| :--- | :--- | :--- |
+| **v3.3** *(Actual)* | Julio 2026 | Baseline oficial sincronizada con SRS v3.3 (ver `SRS.md` para el detalle técnico completo). |

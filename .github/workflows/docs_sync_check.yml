@@ -1,0 +1,43 @@
+name: Docs sync check
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check_docs_updated:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verificar que el codigo funcional y la documentacion cambien juntos
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          if git log "$BASE_SHA..$HEAD_SHA" --format=%B | grep -qi '\[skip-docs\]'; then
+            echo "Se encontro [skip-docs] en algun commit del PR: se salta el chequeo."
+            exit 0
+          fi
+
+          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          echo "Archivos cambiados en este PR:"
+          echo "$CHANGED"
+
+          FUNCTIONAL_PATTERN='^(extract_and_audit\.py|generate_dashboard\.py|index\.html|src/|\.github/workflows/notion_sync\.yml)'
+          DOCS_PATTERN='^Documentacion/(PRD|SRS)\.md$'
+
+          if echo "$CHANGED" | grep -qE "$FUNCTIONAL_PATTERN"; then
+            if echo "$CHANGED" | grep -qE "$DOCS_PATTERN"; then
+              echo "OK: hay cambios funcionales y la documentacion (PRD/SRS) se actualizo en el mismo PR."
+            else
+              echo "::error::Este PR modifica archivos funcionales pero no actualiza Documentacion/PRD.md ni Documentacion/SRS.md. Actualiza la version y el historial correspondiente, o agrega '[skip-docs]' al mensaje de un commit si de verdad no aplica."
+              exit 1
+            fi
+          else
+            echo "OK: no hay cambios funcionales en este PR, no se requiere actualizar la documentacion."
+          fi
