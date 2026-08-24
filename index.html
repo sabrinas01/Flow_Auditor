@@ -380,6 +380,12 @@
     </main>
 
     <!-- =================================================== -->
+    <!-- UTILITARIOS COMPARTIDOS (vanilla, sin bundler) -->
+    <!-- =================================================== -->
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+
+    <!-- =================================================== -->
     <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
     <!-- =================================================== -->
     <script>
@@ -397,6 +403,10 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
+            // 0. Inicializar estado versionado en localStorage (crea o migra el
+            // esquema flow_auditor:v1.0 si hace falta) — src/utils/src_localStorage_index.js
+            initLocalStorage();
+
             // 1. Inyectar Relojes de Telemetría
             document.getElementById("footer-sync-time").innerText = timestampLocalStr;
             document.getElementById("footer-next-time").innerText = timestampNextStr;
@@ -627,18 +637,17 @@
         /**
          * Gatilla animación de refresco al presionar botón en cabecera
          */
+        // Recarga diferida 1.2s mediante el debounce compartido — src/utils/debounce.js
+        const dispararRecargaDiferida = debounce(() => {
+            document.getElementById("icon-refresh").classList.remove("spin-animation");
+            document.getElementById("btn-refresh").disabled = false;
+            location.reload();
+        }, 1200);
+
         function recargarDashboard() {
-            const icon = document.getElementById("icon-refresh");
-            const btn = document.getElementById("btn-refresh");
-
-            icon.classList.add("spin-animation");
-            btn.disabled = true;
-
-            setTimeout(() => {
-                icon.classList.remove("spin-animation");
-                btn.disabled = false;
-                location.reload();
-            }, 1200);
+            document.getElementById("icon-refresh").classList.add("spin-animation");
+            document.getElementById("btn-refresh").disabled = true;
+            dispararRecargaDiferida();
         }
     </script>
 </body>

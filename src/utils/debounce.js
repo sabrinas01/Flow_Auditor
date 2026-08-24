@@ -1,21 +1,19 @@
 /**
- * Debounce utility
+ * Debounce utility (vanilla JS, sin bundler — se carga con <script>).
  *
  * IMPORTANT: The debounce delay is explicitly 1200 ms (1.2 s) as required.
- * Documentación en código: cualquier persona leyendo este archivo debe ver
- * el valor por defecto y el razonamiento resumido aquí.
  *
  * Why 1.2s? (short note)
  * - Reduce ruido en peticiones/filtrado al teclear rápido.
  * - Evita llamadas superfluas al backend / re-render costosos en UI.
  * - 1.2s es el valor acordado para mantener UX reactiva pero limitar tráfico.
  *
- * Usage:
- *   import debounce from 'src/utils/debounce';
- *   const debouncedFn = debounce(fn); // uses default 1200 ms
- *   const debouncedCustom = debounce(fn, 500); // override if required
+ * Usage (navegador):
+ *   <script src="./src/utils/debounce.js"></script>
+ *   const debouncedFn = debounce(fn); // usa el default de 1200 ms
+ *   const debouncedCustom = debounce(fn, 500); // override si hace falta
  *
- * The returned function has a .cancel() method to abort pending invocation.
+ * La función devuelta tiene un método .cancel() para abortar una invocación pendiente.
  */
 
 function debounce(func, wait = 1200, options = { leading: false, trailing: true }) {
@@ -23,7 +21,6 @@ function debounce(func, wait = 1200, options = { leading: false, trailing: true 
   let lastArgs = null;
   let lastThis = null;
   let result = undefined;
-  let lastCallTime = null;
 
   function invokeFunc() {
     const args = lastArgs;
@@ -52,7 +49,6 @@ function debounce(func, wait = 1200, options = { leading: false, trailing: true 
   function wrapper(...args) {
     lastArgs = args;
     lastThis = this;
-    lastCallTime = Date.now();
 
     if (!timeout) {
       if (options.leading) {
@@ -68,4 +64,7 @@ function debounce(func, wait = 1200, options = { leading: false, trailing: true 
   return wrapper;
 }
 
-export default debounce;
+// CommonJS opcional (para tests con Jest/Node) sin afectar el uso como <script> global.
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = debounce;
+}
