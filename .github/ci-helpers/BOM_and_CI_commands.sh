@@ -12,4 +12,4 @@ set -euo pipefail
 
 # Escaneo de vulnerabilidades
 # pip install pip-audit
-# pip-audit --json -o .bom/pip-audit.json
+# pip-audit -f json -o .bom/pip-audit.json

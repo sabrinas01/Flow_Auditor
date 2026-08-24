@@ -25,7 +25,7 @@ jobs:
           git --no-pager diff --exit-code .bom/requirements_ci.txt .bom/requirements.txt || (echo "BOM desactualizado" && exit 1)
       - name: Ejecutar pip-audit
         run: |
-          pip-audit --json -o .bom/pip-audit.json
+          pip-audit -f json -o .bom/pip-audit.json
       - name: Subir reporte de pip-audit
         if: always()
         uses: actions/upload-artifact@v4
