@@ -16,25 +16,24 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install dependencies
+      - name: Install Lighthouse CLI and static server
         run: |
-          npm ci || npm install
-          npm install -g lighthouse
+          npm install -g lighthouse serve
 
-      - name: Start local server (if app is static, use serve)
+      - name: Start local server for the static site
         run: |
-          # Ajusta el comando a cómo se sirve tu frontend. Ejemplo con serve:
-          npm install -g serve
-          serve -s build -l 5000 & sleep 2
+          # El sitio es un único index.html en la raíz del repo (sin build ni bundler).
+          serve -s . -l 5000 &
+          npx wait-on http://localhost:5000
         env:
           CI: true
 
       - name: Run Lighthouse
         run: |
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          echo "TIMESTAMP=$TIMESTAMP" >> "$GITHUB_ENV"
           mkdir -p reports
-          # Ejecuta lighthouse contra http://localhost:5000 o la URL de tu app
-          lighthouse http://localhost:5000 --output html --output-path ./reports/lighthouse-${TIMESTAMP}.html --only-categories=performance,accessibility,best-practices,seo --quiet || true
+          lighthouse http://localhost:5000 --output html --output-path ./reports/lighthouse-${TIMESTAMP}.html --chrome-flags="--headless --no-sandbox" --only-categories=performance,accessibility,best-practices,seo --quiet || true
 
       - name: Upload Lighthouse report
         uses: actions/upload-artifact@v4
@@ -42,19 +41,17 @@ jobs:
           name: lighthouse-report
           path: reports/*.html
 
-      - name: Fail if below thresholds (optional)
+      - name: Fail if below thresholds
         run: |
-          # Usa node script o lhci para parsear JSON y fallar si score < threshold.
-          # Ejemplo simple con lighthouse --output=json:
-          lighthouse http://localhost:5000 --output json --output-path ./reports/lh-${TIMESTAMP}.json --only-categories=performance,accessibility,best-practices,seo --quiet
+          lighthouse http://localhost:5000 --output json --output-path ./reports/lh-${TIMESTAMP}.json --chrome-flags="--headless --no-sandbox" --only-categories=performance,accessibility,best-practices,seo --quiet
           python3 - "$TIMESTAMP" <<'PY'
-            import json,sys
-            ts = sys.argv[1]
-            j = json.load(open(f'reports/lh-{ts}.json'))
-            scores = [j['categories'][c]['score']*100 for c in ('performance','accessibility','best-practices','seo')]
-            perf,acc,bp,seo = scores
-            print("scores:", scores)
-            if perf < 70 or acc < 90:
-                print("Lighthouse thresholds not met")
-                sys.exit(1)
+          import json,sys
+          ts = sys.argv[1]
+          j = json.load(open(f'reports/lh-{ts}.json'))
+          scores = [j['categories'][c]['score']*100 for c in ('performance','accessibility','best-practices','seo')]
+          perf,acc,bp,seo = scores
+          print("scores:", scores)
+          if perf < 70 or acc < 90:
+              print("Lighthouse thresholds not met")
+              sys.exit(1)
           PY

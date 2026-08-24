@@ -56,7 +56,7 @@ def validar_credenciales():
 # Esto asegura que al compilarse localmente, la fecha coincida perfectamente 
 # con tu barra de tareas de Windows de forma dinámica y real.
 arg_now = datetime.datetime.now()
-utc_now = datetime.datetime.utcnow()
+utc_now = datetime.datetime.now(datetime.timezone.utc)
 
 fecha_hoy = arg_now.date()
 fecha_ayer = fecha_hoy - datetime.timedelta(days=1)

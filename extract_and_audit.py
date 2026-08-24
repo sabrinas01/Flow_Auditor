@@ -40,10 +40,12 @@ import os
 import sys
 import json
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from dotenv import load_dotenv
 import requests
+
+from src.utils.env_helper import get_env_var
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -69,19 +71,6 @@ def validar_credenciales():
         sys.exit(1)
 
 
-def get_env_var(keys, required=False, min_length=0):
-    """Devuelve el primer valor de entorno presente en 'keys'. Lanza error si es requerido y no existe o demasiado corto."""
-    for k in keys:
-        v = os.getenv(k)
-        if v:
-            if min_length and len(v) < min_length:
-                raise ValueError(f"La variable {k} debe tener al menos {min_length} caracteres.")
-            return v
-    if required:
-        raise EnvironmentError(f"Falta variable de entorno. Buscadas: {keys}")
-    return None
-
-
 def evaluar_bloque_temporal(fecha_str):
     """Evalúa la marca temporal de la tarea mapeándola a las ventanas cronológicas."""
     if not fecha_str:
@@ -90,7 +79,7 @@ def evaluar_bloque_temporal(fecha_str):
         solo_fecha = fecha_str.split("T")[0].strip()
         fecha_dt = datetime.strptime(solo_fecha, "%Y-%m-%d").date()
         # Normalización horaria estricta de San Juan, Argentina (GMT-3)
-        hoy_local = (datetime.utcnow() - timedelta(hours=3)).date()
+        hoy_local = (datetime.now(timezone.utc) - timedelta(hours=3)).date()
 
         if fecha_dt == hoy_local:
             return "HOY"
@@ -159,7 +148,7 @@ def auditar_consistencia_tripartita():
                 conteo_manana[est_val] = conteo_manana.get(est_val, 0) + 1
 
         # Generación de marcas de tiempo del diagnóstico de infraestructura
-        ahora_utc = datetime.utcnow()
+        ahora_utc = datetime.now(timezone.utc)
         ahora_argentina = ahora_utc - timedelta(hours=3)
         # Sincronización predictiva exacta calculada de forma dinámica relativa (+1 hora exacta)
         proxima_sincro = ahora_argentina + timedelta(hours=1)
