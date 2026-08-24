@@ -3,6 +3,9 @@ venv/
 .venv/
 env/
 
+# Dependencias de Node (build del CSS de Tailwind)
+node_modules/
+
 # Variables de entorno y llaves secretas (¡CRÍTICO!)
 .env
 .env.local
