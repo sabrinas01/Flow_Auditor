@@ -5,7 +5,7 @@
 * **Marca Asociada:** Bitácora IT
 * **Rol de Gobierno:** IT Functional Analyst (Sabrina) & Mentor Técnico de IA
 * **Estado:** Listo para Desarrollo (Base Lineal Validada)
-* **Versión:** 4.5
+* **Versión:** 4.6
 * **Zona Horaria de Referencia:** GMT -3 (San Juan, Argentina)
 
 ## 🎯 2. Visión General y Contexto
@@ -73,4 +73,5 @@ Tasa = (Tareas "Hecha" AND fórmula "consistencia"=1 / Total de Tareas Creadas) 
 | **v4.2** | Agosto 2026 | Primeros tests de JS corriendo de verdad en el repo (Jest): 34 tests nuevos para el motor de consistencia, la alerta de bienestar semanal y el debounce compartido — este último con un bug real que los tests encontraron y se corrigió. Ver `SRS.md` v4.2. |
 | **v4.3** | Agosto 2026 | Se agregan tests de cron, inyección de versión y cálculo de próxima sincronización — cierra los últimos gaps de la HU "Despliegue Automatizado y Trazabilidad de Versiones". Ver `SRS.md` v4.3. |
 | **v4.4** | Agosto 2026 | Se implementa el monitoreo de RAM dentro del script (antes solo existía como test externo); se implementa por primera vez la jerarquía de estados del §4.2 (nunca estuvo codificada, solo documentada); se agregan tests de renderizado DOM. Ver `SRS.md` v4.4 — `SRS-FR-M3-308` nuevo. |
-| **v4.5** *(Actual)* | Agosto 2026 | Se agrega test de paridad entre la ruta local (`.env`) y la ruta CI (Secrets) para la resolución de credenciales, cerrando el último gap de la HU "Orquestación y Bifurcación CI/CD Local". Se descarta `.env.example` por decisión de producto. Ver `SRS.md` v4.5. |
+| **v4.5** | Agosto 2026 | Se agrega test de paridad entre la ruta local (`.env`) y la ruta CI (Secrets) para la resolución de credenciales, cerrando el último gap de la HU "Orquestación y Bifurcación CI/CD Local". Se descarta `.env.example` por decisión de producto. Ver `SRS.md` v4.5. |
+| **v4.6** *(Actual)* | Agosto 2026 | `inicio.html` pasa a ser la página principal del sitio: `index.html` (el dashboard) ahora redirige automáticamente a `inicio.html` la primera vez que se accede en una sesión de navegador (vía `sessionStorage`), sin romper la navegación posterior desde el sidebar de `inicio.html` hacia `index.html`. Cambio de enrutamiento en el frontend; no afecta la plantilla de inyección de datos ni el pipeline de CI. Ver `SRS.md` v4.6. |

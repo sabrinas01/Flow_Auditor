@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bitácora IT - Notion Flow Auditor</title>
+    <script>
+        // inicio.html es la página principal del sitio; si se llega acá directo
+        // (por URL o marcador) se redirige una sola vez por sesión, para no
+        // interferir con la navegación normal desde el sidebar de inicio.html.
+        try {
+            if (!sessionStorage.getItem('nfa_landed')) {
+                sessionStorage.setItem('nfa_landed', '1');
+                window.location.replace('inicio.html');
+            }
+        } catch (e) {
+            // sessionStorage puede no estar disponible (ej. abierto directo como
+            // archivo local en algunos navegadores); en ese caso no redirige.
+        }
+    </script>
     <!-- Tipografías del Design System "Obsidian Refined" (Stitch) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
