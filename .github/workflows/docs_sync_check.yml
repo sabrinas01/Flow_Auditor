@@ -28,7 +28,7 @@ jobs:
           echo "Archivos cambiados en este PR:"
           echo "$CHANGED"
 
-          FUNCTIONAL_PATTERN='^(extract_and_audit\.py|generate_dashboard\.py|index\.html|src/|\.github/workflows/notion_sync\.yml)'
+          FUNCTIONAL_PATTERN='^(extract_and_audit\.py|generate_dashboard\.py|index\.html|recordatorios-varios\.html|src/|\.github/workflows/notion_sync\.yml)'
           DOCS_PATTERN='^Documentacion/(PRD|SRS)\.md$'
 
           if echo "$CHANGED" | grep -qE "$FUNCTIONAL_PATTERN"; then

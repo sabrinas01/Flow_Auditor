@@ -222,34 +222,37 @@ def auditar_consistencia_tripartita():
         str_next = timestamps["proxima"]
         str_server = timestamps["servidor"]
 
-        # Lectura del frontend maestro index.html para realizar la inyección dinámica
-        html_path = BASE_DIR / "index.html"
-        with open(html_path, "r", encoding="utf-8") as file:
-            html_content = file.read()
-
-        # Reemplazo de constantes mediante expresiones regulares tolerantes a espacios (\s*)
-        html_content = re.sub(r'const\s+timestampLocalStr\s*=\s*".*?"\s*;', f'const timestampLocalStr = "{str_local}";', html_content)
-        html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?"\s*;', f'const timestampNextStr = "{str_next}";', html_content)
-        html_content = re.sub(r'const\s+timestampServerStr\s*=\s*".*?"\s*;', f'const timestampServerStr = "{str_server}";', html_content)
-
         # Serialización de estructuras JSON limpias, escapando "</" para evitar
         # que un estado de Notion cierre el bloque <script> prematuramente (XSS/HTML injection)
         json_ayer = json.dumps(conteo_ayer, ensure_ascii=False).replace("</", "<\\/")
         json_hoy = json.dumps(conteo_hoy, ensure_ascii=False).replace("</", "<\\/")
         json_manana = json.dumps(conteo_manana, ensure_ascii=False).replace("</", "<\\/")
 
-        html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\}\s*;", f"const conteoAyer = {json_ayer};", html_content)
-        html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\}\s*;", f"const conteoHoy = {json_hoy};", html_content)
-        html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\}\s*;", f"const conteoManana = {json_manana};", html_content)
-
         app_version = obtener_version_actual()
-        html_content = re.sub(r'const\s+appVersionStr\s*=\s*".*?"\s*;', f'const appVersionStr = "{app_version}";', html_content)
 
-        # Sobrescribir index.html de forma atómica y segura
-        with open(html_path, "w", encoding="utf-8") as file:
-            file.write(html_content)
+        # Ambos frontends (Recordatorios diarios y Recordatorios varios) comparten
+        # el mismo bloque de variables inyectadas, así que se sincronizan igual.
+        for nombre_archivo in ("index.html", "recordatorios-varios.html"):
+            html_path = BASE_DIR / nombre_archivo
+            with open(html_path, "r", encoding="utf-8") as file:
+                html_content = file.read()
 
-        print("✅ Frontend index.html sincronizado y actualizado con éxito de forma horaria.")
+            # Reemplazo de constantes mediante expresiones regulares tolerantes a espacios (\s*)
+            html_content = re.sub(r'const\s+timestampLocalStr\s*=\s*".*?"\s*;', f'const timestampLocalStr = "{str_local}";', html_content)
+            html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?"\s*;', f'const timestampNextStr = "{str_next}";', html_content)
+            html_content = re.sub(r'const\s+timestampServerStr\s*=\s*".*?"\s*;', f'const timestampServerStr = "{str_server}";', html_content)
+
+            html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\}\s*;", f"const conteoAyer = {json_ayer};", html_content)
+            html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\}\s*;", f"const conteoHoy = {json_hoy};", html_content)
+            html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\}\s*;", f"const conteoManana = {json_manana};", html_content)
+
+            html_content = re.sub(r'const\s+appVersionStr\s*=\s*".*?"\s*;', f'const appVersionStr = "{app_version}";', html_content)
+
+            # Sobrescribir el frontend de forma atómica y segura
+            with open(html_path, "w", encoding="utf-8") as file:
+                file.write(html_content)
+
+            print(f"✅ Frontend {nombre_archivo} sincronizado y actualizado con éxito de forma horaria.")
 
         verificar_consumo_ram()
 

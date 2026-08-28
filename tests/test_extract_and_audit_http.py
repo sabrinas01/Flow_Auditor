@@ -27,6 +27,7 @@ PLANTILLA_MINIMA = """<html><body>
 
 def _preparar_directorio_temporal(tmp_path, monkeypatch):
     (tmp_path / "index.html").write_text(PLANTILLA_MINIMA, encoding="utf-8")
+    (tmp_path / "recordatorios-varios.html").write_text(PLANTILLA_MINIMA, encoding="utf-8")
     monkeypatch.setattr(extract_and_audit, "BASE_DIR", tmp_path)
     monkeypatch.setattr(extract_and_audit, "validar_credenciales", lambda: None)
 
@@ -52,13 +53,15 @@ def test_conexion_exitosa_escribe_la_plantilla(tmp_path, monkeypatch):
     with patch.object(extract_and_audit.requests, "post", return_value=_mock_respuesta_notion([pagina_falsa])):
         extract_and_audit.auditar_consistencia_tripartita()
 
-    salida = (tmp_path / "index.html").read_text(encoding="utf-8")
+    # Ambos frontends (index.html y recordatorios-varios.html) deben sincronizarse igual
+    for nombre_archivo in ("index.html", "recordatorios-varios.html"):
+        salida = (tmp_path / nombre_archivo).read_text(encoding="utf-8")
 
-    # Los placeholders vacíos deben haber sido reemplazados con datos reales
-    assert 'const timestampLocalStr = "";' not in salida
-    assert 'const timestampServerStr = "";' not in salida
-    # Sin tags de git en el directorio temporal -> fallback documentado a "dev"
-    assert 'const appVersionStr = "dev";' in salida
+        # Los placeholders vacíos deben haber sido reemplazados con datos reales
+        assert 'const timestampLocalStr = "";' not in salida
+        assert 'const timestampServerStr = "";' not in salida
+        # Sin tags de git en el directorio temporal -> fallback documentado a "dev"
+        assert 'const appVersionStr = "dev";' in salida
 
 
 def test_falla_401_hace_exit_1_y_no_toca_el_archivo(tmp_path, monkeypatch, capsys):
@@ -77,6 +80,7 @@ def test_falla_401_hace_exit_1_y_no_toca_el_archivo(tmp_path, monkeypatch, capsy
 
     # El fallo ocurre en raise_for_status(), antes de leer/escribir el archivo
     assert (tmp_path / "index.html").read_text(encoding="utf-8") == PLANTILLA_MINIMA
+    assert (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8") == PLANTILLA_MINIMA
 
 
 def test_falla_500_tambien_hace_exit_1(tmp_path, monkeypatch, capsys):

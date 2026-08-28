@@ -3,33 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitácora IT - Notion Flow Auditor</title>
-    <script>
-        // inicio.html es la página principal del sitio; si se llega acá directo
-        // (por URL o marcador) se redirige una sola vez por sesión, para no
-        // interferir con la navegación normal desde el sidebar de inicio.html.
-        try {
-            if (!sessionStorage.getItem('nfa_landed')) {
-                sessionStorage.setItem('nfa_landed', '1');
-                window.location.replace('inicio.html');
-            }
-        } catch (e) {
-            // sessionStorage puede no estar disponible (ej. abierto directo como
-            // archivo local en algunos navegadores); en ese caso no redirige.
-        }
-    </script>
+    <title>Bitácora IT - Recordatorios Varios</title>
     <!-- Tipografías del Design System "Obsidian Refined" (Stitch) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Antes pedía wght 100..700 (rango completo variable); la interfaz solo usa wght 400 fijo,
-         así que se fija a un único valor -> Google sirve una instancia estática mucho más liviana
-         en vez de la fuente variable completa. FILL se mantiene en 0..1 porque sí se usan ambos. -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
-    <!-- CSS de Tailwind precompilado (antes: cdn.tailwindcss.com haciendo JIT en el
-         navegador — 127KB de JS + tiempo de compilación en cada carga). El tema
-         (colores/spacing/etc.) vive en tailwind.config.js; regenerar con:
-         npm install && npm run build:css -->
+    <!-- CSS de Tailwind precompilado (mismo bundle que index.html/inicio.html) -->
     <link rel="stylesheet" href="./styles.css">
     <style>
         body {
@@ -105,12 +85,12 @@
                 <span class="material-symbols-outlined">home</span>
                 <span>Inicio</span>
             </a>
-            <a href="index.html" class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all">
+            <a href="index.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
                 <span class="material-symbols-outlined">calendar_today</span>
                 <span>Recordatorios diarios</span>
             </a>
-            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
-                <span class="material-symbols-outlined">list_alt</span>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">list_alt</span>
                 <span>Recordatorios varios</span>
             </a>
         </nav>
@@ -134,7 +114,7 @@
                     </div>
                     <div>
                         <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">NOTION FLOW AUDITOR</span>
-                        <p class="text-[10px] font-label-caps text-primary tracking-widest">DASHBOARD PERSONAL</p>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">RECORDATORIOS VARIOS</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -226,55 +206,44 @@
                         </div>
                     </div>
                 </article>
-            </section>
 
-            <!-- =================================================== -->
-            <!-- BALANCE SEMANAL Y BIENESTAR -->
-            <!-- =================================================== -->
-            <section class="glass-card rounded-xl overflow-hidden p-8 space-y-6">
-                <div class="space-y-1">
-                    <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">BALANCE SEMANAL</p>
-                    <h2 class="text-headline-md font-headline-md text-white">Analítica de Consistencia</h2>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-[#232326]">
-                                <th class="px-2 py-4 text-[10px] font-label-caps text-[#8e8e93] uppercase">Fecha / Día</th>
-                                <th class="px-2 py-4 text-[10px] font-label-caps text-[#8e8e93] uppercase text-right">Consistencia (%)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="weekly-table-body" class="divide-y divide-[#232326]">
-                            <!-- Filas dinámicas mediante JS -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Alerta Mental / Empática de la Mentora de Bienestar (PRD V3.3) -->
-                <div id="wellness-alert-card" class="hidden">
-                    <section class="bg-black/30 rounded-xl p-8 border border-[#e49102]/40 relative overflow-hidden group mt-4">
-                        <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                            <span class="material-symbols-outlined text-[100px] text-white">forum</span>
+                <!-- Tareas Planificadas (Mañana) -->
+                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#e49102] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS PARA MAÑANA</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Tareas planificadas</h2>
                         </div>
-                        <div class="flex items-start gap-6 relative z-10">
-                            <div class="bg-[#e49102]/10 p-4 rounded-xl border border-[#e49102]/30">
-                                <span class="material-symbols-outlined text-[#e49102] text-2xl">warning</span>
+                        <div class="flex items-center gap-2">
+                            <span id="total-manana-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 tareas</span>
+                            <button type="button" onclick="toggleBloque('manana')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-manana">
+                                <span id="chevron-manana" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="content-manana" class="flex flex-col gap-6">
+                        <div id="list-manana" class="space-y-3">
+                            <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
+                                <p id="hechas-manana-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
                             </div>
-                            <div class="space-y-4 flex-grow">
-                                <p class="text-[11px] font-label-caps text-[#e49102] tracking-widest">FEEDBACK DE MENTORA</p>
-                                <blockquote class="text-[18px] font-headline-md italic text-white leading-relaxed font-bold">
-                                    "Linda, es momento de ajustar prioridades y analizar si son necesarias tantas tareas. No seas dura contigo, cielo. 🧠✨"
-                                </blockquote>
-                                <div class="flex items-center gap-2 text-[10px] font-label-caps text-[#8e8e93]">
-                                    <span>— CON AMOR</span>
-                                    <span class="text-[#53a759] material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
-                                    <span>SABRYOFF</span>
-                                </div>
+                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#e49102]/20 text-center">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
+                                <p id="consistencia-manana-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
                             </div>
                         </div>
-                    </section>
-                </div>
+
+                        <div id="alert-manana" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
+                            <span class="material-symbols-outlined text-[#e49102] text-[20px]">warning</span>
+                            <p class="text-[13px] text-[#e49102] font-semibold" id="alert-manana-text"></p>
+                        </div>
+                    </div>
+                </article>
             </section>
 
             <!-- Botón de Redirección Oficial a Notion DB -->
@@ -283,7 +252,7 @@
                    target="_blank"
                    class="bg-[#c0453b] hover:bg-[#c0453b]/90 text-white font-bold text-[16px] py-4 px-10 rounded-xl flex items-center gap-3 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
                     <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
-                    <span>Ir a recordatorios diarios</span>
+                    <span>Ver en Notion</span>
                     <span class="material-symbols-outlined text-[20px]">open_in_new</span>
                 </a>
             </section>
@@ -324,9 +293,8 @@
     <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
     <!-- =================================================== -->
     <script>
-        // escapeHtml, esEstadoCompletado, obtenerEstiloEstado, calcularMetricas,
-        // generarUltimos7Dias y calcularResumenSemanal viven en
-        // src/utils/dashboard_logic.js (testeadas con Jest en tests/unit/).
+        // escapeHtml, esEstadoCompletado, obtenerEstiloEstado, calcularMetricas
+        // viven en src/utils/dashboard_logic.js (testeadas con Jest en tests/unit/).
 
         document.addEventListener("DOMContentLoaded", () => {
             // 0. Inicializar estado versionado en localStorage (crea o migra el
@@ -338,9 +306,10 @@
             document.getElementById("footer-next-time").innerText = timestampNextStr;
             document.getElementById("footer-version").innerText = appVersionStr;
 
-            // 2. Procesar e Inyectar Bloques Temporales Complejos
+            // 2. Procesar e Inyectar Bloques Temporales Complejos (Ayer/Hoy/Mañana)
             procesarSeccionMetrica("ayer", conteoAyer);
             procesarSeccionMetrica("hoy", conteoHoy);
+            procesarSeccionMetrica("manana", conteoManana);
         });
 
         /**
@@ -363,7 +332,7 @@
 
             renderizarFilasEstados(`list-${prefijo}`, data);
 
-            // Alerta individual del cuadro de hoy/ayer si cae del 70%
+            // Alerta individual del bloque si cae del 70%
             const alertBox = document.getElementById(`alert-${prefijo}`);
             if (alertBox) {
                 if (alerta) {
@@ -385,77 +354,9 @@
                     }
                 }
             }
-
-            // Gestionar caché para el Módulo Semanal de Bienestar
-            if (prefijo === "hoy") {
-                gestionarModuloSemanal(tasa.toFixed(1));
-            }
         }
 
-        // renderizarFilasEstados vive en src/utils/dom_render.js (testeada con Jest + jsdom).
-
-        /**
-         * Persistencia y control histórico en local para el Balance Semanal (PRD 4.3)
-         */
-        function gestionarModuloSemanal(hoyConsistencia) {
-            let cache = {};
-            try {
-                cache = JSON.parse(localStorage.getItem("nfa_weekly_cache") || "{}");
-            } catch (e) {
-                cache = {};
-            }
-
-            const key = timestampLocalStr.split(" ")[0];
-            cache[key] = parseFloat(hoyConsistencia);
-            localStorage.setItem("nfa_weekly_cache", JSON.stringify(cache));
-
-            renderizarTablaSemanal(cache);
-        }
-
-        /**
-         * Renderizar la tabla semanal y calcular la Alerta de Bienestar de la Mentora
-         */
-        function renderizarTablaSemanal(cache) {
-            const tableBody = document.getElementById("weekly-table-body");
-            tableBody.innerHTML = "";
-
-            // Generamos las 7 fechas naturales consecutivas terminando hoy, en vez de
-            // tomar solo las fechas presentes en caché (eso dejaba huecos cuando el
-            // dashboard no se abría todos los días).
-            // Cálculo (qué días, cuáles bajan de 70%) vive en dashboard_logic.js — acá solo DOM.
-            const ultimos7Dias = generarUltimos7Dias(timestampLocalStr.split(" ")[0]);
-            const { filas, mostrarAlerta } = calcularResumenSemanal(cache, ultimos7Dias);
-
-            filas.forEach(({ key, tieneDato, value }) => {
-                let celdaValor;
-                if (!tieneDato) {
-                    celdaValor = `<span class="px-3 py-1 rounded bg-[#232326] text-[#8e8e93] text-[13px] font-bold border border-[#2a2a2a]">Sin dato</span>`;
-                } else if (value >= 70.0) {
-                    celdaValor = `<span class="px-3 py-1 rounded bg-[#53a759]/10 text-[#83da85] text-[13px] font-bold border border-[#53a759]/20">${value.toFixed(1)}%</span>`;
-                } else if (value < 30.0) {
-                    celdaValor = `<span class="px-3 py-1 rounded bg-[#ff5f52]/10 text-[#ffb4ab] text-[13px] font-bold border border-[#ff5f52]/20">${value.toFixed(1)}%</span>`;
-                } else {
-                    celdaValor = `<span class="px-3 py-1 rounded bg-[#e49102]/10 text-[#ffb961] text-[13px] font-bold border border-[#e49102]/20">${value.toFixed(1)}%</span>`;
-                }
-
-                const tr = document.createElement("tr");
-                tr.className = "hover:bg-white/[0.02] transition-colors";
-                tr.innerHTML = `
-                    <td class="px-2 py-5 text-on-surface font-semibold">${key}</td>
-                    <td class="px-2 py-5 text-right">${celdaValor}</td>
-                `;
-                tableBody.appendChild(tr);
-            });
-
-            const alertCard = document.getElementById("wellness-alert-card");
-            if (mostrarAlerta) {
-                alertCard.classList.remove("hidden");
-            } else {
-                alertCard.classList.add("hidden");
-            }
-        }
-
-        // toggleBloque vive en src/utils/dom_render.js (testeada con Jest + jsdom).
+        // renderizarFilasEstados y toggleBloque viven en src/utils/dom_render.js (testeadas con Jest + jsdom).
 
         /**
          * Abre/cierra el menú lateral de navegación
