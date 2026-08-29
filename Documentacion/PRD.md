@@ -5,7 +5,7 @@
 * **Marca Asociada:** Bitácora IT
 * **Rol de Gobierno:** IT Functional Analyst (Sabrina) & Mentor Técnico de IA
 * **Estado:** Listo para Desarrollo (Base Lineal Validada)
-* **Versión:** 4.7
+* **Versión:** 4.8
 * **Zona Horaria de Referencia:** GMT -3 (San Juan, Argentina)
 
 ## 🎯 2. Visión General y Contexto
@@ -84,4 +84,5 @@ Tasa = (Tareas "Hecha" AND fórmula "consistencia"=1 / Total de Tareas Creadas) 
 | **v4.4** | Agosto 2026 | Se implementa el monitoreo de RAM dentro del script (antes solo existía como test externo); se implementa por primera vez la jerarquía de estados del §4.2 (nunca estuvo codificada, solo documentada); se agregan tests de renderizado DOM. Ver `SRS.md` v4.4 — `SRS-FR-M3-308` nuevo. |
 | **v4.5** | Agosto 2026 | Se agrega test de paridad entre la ruta local (`.env`) y la ruta CI (Secrets) para la resolución de credenciales, cerrando el último gap de la HU "Orquestación y Bifurcación CI/CD Local". Se descarta `.env.example` por decisión de producto. Ver `SRS.md` v4.5. |
 | **v4.6** | Agosto 2026 | `inicio.html` pasa a ser la página principal del sitio: `index.html` (el dashboard) ahora redirige automáticamente a `inicio.html` la primera vez que se accede en una sesión de navegador (vía `sessionStorage`), sin romper la navegación posterior desde el sidebar de `inicio.html` hacia `index.html`. Cambio de enrutamiento en el frontend; no afecta la plantilla de inyección de datos ni el pipeline de CI. Ver `SRS.md` v4.6. |
-| **v4.7** *(Actual)* | Agosto 2026 | Se implementa el módulo **Recordatorios Varios** (`recordatorios-varios.html`), a partir del diseño Stitch aportado por Sabrina: reutiliza Ayer/Hoy y agrega la card "Tareas planificadas" (Mañana) que había quedado fuera de alcance en v3.6. El sidebar de `index.html`/`inicio.html` habilita el ítem "Recordatorios varios" (antes "Próximamente"). `extract_and_audit.py` ahora sincroniza ambos frontends en el mismo ciclo horario. Ver `SRS.md` v4.7. |
+| **v4.7** | Agosto 2026 | Se implementa el módulo **Recordatorios Varios** (`recordatorios-varios.html`), a partir del diseño Stitch aportado por Sabrina: reutiliza Ayer/Hoy y agrega la card "Tareas planificadas" (Mañana) que había quedado fuera de alcance en v3.6. El sidebar de `index.html`/`inicio.html` habilita el ítem "Recordatorios varios" (antes "Próximamente"). `extract_and_audit.py` ahora sincroniza ambos frontends en el mismo ciclo horario. Ver `SRS.md` v4.7. |
+| **v4.8** *(Actual)* | Agosto 2026 | **Fix de despliegue:** el paso de publicación de `notion_sync.yml` solo hacía `git add index.html` — `recordatorios-varios.html` nunca llegaba a `gh-pages` pese a que `extract_and_audit.py` sí lo actualizaba en el runner cada hora (quedó comprobado: el commit horario automático solo tocaba `index.html` desde que se implementó el módulo en v4.7). El módulo estaba deployado pero congelado con datos de placeholder. Ver `SRS.md` v4.8. |
