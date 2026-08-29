@@ -62,10 +62,13 @@
         const timestampNextStr = "18/08/2026 21:20:23";
         const timestampServerStr = "18/08/2026 23:20:23";
 
-        // Lista plana de recordatorios varios (BD "Mis Recordatorios varios V0"),
-        // uno por ítem con su propio Nombre/Estado/Prioridad/Área/Periodo/Fecha —
-        // a diferencia de Recordatorios Diarios, acá no se agrega por estado.
-        const recordatoriosVarios = [];
+        // Recordatorios varios (BD "Mis Recordatorios varios V0"), clasificados en
+        // las mismas tres ventanas cronológicas que Recordatorios Diarios. Cada
+        // bloque es una LISTA de ítems completos (Nombre/Estado/Prioridad/Área/
+        // Periodo/Fecha) — a diferencia de index.html, acá no se agrega por estado.
+        const recordatoriosVariosAyer = [];
+        const recordatoriosVariosHoy = [];
+        const recordatoriosVariosManana = [];
     </script>
 
     <!-- =================================================== -->
@@ -127,20 +130,72 @@
 
         <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
             <!-- =================================================== -->
-            <!-- LISTA DE RECORDATORIOS VARIOS -->
+            <!-- RECORDATORIOS VARIOS: AYER / HOY / MAÑANA -->
             <!-- =================================================== -->
-            <section class="glass-card rounded-xl p-8 flex flex-col gap-6">
-                <div class="flex justify-between items-start">
-                    <div class="space-y-1">
-                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">HÁBITOS · RECORDATORIOS · TAREAS DE PROYECTO</p>
-                        <h2 class="text-headline-md font-headline-md text-white">Recordatorios Varios</h2>
-                    </div>
-                    <span id="total-varios-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
-                </div>
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-grid-gutter">
 
-                <div id="list-varios" class="space-y-3">
-                    <!-- Se inyectan las filas dinámicamente -->
-                </div>
+                <!-- Ayer -->
+                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">AYER</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Recordatorios de ayer</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="total-varios-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
+                            <button type="button" onclick="toggleBloque('varios-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-ayer">
+                                <span id="chevron-varios-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="content-varios-ayer">
+                        <div id="list-varios-ayer" class="space-y-3">
+                            <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Hoy -->
+                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">HOY</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Recordatorios de hoy</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="total-varios-hoy-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 ítems</span>
+                            <button type="button" onclick="toggleBloque('varios-hoy')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-hoy">
+                                <span id="chevron-varios-hoy" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="content-varios-hoy">
+                        <div id="list-varios-hoy" class="space-y-3">
+                            <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Mañana -->
+                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#e49102] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">MAÑANA</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Recordatorios de mañana</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="total-varios-manana-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
+                            <button type="button" onclick="toggleBloque('varios-manana')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-manana">
+                                <span id="chevron-varios-manana" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="content-varios-manana">
+                        <div id="list-varios-manana" class="space-y-3">
+                            <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+                    </div>
+                </article>
             </section>
 
             <!-- Botón de Redirección Oficial a Notion DB -->
@@ -184,14 +239,16 @@
     <script src="./src/utils/debounce.js"></script>
     <script src="./src/utils/src_localStorage_index.js"></script>
     <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
 
     <!-- =================================================== -->
     <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
     <!-- =================================================== -->
     <script>
-        // escapeHtml y obtenerEstiloEstado viven en src/utils/dashboard_logic.js
-        // (testeadas con Jest en tests/unit/) — se reutilizan acá para mantener la
-        // misma codificación visual por estado en toda la app.
+        // escapeHtml y obtenerEstiloEstado viven en src/utils/dashboard_logic.js;
+        // toggleBloque en src/utils/dom_render.js (testeadas con Jest en tests/unit/)
+        // — se reutilizan acá para mantener la misma codificación visual y el mismo
+        // comportamiento de colapsar/expandir que Recordatorios Diarios.
 
         document.addEventListener("DOMContentLoaded", () => {
             // 0. Inicializar estado versionado en localStorage (crea o migra el
@@ -203,21 +260,23 @@
             document.getElementById("footer-next-time").innerText = timestampNextStr;
             document.getElementById("footer-version").innerText = appVersionStr;
 
-            // 2. Renderizar la lista plana de recordatorios varios
-            renderizarRecordatoriosVarios(recordatoriosVarios);
+            // 2. Renderizar los tres bloques cronológicos de recordatorios varios
+            renderizarRecordatoriosVarios("varios-ayer", recordatoriosVariosAyer);
+            renderizarRecordatoriosVarios("varios-hoy", recordatoriosVariosHoy);
+            renderizarRecordatoriosVarios("varios-manana", recordatoriosVariosManana);
         });
 
         /**
-         * Renderiza la lista de Recordatorios Varios (un ítem por fila, con su
+         * Renderiza un bloque de Recordatorios Varios (un ítem por fila, con su
          * propio Nombre/Estado/Prioridad/Área/Periodo/Fecha) — a diferencia de
          * Recordatorios Diarios, acá no se agrega por estado. Reutiliza
          * escapeHtml/obtenerEstiloEstado de src/utils/dashboard_logic.js para
          * mantener la misma codificación visual (verde=hecha, rojo=fallida/vencida)
          * en toda la app.
          */
-        function renderizarRecordatoriosVarios(items) {
-            const container = document.getElementById("list-varios");
-            document.getElementById("total-varios-lbl").innerText = `${items.length} ítems`;
+        function renderizarRecordatoriosVarios(prefijo, items) {
+            const container = document.getElementById(`list-${prefijo}`);
+            document.getElementById(`total-${prefijo}-lbl`).innerText = `${items.length} ítems`;
 
             if (!items || items.length === 0) {
                 container.innerHTML = `<div class="status-row left-pill-blue flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin recordatorios registrados</div>`;

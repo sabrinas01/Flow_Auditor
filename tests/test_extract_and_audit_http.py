@@ -6,8 +6,11 @@ BASE_DIR se redirige a un directorio temporal con plantillas mínimas.
 Recordatorios Diarios (index.html) es fatal ante cualquier fallo (SRS-FR-M1-105).
 Recordatorios Varios (recordatorios-varios.html) es aislado y no fatal
 (SRS-FR-M4-401): un problema con esa base nunca debe interrumpir ni revertir
-la sincronización de Recordatorios Diarios, que corre primero.
+la sincronización de Recordatorios Diarios, que corre primero. Sus ítems se
+clasifican en los mismos tres bloques cronológicos (Ayer/Hoy/Mañana,
+SRS-FR-M4-402), cada uno como lista de ítems completos, no conteos.
 """
+from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
 
 import pytest
@@ -36,7 +39,9 @@ PLANTILLA_VARIOS = """<html><body>
     const timestampNextStr = "";
     const timestampServerStr = "";
 
-    const recordatoriosVarios = [];
+    const recordatoriosVariosAyer = [];
+    const recordatoriosVariosHoy = [];
+    const recordatoriosVariosManana = [];
 </script>
 </body></html>"""
 
@@ -59,6 +64,10 @@ def _mock_respuesta_notion(resultados):
     return respuesta
 
 
+def _hoy_str():
+    return (datetime.now(timezone.utc) - timedelta(hours=3)).date().isoformat()
+
+
 def _pagina_diarios():
     return {
         "properties": {
@@ -69,15 +78,15 @@ def _pagina_diarios():
     }
 
 
-def _pagina_varios():
+def _pagina_varios(nombre="Lavar gorras", fecha=None):
     return {
         "properties": {
-            "Nombre": {"title": [{"plain_text": "Lavar gorras"}]},
+            "Nombre": {"title": [{"plain_text": nombre}]},
             "Estado": {"status": {"name": "Sin empezar"}},
             "Prioridad": {"select": {"name": "MEDIA"}},
             "Área": {"select": {"name": "Higiene"}},
             "Periodo": {"select": {"name": "MENSUAL"}},
-            "Fecha": {"date": {"start": "2026-08-24"}},
+            "Fecha": {"date": {"start": fecha or _hoy_str()}},
         }
     }
 
@@ -109,8 +118,43 @@ def test_conexion_exitosa_sincroniza_ambos_frontends(tmp_path, monkeypatch):
 
     salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
     assert 'const timestampLocalStr = "";' not in salida_varios
+    # El ítem tiene Fecha = hoy -> cae en recordatoriosVariosHoy, no en Ayer/Mañana
+    assert "const recordatoriosVariosAyer = [];" in salida_varios
+    assert "const recordatoriosVariosManana = [];" in salida_varios
     assert "Lavar gorras" in salida_varios
     assert '"estado": "Sin empezar"' in salida_varios or '"estado":"Sin empezar"' in salida_varios
+
+
+def test_recordatorios_varios_clasifica_por_bloque_cronologico(tmp_path, monkeypatch):
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    hoy = datetime.now(timezone.utc) - timedelta(hours=3)
+    ayer_str = (hoy - timedelta(days=1)).date().isoformat()
+    manana_str = (hoy + timedelta(days=1)).date().isoformat()
+
+    paginas_varios = [
+        _pagina_varios(nombre="Item de ayer", fecha=ayer_str),
+        _pagina_varios(nombre="Item de hoy", fecha=_hoy_str()),
+        _pagina_varios(nombre="Item de mañana", fecha=manana_str),
+    ]
+    fake_post = _fake_post_por_db("C" * 40, _mock_respuesta_notion(paginas_varios))
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
+
+    import re
+    def _bloque(nombre_const):
+        m = re.search(rf"const\s+{nombre_const}\s*=\s*(\[.*?\])\s*;", salida_varios, re.DOTALL)
+        return m.group(1)
+
+    assert "Item de ayer" in _bloque("recordatoriosVariosAyer")
+    assert "Item de ayer" not in _bloque("recordatoriosVariosHoy")
+    assert "Item de hoy" in _bloque("recordatoriosVariosHoy")
+    assert "Item de hoy" not in _bloque("recordatoriosVariosAyer")
+    assert "Item de mañana" in _bloque("recordatoriosVariosManana")
+    assert "Item de mañana" not in _bloque("recordatoriosVariosHoy")
 
 
 def test_recordatorios_varios_no_configurada_no_rompe_diarios(tmp_path, monkeypatch):
@@ -122,7 +166,9 @@ def test_recordatorios_varios_no_configurada_no_rompe_diarios(tmp_path, monkeypa
 
     assert 'const timestampLocalStr = "";' not in (tmp_path / "index.html").read_text(encoding="utf-8")
     salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
-    assert "const recordatoriosVarios = [];" in salida_varios
+    assert "const recordatoriosVariosAyer = [];" in salida_varios
+    assert "const recordatoriosVariosHoy = [];" in salida_varios
+    assert "const recordatoriosVariosManana = [];" in salida_varios
 
 
 def test_recordatorios_varios_401_no_aborta_diarios(tmp_path, monkeypatch, capsys):
@@ -144,7 +190,9 @@ def test_recordatorios_varios_401_no_aborta_diarios(tmp_path, monkeypatch, capsy
 
     assert 'const timestampLocalStr = "";' not in (tmp_path / "index.html").read_text(encoding="utf-8")
     salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
-    assert "const recordatoriosVarios = [];" in salida_varios
+    assert "const recordatoriosVariosAyer = [];" in salida_varios
+    assert "const recordatoriosVariosHoy = [];" in salida_varios
+    assert "const recordatoriosVariosManana = [];" in salida_varios
 
 
 def test_recordatorios_varios_500_no_aborta_diarios(tmp_path, monkeypatch):
