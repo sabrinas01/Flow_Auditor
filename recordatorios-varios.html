@@ -62,10 +62,10 @@
         const timestampNextStr = "18/08/2026 21:20:23";
         const timestampServerStr = "18/08/2026 23:20:23";
 
-        // Estructuras JSON reales de distribución por estados (Notion DB) - Telemetría de peticiones eliminada
-        const conteoAyer = {"Sin empezar": 13, "⏭️ No necesaria": 4, "Hecha": 4, "❌ Fallida / Vencida": 6};
-        const conteoHoy = {"Sin empezar": 20};
-        const conteoManana = {};
+        // Lista plana de recordatorios varios (BD "Mis Recordatorios varios V0"),
+        // uno por ítem con su propio Nombre/Estado/Prioridad/Área/Periodo/Fecha —
+        // a diferencia de Recordatorios Diarios, acá no se agrega por estado.
+        const recordatoriosVarios = [];
     </script>
 
     <!-- =================================================== -->
@@ -127,123 +127,20 @@
 
         <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
             <!-- =================================================== -->
-            <!-- HERO STATS ROW: AYER / HOY -->
+            <!-- LISTA DE RECORDATORIOS VARIOS -->
             <!-- =================================================== -->
-            <section class="grid grid-cols-1 lg:grid-cols-2 gap-grid-gutter">
-
-                <!-- Bitácora de Ayer -->
-                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
-                    <div class="flex justify-between items-start">
-                        <div class="space-y-1">
-                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE AYER</p>
-                            <h2 class="text-headline-md font-headline-md text-white">Bitácora de Ayer</h2>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span id="total-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 tareas</span>
-                            <button type="button" onclick="toggleBloque('ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-ayer">
-                                <span id="chevron-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
-                            </button>
-                        </div>
+            <section class="glass-card rounded-xl p-8 flex flex-col gap-6">
+                <div class="flex justify-between items-start">
+                    <div class="space-y-1">
+                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">HÁBITOS · RECORDATORIOS · TAREAS DE PROYECTO</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Recordatorios Varios</h2>
                     </div>
+                    <span id="total-varios-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
+                </div>
 
-                    <div id="content-ayer" class="flex flex-col gap-6">
-                        <div id="list-ayer" class="space-y-3">
-                            <!-- Se inyectan las filas dinámicamente -->
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
-                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
-                                <p id="hechas-ayer-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
-                            </div>
-                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#e49102]/20 text-center">
-                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
-                                <p id="consistencia-ayer-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
-                            </div>
-                        </div>
-
-                        <div id="alert-ayer" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
-                            <span class="material-symbols-outlined text-[#e49102] text-[20px]">warning</span>
-                            <p class="text-[13px] text-[#e49102] font-semibold" id="alert-ayer-text"></p>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Progreso de Hoy -->
-                <article id="hoy-card" class="glass-card rounded-xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6 transition-colors">
-                    <div class="flex justify-between items-start">
-                        <div class="space-y-1">
-                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE HOY</p>
-                            <h2 class="text-headline-md font-headline-md text-white">Progreso de hoy</h2>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span id="total-hoy-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 tareas</span>
-                            <button type="button" onclick="toggleBloque('hoy')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-hoy">
-                                <span id="chevron-hoy" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="content-hoy" class="flex flex-col gap-6">
-                        <div id="list-hoy" class="space-y-3">
-                            <!-- Se inyectan las filas dinámicamente -->
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
-                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
-                                <p id="hechas-hoy-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
-                            </div>
-                            <div id="hoy-consistencia-card" class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center transition-colors">
-                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
-                                <p id="consistencia-hoy-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
-                            </div>
-                        </div>
-
-                        <div id="alert-hoy" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
-                            <span class="material-symbols-outlined text-[#e49102] text-[20px]">report_problem</span>
-                            <p class="text-[13px] text-[#e49102] font-semibold" id="alert-hoy-text"></p>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Tareas Planificadas (Mañana) -->
-                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#e49102] flex flex-col gap-6">
-                    <div class="flex justify-between items-start">
-                        <div class="space-y-1">
-                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS PARA MAÑANA</p>
-                            <h2 class="text-headline-md font-headline-md text-white">Tareas planificadas</h2>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span id="total-manana-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 tareas</span>
-                            <button type="button" onclick="toggleBloque('manana')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-manana">
-                                <span id="chevron-manana" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="content-manana" class="flex flex-col gap-6">
-                        <div id="list-manana" class="space-y-3">
-                            <!-- Se inyectan las filas dinámicamente -->
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
-                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
-                                <p id="hechas-manana-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
-                            </div>
-                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#e49102]/20 text-center">
-                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
-                                <p id="consistencia-manana-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
-                            </div>
-                        </div>
-
-                        <div id="alert-manana" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
-                            <span class="material-symbols-outlined text-[#e49102] text-[20px]">warning</span>
-                            <p class="text-[13px] text-[#e49102] font-semibold" id="alert-manana-text"></p>
-                        </div>
-                    </div>
-                </article>
+                <div id="list-varios" class="space-y-3">
+                    <!-- Se inyectan las filas dinámicamente -->
+                </div>
             </section>
 
             <!-- Botón de Redirección Oficial a Notion DB -->
@@ -287,14 +184,14 @@
     <script src="./src/utils/debounce.js"></script>
     <script src="./src/utils/src_localStorage_index.js"></script>
     <script src="./src/utils/dashboard_logic.js"></script>
-    <script src="./src/utils/dom_render.js"></script>
 
     <!-- =================================================== -->
     <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
     <!-- =================================================== -->
     <script>
-        // escapeHtml, esEstadoCompletado, obtenerEstiloEstado, calcularMetricas
-        // viven en src/utils/dashboard_logic.js (testeadas con Jest en tests/unit/).
+        // escapeHtml y obtenerEstiloEstado viven en src/utils/dashboard_logic.js
+        // (testeadas con Jest en tests/unit/) — se reutilizan acá para mantener la
+        // misma codificación visual por estado en toda la app.
 
         document.addEventListener("DOMContentLoaded", () => {
             // 0. Inicializar estado versionado en localStorage (crea o migra el
@@ -306,57 +203,44 @@
             document.getElementById("footer-next-time").innerText = timestampNextStr;
             document.getElementById("footer-version").innerText = appVersionStr;
 
-            // 2. Procesar e Inyectar Bloques Temporales Complejos (Ayer/Hoy/Mañana)
-            procesarSeccionMetrica("ayer", conteoAyer);
-            procesarSeccionMetrica("hoy", conteoHoy);
-            procesarSeccionMetrica("manana", conteoManana);
+            // 2. Renderizar la lista plana de recordatorios varios
+            renderizarRecordatoriosVarios(recordatoriosVarios);
         });
 
         /**
-         * Procesa cuantitativamente los estados e inyecta KPIs matemáticos en la interfaz.
-         * El cálculo (total/hechas/tasa/umbral) vive en calcularMetricas() — acá solo DOM.
+         * Renderiza la lista de Recordatorios Varios (un ítem por fila, con su
+         * propio Nombre/Estado/Prioridad/Área/Periodo/Fecha) — a diferencia de
+         * Recordatorios Diarios, acá no se agrega por estado. Reutiliza
+         * escapeHtml/obtenerEstiloEstado de src/utils/dashboard_logic.js para
+         * mantener la misma codificación visual (verde=hecha, rojo=fallida/vencida)
+         * en toda la app.
          */
-        function procesarSeccionMetrica(prefijo, data) {
-            const { total, hechas, tasa, consistenciaOk, alerta } = calcularMetricas(data);
+        function renderizarRecordatoriosVarios(items) {
+            const container = document.getElementById("list-varios");
+            document.getElementById("total-varios-lbl").innerText = `${items.length} ítems`;
 
-            document.getElementById(`total-${prefijo}-lbl`).innerText = `${total} tareas`;
-            document.getElementById(`hechas-${prefijo}-val`).innerText = `${hechas} / ${total}`;
-
-            const consistenciaEl = document.getElementById(`consistencia-${prefijo}-val`);
-            consistenciaEl.innerText = `${tasa.toFixed(1)}%`;
-
-            // Aplicar colores según el umbral del 70% recomendado en el SRS
-            consistenciaEl.className = consistenciaOk
-                ? "text-metric-xl font-metric-xl text-[#83da85]"
-                : "text-metric-xl font-metric-xl text-[#e49102]";
-
-            renderizarFilasEstados(`list-${prefijo}`, data);
-
-            // Alerta individual del bloque si cae del 70%
-            const alertBox = document.getElementById(`alert-${prefijo}`);
-            if (alertBox) {
-                if (alerta) {
-                    document.getElementById(`alert-${prefijo}-text`).innerHTML = `Tasa de consistencia crítica (<strong>${tasa.toFixed(1)}%</strong>). Reduzca la fricción del flujo.`;
-                    alertBox.classList.remove("hidden");
-                    alertBox.classList.add("flex");
-
-                    if (prefijo === "hoy") {
-                        document.getElementById("hoy-card").style.borderLeftColor = "#ffb961"; // secondary (aviso)
-                        document.getElementById("hoy-consistencia-card").className = "bg-[#e49102]/5 rounded-xl p-6 border-2 border-[#e49102]/30 text-center transition-colors";
-                    }
-                } else {
-                    alertBox.classList.add("hidden");
-                    alertBox.classList.remove("flex");
-
-                    if (prefijo === "hoy") {
-                        document.getElementById("hoy-card").style.borderLeftColor = "#ff5f52"; // primary-container (normal)
-                        document.getElementById("hoy-consistencia-card").className = "bg-[#0e0e0f] rounded-xl p-6 border border-[#232326] text-center transition-colors";
-                    }
-                }
+            if (!items || items.length === 0) {
+                container.innerHTML = `<div class="status-row left-pill-blue flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin recordatorios registrados</div>`;
+                return;
             }
-        }
 
-        // renderizarFilasEstados y toggleBloque viven en src/utils/dom_render.js (testeadas con Jest + jsdom).
+            container.innerHTML = items.map((item) => {
+                const estilo = obtenerEstiloEstado(item.estado || "Sin estado");
+                const meta = [item.area, item.periodo, item.prioridad, item.fecha]
+                    .filter(Boolean)
+                    .map(escapeHtml)
+                    .join(" · ");
+                return `
+                    <div class="status-row ${estilo.pill} flex justify-between items-center px-4 py-3.5 gap-3">
+                        <div class="flex flex-col gap-1 min-w-0">
+                            <span class="text-white font-semibold truncate">${escapeHtml(item.nombre || "Sin nombre")}</span>
+                            ${meta ? `<span class="text-[#8e8e93] text-[12px] truncate">${meta}</span>` : ""}
+                        </div>
+                        <span class="${estilo.textClass} text-[13px] whitespace-nowrap">${escapeHtml(item.estado || "Sin estado")}</span>
+                    </div>
+                `;
+            }).join('');
+        }
 
         /**
          * Abre/cierra el menú lateral de navegación

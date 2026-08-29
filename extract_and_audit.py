@@ -96,7 +96,9 @@ def validar_credenciales():
         global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
-        DB_RECORDATORIOS_VARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_VARIOS"], required=True, min_length=32)
+        # Opcional: su ausencia (o cualquier fallo al consultarla) no debe abortar
+        # la sincronización de Recordatorios Diarios — ver sincronizar_recordatorios_varios().
+        DB_RECORDATORIOS_VARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_VARIOS"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -230,53 +232,49 @@ def _serializar_conteos(conteo_ayer, conteo_hoy, conteo_manana):
     )
 
 
+def _inyectar_timestamps_y_version(html_content, timestamps, app_version):
+    """Reemplazo de constantes de telemetría mediante regex tolerantes a espacios (\\s*).
+    Compartido por index.html y recordatorios-varios.html — ambos frontends
+    declaran las mismas cuatro constantes de sincronización."""
+    html_content = re.sub(r'const\s+timestampLocalStr\s*=\s*".*?"\s*;', f'const timestampLocalStr = "{timestamps["local"]}";', html_content)
+    html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?"\s*;', f'const timestampNextStr = "{timestamps["proxima"]}";', html_content)
+    html_content = re.sub(r'const\s+timestampServerStr\s*=\s*".*?"\s*;', f'const timestampServerStr = "{timestamps["servidor"]}";', html_content)
+    html_content = re.sub(r'const\s+appVersionStr\s*=\s*".*?"\s*;', f'const appVersionStr = "{app_version}";', html_content)
+    return html_content
+
+
 def auditar_consistencia_tripartita():
-    """Ejecuta el pipeline de Sincronización principal contra las bases de datos de Notion."""
+    """Ejecuta el pipeline de Sincronización principal contra la base de datos de
+    Recordatorios Diarios (fatal ante cualquier fallo — SRS-FR-M1-105). La
+    sincronización de Recordatorios Varios corre después, aislada y no fatal
+    (SRS-FR-M4-401): un problema con esa base nunca debe interrumpir ni revertir
+    lo que ya se sincronizó acá."""
     validar_credenciales()
 
     try:
-        # Recordatorios Diarios y Recordatorios Varios son bases de Notion
-        # independientes: cada frontend se sincroniza con su propio universo de tareas.
-        conteo_ayer_d, conteo_hoy_d, conteo_manana_d = consultar_y_clasificar(DB_RECORDATORIOS_DIARIOS, "Recordatorios Diarios")
-        conteo_ayer_v, conteo_hoy_v, conteo_manana_v = consultar_y_clasificar(DB_RECORDATORIOS_VARIOS, "Recordatorios Varios")
+        conteo_ayer, conteo_hoy, conteo_manana = consultar_y_clasificar(DB_RECORDATORIOS_DIARIOS, "Recordatorios Diarios")
 
         # Generación de marcas de tiempo del diagnóstico de infraestructura
         ahora_utc = datetime.now(timezone.utc)
         timestamps = calcular_timestamps_sincronizacion(ahora_utc)
-        str_local = timestamps["local"]
-        str_next = timestamps["proxima"]
-        str_server = timestamps["servidor"]
-
         app_version = obtener_version_actual()
 
-        datos_por_archivo = {
-            "index.html": _serializar_conteos(conteo_ayer_d, conteo_hoy_d, conteo_manana_d),
-            "recordatorios-varios.html": _serializar_conteos(conteo_ayer_v, conteo_hoy_v, conteo_manana_v),
-        }
+        json_ayer, json_hoy, json_manana = _serializar_conteos(conteo_ayer, conteo_hoy, conteo_manana)
 
-        for nombre_archivo, (json_ayer, json_hoy, json_manana) in datos_por_archivo.items():
-            html_path = BASE_DIR / nombre_archivo
-            with open(html_path, "r", encoding="utf-8") as file:
-                html_content = file.read()
+        html_path = BASE_DIR / "index.html"
+        with open(html_path, "r", encoding="utf-8") as file:
+            html_content = file.read()
 
-            # Reemplazo de constantes mediante expresiones regulares tolerantes a espacios (\s*)
-            html_content = re.sub(r'const\s+timestampLocalStr\s*=\s*".*?"\s*;', f'const timestampLocalStr = "{str_local}";', html_content)
-            html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?"\s*;', f'const timestampNextStr = "{str_next}";', html_content)
-            html_content = re.sub(r'const\s+timestampServerStr\s*=\s*".*?"\s*;', f'const timestampServerStr = "{str_server}";', html_content)
+        html_content = _inyectar_timestamps_y_version(html_content, timestamps, app_version)
+        html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\}\s*;", f"const conteoAyer = {json_ayer};", html_content)
+        html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\}\s*;", f"const conteoHoy = {json_hoy};", html_content)
+        html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\}\s*;", f"const conteoManana = {json_manana};", html_content)
 
-            html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\}\s*;", f"const conteoAyer = {json_ayer};", html_content)
-            html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\}\s*;", f"const conteoHoy = {json_hoy};", html_content)
-            html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\}\s*;", f"const conteoManana = {json_manana};", html_content)
+        # Sobrescribir el frontend de forma atómica y segura
+        with open(html_path, "w", encoding="utf-8") as file:
+            file.write(html_content)
 
-            html_content = re.sub(r'const\s+appVersionStr\s*=\s*".*?"\s*;', f'const appVersionStr = "{app_version}";', html_content)
-
-            # Sobrescribir el frontend de forma atómica y segura
-            with open(html_path, "w", encoding="utf-8") as file:
-                file.write(html_content)
-
-            print(f"✅ Frontend {nombre_archivo} sincronizado y actualizado con éxito de forma horaria.")
-
-        verificar_consumo_ram()
+        print("✅ Frontend index.html sincronizado y actualizado con éxito de forma horaria.")
 
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 401:
@@ -287,6 +285,101 @@ def auditar_consistencia_tripartita():
     except Exception as e:
         print(f"❌ [ERROR CRÍTICO EN PIPELINE]: {e}")
         sys.exit(1)
+
+    # Aislado y no fatal: BD sin configurar, 401/500, timeout o I/O inesperado
+    # se loguean y se omiten, sin afectar la sincronización de arriba (ya exitosa).
+    try:
+        sincronizar_recordatorios_varios(timestamps, app_version)
+    except Exception as e:
+        print(f"⚠️ [RECORDATORIOS VARIOS]: error inesperado al sincronizar ({e}), se omite.")
+
+    verificar_consumo_ram()
+
+
+def extraer_recordatorios_varios_lista():
+    """Extrae y normaliza los ítems de la BD "Mis Recordatorios varios V0" como
+    una lista plana (uno por ítem, no agregados por estado como en Recordatorios
+    Diarios): cada recordatorio conserva su Nombre, Estado, Prioridad, Área,
+    Periodo y Fecha (SRS-FR-M4-402).
+
+    Fallo aislado: cualquier error (BD sin configurar, 401/500, timeout) se
+    loguea y devuelve lista vacía — nunca levanta una excepción hacia arriba.
+    """
+    if not DB_RECORDATORIOS_VARIOS:
+        print("ℹ️ [RECORDATORIOS VARIOS]: NOTION_DB_RECORDATORIOS_VARIOS no configurada, se omite.")
+        return []
+
+    url = f"https://api.notion.com/v1/databases/{DB_RECORDATORIOS_VARIOS}/query"
+    headers = {
+        "Authorization": f"Bearer {NOTION_API_KEY}",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json"
+    }
+
+    try:
+        response = requests.post(url, json={"page_size": 100}, headers=headers, timeout=15)
+        response.raise_for_status()
+        results = response.json().get("results", [])
+        print(f"📦 [RECORDATORIOS VARIOS]: Se recuperaron {len(results)} registros desde Notion.")
+    except requests.exceptions.HTTPError as e:
+        status = e.response.status_code if e.response is not None else "desconocido"
+        print(f"⚠️ [RECORDATORIOS VARIOS]: fallo HTTP {status} al consultar Notion, se omite esta sincronización.")
+        return []
+    except Exception as e:
+        print(f"⚠️ [RECORDATORIOS VARIOS]: error al consultar Notion ({e}), se omite esta sincronización.")
+        return []
+
+    def _texto_titulo(prop):
+        return "".join(t.get("plain_text", "") for t in prop.get("title", []))
+
+    def _select(prop):
+        sel = prop.get("select")
+        return sel.get("name") if sel else None
+
+    items = []
+    for pagina in results:
+        props = pagina.get("properties", {})
+        nombre = _texto_titulo(props.get("Nombre", {}))
+        estado_data = props.get("Estado", {}).get("status")
+        estado = estado_data.get("name") if estado_data else None
+        fecha_data = props.get("Fecha", {}).get("date")
+        fecha = fecha_data.get("start") if fecha_data else None
+
+        items.append({
+            "nombre": nombre or "Sin nombre",
+            "estado": estado or "Sin estado",
+            "prioridad": _select(props.get("Prioridad", {})),
+            "area": _select(props.get("Área", {})),
+            "periodo": _select(props.get("Periodo", {})),
+            "fecha": fecha,
+        })
+
+    return items
+
+
+def sincronizar_recordatorios_varios(timestamps, app_version):
+    """Inyecta la lista de Recordatorios Varios en recordatorios-varios.html
+    (SRS-FR-M4-403). No fatal: si el archivo no existe todavía en este entorno,
+    se loguea y se continúa."""
+    html_path = BASE_DIR / "recordatorios-varios.html"
+    if not html_path.exists():
+        print("ℹ️ [RECORDATORIOS VARIOS]: recordatorios-varios.html no encontrado, se omite.")
+        return
+
+    items = extraer_recordatorios_varios_lista()
+
+    with open(html_path, "r", encoding="utf-8") as file:
+        html_content = file.read()
+
+    html_content = _inyectar_timestamps_y_version(html_content, timestamps, app_version)
+
+    json_varios = json.dumps(items, ensure_ascii=False).replace("</", "<\\/")
+    html_content = re.sub(r"const\s+recordatoriosVarios\s*=\s*\[.*?\]\s*;", f"const recordatoriosVarios = {json_varios};", html_content, flags=re.DOTALL)
+
+    with open(html_path, "w", encoding="utf-8") as file:
+        file.write(html_content)
+
+    print("✅ Frontend recordatorios-varios.html sincronizado y actualizado con éxito.")
 
 
 if __name__ == "__main__":
