@@ -13,8 +13,8 @@ Fallbacks soportados
 El código acepta varios nombres para la misma información, en orden de preferencia:
 NOTION_API_KEY or NOTION_TOKEN
 NOTION_DB_RECORDATORIOS_DIARIOS or NOTION_DATABASE_ID or NOTION_DB_ID
-NOTION_DB_RECORDATORIOS_VARIOS (sin fallback alternativo, es requerida)
-El helper valida presencia y longitud mínima (configurada en el codebase) y falla con mensajes claros si algo falta.
+NOTION_DB_RECORDATORIOS_VARIOS (sin fallback alternativo; OPCIONAL — a diferencia de las otras dos, su ausencia no hace fallar el script: extract_and_audit.py omite la sincronización de recordatorios-varios.html sin afectar a Recordatorios Diarios)
+El helper valida presencia y longitud mínima (configurada en el codebase) y falla con mensajes claros si algo falta. NOTION_DB_RECORDATORIOS_VARIOS es la excepción: se resuelve con required=False.
 DRY_RUN para pruebas
 Para pruebas locales o CI que no deben ejecutar llamadas externas: exporta/define DRY_RUN=true.
 El script principal detecta DRY_RUN y evita llamadas de red.

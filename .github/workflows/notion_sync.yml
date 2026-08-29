@@ -39,10 +39,9 @@ jobs:
             exit 1
           fi
           if [ -z "$NOTION_DB_RECORDATORIOS_VARIOS" ]; then
-            echo "❌ ERROR: No se detectó el ID de la base de Recordatorios Varios en los secretos"
-            exit 1
+            echo "⚠️ AVISO: No se detectó el ID de la base de Recordatorios Varios en los secretos — es opcional, extract_and_audit.py omite esa sincronización sin afectar a Recordatorios Diarios."
           fi
-          echo "✅ Secretos validados y cargados correctamente en el entorno"
+          echo "✅ Secretos requeridos (API key + Recordatorios Diarios) validados y cargados correctamente en el entorno"
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS }}

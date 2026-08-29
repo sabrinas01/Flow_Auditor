@@ -5,7 +5,7 @@
 * **Marca Asociada:** Bitácora IT
 * **Rol de Gobierno:** IT Functional Analyst (Sabrina) & Mentor Técnico de IA
 * **Estado:** Listo para Desarrollo (Base Lineal Validada)
-* **Versión:** 4.9
+* **Versión:** 4.10
 * **Zona Horaria de Referencia:** GMT -3 (San Juan, Argentina)
 
 ## 🎯 2. Visión General y Contexto
@@ -42,13 +42,13 @@ Tasa = (Tareas "Hecha" AND fórmula "consistencia"=1 / Total de Tareas Creadas) 
 * **Indicador de Versión:** Posicionado abajo a la izquierda (bajo el botón del footer), inyectado vía GitHub Releases (v3.3).
 
 ### 5.2. Recordatorios Varios (`recordatorios-varios.html`)
-* Módulo implementado a partir del diseño Stitch aportado por Sabrina, reutilizando el mismo Design System "Obsidian Refined" y el mismo patrón de variables (`conteoAyer`/`conteoHoy`/`conteoManana`) que Recordatorios Diarios, pero alimentado por su **propia base de Notion independiente** (`NOTION_DB_RECORDATORIOS_VARIOS`) — no comparte datos con Recordatorios Diarios.
-* **Secciones:** * I: Tareas de ayer (idéntica a §5.1-I).
-    * II: Progreso de hoy (idéntica a §5.1-II).
-    * III: Tareas planificadas — "Tareas para mañana" (`conteoManana`), la sección que quedó fuera de alcance de Recordatorios Diarios en v3.6 encuentra acá su hogar definitivo, con el mismo patrón de card colapsable/completadas/consistencia que Ayer y Hoy.
-    * IV: CTA "Ver en Notion" + Panel de Diagnóstico Técnico (footer, igual a §5.1-V).
+* Módulo alimentado por su **propia base de Notion independiente** (`NOTION_DB_RECORDATORIOS_VARIOS`) — no comparte datos con Recordatorios Diarios. Reutiliza el mismo Design System "Obsidian Refined" (paleta, tipografía, sidebar, header, footer) que Recordatorios Diarios.
+* **Modelo de datos (v4.10):** a diferencia de Recordatorios Diarios, acá **no** se agrupa por Ayer/Hoy/Mañana ni por conteo de estados. La BD "Mis Recordatorios varios V0" mezcla hábitos, recordatorios y tareas de proyecto con su propio ritmo (`Periodo`: MENSUAL/QUINCENAL/SEMANAL/TRIMESTRAL/OCASIONAL), así que el módulo renderiza una **lista plana de ítems individuales**, cada uno con Nombre, Estado, Prioridad, Área, Periodo y Fecha — reemplaza el diseño Ayer/Hoy/Mañana de v4.7-v4.9, que mostraba solo conteos agregados y ocultaba esos campos.
+* **Secciones:** * I: Lista de Recordatorios Varios (una fila por ítem, resaltando en rojo "❌ Fallida / Vencida" y en verde "Hecha").
+    * II: CTA "Ver en Notion" + Panel de Diagnóstico Técnico (footer, igual a §5.1-V).
 * **Sin balance semanal ni Módulo de Bienestar** (§4.3): esas secciones son propias de Recordatorios Diarios; este módulo no las duplica.
-* **Navegación:** accesible desde el sidebar de `index.html`/`inicio.html` (ítem "Recordatorios varios", antes deshabilitado con "Próximamente").
+* **Navegación:** accesible desde el sidebar de `index.html`/`inicio.html` (ítem "Recordatorios varios").
+* **Aislamiento de fallos (v4.10):** hasta v4.9, `NOTION_DB_RECORDATORIOS_VARIOS` era obligatoria y se consultaba en el mismo bloque que Recordatorios Diarios — un 401/500/timeout en esa base abortaba **todo** el pipeline, incluyendo Recordatorios Diarios. Ahora es **opcional** y se sincroniza en un segundo paso aislado: cualquier fallo ahí se loguea y se omite, sin afectar la sincronización ya exitosa de `index.html`.
 
 ## 🔒 6. Requerimientos No Funcionales
 * **Seguridad:** `.env` local, tokens inyectados como secretos.
@@ -86,4 +86,5 @@ Tasa = (Tareas "Hecha" AND fórmula "consistencia"=1 / Total de Tareas Creadas) 
 | **v4.6** | Agosto 2026 | `inicio.html` pasa a ser la página principal del sitio: `index.html` (el dashboard) ahora redirige automáticamente a `inicio.html` la primera vez que se accede en una sesión de navegador (vía `sessionStorage`), sin romper la navegación posterior desde el sidebar de `inicio.html` hacia `index.html`. Cambio de enrutamiento en el frontend; no afecta la plantilla de inyección de datos ni el pipeline de CI. Ver `SRS.md` v4.6. |
 | **v4.7** | Agosto 2026 | Se implementa el módulo **Recordatorios Varios** (`recordatorios-varios.html`), a partir del diseño Stitch aportado por Sabrina: reutiliza Ayer/Hoy y agrega la card "Tareas planificadas" (Mañana) que había quedado fuera de alcance en v3.6. El sidebar de `index.html`/`inicio.html` habilita el ítem "Recordatorios varios" (antes "Próximamente"). `extract_and_audit.py` ahora sincroniza ambos frontends en el mismo ciclo horario. Ver `SRS.md` v4.7. |
 | **v4.8** | Agosto 2026 | **Fix de despliegue:** el paso de publicación de `notion_sync.yml` solo hacía `git add index.html` — `recordatorios-varios.html` nunca llegaba a `gh-pages` pese a que `extract_and_audit.py` sí lo actualizaba en el runner cada hora (quedó comprobado: el commit horario automático solo tocaba `index.html` desde que se implementó el módulo en v4.7). El módulo estaba deployado pero congelado con datos de placeholder. Ver `SRS.md` v4.8. |
-| **v4.9** *(Actual)* | Agosto 2026 | **Recordatorios Varios pasa a tener su propia base de Notion:** hasta esta versión, `recordatorios-varios.html` mostraba los mismos números que `index.html` — `extract_and_audit.py` consultaba una única base (`DB_RECORDATORIOS_DIARIOS`) y duplicaba el resultado en ambos frontends. Se agrega `NOTION_DB_RECORDATORIOS_VARIOS` como credencial requerida independiente; el backend ahora hace dos consultas separadas a Notion y cada frontend recibe los datos de su propia base. Ver `SRS.md` v4.9. |
+| **v4.9** | Agosto 2026 | **Recordatorios Varios pasa a tener su propia base de Notion:** hasta esta versión, `recordatorios-varios.html` mostraba los mismos números que `index.html` — `extract_and_audit.py` consultaba una única base (`DB_RECORDATORIOS_DIARIOS`) y duplicaba el resultado en ambos frontends. Se agrega `NOTION_DB_RECORDATORIOS_VARIOS` como credencial requerida independiente; el backend ahora hace dos consultas separadas a Notion y cada frontend recibe los datos de su propia base. Ver `SRS.md` v4.9. |
+| **v4.10** *(Actual)* | Agosto 2026 | **Aislamiento de fallos + lista individual en Recordatorios Varios (HU "Conectar e implementar bd recordatorios varios"):** `NOTION_DB_RECORDATORIOS_VARIOS` pasa a ser **opcional**, y su sincronización corre en un segundo paso aislado del de Recordatorios Diarios — un 401/500/timeout o la ausencia del secret ya no abortan `index.html`, que hasta v4.9 se rompía si Recordatorios Varios fallaba. Además, `recordatorios-varios.html` deja el patrón de conteos Ayer/Hoy/Mañana (v4.7) y pasa a renderizar una **lista plana de ítems individuales** con Nombre, Estado, Prioridad, Área, Periodo y Fecha por recordatorio. Ver `SRS.md` v4.10 — `SRS-FR-M4-401` a `SRS-FR-M4-404` reescritos. |
