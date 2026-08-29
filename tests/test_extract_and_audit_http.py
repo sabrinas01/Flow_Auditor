@@ -3,6 +3,7 @@ Tests con HTTP mockeado para auditar_consistencia_tripartita (extract_and_audit.
 No hacen llamadas reales a la red ni tocan el index.html real del repo:
 BASE_DIR se redirige a un directorio temporal con una plantilla mínima.
 """
+from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
 
 import pytest
@@ -62,6 +63,55 @@ def test_conexion_exitosa_escribe_la_plantilla(tmp_path, monkeypatch):
         assert 'const timestampServerStr = "";' not in salida
         # Sin tags de git en el directorio temporal -> fallback documentado a "dev"
         assert 'const appVersionStr = "dev";' in salida
+
+
+def test_diarios_y_varios_son_bases_independientes(tmp_path, monkeypatch):
+    """Recordatorios Diarios y Recordatorios Varios deben consultar bases de
+    Notion distintas y cada frontend debe quedar con los datos de SU propia
+    base — no la misma data duplicada en los dos archivos."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+    monkeypatch.setattr(extract_and_audit, "DB_RECORDATORIOS_DIARIOS", "db-diarios-id")
+    monkeypatch.setattr(extract_and_audit, "DB_RECORDATORIOS_VARIOS", "db-varios-id")
+
+    ayer_str = ((datetime.now(timezone.utc) - timedelta(hours=3)) - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    pagina_diarios = {
+        "properties": {
+            "Estado": {"type": "status", "status": {"name": "Hecha"}},
+            "Fecha": {"type": "date", "date": {"start": ayer_str}},
+        },
+        "created_time": f"{ayer_str}T00:00:00.000Z",
+    }
+    pagina_varios = {
+        "properties": {
+            "Estado": {"type": "status", "status": {"name": "Sin empezar"}},
+            "Fecha": {"type": "date", "date": {"start": ayer_str}},
+        },
+        "created_time": f"{ayer_str}T00:00:00.000Z",
+    }
+
+    mock_post = Mock(side_effect=[
+        _mock_respuesta_notion([pagina_diarios]),
+        _mock_respuesta_notion([pagina_varios, pagina_varios]),
+    ])
+
+    with patch.object(extract_and_audit.requests, "post", mock_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    # Se consultó cada base por su propio ID, en el orden Diarios -> Varios
+    urls_llamadas = [llamada.args[0] for llamada in mock_post.call_args_list]
+    assert urls_llamadas == [
+        "https://api.notion.com/v1/databases/db-diarios-id/query",
+        "https://api.notion.com/v1/databases/db-varios-id/query",
+    ]
+
+    salida_diarios = (tmp_path / "index.html").read_text(encoding="utf-8")
+    salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
+
+    assert 'const conteoAyer = {"Hecha": 1};' in salida_diarios
+    assert 'const conteoAyer = {"Sin empezar": 2};' in salida_varios
+    # Los dos frontends no deben terminar con el mismo conteo
+    assert salida_diarios != salida_varios
 
 
 def test_falla_401_hace_exit_1_y_no_toca_el_archivo(tmp_path, monkeypatch, capsys):

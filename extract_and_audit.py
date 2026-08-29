@@ -87,14 +87,16 @@ if os.getenv("GITHUB_ACTIONS") != "true" and env_path.exists():
 # Resolución de variables tolerante a múltiples nomenclaturas redundantes
 NOTION_API_KEY = os.getenv("NOTION_API_KEY") or os.getenv("NOTION_TOKEN")
 DB_RECORDATORIOS_DIARIOS = os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS") or os.getenv("NOTION_DATABASE_ID") or os.getenv("NOTION_DB_ID")
+DB_RECORDATORIOS_VARIOS = os.getenv("NOTION_DB_RECORDATORIOS_VARIOS")
 
 
 def validar_credenciales():
     try:
         # Uso de helper interno para resolución robusta de variables de entorno
-        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
+        DB_RECORDATORIOS_VARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_VARIOS"], required=True, min_length=32)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -160,60 +162,83 @@ def evaluar_bloque_temporal(fecha_str):
         return None
 
 
-def auditar_consistencia_tripartita():
-    """Ejecuta el pipeline de Sincronización principal contra la base de datos de Notion."""
-    validar_credenciales()
-
-    url = f"https://api.notion.com/v1/databases/{DB_RECORDATORIOS_DIARIOS}/query"
+def consultar_y_clasificar(database_id, etiqueta_log):
+    """Consulta una base de datos de Notion y clasifica sus páginas en las tres
+    ventanas cronológicas (Ayer/Hoy/Mañana) agrupando por estado. Reutilizada
+    para Recordatorios Diarios y Recordatorios Varios: son bases de Notion
+    independientes, cada una con su propio universo de tareas."""
+    url = f"https://api.notion.com/v1/databases/{database_id}/query"
     headers = {
         "Authorization": f"Bearer {NOTION_API_KEY}",
         "Notion-Version": "2022-06-28",
         "Content-Type": "application/json"
     }
 
+    # Petición segura bajo protocolo TLS 1.3, con timeout para no colgar el Action
+    response = requests.post(url, json={"page_size": 100}, headers=headers, timeout=15)
+    response.raise_for_status()
+    results = response.json().get("results", [])
+    print(f"📦 [LOG PIPELINE]: Se recuperaron {len(results)} registros desde la base de datos de Notion ({etiqueta_log}).")
+
+    conteo_ayer, conteo_hoy, conteo_manana = {}, {}, {}
+    columna_estado, columna_fecha = None, None
+
+    # Detección dinámica de esquema de columnas
+    if results:
+        for n_col, info in results[0].get("properties", {}).items():
+            if info.get("type") in ["status", "select"] and n_col.lower() in ["estado", "status"]:
+                columna_estado = n_col
+            if info.get("type") == "date":
+                columna_fecha = n_col
+
+    # Mapeo y agrupamiento dinámico por estados en base a la ventana de tiempo
+    for pagina in results:
+        props = pagina.get("properties", {})
+        fecha_p = props.get(columna_fecha, {}).get("date", {}).get("start") if columna_fecha else None
+        if not fecha_p:
+            fecha_p = pagina.get("created_time")
+
+        bloque = evaluar_bloque_temporal(fecha_p)
+        if not bloque:
+            continue
+
+        est_val = "Sin empezar"
+        if columna_estado:
+            st_data = props.get(columna_estado, {})
+            if st_data.get("type") == "status" and st_data.get("status"):
+                est_val = st_data["status"].get("name", "Sin empezar")
+            elif st_data.get("type") == "select" and st_data.get("select"):
+                est_val = st_data["select"].get("name", "Sin empezar")
+
+        if bloque == "AYER":
+            conteo_ayer[est_val] = conteo_ayer.get(est_val, 0) + 1
+        elif bloque == "HOY":
+            conteo_hoy[est_val] = conteo_hoy.get(est_val, 0) + 1
+        elif bloque == "MANANA":
+            conteo_manana[est_val] = conteo_manana.get(est_val, 0) + 1
+
+    return conteo_ayer, conteo_hoy, conteo_manana
+
+
+def _serializar_conteos(conteo_ayer, conteo_hoy, conteo_manana):
+    """Serializa los tres diccionarios a JSON limpio, escapando "</" para evitar
+    que un estado de Notion cierre el bloque <script> prematuramente (XSS/HTML injection)."""
+    return (
+        json.dumps(conteo_ayer, ensure_ascii=False).replace("</", "<\\/"),
+        json.dumps(conteo_hoy, ensure_ascii=False).replace("</", "<\\/"),
+        json.dumps(conteo_manana, ensure_ascii=False).replace("</", "<\\/"),
+    )
+
+
+def auditar_consistencia_tripartita():
+    """Ejecuta el pipeline de Sincronización principal contra las bases de datos de Notion."""
+    validar_credenciales()
+
     try:
-        # Petición segura bajo protocolo TLS 1.3, con timeout para no colgar el Action
-        response = requests.post(url, json={"page_size": 100}, headers=headers, timeout=15)
-        response.raise_for_status()
-        results = response.json().get("results", [])
-        print(f"📦 [LOG PIPELINE]: Se recuperaron {len(results)} registros desde la base de datos de Notion.")
-
-        conteo_ayer, conteo_hoy, conteo_manana = {}, {}, {}
-        columna_estado, columna_fecha = None, None
-
-        # Detección dinámica de esquema de columnas
-        if results:
-            for n_col, info in results[0].get("properties", {}).items():
-                if info.get("type") in ["status", "select"] and n_col.lower() in ["estado", "status"]:
-                    columna_estado = n_col
-                if info.get("type") == "date":
-                    columna_fecha = n_col
-
-        # Mapeo y agrupamiento dinámico por estados en base a la ventana de tiempo
-        for pagina in results:
-            props = pagina.get("properties", {})
-            fecha_p = props.get(columna_fecha, {}).get("date", {}).get("start") if columna_fecha else None
-            if not fecha_p:
-                fecha_p = pagina.get("created_time")
-
-            bloque = evaluar_bloque_temporal(fecha_p)
-            if not bloque:
-                continue
-
-            est_val = "Sin empezar"
-            if columna_estado:
-                st_data = props.get(columna_estado, {})
-                if st_data.get("type") == "status" and st_data.get("status"):
-                    est_val = st_data["status"].get("name", "Sin empezar")
-                elif st_data.get("type") == "select" and st_data.get("select"):
-                    est_val = st_data["select"].get("name", "Sin empezar")
-
-            if bloque == "AYER":
-                conteo_ayer[est_val] = conteo_ayer.get(est_val, 0) + 1
-            elif bloque == "HOY":
-                conteo_hoy[est_val] = conteo_hoy.get(est_val, 0) + 1
-            elif bloque == "MANANA":
-                conteo_manana[est_val] = conteo_manana.get(est_val, 0) + 1
+        # Recordatorios Diarios y Recordatorios Varios son bases de Notion
+        # independientes: cada frontend se sincroniza con su propio universo de tareas.
+        conteo_ayer_d, conteo_hoy_d, conteo_manana_d = consultar_y_clasificar(DB_RECORDATORIOS_DIARIOS, "Recordatorios Diarios")
+        conteo_ayer_v, conteo_hoy_v, conteo_manana_v = consultar_y_clasificar(DB_RECORDATORIOS_VARIOS, "Recordatorios Varios")
 
         # Generación de marcas de tiempo del diagnóstico de infraestructura
         ahora_utc = datetime.now(timezone.utc)
@@ -222,17 +247,14 @@ def auditar_consistencia_tripartita():
         str_next = timestamps["proxima"]
         str_server = timestamps["servidor"]
 
-        # Serialización de estructuras JSON limpias, escapando "</" para evitar
-        # que un estado de Notion cierre el bloque <script> prematuramente (XSS/HTML injection)
-        json_ayer = json.dumps(conteo_ayer, ensure_ascii=False).replace("</", "<\\/")
-        json_hoy = json.dumps(conteo_hoy, ensure_ascii=False).replace("</", "<\\/")
-        json_manana = json.dumps(conteo_manana, ensure_ascii=False).replace("</", "<\\/")
-
         app_version = obtener_version_actual()
 
-        # Ambos frontends (Recordatorios diarios y Recordatorios varios) comparten
-        # el mismo bloque de variables inyectadas, así que se sincronizan igual.
-        for nombre_archivo in ("index.html", "recordatorios-varios.html"):
+        datos_por_archivo = {
+            "index.html": _serializar_conteos(conteo_ayer_d, conteo_hoy_d, conteo_manana_d),
+            "recordatorios-varios.html": _serializar_conteos(conteo_ayer_v, conteo_hoy_v, conteo_manana_v),
+        }
+
+        for nombre_archivo, (json_ayer, json_hoy, json_manana) in datos_por_archivo.items():
             html_path = BASE_DIR / nombre_archivo
             with open(html_path, "r", encoding="utf-8") as file:
                 html_content = file.read()

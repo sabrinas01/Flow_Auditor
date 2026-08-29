@@ -35,18 +35,24 @@ jobs:
             exit 1
           fi
           if [ -z "$NOTION_DB_RECORDATORIOS_DIARIOS" ]; then
-            echo "❌ ERROR: No se detectó el ID de la base de datos de Notion en los secretos"
+            echo "❌ ERROR: No se detectó el ID de la base de Recordatorios Diarios en los secretos"
+            exit 1
+          fi
+          if [ -z "$NOTION_DB_RECORDATORIOS_VARIOS" ]; then
+            echo "❌ ERROR: No se detectó el ID de la base de Recordatorios Varios en los secretos"
             exit 1
           fi
           echo "✅ Secretos validados y cargados correctamente en el entorno"
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS }}
+          NOTION_DB_RECORDATORIOS_VARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_VARIOS }}
 
       - name: Run Notion Flow Auditor
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS }}
+          NOTION_DB_RECORDATORIOS_VARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_VARIOS }}
         run: python extract_and_audit.py
 
       - name: Publish updated frontends to the gh-pages branch

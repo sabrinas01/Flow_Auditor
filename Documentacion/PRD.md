@@ -5,7 +5,7 @@
 * **Marca Asociada:** Bitácora IT
 * **Rol de Gobierno:** IT Functional Analyst (Sabrina) & Mentor Técnico de IA
 * **Estado:** Listo para Desarrollo (Base Lineal Validada)
-* **Versión:** 4.8
+* **Versión:** 4.9
 * **Zona Horaria de Referencia:** GMT -3 (San Juan, Argentina)
 
 ## 🎯 2. Visión General y Contexto
@@ -13,7 +13,7 @@
 Calcular la consistencia operativa diaria analizando tareas repetitivas en Notion, superando limitaciones visuales con un panel móvil estático optimizado, segmentado cronológicamente (Ayer, Hoy, Mañana), e incorporando un módulo de bienestar y diagnóstico técnico.
 
 ### 2.2. Modelo de Arquitectura Híbrida Desacoplada
-* **Backend Extractor (Python 3.10):** Daemon invisible (Windows) o asíncrono (GitHub Actions). Procesa vectores analíticos y realiza inyección dinámica de datos (JSON) sobre los archivos `index.html` y `recordatorios-varios.html` (mismo bloque de variables, sincronizado en el mismo ciclo horario).
+* **Backend Extractor (Python 3.10):** Daemon invisible (Windows) o asíncrono (GitHub Actions). Consulta **dos bases de Notion independientes** (Recordatorios Diarios y Recordatorios Varios) y realiza inyección dinámica de datos (JSON) sobre los archivos `index.html` y `recordatorios-varios.html` respectivamente, en el mismo ciclo horario.
 * **Frontend Responsivo (HTML5/Tailwind/JS):** Alojado en GitHub Pages. Lógica matemática de cómputo en cliente.
 
 ## 👥 3. Personas y Usuarios
@@ -42,7 +42,7 @@ Tasa = (Tareas "Hecha" AND fórmula "consistencia"=1 / Total de Tareas Creadas) 
 * **Indicador de Versión:** Posicionado abajo a la izquierda (bajo el botón del footer), inyectado vía GitHub Releases (v3.3).
 
 ### 5.2. Recordatorios Varios (`recordatorios-varios.html`)
-* Módulo implementado a partir del diseño Stitch aportado por Sabrina, reutilizando el mismo Design System "Obsidian Refined" y la misma arquitectura de datos que Recordatorios Diarios (mismas variables `conteoAyer`/`conteoHoy`/`conteoManana` inyectadas por el backend).
+* Módulo implementado a partir del diseño Stitch aportado por Sabrina, reutilizando el mismo Design System "Obsidian Refined" y el mismo patrón de variables (`conteoAyer`/`conteoHoy`/`conteoManana`) que Recordatorios Diarios, pero alimentado por su **propia base de Notion independiente** (`NOTION_DB_RECORDATORIOS_VARIOS`) — no comparte datos con Recordatorios Diarios.
 * **Secciones:** * I: Tareas de ayer (idéntica a §5.1-I).
     * II: Progreso de hoy (idéntica a §5.1-II).
     * III: Tareas planificadas — "Tareas para mañana" (`conteoManana`), la sección que quedó fuera de alcance de Recordatorios Diarios en v3.6 encuentra acá su hogar definitivo, con el mismo patrón de card colapsable/completadas/consistencia que Ayer y Hoy.
@@ -85,4 +85,5 @@ Tasa = (Tareas "Hecha" AND fórmula "consistencia"=1 / Total de Tareas Creadas) 
 | **v4.5** | Agosto 2026 | Se agrega test de paridad entre la ruta local (`.env`) y la ruta CI (Secrets) para la resolución de credenciales, cerrando el último gap de la HU "Orquestación y Bifurcación CI/CD Local". Se descarta `.env.example` por decisión de producto. Ver `SRS.md` v4.5. |
 | **v4.6** | Agosto 2026 | `inicio.html` pasa a ser la página principal del sitio: `index.html` (el dashboard) ahora redirige automáticamente a `inicio.html` la primera vez que se accede en una sesión de navegador (vía `sessionStorage`), sin romper la navegación posterior desde el sidebar de `inicio.html` hacia `index.html`. Cambio de enrutamiento en el frontend; no afecta la plantilla de inyección de datos ni el pipeline de CI. Ver `SRS.md` v4.6. |
 | **v4.7** | Agosto 2026 | Se implementa el módulo **Recordatorios Varios** (`recordatorios-varios.html`), a partir del diseño Stitch aportado por Sabrina: reutiliza Ayer/Hoy y agrega la card "Tareas planificadas" (Mañana) que había quedado fuera de alcance en v3.6. El sidebar de `index.html`/`inicio.html` habilita el ítem "Recordatorios varios" (antes "Próximamente"). `extract_and_audit.py` ahora sincroniza ambos frontends en el mismo ciclo horario. Ver `SRS.md` v4.7. |
-| **v4.8** *(Actual)* | Agosto 2026 | **Fix de despliegue:** el paso de publicación de `notion_sync.yml` solo hacía `git add index.html` — `recordatorios-varios.html` nunca llegaba a `gh-pages` pese a que `extract_and_audit.py` sí lo actualizaba en el runner cada hora (quedó comprobado: el commit horario automático solo tocaba `index.html` desde que se implementó el módulo en v4.7). El módulo estaba deployado pero congelado con datos de placeholder. Ver `SRS.md` v4.8. |
+| **v4.8** | Agosto 2026 | **Fix de despliegue:** el paso de publicación de `notion_sync.yml` solo hacía `git add index.html` — `recordatorios-varios.html` nunca llegaba a `gh-pages` pese a que `extract_and_audit.py` sí lo actualizaba en el runner cada hora (quedó comprobado: el commit horario automático solo tocaba `index.html` desde que se implementó el módulo en v4.7). El módulo estaba deployado pero congelado con datos de placeholder. Ver `SRS.md` v4.8. |
+| **v4.9** *(Actual)* | Agosto 2026 | **Recordatorios Varios pasa a tener su propia base de Notion:** hasta esta versión, `recordatorios-varios.html` mostraba los mismos números que `index.html` — `extract_and_audit.py` consultaba una única base (`DB_RECORDATORIOS_DIARIOS`) y duplicaba el resultado en ambos frontends. Se agrega `NOTION_DB_RECORDATORIOS_VARIOS` como credencial requerida independiente; el backend ahora hace dos consultas separadas a Notion y cada frontend recibe los datos de su propia base. Ver `SRS.md` v4.9. |

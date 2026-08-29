@@ -13,10 +13,11 @@ import extract_and_audit
 # quedar en os.environ y contaminar el resultado sin que el test se entere.
 _NOMBRES_API_KEY = ["NOTION_API_KEY", "NOTION_TOKEN"]
 _NOMBRES_DB = ["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"]
+_NOMBRES_DB_VARIOS = ["NOTION_DB_RECORDATORIOS_VARIOS"]
 
 
 def _limpiar_entorno(monkeypatch):
-    for nombre in _NOMBRES_API_KEY + _NOMBRES_DB:
+    for nombre in _NOMBRES_API_KEY + _NOMBRES_DB + _NOMBRES_DB_VARIOS:
         monkeypatch.delenv(nombre, raising=False)
 
 
@@ -80,3 +81,23 @@ def test_ruta_local_con_nombres_alternativos_tambien_coincide_con_ci(tmp_path, m
     _limpiar_entorno(monkeypatch)
 
     assert resultado_ci == resultado_local == (valor_token, valor_db_id)
+
+
+def test_ruta_local_y_ruta_ci_resuelven_la_misma_db_de_varios(tmp_path, monkeypatch):
+    """Recordatorios Varios (NOTION_DB_RECORDATORIOS_VARIOS) es una base de Notion
+    independiente de Diarios — debe resolverse con la misma paridad local/CI."""
+    valor_db_varios = "E" * 40
+
+    _limpiar_entorno(monkeypatch)
+    monkeypatch.setenv("NOTION_DB_RECORDATORIOS_VARIOS", valor_db_varios)
+    resultado_ci = get_env_var(_NOMBRES_DB_VARIOS, required=True, min_length=32)
+
+    _limpiar_entorno(monkeypatch)
+    env_file = tmp_path / ".env"
+    env_file.write_text(f"NOTION_DB_RECORDATORIOS_VARIOS={valor_db_varios}\n", encoding="utf-8")
+    extract_and_audit.cargar_env_local(env_file)
+    resultado_local = get_env_var(_NOMBRES_DB_VARIOS, required=True, min_length=32)
+
+    _limpiar_entorno(monkeypatch)
+
+    assert resultado_ci == resultado_local == valor_db_varios
