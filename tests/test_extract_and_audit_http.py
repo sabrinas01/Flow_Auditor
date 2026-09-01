@@ -6,9 +6,11 @@ BASE_DIR se redirige a un directorio temporal con plantillas mínimas.
 Recordatorios Diarios (index.html) es fatal ante cualquier fallo (SRS-FR-M1-105).
 Recordatorios Varios (recordatorios-varios.html) es aislado y no fatal
 (SRS-FR-M4-401): un problema con esa base nunca debe interrumpir ni revertir
-la sincronización de Recordatorios Diarios, que corre primero. Sus ítems se
+la sincronización de Recordatorios Diarios, que corre primero. Sus ítems
+PENDIENTES (no Hecha/Hecha por otra persona/No necesaria/Fallida-Vencida) se
 clasifican en los mismos tres bloques cronológicos (Ayer/Hoy/Mañana,
-SRS-FR-M4-402), cada uno como lista de ítems completos, no conteos.
+SRS-FR-M4-402) según su fecha de CREACIÓN en Notion (created_time), no según
+su propiedad Fecha — cada bloque es una lista de ítems completos, no conteos.
 """
 from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
@@ -68,6 +70,10 @@ def _hoy_str():
     return (datetime.now(timezone.utc) - timedelta(hours=3)).date().isoformat()
 
 
+def _hoy_iso_datetime():
+    return (datetime.now(timezone.utc) - timedelta(hours=3)).isoformat().replace("+00:00", "Z")
+
+
 def _pagina_diarios():
     return {
         "properties": {
@@ -78,16 +84,19 @@ def _pagina_diarios():
     }
 
 
-def _pagina_varios(nombre="Lavar gorras", fecha=None):
+def _pagina_varios(nombre="Lavar gorras", estado="Sin empezar", fecha=None, creada=None):
+    """fecha = propiedad Fecha (vencimiento, solo metadato); creada = created_time
+    de Notion (created_time), la fecha que ahora se usa para clasificar el bloque."""
     return {
         "properties": {
             "Nombre": {"title": [{"plain_text": nombre}]},
-            "Estado": {"status": {"name": "Sin empezar"}},
+            "Estado": {"status": {"name": estado}},
             "Prioridad": {"select": {"name": "MEDIA"}},
             "Área": {"select": {"name": "Higiene"}},
             "Periodo": {"select": {"name": "MENSUAL"}},
             "Fecha": {"date": {"start": fecha or _hoy_str()}},
-        }
+        },
+        "created_time": creada or _hoy_iso_datetime(),
     }
 
 
@@ -118,24 +127,29 @@ def test_conexion_exitosa_sincroniza_ambos_frontends(tmp_path, monkeypatch):
 
     salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
     assert 'const timestampLocalStr = "";' not in salida_varios
-    # El ítem tiene Fecha = hoy -> cae en recordatoriosVariosHoy, no en Ayer/Mañana
+    # El ítem se creó hoy (created_time por defecto) -> cae en recordatoriosVariosHoy
     assert "const recordatoriosVariosAyer = [];" in salida_varios
     assert "const recordatoriosVariosManana = [];" in salida_varios
     assert "Lavar gorras" in salida_varios
     assert '"estado": "Sin empezar"' in salida_varios or '"estado":"Sin empezar"' in salida_varios
 
 
-def test_recordatorios_varios_clasifica_por_bloque_cronologico(tmp_path, monkeypatch):
+def test_recordatorios_varios_clasifica_por_fecha_de_creacion(tmp_path, monkeypatch):
+    """La clasificación Ayer/Hoy/Mañana usa created_time (fecha de creación de
+    la página), no la propiedad Fecha — un ítem con Fecha de mañana pero creado
+    hoy debe caer en el bloque Hoy."""
     _preparar_directorio_temporal(tmp_path, monkeypatch)
 
     hoy = datetime.now(timezone.utc) - timedelta(hours=3)
-    ayer_str = (hoy - timedelta(days=1)).date().isoformat()
-    manana_str = (hoy + timedelta(days=1)).date().isoformat()
+    ayer_dt = (hoy - timedelta(days=1)).isoformat().replace("+00:00", "Z")
+    manana_dt = (hoy + timedelta(days=1)).isoformat().replace("+00:00", "Z")
+    manana_fecha_str = (hoy + timedelta(days=1)).date().isoformat()
 
     paginas_varios = [
-        _pagina_varios(nombre="Item de ayer", fecha=ayer_str),
-        _pagina_varios(nombre="Item de hoy", fecha=_hoy_str()),
-        _pagina_varios(nombre="Item de mañana", fecha=manana_str),
+        _pagina_varios(nombre="Item creado ayer", creada=ayer_dt),
+        # Fecha (vencimiento) es de mañana, pero se creó hoy -> debe caer en Hoy
+        _pagina_varios(nombre="Item creado hoy", fecha=manana_fecha_str),
+        _pagina_varios(nombre="Item creado mañana", creada=manana_dt),
     ]
     fake_post = _fake_post_por_db("C" * 40, _mock_respuesta_notion(paginas_varios))
 
@@ -149,12 +163,43 @@ def test_recordatorios_varios_clasifica_por_bloque_cronologico(tmp_path, monkeyp
         m = re.search(rf"const\s+{nombre_const}\s*=\s*(\[.*?\])\s*;", salida_varios, re.DOTALL)
         return m.group(1)
 
-    assert "Item de ayer" in _bloque("recordatoriosVariosAyer")
-    assert "Item de ayer" not in _bloque("recordatoriosVariosHoy")
-    assert "Item de hoy" in _bloque("recordatoriosVariosHoy")
-    assert "Item de hoy" not in _bloque("recordatoriosVariosAyer")
-    assert "Item de mañana" in _bloque("recordatoriosVariosManana")
-    assert "Item de mañana" not in _bloque("recordatoriosVariosHoy")
+    assert "Item creado ayer" in _bloque("recordatoriosVariosAyer")
+    assert "Item creado ayer" not in _bloque("recordatoriosVariosHoy")
+    assert "Item creado hoy" in _bloque("recordatoriosVariosHoy")
+    assert "Item creado hoy" not in _bloque("recordatoriosVariosManana")
+    assert "Item creado mañana" in _bloque("recordatoriosVariosManana")
+    assert "Item creado mañana" not in _bloque("recordatoriosVariosHoy")
+
+
+def test_recordatorios_varios_filtra_estados_terminales(tmp_path, monkeypatch):
+    """Solo se muestran ítems PENDIENTES: se excluyen Hecha, Hecha por otra
+    persona, No necesaria y Fallida/Vencida, dejando Sin empezar, Pospuesta,
+    En ejecución y En espera."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    paginas_varios = [
+        _pagina_varios(nombre="Pendiente sin empezar", estado="Sin empezar"),
+        _pagina_varios(nombre="Pendiente pospuesta", estado="⏳ Pospuesta"),
+        _pagina_varios(nombre="Pendiente en ejecucion", estado="En ejecución"),
+        _pagina_varios(nombre="Terminado hecha", estado="Hecha"),
+        _pagina_varios(nombre="Terminado hecha por otra persona", estado="Hecha por otra persona"),
+        _pagina_varios(nombre="Terminado no necesaria", estado="⏭️ No necesaria"),
+        _pagina_varios(nombre="Terminado fallida", estado="❌ Fallida / Vencida"),
+    ]
+    fake_post = _fake_post_por_db("C" * 40, _mock_respuesta_notion(paginas_varios))
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
+
+    assert "Pendiente sin empezar" in salida_varios
+    assert "Pendiente pospuesta" in salida_varios
+    assert "Pendiente en ejecucion" in salida_varios
+    assert "Terminado hecha" not in salida_varios
+    assert "Terminado hecha por otra persona" not in salida_varios
+    assert "Terminado no necesaria" not in salida_varios
+    assert "Terminado fallida" not in salida_varios
 
 
 def test_recordatorios_varios_no_configurada_no_rompe_diarios(tmp_path, monkeypatch):

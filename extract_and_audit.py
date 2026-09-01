@@ -296,13 +296,30 @@ def auditar_consistencia_tripartita():
     verificar_consumo_ram()
 
 
+def _es_estado_pendiente(estado):
+    """True si el Estado de Notion representa un recordatorio todavía no
+    terminado. Excluye los estados terminales: Hecha, Hecha por otra persona,
+    No necesaria y Fallida/Vencida — deja Sin empezar, Pospuesta, En ejecución
+    y En espera (SRS-FR-M4-402)."""
+    norm = (estado or "").lower()
+    if "hecha" in norm or "hecho" in norm:
+        return False
+    if "no neces" in norm:
+        return False
+    if "fallida" in norm or "vencida" in norm:
+        return False
+    return True
+
+
 def extraer_recordatorios_varios_clasificados():
-    """Extrae y normaliza los ítems de la BD "Mis Recordatorios varios V0",
-    clasificados en las mismas tres ventanas cronológicas que Recordatorios
-    Diarios (Ayer/Hoy/Mañana, vía evaluar_bloque_temporal) — a diferencia de
-    consultar_y_clasificar(), acá cada bloque es una LISTA de ítems completos
-    (Nombre, Estado, Prioridad, Área, Periodo, Fecha), no un conteo agregado
-    por estado (SRS-FR-M4-402).
+    """Extrae y normaliza los ítems PENDIENTES de la BD "Mis Recordatorios
+    varios V0", clasificados en las mismas tres ventanas cronológicas que
+    Recordatorios Diarios (Ayer/Hoy/Mañana, vía evaluar_bloque_temporal) —
+    pero a partir de la fecha de CREACIÓN de la página en Notion
+    (`created_time`), no de su propiedad `Fecha` (vencimiento/programación).
+    A diferencia de consultar_y_clasificar(), acá cada bloque es una LISTA de
+    ítems completos (Nombre, Estado, Prioridad, Área, Periodo, Fecha), no un
+    conteo agregado por estado (SRS-FR-M4-402).
 
     Fallo aislado: cualquier error (BD sin configurar, 401/500, timeout) se
     loguea y devuelve tres listas vacías — nunca levanta una excepción hacia
@@ -342,17 +359,22 @@ def extraer_recordatorios_varios_clasificados():
     items_ayer, items_hoy, items_manana = [], [], []
     for pagina in results:
         props = pagina.get("properties", {})
-        fecha_data = props.get("Fecha", {}).get("date")
-        fecha = fecha_data.get("start") if fecha_data else None
-
-        fecha_p = fecha or pagina.get("created_time")
-        bloque = evaluar_bloque_temporal(fecha_p)
-        if not bloque:
-            continue
 
         nombre = _texto_titulo(props.get("Nombre", {}))
         estado_data = props.get("Estado", {}).get("status")
         estado = estado_data.get("name") if estado_data else None
+
+        if not _es_estado_pendiente(estado):
+            continue
+
+        # Clasificación por fecha de CREACIÓN de la página, no por la
+        # propiedad "Fecha" (que sigue mostrándose como metadato del ítem).
+        bloque = evaluar_bloque_temporal(pagina.get("created_time"))
+        if not bloque:
+            continue
+
+        fecha_data = props.get("Fecha", {}).get("date")
+        fecha = fecha_data.get("start") if fecha_data else None
 
         item = {
             "nombre": nombre or "Sin nombre",
