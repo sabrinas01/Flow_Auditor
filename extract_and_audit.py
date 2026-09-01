@@ -296,18 +296,21 @@ def auditar_consistencia_tripartita():
     verificar_consumo_ram()
 
 
-def extraer_recordatorios_varios_lista():
-    """Extrae y normaliza los ítems de la BD "Mis Recordatorios varios V0" como
-    una lista plana (uno por ítem, no agregados por estado como en Recordatorios
-    Diarios): cada recordatorio conserva su Nombre, Estado, Prioridad, Área,
-    Periodo y Fecha (SRS-FR-M4-402).
+def extraer_recordatorios_varios_clasificados():
+    """Extrae y normaliza los ítems de la BD "Mis Recordatorios varios V0",
+    clasificados en las mismas tres ventanas cronológicas que Recordatorios
+    Diarios (Ayer/Hoy/Mañana, vía evaluar_bloque_temporal) — a diferencia de
+    consultar_y_clasificar(), acá cada bloque es una LISTA de ítems completos
+    (Nombre, Estado, Prioridad, Área, Periodo, Fecha), no un conteo agregado
+    por estado (SRS-FR-M4-402).
 
     Fallo aislado: cualquier error (BD sin configurar, 401/500, timeout) se
-    loguea y devuelve lista vacía — nunca levanta una excepción hacia arriba.
+    loguea y devuelve tres listas vacías — nunca levanta una excepción hacia
+    arriba.
     """
     if not DB_RECORDATORIOS_VARIOS:
         print("ℹ️ [RECORDATORIOS VARIOS]: NOTION_DB_RECORDATORIOS_VARIOS no configurada, se omite.")
-        return []
+        return [], [], []
 
     url = f"https://api.notion.com/v1/databases/{DB_RECORDATORIOS_VARIOS}/query"
     headers = {
@@ -324,10 +327,10 @@ def extraer_recordatorios_varios_lista():
     except requests.exceptions.HTTPError as e:
         status = e.response.status_code if e.response is not None else "desconocido"
         print(f"⚠️ [RECORDATORIOS VARIOS]: fallo HTTP {status} al consultar Notion, se omite esta sincronización.")
-        return []
+        return [], [], []
     except Exception as e:
         print(f"⚠️ [RECORDATORIOS VARIOS]: error al consultar Notion ({e}), se omite esta sincronización.")
-        return []
+        return [], [], []
 
     def _texto_titulo(prop):
         return "".join(t.get("plain_text", "") for t in prop.get("title", []))
@@ -336,45 +339,68 @@ def extraer_recordatorios_varios_lista():
         sel = prop.get("select")
         return sel.get("name") if sel else None
 
-    items = []
+    items_ayer, items_hoy, items_manana = [], [], []
     for pagina in results:
         props = pagina.get("properties", {})
-        nombre = _texto_titulo(props.get("Nombre", {}))
-        estado_data = props.get("Estado", {}).get("status")
-        estado = estado_data.get("name") if estado_data else None
         fecha_data = props.get("Fecha", {}).get("date")
         fecha = fecha_data.get("start") if fecha_data else None
 
-        items.append({
+        fecha_p = fecha or pagina.get("created_time")
+        bloque = evaluar_bloque_temporal(fecha_p)
+        if not bloque:
+            continue
+
+        nombre = _texto_titulo(props.get("Nombre", {}))
+        estado_data = props.get("Estado", {}).get("status")
+        estado = estado_data.get("name") if estado_data else None
+
+        item = {
             "nombre": nombre or "Sin nombre",
             "estado": estado or "Sin estado",
             "prioridad": _select(props.get("Prioridad", {})),
             "area": _select(props.get("Área", {})),
             "periodo": _select(props.get("Periodo", {})),
             "fecha": fecha,
-        })
+        }
 
-    return items
+        if bloque == "AYER":
+            items_ayer.append(item)
+        elif bloque == "HOY":
+            items_hoy.append(item)
+        elif bloque == "MANANA":
+            items_manana.append(item)
+
+    return items_ayer, items_hoy, items_manana
 
 
 def sincronizar_recordatorios_varios(timestamps, app_version):
-    """Inyecta la lista de Recordatorios Varios en recordatorios-varios.html
-    (SRS-FR-M4-403). No fatal: si el archivo no existe todavía en este entorno,
-    se loguea y se continúa."""
+    """Inyecta los tres bloques (Ayer/Hoy/Mañana) de Recordatorios Varios en
+    recordatorios-varios.html (SRS-FR-M4-403). No fatal: si el archivo no
+    existe todavía en este entorno, se loguea y se continúa."""
     html_path = BASE_DIR / "recordatorios-varios.html"
     if not html_path.exists():
         print("ℹ️ [RECORDATORIOS VARIOS]: recordatorios-varios.html no encontrado, se omite.")
         return
 
-    items = extraer_recordatorios_varios_lista()
+    items_ayer, items_hoy, items_manana = extraer_recordatorios_varios_clasificados()
 
     with open(html_path, "r", encoding="utf-8") as file:
         html_content = file.read()
 
     html_content = _inyectar_timestamps_y_version(html_content, timestamps, app_version)
 
-    json_varios = json.dumps(items, ensure_ascii=False).replace("</", "<\\/")
-    html_content = re.sub(r"const\s+recordatoriosVarios\s*=\s*\[.*?\]\s*;", f"const recordatoriosVarios = {json_varios};", html_content, flags=re.DOTALL)
+    for nombre_const, items in (
+        ("recordatoriosVariosAyer", items_ayer),
+        ("recordatoriosVariosHoy", items_hoy),
+        ("recordatoriosVariosManana", items_manana),
+    ):
+        json_items = json.dumps(items, ensure_ascii=False).replace("</", "<\\/")
+        html_content = re.sub(
+            rf"const\s+{nombre_const}\s*=\s*\[.*?\]\s*;",
+            f"const {nombre_const} = {json_items};",
+            html_content,
+            flags=re.DOTALL,
+        )
 
     with open(html_path, "w", encoding="utf-8") as file:
         file.write(html_content)
