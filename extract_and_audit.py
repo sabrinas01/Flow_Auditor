@@ -296,30 +296,27 @@ def auditar_consistencia_tripartita():
     verificar_consumo_ram()
 
 
-def _es_estado_pendiente(estado):
-    """True si el Estado de Notion representa un recordatorio todavía no
-    terminado. Excluye los estados terminales: Hecha, Hecha por otra persona,
-    No necesaria y Fallida/Vencida — deja Sin empezar, Pospuesta, En ejecución
-    y En espera (SRS-FR-M4-402)."""
+def _es_estado_por_hacer(estado):
+    """True si el Estado de Notion pertenece al grupo "Por hacer" (to_do) de
+    la BD "Mis Recordatorios varios V0": únicamente "Sin empezar" y
+    "⏳ Pospuesta". Excluye En ejecución/En espera (in_progress) y todo el
+    grupo Complete (Hecha, Hecha por otra persona, No necesaria, Fallida/
+    Vencida) — comparación case-insensitive por substring (SRS-FR-M4-402)."""
     norm = (estado or "").lower()
-    if "hecha" in norm or "hecho" in norm:
-        return False
-    if "no neces" in norm:
-        return False
-    if "fallida" in norm or "vencida" in norm:
-        return False
-    return True
+    return "sin empezar" in norm or "pospuesta" in norm
 
 
 def extraer_recordatorios_varios_clasificados():
-    """Extrae y normaliza los ítems PENDIENTES de la BD "Mis Recordatorios
-    varios V0", clasificados en las mismas tres ventanas cronológicas que
-    Recordatorios Diarios (Ayer/Hoy/Mañana, vía evaluar_bloque_temporal) —
-    pero a partir de la fecha de CREACIÓN de la página en Notion
-    (`created_time`), no de su propiedad `Fecha` (vencimiento/programación).
-    A diferencia de consultar_y_clasificar(), acá cada bloque es una LISTA de
-    ítems completos (Nombre, Estado, Prioridad, Área, Periodo, Fecha), no un
-    conteo agregado por estado (SRS-FR-M4-402).
+    """Extrae y normaliza los ítems del grupo "Por hacer" (`_es_estado_por_hacer`)
+    de la BD "Mis Recordatorios varios V0", clasificados en las mismas tres
+    ventanas cronológicas que Recordatorios Diarios (Ayer/Hoy/Mañana, vía
+    evaluar_bloque_temporal) a partir de la fecha de CREACIÓN de la página en
+    Notion (`created_time`), no de su propiedad `Fecha` (vencimiento/
+    programación). Dentro de cada bloque, los ítems quedan ordenados por fecha
+    de creación ascendente (el más antiguo primero). A diferencia de
+    consultar_y_clasificar(), acá cada bloque es una LISTA de ítems completos
+    (Nombre, Estado, Prioridad, Área, Periodo, Fecha), no un conteo agregado
+    por estado (SRS-FR-M4-402).
 
     Fallo aislado: cualquier error (BD sin configurar, 401/500, timeout) se
     loguea y devuelve tres listas vacías — nunca levanta una excepción hacia
@@ -356,7 +353,9 @@ def extraer_recordatorios_varios_clasificados():
         sel = prop.get("select")
         return sel.get("name") if sel else None
 
-    items_ayer, items_hoy, items_manana = [], [], []
+    # Cada bucket acumula (created_time, item) para poder ordenar por fecha
+    # de creación ascendente antes de devolver solo los ítems.
+    bucket_ayer, bucket_hoy, bucket_manana = [], [], []
     for pagina in results:
         props = pagina.get("properties", {})
 
@@ -364,12 +363,13 @@ def extraer_recordatorios_varios_clasificados():
         estado_data = props.get("Estado", {}).get("status")
         estado = estado_data.get("name") if estado_data else None
 
-        if not _es_estado_pendiente(estado):
+        if not _es_estado_por_hacer(estado):
             continue
 
         # Clasificación por fecha de CREACIÓN de la página, no por la
         # propiedad "Fecha" (que sigue mostrándose como metadato del ítem).
-        bloque = evaluar_bloque_temporal(pagina.get("created_time"))
+        creada = pagina.get("created_time")
+        bloque = evaluar_bloque_temporal(creada)
         if not bloque:
             continue
 
@@ -386,13 +386,16 @@ def extraer_recordatorios_varios_clasificados():
         }
 
         if bloque == "AYER":
-            items_ayer.append(item)
+            bucket_ayer.append((creada, item))
         elif bloque == "HOY":
-            items_hoy.append(item)
+            bucket_hoy.append((creada, item))
         elif bloque == "MANANA":
-            items_manana.append(item)
+            bucket_manana.append((creada, item))
 
-    return items_ayer, items_hoy, items_manana
+    def _ordenados_por_creacion(bucket):
+        return [item for _creada, item in sorted(bucket, key=lambda t: t[0])]
+
+    return _ordenados_por_creacion(bucket_ayer), _ordenados_por_creacion(bucket_hoy), _ordenados_por_creacion(bucket_manana)
 
 
 def sincronizar_recordatorios_varios(timestamps, app_version):

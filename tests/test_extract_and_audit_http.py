@@ -6,11 +6,12 @@ BASE_DIR se redirige a un directorio temporal con plantillas mínimas.
 Recordatorios Diarios (index.html) es fatal ante cualquier fallo (SRS-FR-M1-105).
 Recordatorios Varios (recordatorios-varios.html) es aislado y no fatal
 (SRS-FR-M4-401): un problema con esa base nunca debe interrumpir ni revertir
-la sincronización de Recordatorios Diarios, que corre primero. Sus ítems
-PENDIENTES (no Hecha/Hecha por otra persona/No necesaria/Fallida-Vencida) se
-clasifican en los mismos tres bloques cronológicos (Ayer/Hoy/Mañana,
-SRS-FR-M4-402) según su fecha de CREACIÓN en Notion (created_time), no según
-su propiedad Fecha — cada bloque es una lista de ítems completos, no conteos.
+la sincronización de Recordatorios Diarios, que corre primero. Solo se
+muestran ítems del grupo "Por hacer" ("Sin empezar" / "⏳ Pospuesta" —
+excluye En ejecución/En espera y todo el grupo Complete), clasificados en
+los mismos tres bloques cronológicos (Ayer/Hoy/Mañana, SRS-FR-M4-402) según
+su fecha de CREACIÓN en Notion (created_time), no según su propiedad Fecha,
+y ordenados dentro de cada bloque por fecha de creación ascendente.
 """
 from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
@@ -171,20 +172,22 @@ def test_recordatorios_varios_clasifica_por_fecha_de_creacion(tmp_path, monkeypa
     assert "Item creado mañana" not in _bloque("recordatoriosVariosHoy")
 
 
-def test_recordatorios_varios_filtra_estados_terminales(tmp_path, monkeypatch):
-    """Solo se muestran ítems PENDIENTES: se excluyen Hecha, Hecha por otra
-    persona, No necesaria y Fallida/Vencida, dejando Sin empezar, Pospuesta,
-    En ejecución y En espera."""
+def test_recordatorios_varios_solo_grupo_por_hacer(tmp_path, monkeypatch):
+    """Solo se muestran ítems del grupo "Por hacer" de Notion: "Sin empezar" y
+    "⏳ Pospuesta". Se excluyen los del grupo "En curso" (En ejecución, En
+    espera) y los del grupo "Completado" (Hecha, Hecha por otra persona, No
+    necesaria, Fallida/Vencida)."""
     _preparar_directorio_temporal(tmp_path, monkeypatch)
 
     paginas_varios = [
-        _pagina_varios(nombre="Pendiente sin empezar", estado="Sin empezar"),
-        _pagina_varios(nombre="Pendiente pospuesta", estado="⏳ Pospuesta"),
-        _pagina_varios(nombre="Pendiente en ejecucion", estado="En ejecución"),
-        _pagina_varios(nombre="Terminado hecha", estado="Hecha"),
-        _pagina_varios(nombre="Terminado hecha por otra persona", estado="Hecha por otra persona"),
-        _pagina_varios(nombre="Terminado no necesaria", estado="⏭️ No necesaria"),
-        _pagina_varios(nombre="Terminado fallida", estado="❌ Fallida / Vencida"),
+        _pagina_varios(nombre="Por hacer sin empezar", estado="Sin empezar"),
+        _pagina_varios(nombre="Por hacer pospuesta", estado="⏳ Pospuesta"),
+        _pagina_varios(nombre="En curso ejecucion", estado="En ejecución"),
+        _pagina_varios(nombre="En curso espera", estado="En espera"),
+        _pagina_varios(nombre="Completado hecha", estado="Hecha"),
+        _pagina_varios(nombre="Completado hecha por otra persona", estado="Hecha por otra persona"),
+        _pagina_varios(nombre="Completado no necesaria", estado="⏭️ No necesaria"),
+        _pagina_varios(nombre="Completado fallida", estado="❌ Fallida / Vencida"),
     ]
     fake_post = _fake_post_por_db("C" * 40, _mock_respuesta_notion(paginas_varios))
 
@@ -193,13 +196,47 @@ def test_recordatorios_varios_filtra_estados_terminales(tmp_path, monkeypatch):
 
     salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
 
-    assert "Pendiente sin empezar" in salida_varios
-    assert "Pendiente pospuesta" in salida_varios
-    assert "Pendiente en ejecucion" in salida_varios
-    assert "Terminado hecha" not in salida_varios
-    assert "Terminado hecha por otra persona" not in salida_varios
-    assert "Terminado no necesaria" not in salida_varios
-    assert "Terminado fallida" not in salida_varios
+    assert "Por hacer sin empezar" in salida_varios
+    assert "Por hacer pospuesta" in salida_varios
+    assert "En curso ejecucion" not in salida_varios
+    assert "En curso espera" not in salida_varios
+    assert "Completado hecha" not in salida_varios
+    assert "Completado hecha por otra persona" not in salida_varios
+    assert "Completado no necesaria" not in salida_varios
+    assert "Completado fallida" not in salida_varios
+
+
+def test_recordatorios_varios_ordena_por_fecha_de_creacion_ascendente(tmp_path, monkeypatch):
+    """Dentro de un mismo bloque, los ítems quedan ordenados por fecha de
+    creación ascendente (el más antiguo primero)."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    hoy = datetime.now(timezone.utc) - timedelta(hours=3)
+    temprano = hoy.replace(hour=8, minute=0, second=0, microsecond=0).isoformat().replace("+00:00", "Z")
+    medio = hoy.replace(hour=12, minute=0, second=0, microsecond=0).isoformat().replace("+00:00", "Z")
+    tarde = hoy.replace(hour=18, minute=0, second=0, microsecond=0).isoformat().replace("+00:00", "Z")
+
+    # Se envían fuera de orden a propósito para probar que el backend ordena.
+    paginas_varios = [
+        _pagina_varios(nombre="Creado a la tarde", creada=tarde),
+        _pagina_varios(nombre="Creado temprano", creada=temprano),
+        _pagina_varios(nombre="Creado al mediodia", creada=medio),
+    ]
+    fake_post = _fake_post_por_db("C" * 40, _mock_respuesta_notion(paginas_varios))
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
+
+    import re
+    m = re.search(r"const\s+recordatoriosVariosHoy\s*=\s*(\[.*?\])\s*;", salida_varios, re.DOTALL)
+    bloque_hoy = m.group(1)
+
+    pos_temprano = bloque_hoy.index("Creado temprano")
+    pos_mediodia = bloque_hoy.index("Creado al mediodia")
+    pos_tarde = bloque_hoy.index("Creado a la tarde")
+    assert pos_temprano < pos_mediodia < pos_tarde
 
 
 def test_recordatorios_varios_no_configurada_no_rompe_diarios(tmp_path, monkeypatch):
