@@ -1,0 +1,253 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Agenda Personal - Bitácora IT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-on-surface": "#313030",
+                      "surface-bright": "#393939",
+                      "on-tertiary-fixed-variant": "#005318",
+                      "secondary-fixed-dim": "#ffb961",
+                      "on-surface": "#e5e2e1",
+                      "on-background": "#e5e2e1",
+                      "on-tertiary-container": "#00360d",
+                      "outline-variant": "#5a413d",
+                      "secondary-fixed": "#ffddb9",
+                      "secondary-container": "#e49102",
+                      "surface-tint": "#ffb4aa",
+                      "tertiary-container": "#53a759",
+                      "on-primary-fixed": "#410002",
+                      "outline": "#a98985",
+                      "inverse-primary": "#b32822",
+                      "error-container": "#93000a",
+                      "surface-container-high": "#2a2a2a",
+                      "secondary": "#ffb961",
+                      "surface-container-lowest": "#0e0e0e",
+                      "on-primary-fixed-variant": "#910a0e",
+                      "on-error": "#690005",
+                      "error": "#ffb4ab",
+                      "on-surface-variant": "#e2beba",
+                      "on-error-container": "#ffdad6",
+                      "on-tertiary-fixed": "#002105",
+                      "background": "#131313",
+                      "tertiary-fixed-dim": "#83da85",
+                      "on-primary-container": "#640004",
+                      "surface-variant": "#353534",
+                      "on-secondary-fixed-variant": "#663e00",
+                      "tertiary-fixed": "#9ff79f",
+                      "on-secondary": "#472a00",
+                      "surface-container": "#201f1f",
+                      "on-secondary-fixed": "#2b1700",
+                      "primary": "#ffb4aa",
+                      "primary-container": "#ff5f52",
+                      "tertiary": "#83da85",
+                      "primary-fixed": "#ffdad5",
+                      "inverse-surface": "#e5e2e1",
+                      "on-secondary-container": "#533200",
+                      "surface-container-highest": "#353534",
+                      "on-tertiary": "#00390e",
+                      "surface-dim": "#131313",
+                      "primary-fixed-dim": "#ffb4aa",
+                      "surface": "#131313",
+                      "on-primary": "#690004",
+                      "surface-container-low": "#1c1b1b"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Manrope"
+                      ],
+                      "display": [
+                              "Manrope"
+                      ],
+                      "body": [
+                              "Inter"
+                      ],
+                      "label": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {}
+      },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+        }
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="text-on-background font-body min-h-screen flex flex-col">
+<!-- TopAppBar (from JSON) -->
+<header class="bg-background dark:bg-background text-primary dark:text-primary docked full-width top-0 border-b border-outline-variant flat no shadows flex justify-between items-center w-full px-6 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<img alt="Bitácora IT Logo" class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida/AP1WRLuDaE_3ZT2RoS7sLIdyppc_I5D5nbjckcsHgXhLvQJ5aGMBYX7Cqum13s7WkPNr37KSZWrbD21N7gjcmB9SMvOvSHLpQRzW5mdXw9kklQ0qCe9mriDtEafXJUMWOsR3S6_nCB0ihhaVPbu4j0CLTAZjGctPeaZpGGPFHmEXC8QAIjAibMl0tcfHkVtzTcOvJ4RBmwX4gwxDnBrRxXVMoO2Xz-JCi2L7yHACiU2uA63f165xC36QIxOmSQGr">
+<span class="text-headline-md font-bold tracking-tight text-primary dark:text-primary font-headline">NFA</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:bg-surface-bright/10 transition-colors p-2 rounded-full active:scale-95 duration-100">
+
+</button>
+<button class="hover:bg-surface-bright/10 transition-colors p-2 rounded-full active:scale-95 duration-100">
+
+</button>
+</div>
+</header>
+<div class="flex flex-1">
+<!-- SideNavBar (from JSON) -->
+<nav class="bg-surface-container dark:bg-surface-container text-primary dark:text-primary font-label text-label-caps docked left-0 h-full w-64 border-r border-outline-variant flat no shadows hidden md:flex fixed left-0 top-0 h-full flex flex-col z-40 mt-[64px]">
+<div class="p-6">
+
+
+</div>
+<div class="flex-1 overflow-y-auto py-4">
+
+
+
+
+
+</div>
+<div class="p-4 border-t border-outline-variant">
+
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-2 hover:bg-surface-variant transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="">Cerrar Sesión</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 p-6 lg:p-10">
+<h1 class="text-display-lg font-headline text-on-surface mb-8">Agenda Personal</h1><p class="text-on-surface-variant font-body text-body-md mb-8 -mt-6">Lunes, 20 de Julio de 2026</p>
+<div class="grid grid-cols-1 gap-8">
+<!-- EVENTOS Column -->
+<div class="space-y-8">
+<section>
+<div class="flex items-center justify-between mb-4"><h2 class="text-label-caps font-label text-primary tracking-widest">EVENTOS</h2><button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-lg font-bold hover:bg-primary transition-colors flex items-center justify-center gap-2 text-body-sm"><span class="material-symbols-outlined">add</span> Nuevo Evento</button></div>
+<!-- Hoy -->
+<div class="mb-6">
+<h3 class="text-headline-md font-headline text-on-surface mb-4">Hoy</h3>
+<div class="space-y-4">
+<!-- Event Item -->
+<div class="bg-surface-container border border-surface-container-high rounded-xl p-4 flex items-center gap-4 hover:border-primary-container transition-colors group relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary-container"></div>
+<div class="w-16 text-center">
+<div class="text-on-surface-variant font-body text-body-sm">09:00</div>
+<div class="text-on-surface font-body font-bold">10:30</div>
+</div>
+<div class="flex-1">
+<h4 class="text-on-surface font-headline font-bold text-lg">Reunión de equipo</h4>
+<p class="text-on-surface-variant text-body-sm font-body">Sala C / Zoom</p>
+</div>
+<span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-opacity">more_vert</span>
+</div>
+<!-- Event Item -->
+<div class="bg-surface-container border border-surface-container-high rounded-xl p-4 flex items-center gap-4 hover:border-primary-container transition-colors group relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-tertiary"></div>
+<div class="w-16 text-center">
+<div class="text-on-surface-variant font-body text-body-sm">13:00</div>
+<div class="text-on-surface font-body font-bold">14:00</div>
+</div>
+<div class="flex-1">
+<h4 class="text-on-surface font-headline font-bold text-lg">Almuerzo con Sabri</h4>
+<p class="text-on-surface-variant text-body-sm font-body">Cafetería Central</p>
+</div>
+<span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-opacity">more_vert</span>
+</div>
+<!-- Event Item -->
+<div class="bg-surface-container border border-surface-container-high rounded-xl p-4 flex items-center gap-4 hover:border-primary-container transition-colors group relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-surface-variant"></div>
+<div class="w-16 text-center">
+<div class="text-on-surface-variant font-body text-body-sm">15:30</div>
+<div class="text-on-surface font-body font-bold">17:00</div>
+</div>
+<div class="flex-1">
+<h4 class="text-on-surface font-headline font-bold text-lg">Revisión de Código</h4>
+<p class="text-on-surface-variant text-body-sm font-body">Oficina</p>
+</div>
+<span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-opacity">more_vert</span>
+</div>
+</div>
+</div>
+<!-- Mañana -->
+<div>
+<h3 class="text-headline-md font-headline text-on-surface-variant mb-4">Mañana</h3>
+<div class="space-y-4 opacity-75">
+<!-- Event Item -->
+<div class="bg-surface-container-low border border-surface-container-high rounded-xl p-4 flex items-center gap-4">
+<div class="w-16 text-center">
+<div class="text-on-surface-variant font-body text-body-sm">10:00</div>
+</div>
+<div class="flex-1">
+<h4 class="text-on-surface-variant font-headline font-bold text-lg">Entrega de Auditoría</h4>
+</div>
+</div>
+<!-- Event Item -->
+<div class="bg-surface-container-low border border-surface-container-high rounded-xl p-4 flex items-center gap-4">
+<div class="w-16 text-center">
+<div class="text-on-surface-variant font-body text-body-sm">14:30</div>
+</div>
+<div class="flex-1">
+<h4 class="text-on-surface-variant font-headline font-bold text-lg">Sincro ART</h4>
+</div>
+</div>
+</div>
+</div>
+</section><section class="bg-surface-container rounded-xl p-6 border border-surface-container-high mt-8">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-label-caps font-label text-secondary tracking-widest">RECORDATORIOS</h2>
+<button class="text-secondary hover:text-secondary-container transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+</div>
+<div class="space-y-3">
+<!-- Reminder Item -->
+<label class="flex items-start gap-3 p-3 bg-surface border border-outline-variant rounded-lg cursor-pointer hover:border-secondary transition-colors group">
+<input class="mt-1 w-5 h-5 rounded border-outline bg-surface-container text-secondary focus:ring-secondary focus:ring-offset-background" type="checkbox">
+<span class="text-on-surface font-body text-body-md group-hover:text-secondary transition-colors">Beber agua</span>
+</label>
+<!-- Reminder Item -->
+<label class="flex items-start gap-3 p-3 bg-surface border border-outline-variant rounded-lg cursor-pointer hover:border-secondary transition-colors group">
+<input class="mt-1 w-5 h-5 rounded border-outline bg-surface-container text-secondary focus:ring-secondary focus:ring-offset-background" type="checkbox">
+<span class="text-on-surface font-body text-body-md group-hover:text-secondary transition-colors">Pausa activa</span>
+</label>
+<!-- Reminder Item -->
+<label class="flex items-start gap-3 p-3 bg-surface border border-outline-variant rounded-lg cursor-pointer hover:border-secondary transition-colors group">
+<input class="mt-1 w-5 h-5 rounded border-outline bg-surface-container text-secondary focus:ring-secondary focus:ring-offset-background" type="checkbox">
+<span class="text-on-surface font-body text-body-md group-hover:text-secondary transition-colors">Actualizar Notion</span>
+</label>
+<!-- Reminder Item -->
+<label class="flex items-start gap-3 p-3 bg-surface border border-outline-variant rounded-lg cursor-pointer hover:border-secondary transition-colors group">
+<input class="mt-1 w-5 h-5 rounded border-outline bg-surface-container text-secondary focus:ring-secondary focus:ring-offset-background" type="checkbox">
+<span class="text-on-surface font-body text-body-md group-hover:text-secondary transition-colors">Enviar reporte semanal</span>
+</label>
+</div>
+</section>
+</div>
+<!-- RECORDATORIOS Column -->
+
+</div>
+</main>
+</div>
+
+
+
+
+</body></html>

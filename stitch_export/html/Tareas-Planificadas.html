@@ -1,0 +1,315 @@
+<!DOCTYPE html><html class="dark" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Bitácora IT - Notion Flow Auditor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#e2beba",
+                        "inverse-surface": "#e5e2e1",
+                        "on-error": "#690005",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-primary-fixed-variant": "#910a0e",
+                        "secondary-container": "#e49102",
+                        "tertiary-container": "#53a759",
+                        "surface-container-low": "#1c1b1b",
+                        "on-surface": "#e5e2e1",
+                        "on-primary": "#690004",
+                        "surface-tint": "#ffb4aa",
+                        "outline-variant": "#5a413d",
+                        "on-secondary": "#472a00",
+                        "primary-container": "#ff5f52",
+                        "surface": "#131313",
+                        "error-container": "#93000a",
+                        "on-primary-fixed": "#410002",
+                        "secondary-fixed": "#ffddb9",
+                        "primary-fixed": "#ffdad5",
+                        "on-background": "#e5e2e1",
+                        "on-tertiary": "#00390e",
+                        "surface-container-highest": "#353534",
+                        "secondary-fixed-dim": "#ffb961",
+                        "background": "#131313",
+                        "on-tertiary-fixed": "#002105",
+                        "on-tertiary-container": "#00360d",
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#83da85",
+                        "inverse-primary": "#b32822",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "tertiary-fixed": "#9ff79f",
+                        "outline": "#a98985",
+                        "surface-dim": "#131313",
+                        "on-tertiary-fixed-variant": "#005318",
+                        "inverse-on-surface": "#313030",
+                        "primary": "#ffb4aa",
+                        "error": "#ffb4ab",
+                        "on-secondary-fixed-variant": "#663e00",
+                        "secondary": "#ffb961",
+                        "on-secondary-container": "#533200",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-variant": "#353534",
+                        "surface-container": "#201f1f",
+                        "surface-bright": "#393939",
+                        "on-primary-container": "#640004",
+                        "tertiary-fixed-dim": "#83da85",
+                        "on-secondary-fixed": "#2b1700"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "1rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-margin": "2.5rem",
+                        "stack-gap": "1.25rem",
+                        "item-gap": "0.75rem",
+                        "container-padding": "1.5rem",
+                        "grid-gutter": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Manrope"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Manrope"],
+                        "metric-xl": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "display-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "800"}],
+                        "metric-xl": ["26px", {"lineHeight": "34px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0e0e0e;
+            color: #e5e2e1;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #141416;
+            border: 1px solid #232326;
+        }
+        .status-row {
+            background: #1c1c1f;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+        .status-row:hover { background: #232326; }
+        
+        .accent-border-blue { border-left: 4px solid #00aaff; }
+        .accent-border-orange { border-left: 4px solid #e49102; }
+        
+        /* Specific Refinement Styles for Left Accents */
+        .left-pill-blue { border-left: 3px solid #00aaff; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-green { border-left: 3px solid #53a759; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-red { border-left: 3px solid #ff5f52; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden">
+<main class="min-h-screen">
+<!-- Top App Bar -->
+<header class="bg-[#0e0e0e] border-b border-outline-variant/30 sticky top-0 z-40">
+<div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+<div class="flex items-center gap-4">
+<span class="text-[20px] font-headline-md font-extrabold text-on-background tracking-tight">Bitácora IT</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+<button class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant">
+</button>
+</div>
+</div>
+</header>
+<div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+<!-- Hero Stats Row -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-grid-gutter">
+<!-- Bitácora de Ayer -->
+<article class="glass-card rounded-xl p-8 accent-border-blue flex flex-col gap-6">
+<div class="flex justify-between items-start">
+<div class="space-y-1">
+<p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE AYER</p>
+<h2 class="text-headline-md font-headline-md text-white">Bitácora de Ayer</h2>
+</div>
+<span class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">27 tareas</span>
+</div>
+<div class="space-y-3">
+<div class="status-row left-pill-blue flex justify-between items-center px-4 py-3.5">
+<span class="text-on-surface font-semibold">Sin empezar</span>
+<span class="text-white font-bold text-[15px]">14</span>
+</div>
+<div class="status-row left-pill-green flex justify-between items-center px-4 py-3.5">
+<span class="text-[#53a759] font-semibold">Hecha</span>
+<span class="text-white font-bold text-[15px]">9</span>
+</div>
+<div class="status-row left-pill-blue flex justify-between items-center px-4 py-3.5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px] text-white" style="font-variation-settings: 'FILL' 1;">fast_forward</span>
+<span class="text-on-surface font-semibold">No necesaria</span>
+</div>
+<span class="text-white font-bold text-[15px]">1</span>
+</div>
+<div class="status-row left-pill-red flex items-center px-4 py-3.5 gap-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px] text-[#ff5f52]" style="font-variation-settings: 'FILL' 1;">close</span>
+<span class="text-[#ff5f52] font-bold">Fallida / Vencida</span>
+</div>
+<span class="text-white font-bold text-[15px]">3</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
+<p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
+<p class="text-metric-xl font-metric-xl text-white">9 / 27</p>
+</div>
+<div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#e49102]/20 text-center">
+<p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
+<p class="text-metric-xl font-metric-xl text-[#e49102]">33.3%</p>
+</div>
+</div>
+<div class="bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl flex items-center gap-3">
+<span class="material-symbols-outlined text-[#e49102] text-[20px]">warning</span>
+<p class="text-[13px] text-[#e49102] font-semibold">Tasa de consistencia crítica (33.3%). Reduzca la fricción del flujo.</p>
+</div>
+</article>
+<!-- Progreso de Hoy -->
+<article class="glass-card rounded-xl p-8 accent-border-orange flex flex-col gap-6">
+<div class="flex justify-between items-start">
+<div class="space-y-1">
+<p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE HOY</p>
+<h2 class="text-headline-md font-headline-md text-white">Progreso de hoy</h2>
+</div>
+<span class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">20 tareas</span>
+</div>
+<div class="space-y-3">
+<div class="status-row left-pill-blue flex justify-between items-center px-4 py-3.5">
+<span class="text-on-surface font-semibold">Sin empezar</span>
+<span class="text-white font-bold text-[15px]">5</span>
+</div>
+<div class="status-row left-pill-green flex justify-between items-center px-4 py-3.5">
+<span class="text-[#53a759] font-semibold">Hecha</span>
+<span class="text-white font-bold text-[15px]">5</span>
+</div>
+<div class="status-row left-pill-blue flex justify-between items-center px-4 py-3.5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px] text-white" style="font-variation-settings: 'FILL' 1;">fast_forward</span>
+<span class="text-on-surface font-semibold">No necesaria</span>
+</div>
+<span class="text-white font-bold text-[15px]">5</span>
+</div>
+<div class="status-row left-pill-red flex items-center px-4 py-3.5 gap-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px] text-[#ff5f52]" style="font-variation-settings: 'FILL' 1;">close</span>
+<span class="text-[#ff5f52] font-bold">Fallida / Vencida</span>
+</div>
+<span class="text-white font-bold text-[15px]">5</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
+<p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
+<p class="text-metric-xl font-metric-xl text-white">5 / 20</p>
+</div>
+<div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#e49102]/20 text-center">
+<p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
+<p class="text-metric-xl font-metric-xl text-[#e49102]">25.0%</p>
+</div>
+</div>
+<div class="bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl flex items-center gap-3">
+<span class="material-symbols-outlined text-[#e49102] text-[20px]">report_problem</span>
+<p class="text-[13px] text-[#e49102] font-semibold">Tasa de consistencia crítica (25.0%). Reduzca la fricción del flujo.</p>
+</div>
+</article><article class="glass-card rounded-xl p-8 accent-border-orange flex flex-col gap-6">
+<div class="flex justify-between items-start">
+<div class="space-y-1">
+<p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS PARA MAÑANA</p>
+<h2 class="text-headline-md font-headline-md text-white">Tareas planificadas</h2>
+</div>
+<span class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">8 tareas</span>
+</div>
+<div class="space-y-3">
+<div class="status-row flex justify-between items-center px-4 py-3.5">
+<span class="text-on-surface font-semibold">Revisión de Servidores</span>
+<span class="text-[#8e8e93] font-semibold text-[13px]">Mañana</span>
+</div>
+<div class="status-row flex justify-between items-center px-4 py-3.5">
+<span class="text-on-surface font-semibold">Backup de Base de Datos</span>
+<span class="text-[#8e8e93] font-semibold text-[13px]">Mañana</span>
+</div>
+<div class="status-row flex justify-between items-center px-4 py-3.5">
+<span class="text-on-surface font-semibold">Actualización de Parches</span>
+<span class="text-[#8e8e93] font-semibold text-[13px]">Tarde</span>
+</div>
+<div class="status-row flex justify-between items-center px-4 py-3.5">
+<span class="text-on-surface font-semibold">Soporte Nivel 2</span>
+<span class="text-[#8e8e93] font-semibold text-[13px]">Tarde</span>
+</div>
+<div class="status-row flex justify-between items-center px-4 py-3.5">
+<span class="text-on-surface font-semibold">Monitoreo de Red</span>
+<span class="text-[#8e8e93] font-semibold text-[13px]">Noche</span>
+</div>
+</div>
+</article>
+</section>
+<!-- Table: Analítica de Consistencia -->
+<!-- CTA Primary Button -->
+<section class="flex flex-col items-center py-4">
+<button class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[16px] py-4 px-10 rounded-xl flex items-center gap-3 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
+<span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+<span class="">IR A RECORDATORIOS VARIOS</span>
+<span class="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
+</section>
+</div>
+<!-- Footer Section -->
+<footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8"><div class="flex flex-col md:flex-row justify-between items-start md:items-end w-full gap-8">
+<div class="space-y-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52]"></span>
+<p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span class="font-bold text-white">v5.4</span></p>
+</div>
+<div class="flex flex-wrap gap-x-8 gap-y-2">
+<a class="text-[#8e8e93] hover:text-white transition-colors text-[13px] font-semibold" href="#">Dashboard de uso personal</a>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2 text-right">
+<p class="text-[13px] text-[#8e8e93]">Sincro ART: <span class="font-bold text-white">19/07/2026 19:51:34</span></p>
+<p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span class="text-[#ffb961] font-bold">19/07/2026 20:51:34</span></p>
+<p class="text-[11px] font-label-caps text-[#5a5a5e] mt-2">Bitácora IT © 2026</p>
+</div>
+</div></div>
+</footer>
+</main>
+<script>
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = 'scale(0.97)';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.transform = '';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = '';
+            });
+        });
+    </script>
+
+
+</body></html>

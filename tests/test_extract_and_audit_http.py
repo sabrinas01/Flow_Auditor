@@ -48,16 +48,35 @@ PLANTILLA_VARIOS = """<html><body>
 </script>
 </body></html>"""
 
+PLANTILLA_AGENDA = """<html><body>
+<script>
+    const timestampLocalStr = "";
+    const appVersionStr = "";
+    const timestampNextStr = "";
+    const timestampServerStr = "";
 
-def _preparar_directorio_temporal(tmp_path, monkeypatch, con_pagina_varios=True):
+    const agendaEventosHoy = [];
+    const agendaEventosManana = [];
+    const agendaRecordatoriosAyer = [];
+    const agendaRecordatoriosHoy = [];
+    const agendaRecordatoriosManana = [];
+</script>
+</body></html>"""
+
+
+def _preparar_directorio_temporal(tmp_path, monkeypatch, con_pagina_varios=True, con_pagina_agenda=True):
     (tmp_path / "index.html").write_text(PLANTILLA_INDEX, encoding="utf-8")
     if con_pagina_varios:
         (tmp_path / "recordatorios-varios.html").write_text(PLANTILLA_VARIOS, encoding="utf-8")
+    if con_pagina_agenda:
+        (tmp_path / "agenda-personal.html").write_text(PLANTILLA_AGENDA, encoding="utf-8")
     monkeypatch.setattr(extract_and_audit, "BASE_DIR", tmp_path)
     monkeypatch.setattr(extract_and_audit, "validar_credenciales", lambda: None)
     monkeypatch.setattr(extract_and_audit, "NOTION_API_KEY", "A" * 40)
     monkeypatch.setattr(extract_and_audit, "DB_RECORDATORIOS_DIARIOS", "B" * 40)
     monkeypatch.setattr(extract_and_audit, "DB_RECORDATORIOS_VARIOS", "C" * 40)
+    monkeypatch.setattr(extract_and_audit, "DB_AGENDA_EVENTOS", "D" * 40)
+    monkeypatch.setattr(extract_and_audit, "DB_AGENDA_RECORDATORIOS", "E" * 40)
 
 
 def _mock_respuesta_notion(resultados):
@@ -110,6 +129,32 @@ def _fake_post_por_db(db_varios_id, respuesta_o_excepcion_varios, respuesta_diar
             if isinstance(respuesta_o_excepcion_varios, Exception):
                 raise respuesta_o_excepcion_varios
             return respuesta_o_excepcion_varios
+        return respuesta_diarios or _mock_respuesta_notion([_pagina_diarios()])
+    return _fake_post
+
+
+def _pagina_evento(nombre="Reunión de equipo", inicio=None, fin=None, lugar="Sala C"):
+    return {
+        "properties": {
+            "Nombre": {"title": [{"plain_text": nombre}]},
+            "Fecha": {"date": {"start": inicio or _hoy_iso_datetime(), "end": fin}},
+            "Lugar": {"rich_text": [{"plain_text": lugar}] if lugar else []},
+        },
+        "created_time": _hoy_iso_datetime(),
+    }
+
+
+def _fake_post_multi(respuestas, respuesta_diarios=None):
+    """side_effect de requests.post genérico para más de dos bases: `respuestas`
+    es un dict {db_id: respuesta_o_excepcion}. Cualquier base no listada
+    (típicamente Recordatorios Diarios) responde exitosamente con
+    _pagina_diarios() por defecto."""
+    def _fake_post(url, *args, **kwargs):
+        for db_id, resp in respuestas.items():
+            if db_id in url:
+                if isinstance(resp, Exception):
+                    raise resp
+                return resp
         return respuesta_diarios or _mock_respuesta_notion([_pagina_diarios()])
     return _fake_post
 
@@ -337,3 +382,126 @@ def test_falla_500_en_diarios_tambien_hace_exit_1(tmp_path, monkeypatch):
 
     assert exc_info.value.code == 1
     assert (tmp_path / "index.html").read_text(encoding="utf-8") == PLANTILLA_INDEX
+
+
+# =================================================================
+# AGENDA PERSONAL (agenda-personal.html) — SRS-FR-M5-501 a 505
+# =================================================================
+
+def test_agenda_personal_eventos_clasifica_hoy_manana_y_ordena_por_inicio(tmp_path, monkeypatch):
+    """Los eventos se clasifican por su propia Fecha.start (no por created_time)
+    en HOY/MAÑANA únicamente (sin bloque Ayer, SRS-FR-M5-502) y quedan
+    ordenados ascendentemente por hora de inicio dentro de cada bloque."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    hoy = datetime.now(timezone.utc) - timedelta(hours=3)
+    manana = hoy + timedelta(days=1)
+    temprano = hoy.replace(hour=9, minute=0, second=0, microsecond=0).isoformat().replace("+00:00", "Z")
+    tarde = hoy.replace(hour=15, minute=30, second=0, microsecond=0).isoformat().replace("+00:00", "Z")
+    manana_iso = manana.replace(hour=10, minute=0, second=0, microsecond=0).isoformat().replace("+00:00", "Z")
+
+    eventos = [
+        _pagina_evento(nombre="Revisión de código", inicio=tarde, lugar="Oficina"),
+        _pagina_evento(nombre="Reunión de equipo", inicio=temprano, lugar="Sala C / Zoom"),
+        _pagina_evento(nombre="Entrega de auditoría", inicio=manana_iso, lugar=None),
+    ]
+    fake_post = _fake_post_multi({"D" * 40: _mock_respuesta_notion(eventos)})
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
+
+    import re
+    def _bloque(nombre_const):
+        m = re.search(rf"const\s+{nombre_const}\s*=\s*(\[.*?\])\s*;", salida_agenda, re.DOTALL)
+        return m.group(1)
+
+    bloque_hoy = _bloque("agendaEventosHoy")
+    assert "Entrega de auditoría" not in bloque_hoy
+    assert bloque_hoy.index("Reunión de equipo") < bloque_hoy.index("Revisión de código")
+    assert "Entrega de auditoría" in _bloque("agendaEventosManana")
+
+
+def test_agenda_personal_recordatorios_filtra_por_hacer(tmp_path, monkeypatch):
+    """Agenda Recordatorios reutiliza el mismo filtro "Por hacer" que
+    Recordatorios Varios (SRS-FR-M5-503), contra su propia BD independiente."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    paginas_agenda_recordatorios = [
+        _pagina_varios(nombre="Beber agua", estado="Sin empezar"),
+        _pagina_varios(nombre="Ya hecho", estado="Hecha"),
+    ]
+    fake_post = _fake_post_multi({"E" * 40: _mock_respuesta_notion(paginas_agenda_recordatorios)})
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
+    assert "Beber agua" in salida_agenda
+    assert "Ya hecho" not in salida_agenda
+
+
+def test_agenda_personal_eventos_401_no_afecta_otros_modulos(tmp_path, monkeypatch, capsys):
+    """Un fallo HTTP al consultar Agenda Eventos es aislado: no debe abortar
+    ni afectar Recordatorios Diarios, Recordatorios Varios ni Agenda
+    Recordatorios (SRS-FR-M5-501)."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    respuesta_401 = Mock()
+    respuesta_401.status_code = 401
+    error_401 = requests.exceptions.HTTPError(response=respuesta_401)
+
+    fake_post = _fake_post_multi({
+        "D" * 40: error_401,
+        "E" * 40: _mock_respuesta_notion([_pagina_varios(nombre="Pausa activa", estado="Sin empezar")]),
+        "C" * 40: _mock_respuesta_notion([_pagina_varios(nombre="Lavar gorras")]),
+    })
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida = capsys.readouterr().out
+    assert "✅ Frontend index.html sincronizado" in salida
+    assert "AGENDA EVENTOS" in salida
+
+    assert 'const timestampLocalStr = "";' not in (tmp_path / "index.html").read_text(encoding="utf-8")
+    salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
+    assert "Lavar gorras" in salida_varios
+
+    salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
+    assert "const agendaEventosHoy = [];" in salida_agenda
+    assert "const agendaEventosManana = [];" in salida_agenda
+    assert "Pausa activa" in salida_agenda
+
+
+def test_agenda_personal_no_configurada_no_rompe_nada(tmp_path, monkeypatch):
+    """Sin las dos BD de Agenda Personal configuradas, el resto del pipeline
+    sigue funcionando normalmente y agenda-personal.html queda con listas
+    vacías."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+    monkeypatch.setattr(extract_and_audit, "DB_AGENDA_EVENTOS", None)
+    monkeypatch.setattr(extract_and_audit, "DB_AGENDA_RECORDATORIOS", None)
+
+    with patch.object(extract_and_audit.requests, "post", return_value=_mock_respuesta_notion([_pagina_diarios()])):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    assert 'const timestampLocalStr = "";' not in (tmp_path / "index.html").read_text(encoding="utf-8")
+    salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
+    assert "const agendaEventosHoy = [];" in salida_agenda
+    assert "const agendaEventosManana = [];" in salida_agenda
+    assert "const agendaRecordatoriosAyer = [];" in salida_agenda
+    assert "const agendaRecordatoriosHoy = [];" in salida_agenda
+    assert "const agendaRecordatoriosManana = [];" in salida_agenda
+
+
+def test_agenda_personal_sin_archivo_no_rompe_nada(tmp_path, monkeypatch):
+    """Si agenda-personal.html no existe todavía en este entorno, se omite sin
+    afectar la sincronización de los otros dos frontends."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch, con_pagina_agenda=False)
+
+    with patch.object(extract_and_audit.requests, "post", return_value=_mock_respuesta_notion([_pagina_diarios()])):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    assert 'const timestampLocalStr = "";' not in (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert not (tmp_path / "agenda-personal.html").exists()

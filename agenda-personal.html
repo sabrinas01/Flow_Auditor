@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitácora IT - Agenda Personal</title>
+    <!-- Tipografías del Design System "Obsidian Refined" (Stitch) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+    <!-- CSS de Tailwind precompilado (mismo bundle que index.html/recordatorios-varios.html) -->
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #0e0e0e;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #141416;
+            border: 1px solid #232326;
+        }
+        .status-row {
+            background: #1c1c1f;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+        .status-row:hover { background: #232326; }
+
+        .left-pill-blue { border-left: 3px solid #00aaff; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-green { border-left: 3px solid #53a759; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-red { border-left: 3px solid #ff5f52; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-orange { border-left: 3px solid #e49102; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+
+        #sidebar {
+            transition: transform 0.3s ease;
+        }
+
+        /* Animación premium de rotación para refrescar el dashboard */
+        .spin-animation {
+            animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden antialiased">
+
+    <!-- =================================================== -->
+    <!-- VARIABLES INYECTADAS DINÁMICAMENTE POR EL BACKEND -->
+    <!-- =================================================== -->
+    <script>
+        // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
+        const timestampLocalStr = "18/08/2026 20:20:23";
+        const appVersionStr = "dev";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
+        const timestampNextStr = "18/08/2026 21:20:23";
+        const timestampServerStr = "18/08/2026 23:20:23";
+
+        // Eventos (BD "Agenda Personal - Eventos"), clasificados por su propia
+        // fecha programada — solo Hoy/Mañana, sin bloque Ayer (SRS-FR-M5-502).
+        const agendaEventosHoy = [];
+        const agendaEventosManana = [];
+
+        // Recordatorios (BD "Agenda Personal - Recordatorios"), mismo criterio
+        // "Por hacer" + clasificación por fecha de creación que Recordatorios
+        // Varios, contra una base de Notion independiente (SRS-FR-M5-503).
+        const agendaRecordatoriosAyer = [];
+        const agendaRecordatoriosHoy = [];
+        const agendaRecordatoriosManana = [];
+    </script>
+
+    <!-- =================================================== -->
+    <!-- SIDEBAR (oculto por defecto, se activa con el menú) -->
+    <!-- =================================================== -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-surface-container-low border-r border-outline-variant/40 w-64 -translate-x-full">
+        <div class="flex items-center gap-3 mb-8 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo Bitácora IT" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-primary text-headline-md leading-tight">Segundo Cerebro</h2>
+                <p class="text-on-surface-variant font-body-sm text-body-sm">SabrIA</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="index.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">calendar_today</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">list_alt</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event</span>
+                <span>Agenda personal</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <main class="min-h-screen">
+        <!-- =================================================== -->
+        <!-- TOP APP BAR -->
+        <!-- =================================================== -->
+        <header class="bg-[#0e0e0e] border-b border-outline-variant/30 sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo Notion Flow Auditor" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">NOTION FLOW AUDITOR</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">AGENDA PERSONAL</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- =================================================== -->
+            <!-- EVENTOS: HOY / MAÑANA -->
+            <!-- =================================================== -->
+            <section class="space-y-4">
+                <h2 class="text-label-caps font-label-caps text-primary tracking-widest px-1">EVENTOS</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-grid-gutter">
+
+                    <!-- Hoy -->
+                    <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6">
+                        <div class="flex justify-between items-start">
+                            <div class="space-y-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">HOY</p>
+                                <h2 class="text-headline-md font-headline-md text-white">Eventos de hoy</h2>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="total-eventos-hoy-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 eventos</span>
+                                <button type="button" onclick="toggleBloque('eventos-hoy')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-eventos-hoy">
+                                    <span id="chevron-eventos-hoy" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="content-eventos-hoy">
+                            <div id="list-eventos-hoy" class="space-y-3">
+                                <!-- Se inyectan las filas dinámicamente -->
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Mañana -->
+                    <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#e49102] flex flex-col gap-6">
+                        <div class="flex justify-between items-start">
+                            <div class="space-y-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">MAÑANA</p>
+                                <h2 class="text-headline-md font-headline-md text-white">Eventos de mañana</h2>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="total-eventos-manana-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 eventos</span>
+                                <button type="button" onclick="toggleBloque('eventos-manana')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-eventos-manana">
+                                    <span id="chevron-eventos-manana" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="content-eventos-manana">
+                            <div id="list-eventos-manana" class="space-y-3">
+                                <!-- Se inyectan las filas dinámicamente -->
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- =================================================== -->
+            <!-- RECORDATORIOS: AYER / HOY / MAÑANA -->
+            <!-- =================================================== -->
+            <section class="space-y-4">
+                <h2 class="text-label-caps font-label-caps text-secondary tracking-widest px-1">RECORDATORIOS</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-grid-gutter">
+
+                    <!-- Ayer -->
+                    <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
+                        <div class="flex justify-between items-start">
+                            <div class="space-y-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">AYER</p>
+                                <h2 class="text-headline-md font-headline-md text-white">Recordatorios de ayer</h2>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="total-recordatorios-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
+                                <button type="button" onclick="toggleBloque('recordatorios-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-recordatorios-ayer">
+                                    <span id="chevron-recordatorios-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="content-recordatorios-ayer">
+                            <div id="list-recordatorios-ayer" class="space-y-3">
+                                <!-- Se inyectan las filas dinámicamente -->
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Hoy -->
+                    <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6">
+                        <div class="flex justify-between items-start">
+                            <div class="space-y-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">HOY</p>
+                                <h2 class="text-headline-md font-headline-md text-white">Recordatorios de hoy</h2>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="total-recordatorios-hoy-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 ítems</span>
+                                <button type="button" onclick="toggleBloque('recordatorios-hoy')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-recordatorios-hoy">
+                                    <span id="chevron-recordatorios-hoy" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="content-recordatorios-hoy">
+                            <div id="list-recordatorios-hoy" class="space-y-3">
+                                <!-- Se inyectan las filas dinámicamente -->
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Mañana -->
+                    <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#e49102] flex flex-col gap-6">
+                        <div class="flex justify-between items-start">
+                            <div class="space-y-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">MAÑANA</p>
+                                <h2 class="text-headline-md font-headline-md text-white">Recordatorios de mañana</h2>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="total-recordatorios-manana-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
+                                <button type="button" onclick="toggleBloque('recordatorios-manana')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-recordatorios-manana">
+                                    <span id="chevron-recordatorios-manana" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="content-recordatorios-manana">
+                            <div id="list-recordatorios-manana" class="space-y-3">
+                                <!-- Se inyectan las filas dinámicamente -->
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- Botones de Redirección Oficial a las BD de Notion -->
+            <section class="flex flex-col sm:flex-row items-center justify-center gap-4 py-4">
+                <a href="https://app.notion.com/p/746b0b3a13f94c2b8479912452a209cb"
+                   target="_blank"
+                   class="bg-[#c0453b] hover:bg-[#c0453b]/90 text-white font-bold text-[15px] py-3.5 px-8 rounded-xl flex items-center gap-2 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
+                    <span class="material-symbols-outlined text-[18px]">event</span>
+                    <span>Ver eventos en Notion</span>
+                    <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                </a>
+                <a href="https://app.notion.com/p/b39dac27bef44484ad68f91bac9810ef"
+                   target="_blank"
+                   class="bg-[#c0453b] hover:bg-[#c0453b]/90 text-white font-bold text-[15px] py-3.5 px-8 rounded-xl flex items-center gap-2 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
+                    <span class="material-symbols-outlined text-[18px]">checklist</span>
+                    <span>Ver recordatorios en Notion</span>
+                    <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                </a>
+            </section>
+        </div>
+
+        <!-- =================================================== -->
+        <!-- FOOTER -->
+        <!-- =================================================== -->
+        <footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">dev</span></p>
+                    </div>
+                    <div class="flex flex-wrap gap-x-8 gap-y-2">
+                        <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Bitácora IT &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- =================================================== -->
+    <!-- UTILITARIOS COMPARTIDOS (vanilla, sin bundler) -->
+    <!-- =================================================== -->
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+
+    <!-- =================================================== -->
+    <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
+    <!-- =================================================== -->
+    <script>
+        // escapeHtml y obtenerEstiloEstado viven en src/utils/dashboard_logic.js;
+        // toggleBloque en src/utils/dom_render.js (testeadas con Jest en tests/unit/)
+        // — se reutilizan acá para mantener la misma codificación visual y el mismo
+        // comportamiento de colapsar/expandir que el resto de la app.
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // 0. Inicializar estado versionado en localStorage (crea o migra el
+            // esquema flow_auditor:v1.0 si hace falta) — src/utils/src_localStorage_index.js
+            initLocalStorage();
+
+            // 1. Inyectar Relojes de Telemetría
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+
+            // 2. Renderizar Eventos (Hoy/Mañana) y Recordatorios (Ayer/Hoy/Mañana)
+            renderizarAgendaEventos("eventos-hoy", agendaEventosHoy);
+            renderizarAgendaEventos("eventos-manana", agendaEventosManana);
+            renderizarAgendaRecordatorios("recordatorios-ayer", agendaRecordatoriosAyer);
+            renderizarAgendaRecordatorios("recordatorios-hoy", agendaRecordatoriosHoy);
+            renderizarAgendaRecordatorios("recordatorios-manana", agendaRecordatoriosManana);
+        });
+
+        /**
+         * Extrae "HH:MM" de un string ISO-8601 (Fecha.start/Fecha.end de
+         * Notion). Sin librería de fechas: mismo criterio vanilla-JS-sin-
+         * bundler que el resto del proyecto.
+         */
+        function formatHora(isoStr) {
+            if (!isoStr) return "--:--";
+            const m = isoStr.match(/T(\d{2}:\d{2})/);
+            return m ? m[1] : "--:--";
+        }
+
+        /**
+         * Renderiza un bloque de Eventos (Hoy/Mañana) — una fila por evento
+         * con hora de inicio/fin, nombre y lugar. Reutiliza escapeHtml() de
+         * dashboard_logic.js para prevenir XSS.
+         */
+        function renderizarAgendaEventos(prefijo, items) {
+            const container = document.getElementById(`list-${prefijo}`);
+            document.getElementById(`total-${prefijo}-lbl`).innerText = `${items.length} eventos`;
+
+            if (!items || items.length === 0) {
+                container.innerHTML = `<div class="status-row left-pill-blue flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin eventos registrados</div>`;
+                return;
+            }
+
+            const pill = prefijo === "eventos-hoy" ? "left-pill-red" : "left-pill-orange";
+
+            container.innerHTML = items.map((item) => {
+                const meta = [item.lugar].filter(Boolean).map(escapeHtml).join(" · ");
+                return `
+                    <div class="status-row ${pill} flex items-center px-4 py-3.5 gap-4">
+                        <div class="flex flex-col items-center w-14 flex-shrink-0">
+                            <span class="text-white font-bold text-[13px]">${escapeHtml(formatHora(item.inicio))}</span>
+                            <span class="text-[#8e8e93] text-[11px]">${escapeHtml(formatHora(item.fin))}</span>
+                        </div>
+                        <div class="flex flex-col gap-1 min-w-0 flex-1">
+                            <span class="text-white font-semibold truncate">${escapeHtml(item.nombre || "Sin nombre")}</span>
+                            ${meta ? `<span class="text-[#8e8e93] text-[12px] truncate">${meta}</span>` : ""}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /**
+         * Renderiza un bloque de Recordatorios (Ayer/Hoy/Mañana) — idéntico a
+         * renderizarRecordatoriosVarios() de recordatorios-varios.html, contra
+         * la BD independiente "Agenda Personal - Recordatorios" (sin
+         * Prioridad/Área/Periodo: esos campos llegan en null y se descartan
+         * con el mismo .filter(Boolean)).
+         */
+        function renderizarAgendaRecordatorios(prefijo, items) {
+            const container = document.getElementById(`list-${prefijo}`);
+            document.getElementById(`total-${prefijo}-lbl`).innerText = `${items.length} ítems`;
+
+            if (!items || items.length === 0) {
+                container.innerHTML = `<div class="status-row left-pill-blue flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin recordatorios registrados</div>`;
+                return;
+            }
+
+            container.innerHTML = items.map((item) => {
+                const estilo = obtenerEstiloEstado(item.estado || "Sin estado");
+                const meta = [item.area, item.periodo, item.prioridad, item.fecha]
+                    .filter(Boolean)
+                    .map(escapeHtml)
+                    .join(" · ");
+                return `
+                    <div class="status-row ${estilo.pill} flex justify-between items-center px-4 py-3.5 gap-3">
+                        <div class="flex flex-col gap-1 min-w-0">
+                            <span class="text-white font-semibold truncate">${escapeHtml(item.nombre || "Sin nombre")}</span>
+                            ${meta ? `<span class="text-[#8e8e93] text-[12px] truncate">${meta}</span>` : ""}
+                        </div>
+                        <span class="${estilo.textClass} text-[13px] whitespace-nowrap">${escapeHtml(item.estado || "Sin estado")}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /**
+         * Abre/cierra el menú lateral de navegación
+         */
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = sidebar.classList.contains('-translate-x-full') === false;
+
+            if (isOpen) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            } else {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            }
+        }
+
+        /**
+         * Gatilla animación de refresco al presionar botón en cabecera
+         */
+        // Recarga diferida 1.2s mediante el debounce compartido — src/utils/debounce.js
+        const dispararRecargaDiferida = debounce(() => {
+            document.getElementById("icon-refresh").classList.remove("spin-animation");
+            document.getElementById("btn-refresh").disabled = false;
+            location.reload();
+        }, 1200);
+
+        function recargarDashboard() {
+            document.getElementById("icon-refresh").classList.add("spin-animation");
+            document.getElementById("btn-refresh").disabled = true;
+            dispararRecargaDiferida();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html><html lang="es" class="dark" style=""><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#353534",
+                        "tertiary-fixed-dim": "#83da85",
+                        "on-secondary-fixed": "#2b1700",
+                        "on-primary-fixed": "#410002",
+                        "secondary-fixed-dim": "#ffb961",
+                        "on-primary-container": "#640004",
+                        "outline-variant": "#5a413d",
+                        "on-primary-fixed-variant": "#910a0e",
+                        "tertiary-fixed": "#9ff79f",
+                        "surface-container-low": "#1c1b1b",
+                        "outline": "#a98985",
+                        "on-tertiary": "#00390e",
+                        "on-primary": "#690004",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-container": "#00360d",
+                        "surface-variant": "#353534",
+                        "on-error": "#690005",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-dim": "#131313",
+                        "tertiary": "#83da85",
+                        "inverse-primary": "#b32822",
+                        "primary-container": "#ff5f52",
+                        "on-surface": "#e5e2e1",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "background": "#131313",
+                        "on-secondary": "#472a00",
+                        "on-tertiary-fixed": "#002105",
+                        "on-secondary-fixed-variant": "#663e00",
+                        "primary": "#ffb4aa",
+                        "surface-tint": "#ffb4aa",
+                        "on-surface-variant": "#e2beba",
+                        "secondary-fixed": "#ffddb9",
+                        "error-container": "#93000a",
+                        "surface": "#131313",
+                        "inverse-surface": "#e5e2e1",
+                        "on-background": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#005318",
+                        "primary-fixed": "#ffdad5",
+                        "secondary": "#ffb961",
+                        "surface-bright": "#393939",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#53a759",
+                        "surface-container": "#201f1f",
+                        "inverse-on-surface": "#313030",
+                        "error": "#ffb4ab",
+                        "secondary-container": "#e49102",
+                        "on-secondary-container": "#533200"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-margin": "2rem",
+                        "grid-gutter": "1rem",
+                        "item-gap": "0.5rem",
+                        "stack-gap": "1rem",
+                        "container-padding": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "metric-xl": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+                        "metric-xl": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    }catch(_e){}</script></head><body class="font-body-md text-body-md selection:bg-primary-container selection:text-on-primary-container bg-black">
+
+    <!-- Sidebar (Hidden by default, triggered by menu) -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-surface-container-low border-r border-outline-variant w-64 -translate-x-full sidebar-transition">
+        <div class="flex items-center gap-3 mb-8 px-2">
+            <img src="https://lh3.googleusercontent.com/aida/AP1WRLt2Tfn_QjOzmaJ4auc1rL04iYMUIg8IYsZa3yOumciAx4CcVRAwA0n08mQ6F6KOGUNUw5NTY49KoQXjZmMM7XzrmY0SD8Z96a-F1l5QeuBdYHJOByajIMS5M05vLEv0ckhiqXx3op2MaaRNwhibDURfvzow3xpzBvWaP26WR8OjtwI3_n1mubgjxMpcKHVV4Z8UrU-16dFUO_rQlEoxGzlBWS4pFgqDVQd-GVu4ffrubUzVuzY8uv4M4XBv" alt="Bitácora IT Logo" class="w-10 h-10 rounded-lg">
+            <div>
+                <h2 class="font-display-lg text-primary text-headline-md leading-tight">Sabri</h2>
+                <p class="text-on-surface-variant font-body-sm text-body-sm">Productivity Lead</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all translate-x-1 duration-200">
+                <span class="material-symbols-outlined" data-icon="calendar_today" data-original-icon="calendar_today">calendar_today</span>
+                <span class="">Recordatorios diarios</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+                <span class="">Recordatorios varios</span>
+            </a>
+        </nav>
+
+        
+    </aside>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <!-- Top AppBar -->
+    <header class="bg-black flex justify-between items-center px-container-padding w-full h-16 fixed top-0 z-30"> <div class="flex items-center gap-4"> <button onclick="toggleMenu()" class="p-2 text-primary hover:text-primary-fixed-dim transition-colors scale-95 active:duration-100"> <span class="material-symbols-outlined">menu</span> </button> <span class="font-display-lg text-display-lg text-primary-fixed">INICIO NFA</span> </div> <div class="flex items-center gap-2"> <button class="p-2 text-on-surface-variant hover:text-primary transition-colors"> </button> </div> </header>
+
+    <!-- Main Content -->
+    <main class="relative min-h-screen flex flex-col pt-16 px-container-padding overflow-hidden">
+        <!-- Subtle Ambient Background -->
+        <div class="absolute inset-0 z-0 pointer-events-none opacity-50">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-container blur-[160px] rounded-full"></div>
+            <div class="absolute top-1/4 right-0 w-[400px] h-[400px] bg-secondary-container blur-[120px] rounded-full opacity-50"></div>
+        </div>
+
+        <!-- Welcome Hero Section -->
+        <div class="relative z-10 max-w-4xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
+            <div class="mb-8 flex">
+                <div class="p-1 rounded-2xl bg-gradient-to-tr from-primary-container to-secondary-container glow-accent">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhQKPGsmOieCxzQouRwFoQMtpXLMr8hIM5M4iZd8nD6sn6k09y-r4oTcmI0mK1CiZtROJ9kE-A9oPHUI_S0SMitJfPLgK5XZ4hkzc957nCkNI_jVF5EyqQLHlfQXD-O9s7b-Awl-wJOf7SPDHZJeiLPLrytAGR2ntupydE80NwHO9XOdnk4zKIlV7NODEeXRvNnNqHcvbN0a0VRXzBQYuD_XJMZDqurw-y_UvYHVyyPUE3gSCok4MNS7fdT_1_fIwOux71MhKPljQJQp8" alt="Bitácora IT" class="w-32 h-32 rounded-xl">
+                </div>
+            </div>
+            
+            <h1 class="font-display-lg text-6xl md:text-8xl tracking-tighter text-on-surface mb-4">
+                Bienvenida <span class="text-primary-container">Sabry</span></h1>
+            <p class="font-headline-md text-headline-md text-on-surface-variant mb-12">
+                ¿Como estás HOY??
+            </p><div class="mb-12 animate-in fade-in duration-1000 delay-200">
+    <p class="font-label-caps text-label-caps tracking-widest text-outline uppercase mb-2">ciclo menstrual</p>
+    <p class="font-body-md text-on-surface opacity-80">
+        Estas en la fase <span class="text-primary-container font-bold">xxxx</span> de tu ciclo
+    </p>
+</div>
+
+            <!-- Quick Action Bento Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-grid-gutter w-full max-w-2xl">
+                
+
+                
+            </div>
+            
+            <div class="mt-16 flex flex-col gap-4 opacity-60">
+                <span class="font-label-caps text-label-caps tracking-widest text-outline uppercase">DASHBOARD PERSONAL</span>
+                <div class="flex gap-1 h-1 w-32 bg-surface-container-highest rounded-full overflow-hidden">
+                    <div class="w-1/3 bg-primary-container"></div>
+                    <div class="w-1/2 bg-secondary-container"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Feedback Block (Optional Atmospheric Element) -->
+    <div class="fixed bottom-8 right-8 z-20 max-w-xs animate-in slide-in-from-right duration-700 delay-500">
+        
+    </div>
+
+    <script class="">
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = sidebar.classList.contains('translate-x-0');
+
+            if (isOpen) {
+                sidebar.classList.remove('translate-x-0');
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            } else {
+                sidebar.classList</script>
+
+
+
+
+
+
+
+</body></html>
