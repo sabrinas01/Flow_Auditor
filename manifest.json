@@ -1,0 +1,32 @@
+{
+    "name": "Notion Flow Auditor",
+    "short_name": "NFA",
+    "description": "Auditoría y visualización de consistencia diaria sobre tareas de Notion.",
+    "start_url": "./inicio.html",
+    "scope": "./",
+    "display": "standalone",
+    "orientation": "portrait",
+    "lang": "es",
+    "background_color": "#0e0e0e",
+    "theme_color": "#0e0e0e",
+    "icons": [
+        {
+            "src": "./grafica/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./grafica/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./grafica/icons/icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

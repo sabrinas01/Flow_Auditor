@@ -64,7 +64,8 @@ directamente. Para que no se desincronicen (como pasó: producción mostraba
 
 Hay un workflow (`.github/workflows/docs_sync_check.yml`) que falla en los PR
 a `main` si se tocan archivos funcionales (`extract_and_audit.py`,
-`generate_dashboard.py`, `index.html`, `recordatorios-varios.html`, `src/**`,
+`generate_dashboard.py`, `index.html`, `recordatorios-varios.html`,
+`agenda-personal.html`, `manifest.json`, `sw.js`, `src/**`,
 `.github/workflows/notion_sync.yml`) sin que `Documentacion/PRD.md` o
 `Documentacion/SRS.md` cambien en el mismo PR. Si un cambio realmente no
 amerita tocar la doc (config interna, CI de tooling, tests), agregar
