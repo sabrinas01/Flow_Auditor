@@ -64,16 +64,12 @@
         const timestampServerStr = "18/08/2026 23:20:23";
 
         // Eventos (BD "Agenda Personal - Eventos"), clasificados por su propia
-        // fecha programada — solo Hoy/Mañana, sin bloque Ayer (SRS-FR-M5-502).
+        // fecha programada en Ayer/Hoy/Mañana. Regla de negocio (SRS-FR-M5-502):
+        // el backend ya descarta los eventos "FINALIZADO" — acá solo llegan
+        // los que están "SIN_EMPEZAR" o "EN_CURSO".
+        const agendaEventosAyer = [];
         const agendaEventosHoy = [];
         const agendaEventosManana = [];
-
-        // Recordatorios (BD "Agenda Personal - Recordatorios"), mismo criterio
-        // "Por hacer" + clasificación por fecha de creación que Recordatorios
-        // Varios, contra una base de Notion independiente (SRS-FR-M5-503).
-        const agendaRecordatoriosAyer = [];
-        const agendaRecordatoriosHoy = [];
-        const agendaRecordatoriosManana = [];
     </script>
 
     <!-- =================================================== -->
@@ -143,7 +139,28 @@
             <!-- =================================================== -->
             <section class="space-y-4">
                 <h2 class="text-label-caps font-label-caps text-primary tracking-widest px-1">EVENTOS</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-grid-gutter">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-grid-gutter">
+
+                    <!-- Ayer -->
+                    <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
+                        <div class="flex justify-between items-start">
+                            <div class="space-y-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">AYER</p>
+                                <h2 class="text-headline-md font-headline-md text-white">Eventos de ayer</h2>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="total-eventos-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 eventos</span>
+                                <button type="button" onclick="toggleBloque('eventos-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-eventos-ayer">
+                                    <span id="chevron-eventos-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="content-eventos-ayer">
+                            <div id="list-eventos-ayer" class="space-y-3">
+                                <!-- Se inyectan las filas dinámicamente -->
+                            </div>
+                        </div>
+                    </article>
 
                     <!-- Hoy -->
                     <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6">
@@ -189,92 +206,13 @@
                 </div>
             </section>
 
-            <!-- =================================================== -->
-            <!-- RECORDATORIOS: AYER / HOY / MAÑANA -->
-            <!-- =================================================== -->
-            <section class="space-y-4">
-                <h2 class="text-label-caps font-label-caps text-secondary tracking-widest px-1">RECORDATORIOS</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-grid-gutter">
-
-                    <!-- Ayer -->
-                    <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
-                        <div class="flex justify-between items-start">
-                            <div class="space-y-1">
-                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">AYER</p>
-                                <h2 class="text-headline-md font-headline-md text-white">Recordatorios de ayer</h2>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span id="total-recordatorios-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
-                                <button type="button" onclick="toggleBloque('recordatorios-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-recordatorios-ayer">
-                                    <span id="chevron-recordatorios-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="content-recordatorios-ayer">
-                            <div id="list-recordatorios-ayer" class="space-y-3">
-                                <!-- Se inyectan las filas dinámicamente -->
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Hoy -->
-                    <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6">
-                        <div class="flex justify-between items-start">
-                            <div class="space-y-1">
-                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">HOY</p>
-                                <h2 class="text-headline-md font-headline-md text-white">Recordatorios de hoy</h2>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span id="total-recordatorios-hoy-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 ítems</span>
-                                <button type="button" onclick="toggleBloque('recordatorios-hoy')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-recordatorios-hoy">
-                                    <span id="chevron-recordatorios-hoy" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="content-recordatorios-hoy">
-                            <div id="list-recordatorios-hoy" class="space-y-3">
-                                <!-- Se inyectan las filas dinámicamente -->
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Mañana -->
-                    <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#e49102] flex flex-col gap-6">
-                        <div class="flex justify-between items-start">
-                            <div class="space-y-1">
-                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">MAÑANA</p>
-                                <h2 class="text-headline-md font-headline-md text-white">Recordatorios de mañana</h2>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span id="total-recordatorios-manana-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
-                                <button type="button" onclick="toggleBloque('recordatorios-manana')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-recordatorios-manana">
-                                    <span id="chevron-recordatorios-manana" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="content-recordatorios-manana">
-                            <div id="list-recordatorios-manana" class="space-y-3">
-                                <!-- Se inyectan las filas dinámicamente -->
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </section>
-
-            <!-- Botones de Redirección Oficial a las BD de Notion -->
+            <!-- Botón de Redirección Oficial a la Agenda de Sabry en Notion -->
             <section class="flex flex-col sm:flex-row items-center justify-center gap-4 py-4">
-                <a href="https://app.notion.com/p/746b0b3a13f94c2b8479912452a209cb"
+                <a href="https://app.notion.com/p/Agenda-Sabry-163a38bb7a6e8301b08d81592cd8c2f2"
                    target="_blank"
                    class="bg-[#c0453b] hover:bg-[#c0453b]/90 text-white font-bold text-[15px] py-3.5 px-8 rounded-xl flex items-center gap-2 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
-                    <span class="material-symbols-outlined text-[18px]">event</span>
-                    <span>Ver eventos en Notion</span>
-                    <span class="material-symbols-outlined text-[18px]">open_in_new</span>
-                </a>
-                <a href="https://app.notion.com/p/b39dac27bef44484ad68f91bac9810ef"
-                   target="_blank"
-                   class="bg-[#c0453b] hover:bg-[#c0453b]/90 text-white font-bold text-[15px] py-3.5 px-8 rounded-xl flex items-center gap-2 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
-                    <span class="material-symbols-outlined text-[18px]">checklist</span>
-                    <span>Ver recordatorios en Notion</span>
+                    <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                    <span>Ver Agenda Sabry en Notion</span>
                     <span class="material-symbols-outlined text-[18px]">open_in_new</span>
                 </a>
             </section>
@@ -315,10 +253,10 @@
     <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
     <!-- =================================================== -->
     <script>
-        // escapeHtml y obtenerEstiloEstado viven en src/utils/dashboard_logic.js;
-        // toggleBloque en src/utils/dom_render.js (testeadas con Jest en tests/unit/)
-        // — se reutilizan acá para mantener la misma codificación visual y el mismo
-        // comportamiento de colapsar/expandir que el resto de la app.
+        // escapeHtml vive en src/utils/dashboard_logic.js; toggleBloque en
+        // src/utils/dom_render.js (testeadas con Jest en tests/unit/) — se
+        // reutilizan acá para mantener la misma codificación visual y el
+        // mismo comportamiento de colapsar/expandir que el resto de la app.
 
         document.addEventListener("DOMContentLoaded", () => {
             // 0. Inicializar estado versionado en localStorage (crea o migra el
@@ -330,12 +268,11 @@
             document.getElementById("footer-next-time").innerText = timestampNextStr;
             document.getElementById("footer-version").innerText = appVersionStr;
 
-            // 2. Renderizar Eventos (Hoy/Mañana) y Recordatorios (Ayer/Hoy/Mañana)
+            // 2. Renderizar Eventos (Ayer/Hoy/Mañana) — el backend ya descarta
+            // los eventos "FINALIZADO", solo llegan "SIN_EMPEZAR"/"EN_CURSO"
+            renderizarAgendaEventos("eventos-ayer", agendaEventosAyer);
             renderizarAgendaEventos("eventos-hoy", agendaEventosHoy);
             renderizarAgendaEventos("eventos-manana", agendaEventosManana);
-            renderizarAgendaRecordatorios("recordatorios-ayer", agendaRecordatoriosAyer);
-            renderizarAgendaRecordatorios("recordatorios-hoy", agendaRecordatoriosHoy);
-            renderizarAgendaRecordatorios("recordatorios-manana", agendaRecordatoriosManana);
         });
 
         /**
@@ -350,9 +287,9 @@
         }
 
         /**
-         * Renderiza un bloque de Eventos (Hoy/Mañana) — una fila por evento
-         * con hora de inicio/fin, nombre y lugar. Reutiliza escapeHtml() de
-         * dashboard_logic.js para prevenir XSS.
+         * Renderiza un bloque de Eventos (Ayer/Hoy/Mañana) — una fila por
+         * evento con hora de inicio/fin, nombre y lugar. Reutiliza escapeHtml()
+         * de dashboard_logic.js para prevenir XSS.
          */
         function renderizarAgendaEventos(prefijo, items) {
             const container = document.getElementById(`list-${prefijo}`);
@@ -363,7 +300,9 @@
                 return;
             }
 
-            const pill = prefijo === "eventos-hoy" ? "left-pill-red" : "left-pill-orange";
+            const pill = prefijo === "eventos-ayer" ? "left-pill-blue"
+                : prefijo === "eventos-hoy" ? "left-pill-red"
+                : "left-pill-orange";
 
             container.innerHTML = items.map((item) => {
                 const meta = [item.lugar].filter(Boolean).map(escapeHtml).join(" · ");
@@ -377,40 +316,6 @@
                             <span class="text-white font-semibold truncate">${escapeHtml(item.nombre || "Sin nombre")}</span>
                             ${meta ? `<span class="text-[#8e8e93] text-[12px] truncate">${meta}</span>` : ""}
                         </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        /**
-         * Renderiza un bloque de Recordatorios (Ayer/Hoy/Mañana) — idéntico a
-         * renderizarRecordatoriosVarios() de recordatorios-varios.html, contra
-         * la BD independiente "Agenda Personal - Recordatorios" (sin
-         * Prioridad/Área/Periodo: esos campos llegan en null y se descartan
-         * con el mismo .filter(Boolean)).
-         */
-        function renderizarAgendaRecordatorios(prefijo, items) {
-            const container = document.getElementById(`list-${prefijo}`);
-            document.getElementById(`total-${prefijo}-lbl`).innerText = `${items.length} ítems`;
-
-            if (!items || items.length === 0) {
-                container.innerHTML = `<div class="status-row left-pill-blue flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin recordatorios registrados</div>`;
-                return;
-            }
-
-            container.innerHTML = items.map((item) => {
-                const estilo = obtenerEstiloEstado(item.estado || "Sin estado");
-                const meta = [item.area, item.periodo, item.prioridad, item.fecha]
-                    .filter(Boolean)
-                    .map(escapeHtml)
-                    .join(" · ");
-                return `
-                    <div class="status-row ${estilo.pill} flex justify-between items-center px-4 py-3.5 gap-3">
-                        <div class="flex flex-col gap-1 min-w-0">
-                            <span class="text-white font-semibold truncate">${escapeHtml(item.nombre || "Sin nombre")}</span>
-                            ${meta ? `<span class="text-[#8e8e93] text-[12px] truncate">${meta}</span>` : ""}
-                        </div>
-                        <span class="${estilo.textClass} text-[13px] whitespace-nowrap">${escapeHtml(item.estado || "Sin estado")}</span>
                     </div>
                 `;
             }).join('');

@@ -89,13 +89,12 @@ NOTION_API_KEY = os.getenv("NOTION_API_KEY") or os.getenv("NOTION_TOKEN")
 DB_RECORDATORIOS_DIARIOS = os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS") or os.getenv("NOTION_DATABASE_ID") or os.getenv("NOTION_DB_ID")
 DB_RECORDATORIOS_VARIOS = os.getenv("NOTION_DB_RECORDATORIOS_VARIOS")
 DB_AGENDA_EVENTOS = os.getenv("NOTION_DB_EVENTOS")
-DB_AGENDA_RECORDATORIOS = os.getenv("NOTION_DB_RECORDATORIOSUNICOS")
 
 
 def validar_credenciales():
     try:
         # Uso de helper interno para resolución robusta de variables de entorno
-        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_AGENDA_RECORDATORIOS
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
         # Opcionales: su ausencia (o cualquier fallo al consultarlas) no debe abortar
@@ -103,7 +102,6 @@ def validar_credenciales():
         # y sincronizar_agenda_personal().
         DB_RECORDATORIOS_VARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_VARIOS"], required=False)
         DB_AGENDA_EVENTOS = get_env_var(["NOTION_DB_EVENTOS"], required=False)
-        DB_AGENDA_RECORDATORIOS = get_env_var(["NOTION_DB_RECORDATORIOSUNICOS"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -330,11 +328,11 @@ def extraer_recordatorios_clasificados(database_id, etiqueta_log):
     Periodo, Fecha), no un conteo agregado por estado (SRS-FR-M4-402).
 
     Generalizada a partir de la BD "Mis Recordatorios varios V0" (Recordatorios
-    Varios) para ser reutilizada también por Agenda Personal (Recordatorios),
-    con su propia BD independiente — mismo criterio de filtro/clasificación,
-    parametrizado por database_id (mismo patrón que consultar_y_clasificar()).
-    Si esa BD no define Prioridad/Área/Periodo, esos campos quedan en None
-    (_select() ya lo maneja) y el frontend los descarta con .filter(Boolean).
+    Varios), parametrizada por database_id para poder reutilizarse contra
+    cualquier otra BD con el mismo esquema (mismo patrón que
+    consultar_y_clasificar()). Si esa BD no define Prioridad/Área/Periodo,
+    esos campos quedan en None (_select() ya lo maneja) y el frontend los
+    descarta con .filter(Boolean).
 
     Fallo aislado: cualquier error (BD sin configurar, 401/500, timeout) se
     loguea y devuelve tres listas vacías — nunca levanta una excepción hacia
@@ -378,9 +376,9 @@ def extraer_recordatorios_clasificados(database_id, etiqueta_log):
         props = pagina.get("properties", {})
 
         nombre = _texto_titulo(props.get("Nombre", {}))
-        # Estado puede ser "status" (Mis Recordatorios varios V0) o "select"
-        # (Agenda Personal - Recordatorios) según la BD — se acepta cualquiera
-        # de los dos para que esta función sirva para ambas (SRS-FR-M5-503).
+        # Estado puede ser "status" o "select" según la BD — se acepta
+        # cualquiera de los dos para que esta función sirva contra cualquier
+        # BD con ese esquema (mismo patrón de generalización que arriba).
         estado_prop = props.get("Estado", {})
         estado_data = estado_prop.get("status") or estado_prop.get("select")
         estado = estado_data.get("name") if estado_data else None
@@ -462,29 +460,64 @@ def sincronizar_recordatorios_varios(timestamps, app_version):
     print("✅ Frontend recordatorios-varios.html sincronizado y actualizado con éxito.")
 
 
+def calcular_estado_evento(inicio_iso, fin_iso, ahora):
+    """Calcula el estado temporal de un evento — "SIN_EMPEZAR", "EN_CURSO" o
+    "FINALIZADO" — comparando su ventana horaria (`inicio`/`fin`, ISO-8601)
+    contra el instante `ahora` (datetime *naive* en huso GMT-3, mismo truco
+    de "hora local disfrazada de UTC" que usa evaluar_bloque_temporal: se
+    resta 3 horas a `datetime.now(timezone.utc)` y se descarta el tzinfo).
+
+    Sin `fin` explícito (evento sin hora de cierre en Notion), se considera
+    vigente hasta el final del día de su `inicio` (23:59:59) — un evento no
+    puede "no tener fin" y a la vez cerrarse apenas empieza (SRS-FR-M5-502).
+
+    Devuelve None si `inicio_iso` no puede parsearse (nunca debería ocurrir:
+    ya se validó que exista antes de llamar a esta función)."""
+    try:
+        inicio_dt = datetime.fromisoformat(inicio_iso.replace("Z", "+00:00")).replace(tzinfo=None)
+    except Exception:
+        return None
+
+    fin_dt = None
+    if fin_iso:
+        try:
+            fin_dt = datetime.fromisoformat(fin_iso.replace("Z", "+00:00")).replace(tzinfo=None)
+        except Exception:
+            fin_dt = None
+    if fin_dt is None:
+        fin_dt = inicio_dt.replace(hour=23, minute=59, second=59, microsecond=0)
+
+    if ahora < inicio_dt:
+        return "SIN_EMPEZAR"
+    if inicio_dt <= ahora <= fin_dt:
+        return "EN_CURSO"
+    return "FINALIZADO"
+
+
 def extraer_eventos_clasificados():
     """Extrae y normaliza los eventos de la BD "Agenda Personal - Eventos",
     clasificados por su propia fecha PROGRAMADA (`Fecha.start`, vía
-    evaluar_bloque_temporal) — a diferencia de extraer_recordatorios_clasificados(),
-    acá no hay filtro de Estado (los eventos no tienen ese concepto) y la
-    clasificación usa la fecha del evento, no la de creación de la página.
+    evaluar_bloque_temporal) en las tres ventanas cronológicas Ayer/Hoy/Mañana
+    — a diferencia de extraer_recordatorios_clasificados(), la clasificación
+    usa la fecha del evento, no la de creación de la página.
 
-    Solo se devuelven las ventanas HOY y MAÑANA (SRS-FR-M5-502): a diferencia
-    del resto de los módulos, "eventos de ayer" no aporta a una agenda —
-    mismo criterio de recorte que Recordatorios Diarios aplicó a "Mañana"
-    (SRS-FR-M3-303).
+    Regla de negocio (SRS-FR-M5-502, pedido explícito de Sabrina): solo se
+    conservan los eventos cuyo estado temporal —vía `calcular_estado_evento()`,
+    que compara `inicio`/`fin` contra el instante actual, no solo la fecha—
+    sea "SIN_EMPEZAR" o "EN_CURSO". Los eventos "FINALIZADO" se descartan,
+    incluso si su fecha programada cae en la ventana Hoy o Ayer.
 
     Dentro de cada bloque, los eventos quedan ordenados ascendentemente por
     hora de inicio (comparación lexicográfica de strings ISO-8601, igual
     técnica que el orden por created_time de extraer_recordatorios_clasificados()).
 
     Fallo aislado: cualquier error (BD sin configurar, 401/500, timeout) se
-    loguea y devuelve dos listas vacías — nunca levanta una excepción hacia
+    loguea y devuelve tres listas vacías — nunca levanta una excepción hacia
     arriba.
     """
     if not DB_AGENDA_EVENTOS:
         print("ℹ️ [AGENDA EVENTOS]: NOTION_DB_EVENTOS no configurada, se omite.")
-        return [], []
+        return [], [], []
 
     url = f"https://api.notion.com/v1/databases/{DB_AGENDA_EVENTOS}/query"
     headers = {
@@ -501,10 +534,10 @@ def extraer_eventos_clasificados():
     except requests.exceptions.HTTPError as e:
         status = e.response.status_code if e.response is not None else "desconocido"
         print(f"⚠️ [AGENDA EVENTOS]: fallo HTTP {status} al consultar Notion, se omite esta sincronización.")
-        return [], []
+        return [], [], []
     except Exception as e:
         print(f"⚠️ [AGENDA EVENTOS]: error al consultar Notion ({e}), se omite esta sincronización.")
-        return [], []
+        return [], [], []
 
     def _texto_titulo(prop):
         return "".join(t.get("plain_text", "") for t in prop.get("title", []))
@@ -513,7 +546,9 @@ def extraer_eventos_clasificados():
         texto = "".join(t.get("plain_text", "") for t in prop.get("rich_text", []))
         return texto or None
 
-    bucket_hoy, bucket_manana = [], []
+    ahora = (datetime.now(timezone.utc) - timedelta(hours=3)).replace(tzinfo=None)
+
+    bucket_ayer, bucket_hoy, bucket_manana = [], [], []
     for pagina in results:
         props = pagina.get("properties", {})
 
@@ -525,7 +560,10 @@ def extraer_eventos_clasificados():
         fin = fecha_data.get("end")
 
         bloque = evaluar_bloque_temporal(inicio)
-        if bloque not in ("HOY", "MANANA"):
+        if bloque not in ("AYER", "HOY", "MANANA"):
+            continue
+
+        if calcular_estado_evento(inicio, fin, ahora) == "FINALIZADO":
             continue
 
         item = {
@@ -535,7 +573,9 @@ def extraer_eventos_clasificados():
             "lugar": _texto_rich(props.get("Lugar", {})),
         }
 
-        if bloque == "HOY":
+        if bloque == "AYER":
+            bucket_ayer.append((inicio, item))
+        elif bloque == "HOY":
             bucket_hoy.append((inicio, item))
         elif bloque == "MANANA":
             bucket_manana.append((inicio, item))
@@ -543,22 +583,19 @@ def extraer_eventos_clasificados():
     def _ordenados_por_inicio(bucket):
         return [item for _inicio, item in sorted(bucket, key=lambda t: t[0])]
 
-    return _ordenados_por_inicio(bucket_hoy), _ordenados_por_inicio(bucket_manana)
+    return _ordenados_por_inicio(bucket_ayer), _ordenados_por_inicio(bucket_hoy), _ordenados_por_inicio(bucket_manana)
 
 
 def sincronizar_agenda_personal(timestamps, app_version):
-    """Inyecta los eventos (Hoy/Mañana) y recordatorios (Ayer/Hoy/Mañana) de
-    Agenda Personal en agenda-personal.html (SRS-FR-M5-504). No fatal: si el
-    archivo no existe todavía en este entorno, se loguea y se continúa."""
+    """Inyecta los eventos (Ayer/Hoy/Mañana) de Agenda Personal en
+    agenda-personal.html (SRS-FR-M5-504). No fatal: si el archivo no existe
+    todavía en este entorno, se loguea y se continúa."""
     html_path = BASE_DIR / "agenda-personal.html"
     if not html_path.exists():
         print("ℹ️ [AGENDA PERSONAL]: agenda-personal.html no encontrado, se omite.")
         return
 
-    eventos_hoy, eventos_manana = extraer_eventos_clasificados()
-    recordatorios_ayer, recordatorios_hoy, recordatorios_manana = extraer_recordatorios_clasificados(
-        DB_AGENDA_RECORDATORIOS, "AGENDA RECORDATORIOS"
-    )
+    eventos_ayer, eventos_hoy, eventos_manana = extraer_eventos_clasificados()
 
     with open(html_path, "r", encoding="utf-8") as file:
         html_content = file.read()
@@ -566,11 +603,9 @@ def sincronizar_agenda_personal(timestamps, app_version):
     html_content = _inyectar_timestamps_y_version(html_content, timestamps, app_version)
 
     for nombre_const, items in (
+        ("agendaEventosAyer", eventos_ayer),
         ("agendaEventosHoy", eventos_hoy),
         ("agendaEventosManana", eventos_manana),
-        ("agendaRecordatoriosAyer", recordatorios_ayer),
-        ("agendaRecordatoriosHoy", recordatorios_hoy),
-        ("agendaRecordatoriosManana", recordatorios_manana),
     ):
         json_items = json.dumps(items, ensure_ascii=False).replace("</", "<\\/")
         html_content = re.sub(
