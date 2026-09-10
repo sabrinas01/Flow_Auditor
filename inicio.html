@@ -13,6 +13,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NFA">
+    <script>
+        // Marca que ya se aterrizó en la página principal, para que index.html
+        // no redirija de vuelta acá al navegar desde este sidebar (SRS-FR-M3-309).
+        try {
+            sessionStorage.setItem('nfa_landed', '1');
+        } catch (e) {
+            // sessionStorage puede no estar disponible (ej. abierto directo como
+            // archivo local en algunos navegadores); index.html maneja ese caso.
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
