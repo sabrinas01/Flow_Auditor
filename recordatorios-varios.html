@@ -71,13 +71,16 @@
         const timestampNextStr = "18/08/2026 21:20:23";
         const timestampServerStr = "18/08/2026 23:20:23";
 
-        // Recordatorios varios (BD "Mis Recordatorios varios V0"), clasificados en
-        // las mismas tres ventanas cronológicas que Recordatorios Diarios. Cada
-        // bloque es una LISTA de ítems completos (Nombre/Estado/Prioridad/Área/
-        // Periodo/Fecha) — a diferencia de index.html, acá no se agrega por estado.
+        // Recordatorios varios (BD "Mis Recordatorios varios V0"), clasificados por
+        // la propiedad Fecha (v4.26; hasta v4.25 se clasificaba por created_time)
+        // en las mismas tres ventanas cronológicas que Recordatorios Diarios, más
+        // un cuarto bloque "Sin fecha" para ítems sin Fecha cargada. Cada bloque es
+        // una LISTA de ítems completos (Nombre/Estado/Prioridad/Área/Periodo/Fecha)
+        // — a diferencia de index.html, acá no se agrega por estado.
         const recordatoriosVariosAyer = [];
         const recordatoriosVariosHoy = [];
         const recordatoriosVariosManana = [];
+        const recordatoriosVariosSinFecha = [];
     </script>
 
     <!-- =================================================== -->
@@ -145,7 +148,7 @@
             <!-- =================================================== -->
             <!-- RECORDATORIOS VARIOS: AYER / HOY / MAÑANA -->
             <!-- =================================================== -->
-            <section class="grid grid-cols-1 lg:grid-cols-3 gap-grid-gutter">
+            <section class="grid grid-cols-1 lg:grid-cols-4 gap-grid-gutter">
 
                 <!-- Ayer -->
                 <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
@@ -205,6 +208,27 @@
                     </div>
                     <div id="content-varios-manana">
                         <div id="list-varios-manana" class="space-y-3">
+                            <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Sin fecha (nuevo v4.26): ítems "Por hacer" sin la propiedad Fecha cargada -->
+                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#8e8e93] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">SIN FECHA</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Recordatorios sin fecha</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="total-varios-sin-fecha-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
+                            <button type="button" onclick="toggleBloque('varios-sin-fecha')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-sin-fecha">
+                                <span id="chevron-varios-sin-fecha" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="content-varios-sin-fecha">
+                        <div id="list-varios-sin-fecha" class="space-y-3">
                             <!-- Se inyectan las filas dinámicamente -->
                         </div>
                     </div>
@@ -273,10 +297,12 @@
             document.getElementById("footer-next-time").innerText = timestampNextStr;
             document.getElementById("footer-version").innerText = appVersionStr;
 
-            // 2. Renderizar los tres bloques cronológicos de recordatorios varios
+            // 2. Renderizar los cuatro bloques de recordatorios varios (tres
+            // cronológicos + "Sin fecha", nuevo v4.26)
             renderizarRecordatoriosVarios("varios-ayer", recordatoriosVariosAyer);
             renderizarRecordatoriosVarios("varios-hoy", recordatoriosVariosHoy);
             renderizarRecordatoriosVarios("varios-manana", recordatoriosVariosManana);
+            renderizarRecordatoriosVarios("varios-sin-fecha", recordatoriosVariosSinFecha);
         });
 
         // renderizarRecordatoriosVarios vive en src/utils/dom_render.js desde

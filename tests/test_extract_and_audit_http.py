@@ -8,10 +8,12 @@ Recordatorios Varios (recordatorios-varios.html) es aislado y no fatal
 (SRS-FR-M4-401): un problema con esa base nunca debe interrumpir ni revertir
 la sincronización de Recordatorios Diarios, que corre primero. Solo se
 muestran ítems del grupo "Por hacer" ("Sin empezar" / "⏳ Pospuesta" —
-excluye En ejecución/En espera y todo el grupo Complete), clasificados en
-los mismos tres bloques cronológicos (Ayer/Hoy/Mañana, SRS-FR-M4-402) según
-su fecha de CREACIÓN en Notion (created_time), no según su propiedad Fecha,
-y ordenados dentro de cada bloque por fecha de creación ascendente.
+excluye En ejecución/En espera y todo el grupo Complete), clasificados según
+su propiedad Fecha (v4.26; hasta v4.25 se usaba created_time) en los mismos
+tres bloques cronológicos (Ayer/Hoy/Mañana, SRS-FR-M4-402) más un cuarto
+bloque "Sin fecha" (nuevo v4.26) para ítems sin Fecha cargada, y ordenados
+dentro de cada bloque por Fecha ascendente (Sin fecha se ordena por
+created_time, único dato temporal disponible ahí).
 """
 from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
@@ -45,6 +47,7 @@ PLANTILLA_VARIOS = """<html><body>
     const recordatoriosVariosAyer = [];
     const recordatoriosVariosHoy = [];
     const recordatoriosVariosManana = [];
+    const recordatoriosVariosSinFecha = [];
 </script>
 </body></html>"""
 
@@ -101,9 +104,12 @@ def _pagina_diarios():
     }
 
 
-def _pagina_varios(nombre="Lavar gorras", estado="Sin empezar", fecha=None, creada=None):
-    """fecha = propiedad Fecha (vencimiento, solo metadato); creada = created_time
-    de Notion (created_time), la fecha que ahora se usa para clasificar el bloque."""
+def _pagina_varios(nombre="Lavar gorras", estado="Sin empezar", fecha=None, creada=None, sin_fecha=False):
+    """fecha = propiedad Fecha, usada desde v4.26 para clasificar el bloque
+    Ayer/Hoy/Mañana (hasta v4.25 se usaba created_time). creada = created_time
+    de Notion, usado ahora solo como criterio de orden del bloque "Sin fecha".
+    sin_fecha=True construye una página sin la propiedad Fecha cargada (Notion
+    devuelve {"date": None} en ese caso), para caer en el bloque "Sin fecha"."""
     return {
         "properties": {
             "Nombre": {"title": [{"plain_text": nombre}]},
@@ -111,7 +117,7 @@ def _pagina_varios(nombre="Lavar gorras", estado="Sin empezar", fecha=None, crea
             "Prioridad": {"select": {"name": "MEDIA"}},
             "Área": {"select": {"name": "Higiene"}},
             "Periodo": {"select": {"name": "MENSUAL"}},
-            "Fecha": {"date": {"start": fecha or _hoy_str()}},
+            "Fecha": {"date": None} if sin_fecha else {"date": {"start": fecha or _hoy_str()}},
         },
         "created_time": creada or _hoy_iso_datetime(),
     }
@@ -179,29 +185,28 @@ def test_conexion_exitosa_sincroniza_ambos_frontends(tmp_path, monkeypatch):
 
     salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
     assert 'const timestampLocalStr = "";' not in salida_varios
-    # El ítem se creó hoy (created_time por defecto) -> cae en recordatoriosVariosHoy
+    # El ítem tiene Fecha de hoy (default) -> cae en recordatoriosVariosHoy
     assert "const recordatoriosVariosAyer = [];" in salida_varios
     assert "const recordatoriosVariosManana = [];" in salida_varios
     assert "Lavar gorras" in salida_varios
     assert '"estado": "Sin empezar"' in salida_varios or '"estado":"Sin empezar"' in salida_varios
 
 
-def test_recordatorios_varios_clasifica_por_fecha_de_creacion(tmp_path, monkeypatch):
-    """La clasificación Ayer/Hoy/Mañana usa created_time (fecha de creación de
-    la página), no la propiedad Fecha — un ítem con Fecha de mañana pero creado
-    hoy debe caer en el bloque Hoy."""
+def test_recordatorios_varios_clasifica_por_propiedad_fecha(tmp_path, monkeypatch):
+    """La clasificación Ayer/Hoy/Mañana usa la propiedad Fecha (v4.26, pedido
+    explícito de Sabrina) — hasta v4.25 se usaba created_time. Un ítem creado
+    hoy pero con Fecha de mañana debe caer en el bloque Mañana."""
     _preparar_directorio_temporal(tmp_path, monkeypatch)
 
     hoy = datetime.now(timezone.utc) - timedelta(hours=3)
-    ayer_dt = (hoy - timedelta(days=1)).isoformat().replace("+00:00", "Z")
-    manana_dt = (hoy + timedelta(days=1)).isoformat().replace("+00:00", "Z")
+    ayer_fecha_str = (hoy - timedelta(days=1)).date().isoformat()
     manana_fecha_str = (hoy + timedelta(days=1)).date().isoformat()
 
     paginas_varios = [
-        _pagina_varios(nombre="Item creado ayer", creada=ayer_dt),
-        # Fecha (vencimiento) es de mañana, pero se creó hoy -> debe caer en Hoy
-        _pagina_varios(nombre="Item creado hoy", fecha=manana_fecha_str),
-        _pagina_varios(nombre="Item creado mañana", creada=manana_dt),
+        _pagina_varios(nombre="Item con fecha ayer", fecha=ayer_fecha_str),
+        # created_time es de hoy (default), pero Fecha es de mañana -> Mañana
+        _pagina_varios(nombre="Item con fecha manana", fecha=manana_fecha_str),
+        _pagina_varios(nombre="Item con fecha hoy"),
     ]
     fake_post = _fake_post_por_db("C" * 40, _mock_respuesta_notion(paginas_varios))
 
@@ -215,12 +220,40 @@ def test_recordatorios_varios_clasifica_por_fecha_de_creacion(tmp_path, monkeypa
         m = re.search(rf"const\s+{nombre_const}\s*=\s*(\[.*?\])\s*;", salida_varios, re.DOTALL)
         return m.group(1)
 
-    assert "Item creado ayer" in _bloque("recordatoriosVariosAyer")
-    assert "Item creado ayer" not in _bloque("recordatoriosVariosHoy")
-    assert "Item creado hoy" in _bloque("recordatoriosVariosHoy")
-    assert "Item creado hoy" not in _bloque("recordatoriosVariosManana")
-    assert "Item creado mañana" in _bloque("recordatoriosVariosManana")
-    assert "Item creado mañana" not in _bloque("recordatoriosVariosHoy")
+    assert "Item con fecha ayer" in _bloque("recordatoriosVariosAyer")
+    assert "Item con fecha ayer" not in _bloque("recordatoriosVariosHoy")
+    assert "Item con fecha hoy" in _bloque("recordatoriosVariosHoy")
+    assert "Item con fecha hoy" not in _bloque("recordatoriosVariosManana")
+    assert "Item con fecha manana" in _bloque("recordatoriosVariosManana")
+    assert "Item con fecha manana" not in _bloque("recordatoriosVariosHoy")
+
+
+def test_recordatorios_varios_sin_fecha_cae_en_bloque_propio(tmp_path, monkeypatch):
+    """Regla de negocio nueva (v4.26, pedido explícito de Sabrina): un ítem
+    "Por hacer" sin la propiedad Fecha cargada no se descarta — cae en un
+    cuarto bloque, recordatoriosVariosSinFecha, en vez de desaparecer."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    paginas_varios = [
+        _pagina_varios(nombre="Item sin fecha cargada", sin_fecha=True),
+        _pagina_varios(nombre="Item con fecha hoy"),
+    ]
+    fake_post = _fake_post_por_db("C" * 40, _mock_respuesta_notion(paginas_varios))
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
+
+    import re
+    def _bloque(nombre_const):
+        m = re.search(rf"const\s+{nombre_const}\s*=\s*(\[.*?\])\s*;", salida_varios, re.DOTALL)
+        return m.group(1)
+
+    assert "Item sin fecha cargada" in _bloque("recordatoriosVariosSinFecha")
+    assert "Item sin fecha cargada" not in _bloque("recordatoriosVariosHoy")
+    assert "Item con fecha hoy" in _bloque("recordatoriosVariosHoy")
+    assert "Item con fecha hoy" not in _bloque("recordatoriosVariosSinFecha")
 
 
 def test_recordatorios_varios_solo_grupo_por_hacer(tmp_path, monkeypatch):
@@ -257,9 +290,9 @@ def test_recordatorios_varios_solo_grupo_por_hacer(tmp_path, monkeypatch):
     assert "Completado fallida" not in salida_varios
 
 
-def test_recordatorios_varios_ordena_por_fecha_de_creacion_ascendente(tmp_path, monkeypatch):
-    """Dentro de un mismo bloque, los ítems quedan ordenados por fecha de
-    creación ascendente (el más antiguo primero)."""
+def test_recordatorios_varios_ordena_por_fecha_ascendente(tmp_path, monkeypatch):
+    """Dentro de un mismo bloque, los ítems quedan ordenados por la propiedad
+    Fecha ascendente (v4.26; hasta v4.25 se ordenaba por created_time)."""
     _preparar_directorio_temporal(tmp_path, monkeypatch)
 
     hoy = datetime.now(timezone.utc) - timedelta(hours=3)
@@ -268,10 +301,12 @@ def test_recordatorios_varios_ordena_por_fecha_de_creacion_ascendente(tmp_path, 
     tarde = hoy.replace(hour=18, minute=0, second=0, microsecond=0).isoformat().replace("+00:00", "Z")
 
     # Se envían fuera de orden a propósito para probar que el backend ordena.
+    # created_time queda igual para las tres (hoy, default) para aislar que el
+    # orden sale de Fecha y no de un remanente de la lógica vieja.
     paginas_varios = [
-        _pagina_varios(nombre="Creado a la tarde", creada=tarde),
-        _pagina_varios(nombre="Creado temprano", creada=temprano),
-        _pagina_varios(nombre="Creado al mediodia", creada=medio),
+        _pagina_varios(nombre="Fecha a la tarde", fecha=tarde),
+        _pagina_varios(nombre="Fecha temprano", fecha=temprano),
+        _pagina_varios(nombre="Fecha al mediodia", fecha=medio),
     ]
     fake_post = _fake_post_por_db("C" * 40, _mock_respuesta_notion(paginas_varios))
 
@@ -284,9 +319,9 @@ def test_recordatorios_varios_ordena_por_fecha_de_creacion_ascendente(tmp_path, 
     m = re.search(r"const\s+recordatoriosVariosHoy\s*=\s*(\[.*?\])\s*;", salida_varios, re.DOTALL)
     bloque_hoy = m.group(1)
 
-    pos_temprano = bloque_hoy.index("Creado temprano")
-    pos_mediodia = bloque_hoy.index("Creado al mediodia")
-    pos_tarde = bloque_hoy.index("Creado a la tarde")
+    pos_temprano = bloque_hoy.index("Fecha temprano")
+    pos_mediodia = bloque_hoy.index("Fecha al mediodia")
+    pos_tarde = bloque_hoy.index("Fecha a la tarde")
     assert pos_temprano < pos_mediodia < pos_tarde
 
 
