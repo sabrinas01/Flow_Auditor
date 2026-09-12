@@ -37,14 +37,17 @@ Es decir, un ítem es consistente (`Consistencia = 1`) si su **Estado** es `Hech
 Notion API
     │
     ▼
-extract_and_audit.py   (GitHub Actions)
-    │  extrae y audita tareas según reglas de negocio
+extract_and_audit.py   (GitHub Actions, cron horario)
+    │  extrae y audita tareas según reglas de negocio, y
+    │  reescribe in-place los 3 HTML con los datos actualizados
     ▼
-generate_dashboard.py
-    │  reescribe index.html con los datos actualizados
+index.html / recordatorios-varios.html / agenda-personal.html   (dashboards estáticos)
+    │
     ▼
-index.html   (dashboard estático)
+git push --force origin gh-pages   →   GitHub Pages
 ```
+
+> **Nota:** `generate_dashboard.py` existe en la raíz del repo pero es un script local suelto — no lo invoca ningún workflow de CI. `extract_and_audit.py` es el único script que corre en GitHub Actions y hace la extracción **y** la reescritura de los 3 HTML por sí solo.
 
 ## Características
 
