@@ -17,7 +17,9 @@ const {
   renderizarRecordatoriosVarios,
   formatHora,
   renderizarAgendaEventos,
+  crearManejadorDeRefresco,
 } = require('../../src/utils/dom_render.js');
+const debounce = require('../../src/utils/debounce.js');
 
 describe('renderizarFilasEstados', () => {
   beforeEach(() => {
@@ -201,5 +203,56 @@ describe('renderizarAgendaEventos', () => {
     const html = document.getElementById('list-eventos-hoy').innerHTML;
     expect(html).not.toContain('<img');
     expect(html).not.toContain('<script>alert');
+  });
+});
+
+// Extraída de index.html/recordatorios-varios.html/agenda-personal.html en
+// v4.24 (SRS-FR-M3-305, HU Notion Épica 2 #12). onRecargar es inyectable
+// para no depender de location.reload(), que jsdom no implementa.
+describe('crearManejadorDeRefresco', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    document.body.innerHTML = '<button id="btn-refresh"><span id="icon-refresh"></span></button>';
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test('Escenario 1 (SRS-FR-M3-305): al presionar, agrega spin-animation y deshabilita el botón de inmediato, sin recargar todavía', () => {
+    const onRecargar = jest.fn();
+    const recargarDashboard = crearManejadorDeRefresco(debounce, { onRecargar });
+
+    recargarDashboard();
+
+    expect(document.getElementById('icon-refresh').classList.contains('spin-animation')).toBe(true);
+    expect(document.getElementById('btn-refresh').disabled).toBe(true);
+    expect(onRecargar).not.toHaveBeenCalled();
+  });
+
+  test('tras el debounce (1200ms), quita spin-animation, rehabilita el botón y dispara la recarga', () => {
+    const onRecargar = jest.fn();
+    const recargarDashboard = crearManejadorDeRefresco(debounce, { onRecargar });
+
+    recargarDashboard();
+    jest.advanceTimersByTime(1200);
+
+    expect(document.getElementById('icon-refresh').classList.contains('spin-animation')).toBe(false);
+    expect(document.getElementById('btn-refresh').disabled).toBe(false);
+    expect(onRecargar).toHaveBeenCalledTimes(1);
+  });
+
+  test('clicks repetidos dentro de la ventana de debounce colapsan en una sola recarga (sin llamados repetidos)', () => {
+    const onRecargar = jest.fn();
+    const recargarDashboard = crearManejadorDeRefresco(debounce, { onRecargar });
+
+    recargarDashboard();
+    jest.advanceTimersByTime(600);
+    recargarDashboard();
+    jest.advanceTimersByTime(600);
+    recargarDashboard();
+    jest.advanceTimersByTime(1200);
+
+    expect(onRecargar).toHaveBeenCalledTimes(1);
   });
 });

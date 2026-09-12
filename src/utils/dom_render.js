@@ -135,6 +135,30 @@ function renderizarAgendaEventos(prefijo, items) {
   }).join('');
 }
 
+/**
+ * Crea el manejador del botón de refresco animado del header (btn-refresh/
+ * icon-refresh): al presionarlo agrega la clase de giro y deshabilita el
+ * botón; tras el debounce (1200ms por defecto) la quita, lo rehabilita y
+ * dispara la recarga real. Extraída de index.html/recordatorios-varios.html/
+ * agenda-personal.html en v4.24 (SRS-FR-M3-305, HU Notion Épica 2 #12) para
+ * poder testearla sin depender de `location.reload()` (jsdom no lo
+ * implementa) — `onRecargar` es inyectable, por defecto
+ * `() => location.reload()` en el navegador real.
+ */
+function crearManejadorDeRefresco(debounceFn, { onRecargar = () => location.reload(), delayMs = 1200 } = {}) {
+  const dispararRecargaDiferida = debounceFn(() => {
+    document.getElementById("icon-refresh").classList.remove("spin-animation");
+    document.getElementById("btn-refresh").disabled = false;
+    onRecargar();
+  }, delayMs);
+
+  return function recargarDashboard() {
+    document.getElementById("icon-refresh").classList.add("spin-animation");
+    document.getElementById("btn-refresh").disabled = true;
+    dispararRecargaDiferida();
+  };
+}
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     renderizarFilasEstados,
@@ -142,5 +166,6 @@ if (typeof module !== "undefined" && module.exports) {
     renderizarRecordatoriosVarios,
     formatHora,
     renderizarAgendaEventos,
+    crearManejadorDeRefresco,
   };
 }

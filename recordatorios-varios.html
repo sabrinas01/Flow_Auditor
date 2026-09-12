@@ -303,18 +303,9 @@
         /**
          * Gatilla animación de refresco al presionar botón en cabecera
          */
-        // Recarga diferida 1.2s mediante el debounce compartido — src/utils/debounce.js
-        const dispararRecargaDiferida = debounce(() => {
-            document.getElementById("icon-refresh").classList.remove("spin-animation");
-            document.getElementById("btn-refresh").disabled = false;
-            location.reload();
-        }, 1200);
-
-        function recargarDashboard() {
-            document.getElementById("icon-refresh").classList.add("spin-animation");
-            document.getElementById("btn-refresh").disabled = true;
-            dispararRecargaDiferida();
-        }
+        // recargarDashboard vive en src/utils/dom_render.js desde v4.24 (antes
+        // inline acá, sin test) — testeada en tests/unit/dom_render.test.js.
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
 
         // Registro del Service Worker (PWA) — no bloquea el render inicial.
         if ("serviceWorker" in navigator) {
