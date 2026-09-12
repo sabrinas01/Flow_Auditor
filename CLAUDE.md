@@ -36,7 +36,7 @@ terminada:
      `Quiero` / `Para` cuando implique una decisión de producto nueva (no una
      continuación obvia de algo ya charlado en la conversación).
 
-4. **Requisitos SRS en Notion** — base `📋 Requisitos SRS (RF + RNF) — v4.17`
+4. **Requisitos SRS en Notion** — base `📋 Requisitos SRS (RF + RNF) — v4.19`
    (workspace de Sabrina).
    - Data source: `collection://582dd387-00da-4075-bcf4-ca01517ace84`.
    - Si el cambio en `Documentacion/SRS.md` agrega, modifica o retira un
@@ -51,6 +51,19 @@ terminada:
    - Si existe una HU asociada, enlazarla vía la propiedad relacional
      `Historias de Usuario` (o desde el otro lado, `Trazabilidad SRS (RF/RNF)`
      en la HU).
+   - **Resolución de conflictos entre fuentes:** cuando `SRS.md`, el PRD o
+     Notion describan un mismo requisito de forma distinta, **manda lo que
+     efectivamente está implementado en el código** — no la fuente editada
+     más recientemente, ni la que "suena" más autorizada. Verificar contra
+     el código (`grep`/lectura directa del archivo relevante) antes de
+     corregir cualquiera de las tres fuentes. Precedentes reales de este
+     proyecto: `SRS-FR-M3-303` (SRS.md decía "tripartita", el código
+     confirma bipartita en `index.html` — Recordatorios Diarios es Ayer/Hoy,
+     Recordatorios Varios es el que es tripartito); `SRS-FR-M3-305`
+     (SRS.md describía un reloj UTC en el header que nunca se renderizó —
+     código muerto, `timestampServerStr` sin uso en el DOM); `SRS-NFR-USE-004`
+     / `SRS-NFR-PERF-005` (son mecanismos de código distintos — umbral 70%
+     en `dashboard_logic.js` vs. gate de Lighthouse — nunca fusionarlos).
 
 5. **Plan de Pruebas y Matriz de Trazabilidad** — página de Notion
    "📄 Plan de Pruebas y Matriz de Trazabilidad" (bajo el título `Plan NFA`).
