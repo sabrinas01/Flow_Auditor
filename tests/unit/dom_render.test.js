@@ -170,15 +170,26 @@ describe('renderizarAgendaEventos', () => {
     expect(document.getElementById('list-eventos-hoy').textContent).toContain('Sin eventos registrados');
   });
 
-  test('renderiza hora de inicio-fin, nombre y lugar de cada evento', () => {
+  test('renderiza hora de inicio-fin, nombre, tipo y lugar de cada evento', () => {
     renderizarAgendaEventos('eventos-hoy', [
-      { nombre: 'Turno médico', inicio: '2026-09-15T09:00:00-03:00', fin: '2026-09-15T10:00:00-03:00', lugar: 'Clínica Central' },
+      { nombre: 'Turno médico', inicio: '2026-09-15T09:00:00-03:00', fin: '2026-09-15T10:00:00-03:00', tipo: 'ESTUDIO MÉDICO', lugar: 'Clínica Central' },
     ]);
     const fila = document.querySelector('#list-eventos-hoy .status-row');
     expect(fila.textContent).toContain('Turno médico');
     expect(fila.textContent).toContain('09:00');
     expect(fila.textContent).toContain('10:00');
-    expect(fila.textContent).toContain('Clínica Central');
+    expect(fila.textContent).toContain('ESTUDIO MÉDICO · Clínica Central');
+  });
+
+  test('Escenario 3 (SRS-FR-M5-505): evento sin tipo no rompe el layout, solo omite ese dato', () => {
+    renderizarAgendaEventos('eventos-hoy', [
+      { nombre: 'Reunión sin tipo cargado', inicio: '2026-09-15T09:00:00-03:00', lugar: 'Oficina' },
+    ]);
+    const fila = document.querySelector('#list-eventos-hoy .status-row');
+    expect(fila.textContent).toContain('Reunión sin tipo cargado');
+    expect(fila.textContent).toContain('Oficina');
+    expect(fila.textContent).not.toContain('undefined');
+    expect(fila.textContent).not.toContain('null');
   });
 
   test('muestra la cantidad correcta de eventos en el total', () => {

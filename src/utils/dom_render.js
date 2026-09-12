@@ -101,9 +101,11 @@ function formatHora(isoStr) {
 
 /**
  * Renderiza un bloque de Eventos de Agenda Personal (agenda-personal.html):
- * una fila por evento con hora de inicio/fin, nombre y lugar. Reutiliza
- * escapeHtml para prevenir XSS. Extraída de agenda-personal.html en v4.23
- * (HU Notion Épica 2 #11) para poder testearla con Jest + jsdom.
+ * una fila por evento con hora de inicio/fin, nombre, tipo y lugar (tipo
+ * agregado en v4.25 — SRS-FR-M5-505, HU Notion Épica 2 #8, sale de la
+ * propiedad "Tipo de tarea" de la BD "Eventos y Recordatorios únicos").
+ * Reutiliza escapeHtml para prevenir XSS. Extraída de agenda-personal.html
+ * en v4.23 (HU Notion Épica 2 #11) para poder testearla con Jest + jsdom.
  */
 function renderizarAgendaEventos(prefijo, items) {
   const container = document.getElementById(`list-${prefijo}`);
@@ -119,7 +121,7 @@ function renderizarAgendaEventos(prefijo, items) {
     : "left-pill-orange";
 
   container.innerHTML = items.map((item) => {
-    const meta = [item.lugar].filter(Boolean).map(escapeHtml).join(" · ");
+    const meta = [item.tipo, item.lugar].filter(Boolean).map(escapeHtml).join(" · ");
     return `
         <div class="status-row ${pill} flex items-center px-4 py-3.5 gap-4">
             <div class="flex flex-col items-center w-14 flex-shrink-0">

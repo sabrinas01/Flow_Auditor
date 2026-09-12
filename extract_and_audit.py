@@ -494,18 +494,41 @@ def calcular_estado_evento(inicio_iso, fin_iso, ahora):
     return "FINALIZADO"
 
 
+_ESTADOS_TERMINALES_EVENTO = {"hecha", "sin asistir", "asisti"}
+
+
+def _evento_esta_activo_por_estado(props):
+    """True si el evento debe mostrarse según su propiedad `Estado` de Notion
+    (status): se descartan los estados terminales del grupo "Complete" de la
+    BD "Eventos y Recordatorios únicos" — Hecha, Sin asistir, Asisti — sin
+    importar su ventana temporal. "Pendiente"/"Planificada"/"Sin empezar"
+    (to_do) y "En curso" (in_progress) se muestran. Un evento sin `Estado`
+    cargado se muestra igual (fail-open): la ausencia del dato no debe
+    ocultarlo (SRS-FR-M5-502, v4.25)."""
+    estado = (props.get("Estado") or {}).get("status") or {}
+    nombre = (estado.get("name") or "").strip().lower()
+    if not nombre:
+        return True
+    return nombre not in _ESTADOS_TERMINALES_EVENTO
+
+
 def extraer_eventos_clasificados():
-    """Extrae y normaliza los eventos de la BD "Agenda Personal - Eventos",
+    """Extrae y normaliza los eventos de la BD "Eventos y Recordatorios
+    únicos" (antes "Agenda Personal - Eventos", reemplazada en v4.25 por
+    pedido explícito de Sabrina para poder mostrar el Tipo de cada evento),
     clasificados por su propia fecha PROGRAMADA (`Fecha.start`, vía
     evaluar_bloque_temporal) en las tres ventanas cronológicas Ayer/Hoy/Mañana
     — a diferencia de extraer_recordatorios_clasificados(), la clasificación
     usa la fecha del evento, no la de creación de la página.
 
-    Regla de negocio (SRS-FR-M5-502, pedido explícito de Sabrina): solo se
-    conservan los eventos cuyo estado temporal —vía `calcular_estado_evento()`,
-    que compara `inicio`/`fin` contra el instante actual, no solo la fecha—
-    sea "SIN_EMPEZAR" o "EN_CURSO". Los eventos "FINALIZADO" se descartan,
-    incluso si su fecha programada cae en la ventana Hoy o Ayer.
+    Reglas de negocio para descartar un evento (se aplican ambas):
+    1. (SRS-FR-M5-502) Estado temporal —vía `calcular_estado_evento()`, que
+       compara `inicio`/`fin` contra el instante actual, no solo la fecha—
+       debe ser "SIN_EMPEZAR" o "EN_CURSO". Un evento "FINALIZADO" se
+       descarta aunque su fecha programada caiga en la ventana Hoy o Ayer.
+    2. (SRS-FR-M5-502, nuevo v4.25) Estado de Notion (`Estado`, propiedad
+       `status` en la BD "Eventos y Recordatorios únicos") no debe ser un
+       estado terminal — ver `_evento_esta_activo_por_estado()`.
 
     Dentro de cada bloque, los eventos quedan ordenados ascendentemente por
     hora de inicio (comparación lexicográfica de strings ISO-8601, igual
@@ -542,9 +565,16 @@ def extraer_eventos_clasificados():
     def _texto_titulo(prop):
         return "".join(t.get("plain_text", "") for t in prop.get("title", []))
 
-    def _texto_rich(prop):
-        texto = "".join(t.get("plain_text", "") for t in prop.get("rich_text", []))
-        return texto or None
+    def _texto_place(prop):
+        # Lugar es tipo "place" en "Eventos y Recordatorios únicos" (antes
+        # "rich_text" en "Agenda Personal - Eventos") — el nombre del lugar
+        # vive en prop["place"]["name"], no en prop["rich_text"].
+        lugar = (prop or {}).get("place") or {}
+        return lugar.get("name") or None
+
+    def _texto_select(prop):
+        seleccion = (prop or {}).get("select") or {}
+        return seleccion.get("name") or None
 
     ahora = (datetime.now(timezone.utc) - timedelta(hours=3)).replace(tzinfo=None)
 
@@ -566,11 +596,15 @@ def extraer_eventos_clasificados():
         if calcular_estado_evento(inicio, fin, ahora) == "FINALIZADO":
             continue
 
+        if not _evento_esta_activo_por_estado(props):
+            continue
+
         item = {
             "nombre": _texto_titulo(props.get("Nombre", {})) or "Sin nombre",
             "inicio": inicio,
             "fin": fin,
-            "lugar": _texto_rich(props.get("Lugar", {})),
+            "lugar": _texto_place(props.get("Lugar", {})),
+            "tipo": _texto_select(props.get("Tipo de tarea", {})),
         }
 
         if bloque == "AYER":

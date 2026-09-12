@@ -130,12 +130,21 @@ def _fake_post_por_db(db_varios_id, respuesta_o_excepcion_varios, respuesta_diar
     return _fake_post
 
 
-def _pagina_evento(nombre="Reunión de equipo", inicio=None, fin=None, lugar="Sala C"):
+def _pagina_evento(nombre="Reunión de equipo", inicio=None, fin=None, lugar="Sala C", tipo=None, estado="Pendiente"):
+    """Página mock de la BD "Eventos y Recordatorios únicos" (reemplaza en
+    v4.25 a "Agenda Personal - Eventos"): Lugar es tipo `place` (no
+    `rich_text`), Tipo de tarea es `select`, Estado es `status` — a
+    diferencia de la BD anterior, que no tenía ninguna de las dos últimas.
+    `estado` por defecto "Pendiente" (grupo to_do, no terminal) para que
+    los tests existentes que no ejercitan el filtro de Estado no se vean
+    afectados por él."""
     return {
         "properties": {
             "Nombre": {"title": [{"plain_text": nombre}]},
             "Fecha": {"date": {"start": inicio or _hoy_iso_datetime(), "end": fin}},
-            "Lugar": {"rich_text": [{"plain_text": lugar}] if lugar else []},
+            "Lugar": {"place": {"name": lugar} if lugar else None},
+            "Tipo de tarea": {"select": {"name": tipo} if tipo else None},
+            "Estado": {"status": {"name": estado} if estado else None},
         },
         "created_time": _hoy_iso_datetime(),
     }
@@ -455,6 +464,80 @@ def test_agenda_personal_eventos_finalizado_se_descarta(tmp_path, monkeypatch):
     salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
     assert "Evento de ayer sin fin" not in salida_agenda
     assert "Evento de hoy ya terminado" not in salida_agenda
+
+
+def test_agenda_personal_eventos_incluye_tipo_de_tarea(tmp_path, monkeypatch):
+    """Escenario 2 (HU Notion Épica 2 #8, SRS-FR-M5-505): un evento con la
+    propiedad 'Tipo de tarea' cargada en Notion debe incluir ese valor en el
+    JSON inyectado como clave 'tipo', junto al 'lugar'."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    eventos = [_pagina_evento(nombre="Turno médico", lugar="Clínica Central", tipo="ESTUDIO MÉDICO")]
+    fake_post = _fake_post_multi({"D" * 40: _mock_respuesta_notion(eventos)})
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
+    assert "ESTUDIO MÉDICO" in salida_agenda
+    assert "Clínica Central" in salida_agenda
+
+
+def test_agenda_personal_eventos_sin_tipo_no_rompe(tmp_path, monkeypatch):
+    """Escenario 3 (HU Notion Épica 2 #8): un evento sin 'Tipo de tarea'
+    cargado no debe romper la sincronización — el campo 'tipo' queda en
+    null/None en vez de faltar la clave o abortar el proceso."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    eventos = [_pagina_evento(nombre="Reunión sin tipo", lugar="Oficina", tipo=None)]
+    fake_post = _fake_post_multi({"D" * 40: _mock_respuesta_notion(eventos)})
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
+    assert "Reunión sin tipo" in salida_agenda
+    assert '"tipo": null' in salida_agenda
+
+
+def test_agenda_personal_eventos_estado_terminal_se_descarta(tmp_path, monkeypatch):
+    """Regla de negocio nueva (SRS-FR-M5-502, v4.25, pedido explícito de
+    Sabrina): un evento en un Estado terminal de Notion (Hecha, Sin asistir,
+    Asisti) se descarta aunque su estado temporal sea SIN_EMPEZAR o EN_CURSO."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    hoy_iso = _hoy_iso_datetime()
+    eventos = [
+        _pagina_evento(nombre="Evento ya hecho", inicio=hoy_iso, estado="Hecha"),
+        _pagina_evento(nombre="Evento sin asistir", inicio=hoy_iso, estado="Sin asistir"),
+        _pagina_evento(nombre="Evento asisti", inicio=hoy_iso, estado="Asisti"),
+        _pagina_evento(nombre="Evento en curso activo", inicio=hoy_iso, estado="En curso"),
+    ]
+    fake_post = _fake_post_multi({"D" * 40: _mock_respuesta_notion(eventos)})
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
+    assert "Evento ya hecho" not in salida_agenda
+    assert "Evento sin asistir" not in salida_agenda
+    assert "Evento asisti" not in salida_agenda
+    assert "Evento en curso activo" in salida_agenda
+
+
+def test_agenda_personal_eventos_sin_estado_no_se_oculta(tmp_path, monkeypatch):
+    """Un evento sin la propiedad Estado cargada se muestra igual (fail-open):
+    la ausencia del dato no debe ocultarlo."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    eventos = [_pagina_evento(nombre="Evento sin estado cargado", estado=None)]
+    fake_post = _fake_post_multi({"D" * 40: _mock_respuesta_notion(eventos)})
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
+    assert "Evento sin estado cargado" in salida_agenda
 
 
 def test_agenda_personal_eventos_401_no_afecta_otros_modulos(tmp_path, monkeypatch, capsys):
