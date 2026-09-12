@@ -11,7 +11,13 @@
 const dashboardLogic = require('../../src/utils/dashboard_logic.js');
 Object.assign(global, dashboardLogic);
 
-const { renderizarFilasEstados, toggleBloque } = require('../../src/utils/dom_render.js');
+const {
+  renderizarFilasEstados,
+  toggleBloque,
+  renderizarRecordatoriosVarios,
+  formatHora,
+  renderizarAgendaEventos,
+} = require('../../src/utils/dom_render.js');
 
 describe('renderizarFilasEstados', () => {
   beforeEach(() => {
@@ -82,5 +88,118 @@ describe('toggleBloque', () => {
     expect(document.getElementById('content-ayer').classList.contains('hidden')).toBe(false);
     expect(document.getElementById('chevron-ayer').style.transform).toBe('rotate(0deg)');
     expect(document.querySelector('button').getAttribute('aria-expanded')).toBe('true');
+  });
+});
+
+// Extraída de recordatorios-varios.html en v4.23 (SRS-FR-M4-404, HU Notion Épica 2 #11)
+describe('renderizarRecordatoriosVarios', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '<div id="list-varios-hoy"></div><span id="total-varios-hoy-lbl"></span>';
+  });
+
+  test('sin ítems, muestra el mensaje de "Sin recordatorios registrados"', () => {
+    renderizarRecordatoriosVarios('varios-hoy', []);
+    expect(document.getElementById('list-varios-hoy').textContent).toContain('Sin recordatorios registrados');
+  });
+
+  test('renderiza Nombre/Estado/Prioridad/Área/Periodo/Fecha de cada ítem', () => {
+    renderizarRecordatoriosVarios('varios-hoy', [
+      { nombre: 'Pagar el alquiler', estado: 'Sin empezar', prioridad: 'Alta', area: 'Personal', periodo: 'Mensual', fecha: '10/09/2026' },
+    ]);
+    const fila = document.querySelector('#list-varios-hoy .status-row');
+    expect(fila.textContent).toContain('Pagar el alquiler');
+    expect(fila.textContent).toContain('Sin empezar');
+    expect(fila.textContent).toContain('Alta');
+    expect(fila.textContent).toContain('Personal');
+    expect(fila.textContent).toContain('Mensual');
+    expect(fila.textContent).toContain('10/09/2026');
+  });
+
+  test('muestra la cantidad correcta de ítems en el total', () => {
+    renderizarRecordatoriosVarios('varios-hoy', [
+      { nombre: 'a', estado: 'Hecha' },
+      { nombre: 'b', estado: 'Hecha' },
+    ]);
+    expect(document.getElementById('total-varios-hoy-lbl').innerText).toBe('2 ítems');
+  });
+
+  test.each([
+    ['Hecha', 'left-pill-green'],
+    ['❌ Fallida / Vencida', 'left-pill-red'],
+    ['Sin empezar', 'left-pill-blue'],
+  ])('aplica la pill correcta para el estado "%s"', (estado, pillEsperada) => {
+    renderizarRecordatoriosVarios('varios-hoy', [{ nombre: 'x', estado }]);
+    expect(document.querySelector('#list-varios-hoy .status-row').className).toContain(pillEsperada);
+  });
+
+  test('escapa HTML en nombre y metadatos (previene XSS)', () => {
+    renderizarRecordatoriosVarios('varios-hoy', [
+      { nombre: '<img src=x onerror=alert(1)>', estado: 'Sin empezar', area: '<script>alert(2)</script>' },
+    ]);
+    const html = document.getElementById('list-varios-hoy').innerHTML;
+    expect(html).not.toContain('<img');
+    expect(html).not.toContain('<script>alert');
+  });
+});
+
+// Extraída de agenda-personal.html en v4.23 (SRS-FR-M5-505, HU Notion Épica 2 #11)
+describe('formatHora', () => {
+  test('extrae HH:MM de un ISO-8601 completo', () => {
+    expect(formatHora('2026-09-15T14:30:00.000-03:00')).toBe('14:30');
+  });
+
+  test('sin horario (null/undefined), devuelve "--:--"', () => {
+    expect(formatHora(null)).toBe('--:--');
+    expect(formatHora(undefined)).toBe('--:--');
+  });
+
+  test('string sin formato de hora reconocible, devuelve "--:--"', () => {
+    expect(formatHora('no-es-una-fecha')).toBe('--:--');
+  });
+});
+
+describe('renderizarAgendaEventos', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '<div id="list-eventos-hoy"></div><span id="total-eventos-hoy-lbl"></span>';
+  });
+
+  test('sin eventos, muestra el mensaje de "Sin eventos registrados"', () => {
+    renderizarAgendaEventos('eventos-hoy', []);
+    expect(document.getElementById('list-eventos-hoy').textContent).toContain('Sin eventos registrados');
+  });
+
+  test('renderiza hora de inicio-fin, nombre y lugar de cada evento', () => {
+    renderizarAgendaEventos('eventos-hoy', [
+      { nombre: 'Turno médico', inicio: '2026-09-15T09:00:00-03:00', fin: '2026-09-15T10:00:00-03:00', lugar: 'Clínica Central' },
+    ]);
+    const fila = document.querySelector('#list-eventos-hoy .status-row');
+    expect(fila.textContent).toContain('Turno médico');
+    expect(fila.textContent).toContain('09:00');
+    expect(fila.textContent).toContain('10:00');
+    expect(fila.textContent).toContain('Clínica Central');
+  });
+
+  test('muestra la cantidad correcta de eventos en el total', () => {
+    renderizarAgendaEventos('eventos-hoy', [{ nombre: 'a' }, { nombre: 'b' }]);
+    expect(document.getElementById('total-eventos-hoy-lbl').innerText).toBe('2 eventos');
+  });
+
+  test.each([
+    ['eventos-ayer', 'left-pill-blue'],
+    ['eventos-hoy', 'left-pill-red'],
+    ['eventos-manana', 'left-pill-orange'],
+  ])('usa la pill correcta según el bloque cronológico (%s)', (prefijo, pillEsperada) => {
+    document.body.innerHTML = `<div id="list-${prefijo}"></div><span id="total-${prefijo}-lbl"></span>`;
+    renderizarAgendaEventos(prefijo, [{ nombre: 'x' }]);
+    expect(document.querySelector(`#list-${prefijo} .status-row`).className).toContain(pillEsperada);
+  });
+
+  test('escapa HTML en nombre y lugar (previene XSS)', () => {
+    renderizarAgendaEventos('eventos-hoy', [
+      { nombre: '<img src=x onerror=alert(1)>', lugar: '<script>alert(2)</script>' },
+    ]);
+    const html = document.getElementById('list-eventos-hoy').innerHTML;
+    expect(html).not.toContain('<img');
+    expect(html).not.toContain('<script>alert');
   });
 });

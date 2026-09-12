@@ -284,51 +284,9 @@
             renderizarAgendaEventos("eventos-manana", agendaEventosManana);
         });
 
-        /**
-         * Extrae "HH:MM" de un string ISO-8601 (Fecha.start/Fecha.end de
-         * Notion). Sin librería de fechas: mismo criterio vanilla-JS-sin-
-         * bundler que el resto del proyecto.
-         */
-        function formatHora(isoStr) {
-            if (!isoStr) return "--:--";
-            const m = isoStr.match(/T(\d{2}:\d{2})/);
-            return m ? m[1] : "--:--";
-        }
-
-        /**
-         * Renderiza un bloque de Eventos (Ayer/Hoy/Mañana) — una fila por
-         * evento con hora de inicio/fin, nombre y lugar. Reutiliza escapeHtml()
-         * de dashboard_logic.js para prevenir XSS.
-         */
-        function renderizarAgendaEventos(prefijo, items) {
-            const container = document.getElementById(`list-${prefijo}`);
-            document.getElementById(`total-${prefijo}-lbl`).innerText = `${items.length} eventos`;
-
-            if (!items || items.length === 0) {
-                container.innerHTML = `<div class="status-row left-pill-blue flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin eventos registrados</div>`;
-                return;
-            }
-
-            const pill = prefijo === "eventos-ayer" ? "left-pill-blue"
-                : prefijo === "eventos-hoy" ? "left-pill-red"
-                : "left-pill-orange";
-
-            container.innerHTML = items.map((item) => {
-                const meta = [item.lugar].filter(Boolean).map(escapeHtml).join(" · ");
-                return `
-                    <div class="status-row ${pill} flex items-center px-4 py-3.5 gap-4">
-                        <div class="flex flex-col items-center w-14 flex-shrink-0">
-                            <span class="text-white font-bold text-[13px]">${escapeHtml(formatHora(item.inicio))}</span>
-                            <span class="text-[#8e8e93] text-[11px]">${escapeHtml(formatHora(item.fin))}</span>
-                        </div>
-                        <div class="flex flex-col gap-1 min-w-0 flex-1">
-                            <span class="text-white font-semibold truncate">${escapeHtml(item.nombre || "Sin nombre")}</span>
-                            ${meta ? `<span class="text-[#8e8e93] text-[12px] truncate">${meta}</span>` : ""}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
+        // formatHora y renderizarAgendaEventos viven en src/utils/dom_render.js
+        // desde v4.23 (antes estaban inline acá, sin test) — testeadas en
+        // tests/unit/dom_render.test.js.
 
         /**
          * Abre/cierra el menú lateral de navegación
