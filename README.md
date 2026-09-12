@@ -21,12 +21,15 @@ Este proyecto forma parte de mi portfolio como analista técnico-funcional: docu
 
 ## Reglas de negocio
 
-La consistencia de una tarea se determina mediante un filtro compuesto AND:
+La propiedad **Consistencia** es una fórmula de Notion, definida igual en las bases de Recordatorios Diarios y Recordatorios Varios:
 
-- El campo **Estado** debe ser exactamente `"Hecha"`
-- La propiedad **Consistencia** debe ser igual a `1`
+```
+if(prop("Estado") == "Hecha" or prop("Estado") == "Hecha por otra persona" or prop("Estado") == "No necesaria", 1, 0)
+```
 
-Solo si ambas condiciones se cumplen, la tarea se contabiliza como consistente en el dashboard.
+Es decir, un ítem es consistente (`Consistencia = 1`) si su **Estado** es `Hecha`, `Hecha por otra persona` o `No necesaria`.
+
+> **Nota de implementación:** el pipeline actual (`extract_and_audit.py`) no lee la propiedad `Consistencia` de Notion — agrupa las tareas por `Estado` y delega en el frontend (`esEstadoCompletado()`) decidir cuáles cuentan como "hechas" para la tasa mostrada en el dashboard. Ese criterio de texto (`hecha`, `hecho`, `completad`, `done`) **no incluye** `No necesaria`, a diferencia de la fórmula real de Notion. Ver detalle completo en [PRD §4.1](Documentacion/PRD.md).
 
 ## Arquitectura
 
