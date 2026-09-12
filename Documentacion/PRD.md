@@ -5,7 +5,7 @@
 * **Marca Asociada:** Bitácora IT
 * **Rol de Gobierno:** IT Functional Analyst (Sabrina) & Mentor Técnico de IA
 * **Estado:** Listo para Desarrollo (Base Lineal Validada)
-* **Versión:** 4.19
+* **Versión:** 4.20
 * **Zona Horaria de Referencia:** GMT -3 (San Juan, Argentina)
 
 ## 🎯 2. Visión General y Contexto
@@ -68,7 +68,12 @@ Tasa = (Σ Consistencia de las tareas creadas en el día / Total de Tareas Cread
 * **Navegación:** accesible desde el sidebar de todas las páginas (ítem "Agenda personal").
 * **Aislamiento de fallos:** la base se sincroniza en su propio paso aislado y no fatal, después de Recordatorios Varios — un fallo ahí nunca afecta a `index.html` ni a `recordatorios-varios.html`.
 
-### 5.4. Progressive Web App (PWA) — infraestructura compartida (v4.16)
+### 5.4. Navegación — Orden fijo del menú hamburguesa (v4.20)
+* El sidebar de las 4 páginas (`inicio.html`, `index.html`, `recordatorios-varios.html`, `agenda-personal.html`) lista sus ítems en el orden fijo: **Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios**, reflejando la prioridad de uso diario confirmada por Sabrina (antes: Inicio, Recordatorios diarios, Recordatorios varios, Agenda personal).
+* `inicio.html` no incluye un ítem "Inicio" (es la página en la que ya se está), por lo que ahí el orden visible es Agenda personal, Recordatorios diarios, Recordatorios varios.
+* El ítem de la página actual conserva su resaltado visual ("activo") en su nueva posición. Ver `SRS.md` — `SRS-FR-M3-312`.
+
+### 5.5. Progressive Web App (PWA) — infraestructura compartida (v4.16)
 * Las cuatro páginas (`inicio.html`, `index.html`, `recordatorios-varios.html`, `agenda-personal.html`) son instalables como app desde el navegador móvil (Android/Chrome: banner "Agregar a pantalla de inicio"; iOS/Safari: "Agregar a inicio" desde compartir).
 * **`manifest.json`:** nombre, ícono, `display: standalone` (sin barra de navegador) y `theme_color`/`background_color` en `#0e0e0e`, alineado a la paleta Obsidiana del Brand Book.
 * **Ícono de la app:** generado a partir del logo existente (`grafica/logo 1-1 NF.png`) en los tamaños estándar (192px, 512px) más una variante *maskable* para que Android no recorte el ícono al aplicar su propia máscara de forma.
@@ -80,7 +85,7 @@ Tasa = (Σ Consistencia de las tareas creadas en el día / Total de Tareas Cread
 * **Rendimiento:** Daemon < 2% CPU, < 50MB RAM.
 * **Sincronización:** Automática cada 1 hora.
 * **Performance Web:** Carga < 1.5s en 4G/5G.
-* **Instalabilidad (PWA):** Manifest + Service Worker + set de íconos válidos en las 4 páginas del sitio, permitiendo instalación como app y uso con el último dato sincronizado sin conexión (§5.4).
+* **Instalabilidad (PWA):** Manifest + Service Worker + set de íconos válidos en las 4 páginas del sitio, permitiendo instalación como app y uso con el último dato sincronizado sin conexión (§5.5).
 
 ## 🚫 7. Fuera de Alcance
 * Escritura o modificación en Notion (Lectura/Auditoría solamente).
@@ -122,4 +127,5 @@ Tasa = (Σ Consistencia de las tareas creadas en el día / Total de Tareas Cread
 | **v4.16** | Septiembre 2026 | **El sitio pasa a ser instalable como PWA (nuevo §5.4):** se agregan `manifest.json`, un Service Worker (`sw.js`, caché de app shell con estrategia red-primero para HTML y caché-primero para assets estáticos) y un set de íconos (192px/512px/maskable/apple-touch-icon) generado a partir del logo existente, enlazados desde las 4 páginas del sitio (`inicio.html`, `index.html`, `recordatorios-varios.html`, `agenda-personal.html`). De paso se corrige `inicio.html`, que tenía `user-scalable=no` en el viewport pese a que ese mismo fix de accesibilidad ya se había aplicado a `index.html` en v4.1. Ver `SRS.md` v4.16 — nuevo `SRS-FR-M3-311`. |
 | **v4.17** | Septiembre 2026 | **Fix: el sidebar redirigía al Inicio al entrar a Recordatorios Diarios (reportado por Sabrina):** desde v4.6, `index.html` solo marca `nfa_landed` en `sessionStorage` cuando redirige *hacia* `inicio.html` — pero `inicio.html` nunca seteaba esa marca al cargar. Resultado: el primer click en "Recordatorios diarios" desde el sidebar de `inicio.html` en una sesión nueva rebotaba de vuelta al Inicio en vez de mostrar el dashboard, contradiciendo el comportamiento ya documentado en v4.6/`SRS-FR-M3-309`. Se agrega el seteo de `nfa_landed` en `inicio.html` al cargar. Ver `SRS.md` v4.17 — `SRS-FR-M3-309` sin cambios de texto (la implementación no cumplía la especificación ya escrita). |
 | **v4.18** | Septiembre 2026 | **Corrección de documentación: fórmula real de Consistencia (reportado por Sabrina):** §4.1 y el README describían la consistencia como un filtro `Estado == "Hecha" AND Consistencia == 1`, sin especificar la fórmula real. `Consistencia` es una propiedad `formula` de Notion, igual en Recordatorios Diarios y Recordatorios Varios: `if(prop("Estado") == "Hecha" or prop("Estado") == "Hecha por otra persona" or prop("Estado") == "No necesaria", 1, 0)`. Se documenta además el gap con la implementación: el backend no lee esa propiedad, y el criterio de texto del frontend (`esEstadoCompletado()`) no incluye "No necesaria". Sin cambios de código ni de comportamiento visible — solo se corrige la documentación (README, PRD, SRS). Ver `SRS.md` v4.18 — `SRS-FR-M1-103`/`SRS-FR-M3-302` reescritos. |
-| **v4.19** *(Actual)* | Septiembre 2026 | **Corrección de documentación: el header no tiene reloj UTC (detectado al auditar la base de Requisitos SRS de Notion contra el código real):** `SRS-FR-M3-305` especificaba un reloj UTC fijo junto al botón de refresco del header; la constante que lo alimentaba (`timestampServerStr`) nunca se renderizó en ningún frontend — código muerto. Regla aplicada: ante discrepancia entre documentación y código, manda lo implementado. Se reescribe el requisito para describir el botón de refresco animado real. Sin cambios de código ni de comportamiento visible. Ver `SRS.md` v4.19 — `SRS-FR-M3-305` reescrito. |
+| **v4.19** | Septiembre 2026 | **Corrección de documentación: el header no tiene reloj UTC (detectado al auditar la base de Requisitos SRS de Notion contra el código real):** `SRS-FR-M3-305` especificaba un reloj UTC fijo junto al botón de refresco del header; la constante que lo alimentaba (`timestampServerStr`) nunca se renderizó en ningún frontend — código muerto. Regla aplicada: ante discrepancia entre documentación y código, manda lo implementado. Se reescribe el requisito para describir el botón de refresco animado real. Sin cambios de código ni de comportamiento visible. Ver `SRS.md` v4.19 — `SRS-FR-M3-305` reescrito. |
+| **v4.20** *(Actual)* | Septiembre 2026 | **Reordenar menú hamburguesa por prioridad de uso diario (HU Notion #8, pedido explícito de Sabrina, prioridad Alta):** el sidebar de las 4 páginas pasa del orden Inicio/Recordatorios diarios/Recordatorios varios/Agenda personal al orden fijo Inicio/Agenda personal/Recordatorios diarios/Recordatorios varios (nuevo §5.4). Cambio puramente de marcado — se reordenaron los `<a>` del `<nav>` sin tocar clases ni lógica de resaltado del ítem activo. Sin cambios de backend. Ver `SRS.md` v4.20 — nuevo `SRS-FR-M3-312`. |
