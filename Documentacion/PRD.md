@@ -5,7 +5,7 @@
 * **Marca Asociada:** Bitácora IT
 * **Rol de Gobierno:** IT Functional Analyst (Sabrina) & Mentor Técnico de IA
 * **Estado:** Listo para Desarrollo (Base Lineal Validada)
-* **Versión:** 4.26
+* **Versión:** 4.27
 * **Zona Horaria de Referencia:** GMT -3 (San Juan, Argentina)
 
 ## 🎯 2. Visión General y Contexto
@@ -83,6 +83,12 @@ Tasa = (Σ Consistencia de las tareas creadas en el día / Total de Tareas Cread
 * **`sw.js` (Service Worker):** cachea el "app shell" (HTML de las 4 páginas, CSS, íconos) para que el dashboard siga siendo usable — mostrando el último dato sincronizado — si el celular pierde conexión. Las páginas HTML priorizan red (para no mostrar métricas de Notion desactualizadas) y solo caen al caché sin conexión; los assets estáticos usan caché-primero con actualización en segundo plano.
 * Se corrige además una inconsistencia de accesibilidad en `inicio.html`: tenía `user-scalable=no`/`maximum-scale=1.0` en el viewport, revirtiendo el fix de zoom móvil ya aplicado a `index.html` en v4.1 (ver `SRS.md` v4.1).
 
+### 5.6. Inicio (`inicio.html`) — Accesos directos (nuevo v4.27)
+* Debajo del hero de bienvenida se agrega la sección **"Accesos directos"**: dos preguntas de autochequeo diario, cada una con un botón que abre en pestaña nueva la base de Notion correspondiente (mismo patrón de redirección directa que el CTA de §5.1 — sin lectura/escritura desde el frontend).
+  * "¿Registraste los gastos de hoy?" → base de Notion `NOTION_DB_FINANZAS`.
+  * "¿Moviste tu cuerpo hoy o volviste caminando a casa?" → base de Notion `NOTION_DB_SESIONESEJERCICIO`.
+* Son links estáticos por ID de base (pedido explícito de Sabrina) — no hay datos inyectados por el backend para esta sección, no requiere sincronización.
+
 ## 🔒 6. Requerimientos No Funcionales
 * **Seguridad:** `.env` local, tokens inyectados como secretos.
 * **Rendimiento:** Daemon < 2% CPU, < 50MB RAM.
@@ -137,4 +143,5 @@ Tasa = (Σ Consistencia de las tareas creadas en el día / Total de Tareas Cread
 | **v4.23** | Septiembre 2026 | **Tests JS dedicados — render de Recordatorios Varios y Eventos de Agenda Personal (HU Notion Épica 2 #11, cierra `SRS-FR-M4-404`/`SRS-FR-M5-505`):** `renderizarRecordatoriosVarios()` y `formatHora()`/`renderizarAgendaEventos()` (antes inline, sin test) se extraen a `src/utils/dom_render.js`, mismo patrón que en v4.4, y se cubren con tests nuevos en `tests/unit/dom_render.test.js`. Ambas páginas ya cargaban ese archivo, así que es un cambio puramente interno — sin diferencia de comportamiento visible. Ver `SRS.md` v4.23. |
 | **v4.24** | Septiembre 2026 | **Cobertura para requisitos visuales/posicionales sin test (HU Notion Épica 2 #12):** el botón de refresco animado (`SRS-FR-M3-305`) se extrae a `crearManejadorDeRefresco()` y se testea con fake timers; el orden fijo del menú y el link a Recordatorios Varios (`SRS-FR-M3-310`/`312`) se verifican con un test estático nuevo sobre las 4 páginas. El identificador de versión alineado bajo el CTA (`SRS-FR-M3-307`) queda con un checklist manual documentado en `SRS.md` en vez de una herramienta de test visual nueva (alineación pixel-exacta, no automatizable con las herramientas actuales del proyecto). Sin cambios de comportamiento visible. Ver `SRS.md` v4.24. |
 | **v4.25** | Septiembre 2026 | **Agenda Personal: mensaje motivacional y tipo de evento (HU Notion Épica 2 #8, pedido explícito de Sabrina):** `NOTION_DB_EVENTOS` reemplaza la base "Agenda Personal - Eventos" por "🤞🏻 Eventos y Recordatorios únicos", que ya tenía el dato de tipo (`Tipo de tarea`) que faltaba. Cada fila de evento ahora muestra el tipo junto al lugar; un evento sin tipo omite ese dato sin romper el layout. Nueva regla de negocio: se descartan eventos en Estado terminal de Notion (Hecha/Sin asistir/Asisti), además del filtro temporal ya existente. Se agrega el mensaje motivacional estático debajo de la card "Eventos de hoy". **Acción manual pendiente:** el valor de `NOTION_DB_EVENTOS` debe actualizarse en el `.env` local y en el secret de GitHub Actions al ID de la nueva base (no se puede automatizar desde el repo). Ver `SRS.md` v4.25 — `SRS-FR-M5-502`/`505` reescritos. |
-| **v4.26** *(Actual)* | Septiembre 2026 | **Recordatorios Varios: reclasificar por Fecha y agregar bloque "Sin fecha" (pedido explícito de Sabrina):** la clasificación Ayer/Hoy/Mañana vuelve a usar la propiedad `Fecha` (vencimiento/programación) en vez de la fecha de creación de la página (`created_time`, usada desde v4.12). Un ítem sin `Fecha` cargada ya no se pierde de la vista: se agrega un cuarto bloque colapsable, "Recordatorios sin fecha", ordenado por fecha de creación. Ver `SRS.md` v4.26 — `SRS-FR-M4-402` reescrito. |
+| **v4.26** | Septiembre 2026 | **Recordatorios Varios: reclasificar por Fecha y agregar bloque "Sin fecha" (pedido explícito de Sabrina):** la clasificación Ayer/Hoy/Mañana vuelve a usar la propiedad `Fecha` (vencimiento/programación) en vez de la fecha de creación de la página (`created_time`, usada desde v4.12). Un ítem sin `Fecha` cargada ya no se pierde de la vista: se agrega un cuarto bloque colapsable, "Recordatorios sin fecha", ordenado por fecha de creación. Ver `SRS.md` v4.26 — `SRS-FR-M4-402` reescrito. |
+| **v4.27** *(Actual)* | Septiembre 2026 | **Nueva sección "Accesos directos" en `inicio.html` (pedido explícito de Sabrina):** debajo del hero de bienvenida se agregan dos preguntas de autochequeo diario ("¿Registraste los gastos de hoy?" / "¿Moviste tu cuerpo hoy o volviste caminando a casa?"), cada una con un botón que abre en pestaña nueva la base de Notion correspondiente (`NOTION_DB_FINANZAS` / `NOTION_DB_SESIONESEJERCICIO`). Nuevo §5.6. Ver `SRS.md` v4.27 — nuevo `SRS-FR-M3-313`. |
