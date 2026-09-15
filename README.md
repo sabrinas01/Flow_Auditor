@@ -21,15 +21,9 @@ Este proyecto forma parte de mi portfolio como analista técnico-funcional: docu
 
 ## Reglas de negocio
 
-La propiedad **Consistencia** es una fórmula de Notion, definida igual en las bases de Recordatorios Diarios y Recordatorios Varios:
+La propiedad **Consistencia** es una fórmula de Notion, definida igual en las bases de Recordatorios Diarios y Recordatorios Varios, es un ítem es consistente (`Consistencia = 1`) si su **Estado** es `Hecha`, `Hecha por otra persona` o `No necesaria`.
 
-```
-if(prop("Estado") == "Hecha" or prop("Estado") == "Hecha por otra persona" or prop("Estado") == "No necesaria", 1, 0)
-```
 
-Es decir, un ítem es consistente (`Consistencia = 1`) si su **Estado** es `Hecha`, `Hecha por otra persona` o `No necesaria`.
-
-> **Nota de implementación:** el pipeline actual (`extract_and_audit.py`) no lee la propiedad `Consistencia` de Notion — agrupa las tareas por `Estado` y delega en el frontend (`esEstadoCompletado()`) decidir cuáles cuentan como "hechas" para la tasa mostrada en el dashboard. Ese criterio de texto (`hecha`, `hecho`, `completad`, `done`) **no incluye** `No necesaria`, a diferencia de la fórmula real de Notion. Ver detalle completo en [PRD §4.1](Documentacion/PRD.md).
 
 ## Arquitectura
 
@@ -38,8 +32,7 @@ Notion API
     │
     ▼
 extract_and_audit.py   (GitHub Actions, cron horario)
-    │  extrae y audita tareas según reglas de negocio, y
-    │  reescribe in-place los 3 HTML con los datos actualizados
+    │  extrae y audita tareas según reglas de negocio, y reescribe in-place los 3 HTML con los datos actualizados
     ▼
 index.html / recordatorios-varios.html / agenda-personal.html   (dashboards estáticos)
     │
@@ -47,7 +40,6 @@ index.html / recordatorios-varios.html / agenda-personal.html   (dashboards est�
 git push --force origin gh-pages   →   GitHub Pages
 ```
 
-> **Nota:** `generate_dashboard.py` existe en la raíz del repo pero es un script local suelto — no lo invoca ningún workflow de CI. `extract_and_audit.py` es el único script que corre en GitHub Actions y hace la extracción **y** la reescritura de los 3 HTML por sí solo.
 
 ## Características
 
@@ -66,4 +58,4 @@ git push --force origin gh-pages   →   GitHub Pages
 
 ## Autoría
 
-Desarrollado por Sabry @bitacorait
+Desarrollado por Sabry de Sabri Studios. 
