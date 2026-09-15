@@ -66,10 +66,10 @@
     <!-- =================================================== -->
     <script>
         // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
-        const timestampLocalStr = "18/08/2026 20:20:23";
-        const appVersionStr = "dev";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
-        const timestampNextStr = "18/08/2026 21:20:23";
-        const timestampServerStr = "18/08/2026 23:20:23";
+        const timestampLocalStr = "15/09/2026 20:25:30";
+        const appVersionStr = "v4.27";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
+        const timestampNextStr = "15/09/2026 21:25:30";
+        const timestampServerStr = "15/09/2026 23:25:30";
 
         // Recordatorios varios (BD "Mis Recordatorios varios V0"), clasificados por
         // la propiedad Fecha (v4.26; hasta v4.25 se clasificaba por created_time)
@@ -78,8 +78,8 @@
         // una LISTA de ítems completos (Nombre/Estado/Prioridad/Área/Periodo/Fecha)
         // — a diferencia de index.html, acá no se agrega por estado.
         const recordatoriosVariosAyer = [];
-        const recordatoriosVariosHoy = [];
-        const recordatoriosVariosManana = [];
+        const recordatoriosVariosHoy = [{"nombre": "Lavar ducha (Lavadero)", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Hogar", "periodo": "MENSUAL", "fecha": "2026-09-15"}, {"nombre": "Arma cama con sábanas limpias", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Hogar", "periodo": "SEMANAL", "fecha": "2026-09-15"}, {"nombre": "Lavar o repasar baño", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Higiene", "periodo": "SEMANAL", "fecha": "2026-09-15"}, {"nombre": "Girar colchón", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "QUINCENAL", "fecha": "2026-09-15"}, {"nombre": "Depilarme las cejas", "estado": "Sin empezar", "prioridad": "ALTA", "area": "Belleza", "periodo": "SEMANAL", "fecha": "2026-09-15"}, {"nombre": "Depilarme el rostro", "estado": "Sin empezar", "prioridad": "ALTA", "area": "Belleza", "periodo": "SEMANAL", "fecha": "2026-09-15"}, {"nombre": "[ABRIR] Revisión semanal", "estado": "Sin empezar", "prioridad": "ALTA", "area": "Desarrollo personal", "periodo": "SEMANAL", "fecha": "2026-09-15"}, {"nombre": "Cargar auriculares inalámbricos JBL", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Electronica", "periodo": "QUINCENAL", "fecha": "2026-09-15"}, {"nombre": "Cargar reloj", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Electronica", "periodo": "SEMANAL", "fecha": "2026-09-15"}, {"nombre": "[ABRIR] Revisión semanal", "estado": "Sin empezar", "prioridad": "ALTA", "area": "Desarrollo personal", "periodo": "SEMANAL", "fecha": "2026-09-15"}, {"nombre": "Limpiar rueditas de la silla", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Hogar", "periodo": "MENSUAL", "fecha": "2026-09-15"}, {"nombre": "Lavar portacepillos", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Higiene", "periodo": "QUINCENAL", "fecha": "2026-09-15"}, {"nombre": "Desinfectar cepillo dental", "estado": "Sin empezar", "prioridad": "ALTA", "area": "Higiene", "periodo": "MENSUAL", "fecha": "2026-09-15"}];
+        const recordatoriosVariosManana = [{"nombre": "Lavar acolchado", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "SEMANAL", "fecha": "2026-09-16"}, {"nombre": "Lavar almohadas", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "MENSUAL", "fecha": "2026-09-16"}];
         const recordatoriosVariosSinFecha = [];
     </script>
 

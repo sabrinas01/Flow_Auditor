@@ -67,18 +67,18 @@
     <!-- =================================================== -->
     <script>
         // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
-        const timestampLocalStr = "18/08/2026 20:20:23";
-        const appVersionStr = "dev";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
-        const timestampNextStr = "18/08/2026 21:20:23";
-        const timestampServerStr = "18/08/2026 23:20:23";
+        const timestampLocalStr = "15/09/2026 20:25:30";
+        const appVersionStr = "v4.27";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
+        const timestampNextStr = "15/09/2026 21:25:30";
+        const timestampServerStr = "15/09/2026 23:25:30";
 
         // Eventos (BD "Agenda Personal - Eventos"), clasificados por su propia
         // fecha programada en Ayer/Hoy/Mañana. Regla de negocio (SRS-FR-M5-502):
         // el backend ya descarta los eventos "FINALIZADO" — acá solo llegan
         // los que están "SIN_EMPEZAR" o "EN_CURSO".
         const agendaEventosAyer = [];
-        const agendaEventosHoy = [];
-        const agendaEventosManana = [];
+        const agendaEventosHoy = [{"nombre": "Lavar paño para limpiar electronica y el de los anteojos", "inicio": "2026-09-15T12:45:00.000-03:00", "fin": null, "lugar": null, "tipo": "RECORDATORIO"}];
+        const agendaEventosManana = [{"nombre": "[RECORDATORIO] Recordarle a Mary de la ropa", "inicio": "2026-09-16T13:30:00.000-03:00", "fin": null, "lugar": null, "tipo": "RECORDATORIO"}];
     </script>
 
     <!-- =================================================== -->
