@@ -34,6 +34,7 @@ PLANTILLA_INDEX = """<html><body>
     const conteoAyer = {};
     const conteoHoy = {};
     const conteoManana = {};
+    const tareasHoySinEmpezar = [];
 </script>
 </body></html>"""
 
@@ -190,6 +191,39 @@ def test_conexion_exitosa_sincroniza_ambos_frontends(tmp_path, monkeypatch):
     assert "const recordatoriosVariosManana = [];" in salida_varios
     assert "Lavar gorras" in salida_varios
     assert '"estado": "Sin empezar"' in salida_varios or '"estado":"Sin empezar"' in salida_varios
+
+
+def test_diarios_inyecta_nombres_de_tareas_de_hoy_sin_empezar(tmp_path, monkeypatch):
+    """Solo los ítems de HOY en "Sin empezar" aportan su nombre a
+    `tareasHoySinEmpezar` (lista colapsable de "Progreso de hoy"); los de
+    otro estado u otro día no. El nombre con comillas se serializa bien."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    def _pagina(nombre, estado, fecha):
+        return {
+            "properties": {
+                "Nombre": {"type": "title", "title": [{"plain_text": nombre}]},
+                "Estado": {"type": "status", "status": {"name": estado}},
+                "Fecha": {"type": "date", "date": {"start": fecha}},
+            },
+            "created_time": "2026-01-01T00:00:00.000Z",
+        }
+
+    ayer = (datetime.now(timezone.utc) - timedelta(hours=3, days=1)).date().isoformat()
+    diarios = _mock_respuesta_notion([
+        _pagina('Llamar a "Juan"', "Sin empezar", _hoy_str()),
+        _pagina("Tarea hecha hoy", "Hecha", _hoy_str()),
+        _pagina("Tarea de ayer", "Sin empezar", ayer),
+    ])
+    fake_post = _fake_post_por_db("C" * 40, _mock_respuesta_notion([]), respuesta_diarios=diarios)
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida = (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert 'const tareasHoySinEmpezar = ["Llamar a \\"Juan\\""];' in salida
+    assert "Tarea hecha hoy" not in salida
+    assert "Tarea de ayer" not in salida
 
 
 def test_recordatorios_varios_clasifica_por_propiedad_fecha(tmp_path, monkeypatch):

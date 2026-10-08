@@ -40,6 +40,29 @@ function renderizarFilasEstados(containerId, data) {
 }
 
 /**
+ * Renderiza la lista colapsable de tareas de hoy en "Sin empezar" dentro de
+ * "Progreso de hoy" (index.html): una fila por tarea, solo con su nombre. Si
+ * no hay tareas, oculta el bloque entero (`wrap-${prefijo}`).
+ */
+function renderizarTareasSinEmpezar(prefijo, nombres) {
+  const wrap = document.getElementById(`wrap-${prefijo}`);
+  const container = document.getElementById(`list-${prefijo}`);
+
+  if (!nombres || nombres.length === 0) {
+    wrap.classList.add("hidden");
+    container.innerHTML = "";
+    return;
+  }
+
+  wrap.classList.remove("hidden");
+  container.innerHTML = nombres.map((nombre) => `
+        <div class="status-row flex items-center px-4 py-3">
+            <span class="text-white truncate">${escapeHtml(nombre || "Sin nombre")}</span>
+        </div>
+    `).join('');
+}
+
+/**
  * Colapsa/expande el contenido de un bloque (Ayer/Hoy), rotando el chevron.
  */
 function toggleBloque(prefijo) {
@@ -151,6 +174,7 @@ function crearManejadorDeRefresco(debounceFn, { onRecargar = () => location.relo
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     renderizarFilasEstados,
+    renderizarTareasSinEmpezar,
     toggleBloque,
     renderizarRecordatoriosVarios,
     formatHora,

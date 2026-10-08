@@ -186,7 +186,8 @@ def consultar_y_clasificar(database_id, etiqueta_log):
     print(f"📦 [LOG PIPELINE]: Se recuperaron {len(results)} registros desde la base de datos de Notion ({etiqueta_log}).")
 
     conteo_ayer, conteo_hoy, conteo_manana = {}, {}, {}
-    columna_estado, columna_fecha = None, None
+    nombres_hoy_sin_empezar = []
+    columna_estado, columna_fecha, columna_titulo = None, None, None
 
     # Detección dinámica de esquema de columnas
     if results:
@@ -195,6 +196,8 @@ def consultar_y_clasificar(database_id, etiqueta_log):
                 columna_estado = n_col
             if info.get("type") == "date":
                 columna_fecha = n_col
+            if info.get("type") == "title":
+                columna_titulo = n_col
 
     # Mapeo y agrupamiento dinámico por estados en base a la ventana de tiempo
     for pagina in results:
@@ -219,10 +222,13 @@ def consultar_y_clasificar(database_id, etiqueta_log):
             conteo_ayer[est_val] = conteo_ayer.get(est_val, 0) + 1
         elif bloque == "HOY":
             conteo_hoy[est_val] = conteo_hoy.get(est_val, 0) + 1
+            if "sin empezar" in est_val.lower() and columna_titulo:
+                nombre = "".join(t.get("plain_text", "") for t in props.get(columna_titulo, {}).get("title", []))
+                nombres_hoy_sin_empezar.append(nombre or "Sin nombre")
         elif bloque == "MANANA":
             conteo_manana[est_val] = conteo_manana.get(est_val, 0) + 1
 
-    return conteo_ayer, conteo_hoy, conteo_manana
+    return conteo_ayer, conteo_hoy, conteo_manana, nombres_hoy_sin_empezar
 
 
 def _serializar_conteos(conteo_ayer, conteo_hoy, conteo_manana):
@@ -255,7 +261,7 @@ def auditar_consistencia_tripartita():
     validar_credenciales()
 
     try:
-        conteo_ayer, conteo_hoy, conteo_manana = consultar_y_clasificar(DB_RECORDATORIOS_DIARIOS, "Recordatorios Diarios")
+        conteo_ayer, conteo_hoy, conteo_manana, nombres_hoy_sin_empezar = consultar_y_clasificar(DB_RECORDATORIOS_DIARIOS, "Recordatorios Diarios")
 
         # Generación de marcas de tiempo del diagnóstico de infraestructura
         ahora_utc = datetime.now(timezone.utc)
@@ -272,6 +278,16 @@ def auditar_consistencia_tripartita():
         html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\}\s*;", f"const conteoAyer = {json_ayer};", html_content)
         html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\}\s*;", f"const conteoHoy = {json_hoy};", html_content)
         html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\}\s*;", f"const conteoManana = {json_manana};", html_content)
+
+        # Nombres de las tareas de hoy en "Sin empezar" (lista colapsable en
+        # "Progreso de hoy"). Reemplazo por función: el JSON puede traer
+        # backslashes (comillas escapadas) que re.sub interpretaría como grupos.
+        json_nombres = json.dumps(nombres_hoy_sin_empezar, ensure_ascii=False).replace("</", "<\\/")
+        html_content = re.sub(
+            r"const\s+tareasHoySinEmpezar\s*=\s*\[.*?\]\s*;",
+            lambda _m: f"const tareasHoySinEmpezar = {json_nombres};",
+            html_content,
+        )
 
         # Sobrescribir el frontend de forma atómica y segura
         with open(html_path, "w", encoding="utf-8") as file:

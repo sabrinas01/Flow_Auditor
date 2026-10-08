@@ -13,6 +13,7 @@ Object.assign(global, dashboardLogic);
 
 const {
   renderizarFilasEstados,
+  renderizarTareasSinEmpezar,
   toggleBloque,
   renderizarRecordatoriosVarios,
   formatHora,
@@ -62,6 +63,34 @@ describe('renderizarFilasEstados', () => {
   test('escapa HTML en el nombre del estado (previene XSS)', () => {
     renderizarFilasEstados('list-test', { '<img src=x onerror=alert(1)>': 1 });
     const html = document.getElementById('list-test').innerHTML;
+    expect(html).not.toContain('<img');
+    expect(html).toContain('&lt;img');
+  });
+});
+
+describe('renderizarTareasSinEmpezar', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '<div id="wrap-hoy-sin-empezar" class="hidden"><div id="list-hoy-sin-empezar"></div></div>';
+  });
+
+  test('renderiza una fila por tarea, solo con el nombre, y muestra el bloque', () => {
+    renderizarTareasSinEmpezar('hoy-sin-empezar', ['Lavar gorras', 'Pagar luz']);
+    const filas = document.querySelectorAll('#list-hoy-sin-empezar .status-row');
+    expect(filas.length).toBe(2);
+    expect(filas[0].textContent.trim()).toBe('Lavar gorras');
+    expect(document.getElementById('wrap-hoy-sin-empezar').classList.contains('hidden')).toBe(false);
+  });
+
+  test('sin tareas, oculta el bloque entero', () => {
+    document.getElementById('wrap-hoy-sin-empezar').classList.remove('hidden');
+    renderizarTareasSinEmpezar('hoy-sin-empezar', []);
+    expect(document.getElementById('wrap-hoy-sin-empezar').classList.contains('hidden')).toBe(true);
+    expect(document.getElementById('list-hoy-sin-empezar').innerHTML).toBe('');
+  });
+
+  test('escapa HTML en el nombre (previene XSS)', () => {
+    renderizarTareasSinEmpezar('hoy-sin-empezar', ['<img src=x onerror=alert(1)>']);
+    const html = document.getElementById('list-hoy-sin-empezar').innerHTML;
     expect(html).not.toContain('<img');
     expect(html).toContain('&lt;img');
   });

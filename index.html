@@ -95,6 +95,10 @@
         const conteoAyer = {"Sin empezar": 13, "⏭️ No necesaria": 4, "Hecha": 4, "❌ Fallida / Vencida": 6};
         const conteoHoy = {"Sin empezar": 20};
         const conteoManana = {};
+
+        // Nombres de las tareas de hoy en estado "Sin empezar" (lista colapsable
+        // dentro de "Progreso de hoy"). Solo el nombre, sin otros datos.
+        const tareasHoySinEmpezar = [];
     </script>
 
     <!-- =================================================== -->
@@ -220,6 +224,21 @@
                     <div id="content-hoy" class="flex flex-col gap-6">
                         <div id="list-hoy" class="space-y-3">
                             <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+
+                        <!-- Tareas de hoy en "Sin empezar": solo nombre, colapsable (se oculta si no hay ninguna) -->
+                        <div id="wrap-hoy-sin-empezar" class="space-y-3 hidden">
+                            <div class="flex justify-between items-center px-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS SIN EMPEZAR</p>
+                                <button type="button" onclick="toggleBloque('hoy-sin-empezar')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-hoy-sin-empezar">
+                                    <span id="chevron-hoy-sin-empezar" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                            <div id="content-hoy-sin-empezar">
+                                <div id="list-hoy-sin-empezar" class="space-y-2">
+                                    <!-- Se inyectan los nombres dinámicamente -->
+                                </div>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
@@ -354,6 +373,7 @@
             // 2. Procesar e Inyectar Bloques Temporales Complejos
             procesarSeccionMetrica("ayer", conteoAyer);
             procesarSeccionMetrica("hoy", conteoHoy);
+            renderizarTareasSinEmpezar("hoy-sin-empezar", tareasHoySinEmpezar);
         });
 
         /**

@@ -1,6 +1,6 @@
 /**
  * Escenario 1 (HU Notion Épica 2 #8): mensaje motivacional estático debajo
- * de la card "Eventos de hoy" en agenda-personal.html. Chequeo estático
+ * del título "EVENTOS" (sobre las cards) en agenda-personal.html. Chequeo estático
  * sobre el HTML real (mismo enfoque que tests/unit/sidebar_navegacion.test.js),
  * no una reimplementación del render.
  */
@@ -17,13 +17,13 @@ describe('Mensaje motivacional en agenda-personal.html', () => {
     expect(html).toContain(MENSAJE);
   });
 
-  test('aparece debajo de la lista de "Eventos de hoy" (dentro de esa misma card)', () => {
-    const idxListaHoy = html.indexOf('id="list-eventos-hoy"');
+  test('aparece debajo del título "EVENTOS" y antes de las cards de Ayer/Hoy/Mañana', () => {
+    const idxTitulo = html.indexOf('tracking-widest px-1">EVENTOS</h2>');
     const idxMensaje = html.indexOf(MENSAJE);
-    const idxCierreCardHoy = html.indexOf('</article>', idxListaHoy);
+    const idxPrimeraCard = html.indexOf('<article', idxTitulo);
 
-    expect(idxListaHoy).toBeGreaterThan(-1);
-    expect(idxMensaje).toBeGreaterThan(idxListaHoy);
-    expect(idxMensaje).toBeLessThan(idxCierreCardHoy);
+    expect(idxTitulo).toBeGreaterThan(-1);
+    expect(idxMensaje).toBeGreaterThan(idxTitulo);
+    expect(idxMensaje).toBeLessThan(idxPrimeraCard);
   });
 });
