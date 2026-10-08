@@ -1,5 +1,5 @@
 {
-  "name": "notion-flow-auditor-frontend",
+  "name": "asistentesabry-frontend",
   "private": true,
   "description": "Build del CSS estático de Tailwind para index.html (sin bundler ni framework, todo el JS sigue siendo vanilla).",
   "scripts": {

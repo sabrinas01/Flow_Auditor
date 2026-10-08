@@ -1,10 +1,10 @@
-# 📋 NFA — Notion Flow Auditor
+# 📋 AsistenteSabry
 
 > Herramienta de auditoría y visualización de consistencia diaria sobre una base de datos de Notion.
 
 ## Contexto
 
-NFA nace para resolver un problema concreto de seguimiento personal: verificar de forma objetiva si las tareas diarias registradas en Notion cumplen con un criterio de consistencia definido, y comunicar ese estado en un dashboard claro, sin depender de revisar la base de datos manualmente.
+AsistenteSabry nace para resolver un problema concreto de seguimiento personal: verificar de forma objetiva si las tareas diarias registradas en Notion cumplen con un criterio de consistencia definido, y comunicar ese estado en un dashboard claro, sin depender de revisar la base de datos manualmente.
 
 Este proyecto forma parte de mi portfolio como analista técnico-funcional: documenta el proceso completo desde el levantamiento de requisitos hasta la implementación.
 
@@ -12,12 +12,12 @@ Este proyecto forma parte de mi portfolio como analista técnico-funcional: docu
 
 | Documento | Descripción |
 |---|---|
-| [PRD](https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/PRD.md) | Documento de requisitos del producto |
-| [SRS](https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/SRS.md) | Especificación de requisitos de software |
-| [Flujograma](https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/Flujograma) | Carpeta con versiones del flujograma |
+| [PRD](https://github.com/sabrinas01/AsistenteSabry/blob/main/Documentacion/PRD.md) | Documento de requisitos del producto |
+| [SRS](https://github.com/sabrinas01/AsistenteSabry/blob/main/Documentacion/SRS.md) | Especificación de requisitos de software |
+| [Flujograma](https://github.com/sabrinas01/AsistenteSabry/blob/main/Documentacion/Flujograma) | Carpeta con versiones del flujograma |
 | [HU](https://app.notion.com/p/35ea38bb7a6e8062952be3e22adfa927?v=35ea38bb7a6e81ad9cb5000cb74ba0ac&source=copy_link) | Enlace a pagina de notion con las historias de usuario |
-| [Libro de marca](https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/Notion%20Flow%20Auditor%20Brandbook%20by%20Pomelli.pdf) | Archivo generado por la herramienta Pomelli de Google Labs |
-| [Diseño visual](https://github.com/sabrinas01/Flow_Auditor/blob/main/Documentacion/DESIGN.md) | Parte visual generada por la herramienta Stich de Google Labs |
+| [Libro de marca](https://github.com/sabrinas01/AsistenteSabry/blob/main/Documentacion/Notion%20Flow%20Auditor%20Brandbook%20by%20Pomelli.pdf) | Archivo generado por la herramienta Pomelli de Google Labs |
+| [Diseño visual](https://github.com/sabrinas01/AsistenteSabry/blob/main/Documentacion/DESIGN.md) | Parte visual generada por la herramienta Stich de Google Labs |
 
 ## Reglas de negocio
 

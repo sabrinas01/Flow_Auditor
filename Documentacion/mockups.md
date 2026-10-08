@@ -1,4 +1,4 @@
-# Mockups visuales — Flow Auditor
+# Mockups visuales — AsistenteSabry
 
 Propósito
 - Documentar formalmente la representación visual de pantallas/elementos.
@@ -16,9 +16,9 @@ Ejemplo de entrada para un mockup (Search UI v1.0)
 - mockup_version: 1.0
 - author: Raine
 - date: 2026-07-31
-- source: https://www.figma.com/file/XXXX/Flow-Auditor
+- source: https://www.figma.com/file/XXXX/AsistenteSabry
 - assets:
-  - [(https://github.com/sabrinas01/Flow_Auditor/blob/4263baccadec2f534cc4d6a2115a788d3e06ae28/grafica)]
+  - [(https://github.com/sabrinas01/AsistenteSabry/blob/4263baccadec2f534cc4d6a2115a788d3e06ae28/grafica)]
 
 - description:
   - Campo input con placeholder "Buscar..."

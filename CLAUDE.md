@@ -1,4 +1,4 @@
-# Notion Flow Auditor (NFA) — instrucciones para Claude Code
+# AsistenteSabry (antes Notion Flow Auditor / NFA) — instrucciones para Claude Code
 
 ## Regla de documentación versionada
 

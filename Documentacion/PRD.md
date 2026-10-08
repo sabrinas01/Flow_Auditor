@@ -1,11 +1,11 @@
-# Product Requirements Document (PRD) — Notion Flow Auditor (NFA)
+# Product Requirements Document (PRD) — AsistenteSabry
 
 ## 📌 1. Información General del Producto
-* **Nombre:** Notion Flow Auditor (NFA)
+* **Nombre:** AsistenteSabry
 * **Marca Asociada:** Bitácora IT
 * **Rol de Gobierno:** IT Functional Analyst (Sabrina) & Mentor Técnico de IA
 * **Estado:** Listo para Desarrollo (Base Lineal Validada)
-* **Versión:** 4.27
+* **Versión:** 4.28
 * **Zona Horaria de Referencia:** GMT -3 (San Juan, Argentina)
 
 ## 🎯 2. Visión General y Contexto
@@ -26,7 +26,7 @@ La propiedad **Consistencia** es una fórmula de Notion, definida igual en Recor
 
 Tasa = (Σ Consistencia de las tareas creadas en el día / Total de Tareas Creadas ese día) x 100.
 
-**Nota de implementación (gap conocido, corregido en la documentación en v4.18):** el backend (`extract_and_audit.py`) no lee la propiedad `Consistencia` de Notion — agrupa las tareas por `Estado` y delega en el frontend (`esEstadoCompletado()`) decidir cuáles cuentan como "hechas" para la tasa mostrada. Ese criterio de texto (`hecha`, `hecho`, `completad`, `done`) **no incluye** `No necesaria`, a diferencia de la fórmula real de Notion — por lo tanto la tasa que muestra el dashboard puede ser menor a la que daría la fórmula `Consistencia` si hay ítems en ese estado. Ver detalle completo en la página de Notion "📄 Diccionario de Datos / Contrato de API (Data Mapping)" (NFA Hub) y en `SRS.md` (`SRS-FR-M1-103`, `SRS-FR-M3-302`).
+**Nota de implementación (gap conocido, corregido en la documentación en v4.18):** el backend (`extract_and_audit.py`) no lee la propiedad `Consistencia` de Notion — agrupa las tareas por `Estado` y delega en el frontend (`esEstadoCompletado()`) decidir cuáles cuentan como "hechas" para la tasa mostrada. Ese criterio de texto (`hecha`, `hecho`, `completad`, `done`) **no incluye** `No necesaria`, a diferencia de la fórmula real de Notion — por lo tanto la tasa que muestra el dashboard puede ser menor a la que daría la fórmula `Consistencia` si hay ítems en ese estado. Ver detalle completo en la página de Notion "📄 Diccionario de Datos / Contrato de API (Data Mapping)" (AsistenteSabry Hub) y en `SRS.md` (`SRS-FR-M1-103`, `SRS-FR-M3-302`).
 
 ### 4.2. Jerarquía de Estados (Orden estricto)
 1. Sin empezar | 2. En ejecución | 3. Hecha por otra persona | 4. No necesaria | 5. Hecha | 6. Fallida / Vencida.
@@ -144,4 +144,5 @@ Tasa = (Σ Consistencia de las tareas creadas en el día / Total de Tareas Cread
 | **v4.24** | Septiembre 2026 | **Cobertura para requisitos visuales/posicionales sin test (HU Notion Épica 2 #12):** el botón de refresco animado (`SRS-FR-M3-305`) se extrae a `crearManejadorDeRefresco()` y se testea con fake timers; el orden fijo del menú y el link a Recordatorios Varios (`SRS-FR-M3-310`/`312`) se verifican con un test estático nuevo sobre las 4 páginas. El identificador de versión alineado bajo el CTA (`SRS-FR-M3-307`) queda con un checklist manual documentado en `SRS.md` en vez de una herramienta de test visual nueva (alineación pixel-exacta, no automatizable con las herramientas actuales del proyecto). Sin cambios de comportamiento visible. Ver `SRS.md` v4.24. |
 | **v4.25** | Septiembre 2026 | **Agenda Personal: mensaje motivacional y tipo de evento (HU Notion Épica 2 #8, pedido explícito de Sabrina):** `NOTION_DB_EVENTOS` reemplaza la base "Agenda Personal - Eventos" por "🤞🏻 Eventos y Recordatorios únicos", que ya tenía el dato de tipo (`Tipo de tarea`) que faltaba. Cada fila de evento ahora muestra el tipo junto al lugar; un evento sin tipo omite ese dato sin romper el layout. Nueva regla de negocio: se descartan eventos en Estado terminal de Notion (Hecha/Sin asistir/Asisti), además del filtro temporal ya existente. Se agrega el mensaje motivacional estático debajo de la card "Eventos de hoy". **Acción manual pendiente:** el valor de `NOTION_DB_EVENTOS` debe actualizarse en el `.env` local y en el secret de GitHub Actions al ID de la nueva base (no se puede automatizar desde el repo). Ver `SRS.md` v4.25 — `SRS-FR-M5-502`/`505` reescritos. |
 | **v4.26** | Septiembre 2026 | **Recordatorios Varios: reclasificar por Fecha y agregar bloque "Sin fecha" (pedido explícito de Sabrina):** la clasificación Ayer/Hoy/Mañana vuelve a usar la propiedad `Fecha` (vencimiento/programación) en vez de la fecha de creación de la página (`created_time`, usada desde v4.12). Un ítem sin `Fecha` cargada ya no se pierde de la vista: se agrega un cuarto bloque colapsable, "Recordatorios sin fecha", ordenado por fecha de creación. Ver `SRS.md` v4.26 — `SRS-FR-M4-402` reescrito. |
-| **v4.27** *(Actual)* | Septiembre 2026 | **Nueva sección "Accesos directos" en `inicio.html` (pedido explícito de Sabrina):** debajo del hero de bienvenida se agregan dos preguntas de autochequeo diario ("¿Registraste los gastos de hoy?" / "¿Moviste tu cuerpo hoy o volviste caminando a casa?"), cada una con un botón que abre en pestaña nueva la base de Notion correspondiente (`NOTION_DB_FINANZAS` / `NOTION_DB_SESIONESEJERCICIO`). Nuevo §5.6. Ver `SRS.md` v4.27 — nuevo `SRS-FR-M3-313`. |
+| **v4.27** | Septiembre 2026 | **Nueva sección "Accesos directos" en `inicio.html` (pedido explícito de Sabrina):** debajo del hero de bienvenida se agregan dos preguntas de autochequeo diario ("¿Registraste los gastos de hoy?" / "¿Moviste tu cuerpo hoy o volviste caminando a casa?"), cada una con un botón que abre en pestaña nueva la base de Notion correspondiente (`NOTION_DB_FINANZAS` / `NOTION_DB_SESIONESEJERCICIO`). Nuevo §5.6. Ver `SRS.md` v4.27 — nuevo `SRS-FR-M3-313`. |
+| **v4.28** *(Actual)* | Octubre 2026 | **Renombre del proyecto a AsistenteSabry (pedido explícito de Sabrina):** el producto deja de llamarse "Notion Flow Auditor (NFA)". Cambia el nombre visible (títulos, header, manifest PWA, `apple-mobile-web-app-title`), el README, el repositorio de GitHub y el prefijo de localStorage (`flow_auditor:v*` → `asistente_sabry:v*`, con migración automática de la clave anterior). Ver `SRS.md` v4.28. |

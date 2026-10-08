@@ -52,7 +52,7 @@ function ejecutarScript(script, sessionStorageInicial = {}) {
   });
 
   const { window } = new JSDOM('<!doctype html><html><head></head><body></body></html>', {
-    url: 'https://nfa.local/pagina-de-prueba.html',
+    url: 'https://asistentesabry.local/pagina-de-prueba.html',
     runScripts: 'dangerously',
     virtualConsole,
   });

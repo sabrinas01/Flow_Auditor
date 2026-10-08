@@ -1,6 +1,6 @@
 {
-    "name": "Notion Flow Auditor",
-    "short_name": "NFA",
+    "name": "AsistenteSabry",
+    "short_name": "AsistenteSabry",
     "description": "Auditoría y visualización de consistencia diaria sobre tareas de Notion.",
     "start_url": "./inicio.html",
     "scope": "./",
