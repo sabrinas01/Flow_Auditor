@@ -104,17 +104,12 @@ describe('renderizarRecordatoriosVarios', () => {
     expect(document.getElementById('list-varios-hoy').textContent).toContain('Sin recordatorios registrados');
   });
 
-  test('renderiza Nombre/Estado/Prioridad/Área/Periodo/Fecha de cada ítem', () => {
+  test('renderiza solo el Nombre de cada ítem, sin Estado/Prioridad/Área/Periodo/Fecha', () => {
     renderizarRecordatoriosVarios('varios-hoy', [
       { nombre: 'Pagar el alquiler', estado: 'Sin empezar', prioridad: 'Alta', area: 'Personal', periodo: 'Mensual', fecha: '10/09/2026' },
     ]);
     const fila = document.querySelector('#list-varios-hoy .status-row');
-    expect(fila.textContent).toContain('Pagar el alquiler');
-    expect(fila.textContent).toContain('Sin empezar');
-    expect(fila.textContent).toContain('Alta');
-    expect(fila.textContent).toContain('Personal');
-    expect(fila.textContent).toContain('Mensual');
-    expect(fila.textContent).toContain('10/09/2026');
+    expect(fila.textContent.trim()).toBe('Pagar el alquiler');
   });
 
   test('muestra la cantidad correcta de ítems en el total', () => {
@@ -125,16 +120,13 @@ describe('renderizarRecordatoriosVarios', () => {
     expect(document.getElementById('total-varios-hoy-lbl').innerText).toBe('2 ítems');
   });
 
-  test.each([
-    ['Hecha', 'left-pill-green'],
-    ['❌ Fallida / Vencida', 'left-pill-red'],
-    ['Sin empezar', 'left-pill-blue'],
-  ])('aplica la pill correcta para el estado "%s"', (estado, pillEsperada) => {
-    renderizarRecordatoriosVarios('varios-hoy', [{ nombre: 'x', estado }]);
-    expect(document.querySelector('#list-varios-hoy .status-row').className).toContain(pillEsperada);
-  });
+  test.each(['Hecha', '❌ Fallida / Vencida', 'Sin empezar'])(
+    'no aplica borde de color para el estado "%s"', (estado) => {
+      renderizarRecordatoriosVarios('varios-hoy', [{ nombre: 'x', estado }]);
+      expect(document.querySelector('#list-varios-hoy .status-row').className).not.toContain('left-pill');
+    });
 
-  test('escapa HTML en nombre y metadatos (previene XSS)', () => {
+  test('escapa HTML en el nombre (previene XSS)', () => {
     renderizarRecordatoriosVarios('varios-hoy', [
       { nombre: '<img src=x onerror=alert(1)>', estado: 'Sin empezar', area: '<script>alert(2)</script>' },
     ]);

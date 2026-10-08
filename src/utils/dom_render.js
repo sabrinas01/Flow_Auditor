@@ -54,10 +54,8 @@ function toggleBloque(prefijo) {
 
 /**
  * Renderiza un bloque de Recordatorios Varios (recordatorios-varios.html):
- * un ítem por fila, con su propio Nombre/Estado/Prioridad/Área/Periodo/Fecha
- * — a diferencia de renderizarFilasEstados, acá no se agrega por estado.
- * Reutiliza escapeHtml/obtenerEstiloEstado para mantener la misma
- * codificación visual (verde=hecha, rojo=fallida/vencida) en toda la app.
+ * un ítem por fila mostrando solo el Nombre (sin borde de color) — a
+ * diferencia de renderizarFilasEstados, acá no se agrega por estado.
  * Extraída de recordatorios-varios.html en v4.23 (HU Notion Épica 2 #11)
  * para poder testearla con Jest + jsdom.
  */
@@ -66,26 +64,15 @@ function renderizarRecordatoriosVarios(prefijo, items) {
   document.getElementById(`total-${prefijo}-lbl`).innerText = `${items.length} ítems`;
 
   if (!items || items.length === 0) {
-    container.innerHTML = `<div class="status-row left-pill-blue flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin recordatorios registrados</div>`;
+    container.innerHTML = `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin recordatorios registrados</div>`;
     return;
   }
 
-  container.innerHTML = items.map((item) => {
-    const estilo = obtenerEstiloEstado(item.estado || "Sin estado");
-    const meta = [item.area, item.periodo, item.prioridad, item.fecha]
-      .filter(Boolean)
-      .map(escapeHtml)
-      .join(" · ");
-    return `
-        <div class="status-row ${estilo.pill} flex justify-between items-center px-4 py-3.5 gap-3">
-            <div class="flex flex-col gap-1 min-w-0">
-                <span class="text-white font-semibold truncate">${escapeHtml(item.nombre || "Sin nombre")}</span>
-                ${meta ? `<span class="text-[#8e8e93] text-[12px] truncate">${meta}</span>` : ""}
-            </div>
-            <span class="${estilo.textClass} text-[13px] whitespace-nowrap">${escapeHtml(item.estado || "Sin estado")}</span>
+  container.innerHTML = items.map((item) => `
+        <div class="status-row flex items-center px-4 py-3.5">
+            <span class="text-white font-semibold truncate">${escapeHtml(item.nombre || "Sin nombre")}</span>
         </div>
-    `;
-  }).join('');
+    `).join('');
 }
 
 /**
