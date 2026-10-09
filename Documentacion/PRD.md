@@ -89,8 +89,8 @@ Tasa = (Σ Consistencia de las tareas creadas en el día / Total de Tareas Cread
   * "¿Moviste tu cuerpo hoy o volviste caminando a casa?" → base de Notion `NOTION_DB_SESIONESEJERCICIO`.
 * Son links estáticos por ID de base (pedido explícito de Sabrina) — no hay datos inyectados por el backend para esta sección, no requiere sincronización.
 
-### 5.7. Inicio (`inicio.html`) — Enlace al Dashboard bitacorait (v4.33)
-* Debajo del hero de bienvenida, se agrega el texto "Dashboard bitacorait" y un botón "Abrir dashboard" que enlaza a un recurso externo (artifact de Claude: `https://claude.ai/artifact/ExE3D2oJaCU7pbcG2thWfL`), abierto en una pestaña nueva.
+### 5.7. Inicio (`inicio.html`) — Enlace al Dashboard SABRY OFF (v4.33)
+* Debajo del hero de bienvenida, se agrega el texto "Dashboard SABRY OFF" y un botón "Abrir dashboard" que enlaza a un recurso externo (artifact de Claude: `https://claude.ai/artifact/ExE3D2oJaCU7pbcG2thWfL`), abierto en una pestaña nueva.
 * Enlace estático de solo navegación — no hay inyección de datos ni lógica de backend asociada.
 
 ## 🔒 6. Requerimientos No Funcionales
@@ -154,4 +154,4 @@ Tasa = (Σ Consistencia de las tareas creadas en el día / Total de Tareas Cread
 | **v4.30** | Octubre 2026 | **Agenda Personal, mensaje motivacional reubicado (pedido explícito de Sabrina):** el mensaje estático deja de estar dentro de la card "Eventos de hoy" y se muestra debajo del título "EVENTOS", encima de las cards. Ver `SRS.md` v4.30. |
 | **v4.29** | Octubre 2026 | **Recordatorios Varios simplificado (pedido explícito de Sabrina):** cada card muestra solo el Nombre del recordatorio, sin Estado, Prioridad, Área, Periodo ni Fecha, y sin borde de color. El botón "Ir a Recordatorios Varios" apunta a una nueva vista de Notion. Ver `SRS.md` v4.29. |
 | **v4.28** | Octubre 2026 | **Renombre del proyecto a AsistenteSabry (pedido explícito de Sabrina):** el producto deja de llamarse "Notion Flow Auditor (NFA)". Cambia el nombre visible (títulos, header, manifest PWA, `apple-mobile-web-app-title`), el README, el repositorio de GitHub y el prefijo de localStorage (`flow_auditor:v*` → `asistente_sabry:v*`, con migración automática de la clave anterior). Ver `SRS.md` v4.28. |
-| **v4.33** *(Actual)* | Octubre 2026 | **Home: nuevo enlace al Dashboard bitacorait (pedido explícito de Sabrina):** debajo del hero de bienvenida de `inicio.html` se agrega el texto "Dashboard bitacorait" y un botón que abre, en pestaña nueva, un artifact externo de Claude (`https://claude.ai/artifact/ExE3D2oJaCU7pbcG2thWfL`). Enlace estático, sin lógica de backend ni inyección de datos. Nuevo §5.7. Ver `SRS.md` v4.33 — nuevo `SRS-FR-M3-315`. |
+| **v4.33** *(Actual)* | Octubre 2026 | **Home: nuevo enlace al Dashboard SABRY OFF (pedido explícito de Sabrina):** debajo del hero de bienvenida de `inicio.html` se agrega el texto "Dashboard SABRY OFF" y un botón que abre, en pestaña nueva, un artifact externo de Claude (`https://claude.ai/artifact/ExE3D2oJaCU7pbcG2thWfL`). Enlace estático, sin lógica de backend ni inyección de datos. Nuevo §5.7. Ver `SRS.md` v4.33 — nuevo `SRS-FR-M3-315`. |
