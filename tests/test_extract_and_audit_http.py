@@ -8,10 +8,12 @@ Recordatorios Varios (recordatorios-varios.html) es aislado y no fatal
 (SRS-FR-M4-401): un problema con esa base nunca debe interrumpir ni revertir
 la sincronización de Recordatorios Diarios, que corre primero. Solo se
 muestran ítems del grupo "Por hacer" ("Sin empezar" / "⏳ Pospuesta" —
-excluye En ejecución/En espera y todo el grupo Complete), clasificados en
-los mismos tres bloques cronológicos (Ayer/Hoy/Mañana, SRS-FR-M4-402) según
-su fecha de CREACIÓN en Notion (created_time), no según su propiedad Fecha,
-y ordenados dentro de cada bloque por fecha de creación ascendente.
+excluye En ejecución/En espera y todo el grupo Complete), clasificados según
+su propiedad Fecha (v4.26; hasta v4.25 se usaba created_time) en los mismos
+tres bloques cronológicos (Ayer/Hoy/Mañana, SRS-FR-M4-402) más un cuarto
+bloque "Sin fecha" (nuevo v4.26) para ítems sin Fecha cargada, y ordenados
+dentro de cada bloque por Fecha ascendente (Sin fecha se ordena por
+created_time, único dato temporal disponible ahí).
 """
 from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
@@ -32,6 +34,7 @@ PLANTILLA_INDEX = """<html><body>
     const conteoAyer = {};
     const conteoHoy = {};
     const conteoManana = {};
+    const tareasHoySinEmpezar = [];
 </script>
 </body></html>"""
 
@@ -45,6 +48,7 @@ PLANTILLA_VARIOS = """<html><body>
     const recordatoriosVariosAyer = [];
     const recordatoriosVariosHoy = [];
     const recordatoriosVariosManana = [];
+    const recordatoriosVariosSinFecha = [];
 </script>
 </body></html>"""
 
@@ -101,9 +105,12 @@ def _pagina_diarios():
     }
 
 
-def _pagina_varios(nombre="Lavar gorras", estado="Sin empezar", fecha=None, creada=None):
-    """fecha = propiedad Fecha (vencimiento, solo metadato); creada = created_time
-    de Notion (created_time), la fecha que ahora se usa para clasificar el bloque."""
+def _pagina_varios(nombre="Lavar gorras", estado="Sin empezar", fecha=None, creada=None, sin_fecha=False):
+    """fecha = propiedad Fecha, usada desde v4.26 para clasificar el bloque
+    Ayer/Hoy/Mañana (hasta v4.25 se usaba created_time). creada = created_time
+    de Notion, usado ahora solo como criterio de orden del bloque "Sin fecha".
+    sin_fecha=True construye una página sin la propiedad Fecha cargada (Notion
+    devuelve {"date": None} en ese caso), para caer en el bloque "Sin fecha"."""
     return {
         "properties": {
             "Nombre": {"title": [{"plain_text": nombre}]},
@@ -111,7 +118,7 @@ def _pagina_varios(nombre="Lavar gorras", estado="Sin empezar", fecha=None, crea
             "Prioridad": {"select": {"name": "MEDIA"}},
             "Área": {"select": {"name": "Higiene"}},
             "Periodo": {"select": {"name": "MENSUAL"}},
-            "Fecha": {"date": {"start": fecha or _hoy_str()}},
+            "Fecha": {"date": None} if sin_fecha else {"date": {"start": fecha or _hoy_str()}},
         },
         "created_time": creada or _hoy_iso_datetime(),
     }
@@ -130,12 +137,21 @@ def _fake_post_por_db(db_varios_id, respuesta_o_excepcion_varios, respuesta_diar
     return _fake_post
 
 
-def _pagina_evento(nombre="Reunión de equipo", inicio=None, fin=None, lugar="Sala C"):
+def _pagina_evento(nombre="Reunión de equipo", inicio=None, fin=None, lugar="Sala C", tipo=None, estado="Pendiente"):
+    """Página mock de la BD "Eventos y Recordatorios únicos" (reemplaza en
+    v4.25 a "Agenda Personal - Eventos"): Lugar es tipo `place` (no
+    `rich_text`), Tipo de tarea es `select`, Estado es `status` — a
+    diferencia de la BD anterior, que no tenía ninguna de las dos últimas.
+    `estado` por defecto "Pendiente" (grupo to_do, no terminal) para que
+    los tests existentes que no ejercitan el filtro de Estado no se vean
+    afectados por él."""
     return {
         "properties": {
             "Nombre": {"title": [{"plain_text": nombre}]},
             "Fecha": {"date": {"start": inicio or _hoy_iso_datetime(), "end": fin}},
-            "Lugar": {"rich_text": [{"plain_text": lugar}] if lugar else []},
+            "Lugar": {"place": {"name": lugar} if lugar else None},
+            "Tipo de tarea": {"select": {"name": tipo} if tipo else None},
+            "Estado": {"status": {"name": estado} if estado else None},
         },
         "created_time": _hoy_iso_datetime(),
     }
@@ -170,29 +186,61 @@ def test_conexion_exitosa_sincroniza_ambos_frontends(tmp_path, monkeypatch):
 
     salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
     assert 'const timestampLocalStr = "";' not in salida_varios
-    # El ítem se creó hoy (created_time por defecto) -> cae en recordatoriosVariosHoy
+    # El ítem tiene Fecha de hoy (default) -> cae en recordatoriosVariosHoy
     assert "const recordatoriosVariosAyer = [];" in salida_varios
     assert "const recordatoriosVariosManana = [];" in salida_varios
     assert "Lavar gorras" in salida_varios
     assert '"estado": "Sin empezar"' in salida_varios or '"estado":"Sin empezar"' in salida_varios
 
 
-def test_recordatorios_varios_clasifica_por_fecha_de_creacion(tmp_path, monkeypatch):
-    """La clasificación Ayer/Hoy/Mañana usa created_time (fecha de creación de
-    la página), no la propiedad Fecha — un ítem con Fecha de mañana pero creado
-    hoy debe caer en el bloque Hoy."""
+def test_diarios_inyecta_nombres_de_tareas_de_hoy_sin_empezar(tmp_path, monkeypatch):
+    """Solo los ítems de HOY en "Sin empezar" aportan su nombre a
+    `tareasHoySinEmpezar` (lista colapsable de "Progreso de hoy"); los de
+    otro estado u otro día no. El nombre con comillas se serializa bien."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    def _pagina(nombre, estado, fecha):
+        return {
+            "properties": {
+                "Nombre": {"type": "title", "title": [{"plain_text": nombre}]},
+                "Estado": {"type": "status", "status": {"name": estado}},
+                "Fecha": {"type": "date", "date": {"start": fecha}},
+            },
+            "created_time": "2026-01-01T00:00:00.000Z",
+        }
+
+    ayer = (datetime.now(timezone.utc) - timedelta(hours=3, days=1)).date().isoformat()
+    diarios = _mock_respuesta_notion([
+        _pagina('Llamar a "Juan"', "Sin empezar", _hoy_str()),
+        _pagina("Tarea hecha hoy", "Hecha", _hoy_str()),
+        _pagina("Tarea de ayer", "Sin empezar", ayer),
+    ])
+    fake_post = _fake_post_por_db("C" * 40, _mock_respuesta_notion([]), respuesta_diarios=diarios)
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida = (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert 'const tareasHoySinEmpezar = ["Llamar a \\"Juan\\""];' in salida
+    assert "Tarea hecha hoy" not in salida
+    assert "Tarea de ayer" not in salida
+
+
+def test_recordatorios_varios_clasifica_por_propiedad_fecha(tmp_path, monkeypatch):
+    """La clasificación Ayer/Hoy/Mañana usa la propiedad Fecha (v4.26, pedido
+    explícito de Sabrina) — hasta v4.25 se usaba created_time. Un ítem creado
+    hoy pero con Fecha de mañana debe caer en el bloque Mañana."""
     _preparar_directorio_temporal(tmp_path, monkeypatch)
 
     hoy = datetime.now(timezone.utc) - timedelta(hours=3)
-    ayer_dt = (hoy - timedelta(days=1)).isoformat().replace("+00:00", "Z")
-    manana_dt = (hoy + timedelta(days=1)).isoformat().replace("+00:00", "Z")
+    ayer_fecha_str = (hoy - timedelta(days=1)).date().isoformat()
     manana_fecha_str = (hoy + timedelta(days=1)).date().isoformat()
 
     paginas_varios = [
-        _pagina_varios(nombre="Item creado ayer", creada=ayer_dt),
-        # Fecha (vencimiento) es de mañana, pero se creó hoy -> debe caer en Hoy
-        _pagina_varios(nombre="Item creado hoy", fecha=manana_fecha_str),
-        _pagina_varios(nombre="Item creado mañana", creada=manana_dt),
+        _pagina_varios(nombre="Item con fecha ayer", fecha=ayer_fecha_str),
+        # created_time es de hoy (default), pero Fecha es de mañana -> Mañana
+        _pagina_varios(nombre="Item con fecha manana", fecha=manana_fecha_str),
+        _pagina_varios(nombre="Item con fecha hoy"),
     ]
     fake_post = _fake_post_por_db("C" * 40, _mock_respuesta_notion(paginas_varios))
 
@@ -206,12 +254,40 @@ def test_recordatorios_varios_clasifica_por_fecha_de_creacion(tmp_path, monkeypa
         m = re.search(rf"const\s+{nombre_const}\s*=\s*(\[.*?\])\s*;", salida_varios, re.DOTALL)
         return m.group(1)
 
-    assert "Item creado ayer" in _bloque("recordatoriosVariosAyer")
-    assert "Item creado ayer" not in _bloque("recordatoriosVariosHoy")
-    assert "Item creado hoy" in _bloque("recordatoriosVariosHoy")
-    assert "Item creado hoy" not in _bloque("recordatoriosVariosManana")
-    assert "Item creado mañana" in _bloque("recordatoriosVariosManana")
-    assert "Item creado mañana" not in _bloque("recordatoriosVariosHoy")
+    assert "Item con fecha ayer" in _bloque("recordatoriosVariosAyer")
+    assert "Item con fecha ayer" not in _bloque("recordatoriosVariosHoy")
+    assert "Item con fecha hoy" in _bloque("recordatoriosVariosHoy")
+    assert "Item con fecha hoy" not in _bloque("recordatoriosVariosManana")
+    assert "Item con fecha manana" in _bloque("recordatoriosVariosManana")
+    assert "Item con fecha manana" not in _bloque("recordatoriosVariosHoy")
+
+
+def test_recordatorios_varios_sin_fecha_cae_en_bloque_propio(tmp_path, monkeypatch):
+    """Regla de negocio nueva (v4.26, pedido explícito de Sabrina): un ítem
+    "Por hacer" sin la propiedad Fecha cargada no se descarta — cae en un
+    cuarto bloque, recordatoriosVariosSinFecha, en vez de desaparecer."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    paginas_varios = [
+        _pagina_varios(nombre="Item sin fecha cargada", sin_fecha=True),
+        _pagina_varios(nombre="Item con fecha hoy"),
+    ]
+    fake_post = _fake_post_por_db("C" * 40, _mock_respuesta_notion(paginas_varios))
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
+
+    import re
+    def _bloque(nombre_const):
+        m = re.search(rf"const\s+{nombre_const}\s*=\s*(\[.*?\])\s*;", salida_varios, re.DOTALL)
+        return m.group(1)
+
+    assert "Item sin fecha cargada" in _bloque("recordatoriosVariosSinFecha")
+    assert "Item sin fecha cargada" not in _bloque("recordatoriosVariosHoy")
+    assert "Item con fecha hoy" in _bloque("recordatoriosVariosHoy")
+    assert "Item con fecha hoy" not in _bloque("recordatoriosVariosSinFecha")
 
 
 def test_recordatorios_varios_solo_grupo_por_hacer(tmp_path, monkeypatch):
@@ -248,9 +324,9 @@ def test_recordatorios_varios_solo_grupo_por_hacer(tmp_path, monkeypatch):
     assert "Completado fallida" not in salida_varios
 
 
-def test_recordatorios_varios_ordena_por_fecha_de_creacion_ascendente(tmp_path, monkeypatch):
-    """Dentro de un mismo bloque, los ítems quedan ordenados por fecha de
-    creación ascendente (el más antiguo primero)."""
+def test_recordatorios_varios_ordena_por_fecha_ascendente(tmp_path, monkeypatch):
+    """Dentro de un mismo bloque, los ítems quedan ordenados por la propiedad
+    Fecha ascendente (v4.26; hasta v4.25 se ordenaba por created_time)."""
     _preparar_directorio_temporal(tmp_path, monkeypatch)
 
     hoy = datetime.now(timezone.utc) - timedelta(hours=3)
@@ -259,10 +335,12 @@ def test_recordatorios_varios_ordena_por_fecha_de_creacion_ascendente(tmp_path, 
     tarde = hoy.replace(hour=18, minute=0, second=0, microsecond=0).isoformat().replace("+00:00", "Z")
 
     # Se envían fuera de orden a propósito para probar que el backend ordena.
+    # created_time queda igual para las tres (hoy, default) para aislar que el
+    # orden sale de Fecha y no de un remanente de la lógica vieja.
     paginas_varios = [
-        _pagina_varios(nombre="Creado a la tarde", creada=tarde),
-        _pagina_varios(nombre="Creado temprano", creada=temprano),
-        _pagina_varios(nombre="Creado al mediodia", creada=medio),
+        _pagina_varios(nombre="Fecha a la tarde", fecha=tarde),
+        _pagina_varios(nombre="Fecha temprano", fecha=temprano),
+        _pagina_varios(nombre="Fecha al mediodia", fecha=medio),
     ]
     fake_post = _fake_post_por_db("C" * 40, _mock_respuesta_notion(paginas_varios))
 
@@ -275,9 +353,9 @@ def test_recordatorios_varios_ordena_por_fecha_de_creacion_ascendente(tmp_path, 
     m = re.search(r"const\s+recordatoriosVariosHoy\s*=\s*(\[.*?\])\s*;", salida_varios, re.DOTALL)
     bloque_hoy = m.group(1)
 
-    pos_temprano = bloque_hoy.index("Creado temprano")
-    pos_mediodia = bloque_hoy.index("Creado al mediodia")
-    pos_tarde = bloque_hoy.index("Creado a la tarde")
+    pos_temprano = bloque_hoy.index("Fecha temprano")
+    pos_mediodia = bloque_hoy.index("Fecha al mediodia")
+    pos_tarde = bloque_hoy.index("Fecha a la tarde")
     assert pos_temprano < pos_mediodia < pos_tarde
 
 
@@ -455,6 +533,80 @@ def test_agenda_personal_eventos_finalizado_se_descarta(tmp_path, monkeypatch):
     salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
     assert "Evento de ayer sin fin" not in salida_agenda
     assert "Evento de hoy ya terminado" not in salida_agenda
+
+
+def test_agenda_personal_eventos_incluye_tipo_de_tarea(tmp_path, monkeypatch):
+    """Escenario 2 (HU Notion Épica 2 #8, SRS-FR-M5-505): un evento con la
+    propiedad 'Tipo de tarea' cargada en Notion debe incluir ese valor en el
+    JSON inyectado como clave 'tipo', junto al 'lugar'."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    eventos = [_pagina_evento(nombre="Turno médico", lugar="Clínica Central", tipo="ESTUDIO MÉDICO")]
+    fake_post = _fake_post_multi({"D" * 40: _mock_respuesta_notion(eventos)})
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
+    assert "ESTUDIO MÉDICO" in salida_agenda
+    assert "Clínica Central" in salida_agenda
+
+
+def test_agenda_personal_eventos_sin_tipo_no_rompe(tmp_path, monkeypatch):
+    """Escenario 3 (HU Notion Épica 2 #8): un evento sin 'Tipo de tarea'
+    cargado no debe romper la sincronización — el campo 'tipo' queda en
+    null/None en vez de faltar la clave o abortar el proceso."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    eventos = [_pagina_evento(nombre="Reunión sin tipo", lugar="Oficina", tipo=None)]
+    fake_post = _fake_post_multi({"D" * 40: _mock_respuesta_notion(eventos)})
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
+    assert "Reunión sin tipo" in salida_agenda
+    assert '"tipo": null' in salida_agenda
+
+
+def test_agenda_personal_eventos_estado_terminal_se_descarta(tmp_path, monkeypatch):
+    """Regla de negocio nueva (SRS-FR-M5-502, v4.25, pedido explícito de
+    Sabrina): un evento en un Estado terminal de Notion (Hecha, Sin asistir,
+    Asisti) se descarta aunque su estado temporal sea SIN_EMPEZAR o EN_CURSO."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    hoy_iso = _hoy_iso_datetime()
+    eventos = [
+        _pagina_evento(nombre="Evento ya hecho", inicio=hoy_iso, estado="Hecha"),
+        _pagina_evento(nombre="Evento sin asistir", inicio=hoy_iso, estado="Sin asistir"),
+        _pagina_evento(nombre="Evento asisti", inicio=hoy_iso, estado="Asisti"),
+        _pagina_evento(nombre="Evento en curso activo", inicio=hoy_iso, estado="En curso"),
+    ]
+    fake_post = _fake_post_multi({"D" * 40: _mock_respuesta_notion(eventos)})
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
+    assert "Evento ya hecho" not in salida_agenda
+    assert "Evento sin asistir" not in salida_agenda
+    assert "Evento asisti" not in salida_agenda
+    assert "Evento en curso activo" in salida_agenda
+
+
+def test_agenda_personal_eventos_sin_estado_no_se_oculta(tmp_path, monkeypatch):
+    """Un evento sin la propiedad Estado cargada se muestra igual (fail-open):
+    la ausencia del dato no debe ocultarlo."""
+    _preparar_directorio_temporal(tmp_path, monkeypatch)
+
+    eventos = [_pagina_evento(nombre="Evento sin estado cargado", estado=None)]
+    fake_post = _fake_post_multi({"D" * 40: _mock_respuesta_notion(eventos)})
+
+    with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
+        extract_and_audit.auditar_consistencia_tripartita()
+
+    salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
+    assert "Evento sin estado cargado" in salida_agenda
 
 
 def test_agenda_personal_eventos_401_no_afecta_otros_modulos(tmp_path, monkeypatch, capsys):

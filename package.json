@@ -1,5 +1,5 @@
 {
-  "name": "notion-flow-auditor-frontend",
+  "name": "asistentesabry-frontend",
   "private": true,
   "description": "Build del CSS estático de Tailwind para index.html (sin bundler ni framework, todo el JS sigue siendo vanilla).",
   "scripts": {
@@ -7,12 +7,15 @@
     "test": "jest"
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.19",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0"
+    "jest-environment-jsdom": "^29.7.0",
+    "jsdom": "^20.0.3",
+    "tailwindcss": "^3.4.19"
   },
   "jest": {
     "testEnvironment": "jsdom",
-    "testMatch": ["**/tests/unit/**/*.test.js"]
+    "testMatch": [
+      "**/tests/unit/**/*.test.js"
+    ]
   }
 }

@@ -3,7 +3,8 @@
  * Uso: llamar initLocalStorage() al arrancar la página, antes de usar datos del storage.
  */
 
-const ROOT_KEY_PREFIX = "flow_auditor:v";
+const ROOT_KEY_PREFIX = "asistente_sabry:v";
+const LEGACY_KEY_PREFIXES = ["flow_auditor:v"]; // nombre anterior del proyecto
 const CURRENT_SCHEMA = "1.0";
 const ROOT_KEY = `${ROOT_KEY_PREFIX}${CURRENT_SCHEMA}`;
 
@@ -16,12 +17,16 @@ function writeRaw(key, value) {
 }
 
 function findExistingRootKey() {
-  // detectar keys antiguas con prefijo flow_auditor:v*
+  // detectar keys con prefijo actual (asistente_sabry:v*) o legacy (flow_auditor:v*)
+  const prefixes = [ROOT_KEY_PREFIX, ...LEGACY_KEY_PREFIXES];
+  let legacy = null;
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
-    if (k && k.startsWith(ROOT_KEY_PREFIX)) return k;
+    if (!k) continue;
+    if (k.startsWith(ROOT_KEY_PREFIX)) return k;
+    if (!legacy && prefixes.some((p) => k.startsWith(p))) legacy = k;
   }
-  return null;
+  return legacy;
 }
 
 function migrate(fromVersion, data) {

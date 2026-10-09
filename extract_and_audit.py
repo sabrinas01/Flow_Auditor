@@ -186,7 +186,8 @@ def consultar_y_clasificar(database_id, etiqueta_log):
     print(f"📦 [LOG PIPELINE]: Se recuperaron {len(results)} registros desde la base de datos de Notion ({etiqueta_log}).")
 
     conteo_ayer, conteo_hoy, conteo_manana = {}, {}, {}
-    columna_estado, columna_fecha = None, None
+    nombres_hoy_sin_empezar = []
+    columna_estado, columna_fecha, columna_titulo = None, None, None
 
     # Detección dinámica de esquema de columnas
     if results:
@@ -195,6 +196,8 @@ def consultar_y_clasificar(database_id, etiqueta_log):
                 columna_estado = n_col
             if info.get("type") == "date":
                 columna_fecha = n_col
+            if info.get("type") == "title":
+                columna_titulo = n_col
 
     # Mapeo y agrupamiento dinámico por estados en base a la ventana de tiempo
     for pagina in results:
@@ -219,10 +222,13 @@ def consultar_y_clasificar(database_id, etiqueta_log):
             conteo_ayer[est_val] = conteo_ayer.get(est_val, 0) + 1
         elif bloque == "HOY":
             conteo_hoy[est_val] = conteo_hoy.get(est_val, 0) + 1
+            if "sin empezar" in est_val.lower() and columna_titulo:
+                nombre = "".join(t.get("plain_text", "") for t in props.get(columna_titulo, {}).get("title", []))
+                nombres_hoy_sin_empezar.append(nombre or "Sin nombre")
         elif bloque == "MANANA":
             conteo_manana[est_val] = conteo_manana.get(est_val, 0) + 1
 
-    return conteo_ayer, conteo_hoy, conteo_manana
+    return conteo_ayer, conteo_hoy, conteo_manana, nombres_hoy_sin_empezar
 
 
 def _serializar_conteos(conteo_ayer, conteo_hoy, conteo_manana):
@@ -255,7 +261,7 @@ def auditar_consistencia_tripartita():
     validar_credenciales()
 
     try:
-        conteo_ayer, conteo_hoy, conteo_manana = consultar_y_clasificar(DB_RECORDATORIOS_DIARIOS, "Recordatorios Diarios")
+        conteo_ayer, conteo_hoy, conteo_manana, nombres_hoy_sin_empezar = consultar_y_clasificar(DB_RECORDATORIOS_DIARIOS, "Recordatorios Diarios")
 
         # Generación de marcas de tiempo del diagnóstico de infraestructura
         ahora_utc = datetime.now(timezone.utc)
@@ -272,6 +278,16 @@ def auditar_consistencia_tripartita():
         html_content = re.sub(r"const\s+conteoAyer\s*=\s*\{.*?\}\s*;", f"const conteoAyer = {json_ayer};", html_content)
         html_content = re.sub(r"const\s+conteoHoy\s*=\s*\{.*?\}\s*;", f"const conteoHoy = {json_hoy};", html_content)
         html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\}\s*;", f"const conteoManana = {json_manana};", html_content)
+
+        # Nombres de las tareas de hoy en "Sin empezar" (lista colapsable en
+        # "Progreso de hoy"). Reemplazo por función: el JSON puede traer
+        # backslashes (comillas escapadas) que re.sub interpretaría como grupos.
+        json_nombres = json.dumps(nombres_hoy_sin_empezar, ensure_ascii=False).replace("</", "<\\/")
+        html_content = re.sub(
+            r"const\s+tareasHoySinEmpezar\s*=\s*\[.*?\]\s*;",
+            lambda _m: f"const tareasHoySinEmpezar = {json_nombres};",
+            html_content,
+        )
 
         # Sobrescribir el frontend de forma atómica y segura
         with open(html_path, "w", encoding="utf-8") as file:
@@ -320,12 +336,15 @@ def extraer_recordatorios_clasificados(database_id, etiqueta_log):
     """Extrae y normaliza los ítems del grupo "Por hacer" (`_es_estado_por_hacer`)
     de una BD de Notion, clasificados en las mismas tres ventanas cronológicas
     que Recordatorios Diarios (Ayer/Hoy/Mañana, vía evaluar_bloque_temporal) a
-    partir de la fecha de CREACIÓN de la página en Notion (`created_time`), no
-    de su propiedad `Fecha` (vencimiento/programación). Dentro de cada bloque,
-    los ítems quedan ordenados por fecha de creación ascendente (el más
-    antiguo primero). A diferencia de consultar_y_clasificar(), acá cada
-    bloque es una LISTA de ítems completos (Nombre, Estado, Prioridad, Área,
-    Periodo, Fecha), no un conteo agregado por estado (SRS-FR-M4-402).
+    partir de su propiedad `Fecha` (vencimiento/programación) — hasta v4.25 se
+    clasificaba por la fecha de CREACIÓN de la página (`created_time`); cambio
+    v4.26, pedido explícito de Sabrina. Un ítem sin `Fecha` cargada no se
+    descarta: cae en un cuarto bloque, "Sin fecha", ordenado por fecha de
+    creación (único dato temporal disponible en ese caso). Dentro de los otros
+    tres bloques, los ítems quedan ordenados por `Fecha` ascendente. A
+    diferencia de consultar_y_clasificar(), acá cada bloque es una LISTA de
+    ítems completos (Nombre, Estado, Prioridad, Área, Periodo, Fecha), no un
+    conteo agregado por estado (SRS-FR-M4-402).
 
     Generalizada a partir de la BD "Mis Recordatorios varios V0" (Recordatorios
     Varios), parametrizada por database_id para poder reutilizarse contra
@@ -335,12 +354,12 @@ def extraer_recordatorios_clasificados(database_id, etiqueta_log):
     descarta con .filter(Boolean).
 
     Fallo aislado: cualquier error (BD sin configurar, 401/500, timeout) se
-    loguea y devuelve tres listas vacías — nunca levanta una excepción hacia
-    arriba.
+    loguea y devuelve cuatro listas vacías — nunca levanta una excepción
+    hacia arriba.
     """
     if not database_id:
         print(f"ℹ️ [{etiqueta_log}]: base de datos no configurada, se omite.")
-        return [], [], []
+        return [], [], [], []
 
     url = f"https://api.notion.com/v1/databases/{database_id}/query"
     headers = {
@@ -357,10 +376,10 @@ def extraer_recordatorios_clasificados(database_id, etiqueta_log):
     except requests.exceptions.HTTPError as e:
         status = e.response.status_code if e.response is not None else "desconocido"
         print(f"⚠️ [{etiqueta_log}]: fallo HTTP {status} al consultar Notion, se omite esta sincronización.")
-        return [], [], []
+        return [], [], [], []
     except Exception as e:
         print(f"⚠️ [{etiqueta_log}]: error al consultar Notion ({e}), se omite esta sincronización.")
-        return [], [], []
+        return [], [], [], []
 
     def _texto_titulo(prop):
         return "".join(t.get("plain_text", "") for t in prop.get("title", []))
@@ -369,9 +388,9 @@ def extraer_recordatorios_clasificados(database_id, etiqueta_log):
         sel = prop.get("select")
         return sel.get("name") if sel else None
 
-    # Cada bucket acumula (created_time, item) para poder ordenar por fecha
-    # de creación ascendente antes de devolver solo los ítems.
-    bucket_ayer, bucket_hoy, bucket_manana = [], [], []
+    # Cada bucket acumula (clave_de_orden, item): Fecha para Ayer/Hoy/Mañana,
+    # created_time para Sin fecha (único dato temporal disponible ahí).
+    bucket_ayer, bucket_hoy, bucket_manana, bucket_sin_fecha = [], [], [], []
     for pagina in results:
         props = pagina.get("properties", {})
 
@@ -386,13 +405,6 @@ def extraer_recordatorios_clasificados(database_id, etiqueta_log):
         if not _es_estado_por_hacer(estado):
             continue
 
-        # Clasificación por fecha de CREACIÓN de la página, no por la
-        # propiedad "Fecha" (que sigue mostrándose como metadato del ítem).
-        creada = pagina.get("created_time")
-        bloque = evaluar_bloque_temporal(creada)
-        if not bloque:
-            continue
-
         fecha_data = props.get("Fecha", {}).get("date")
         fecha = fecha_data.get("start") if fecha_data else None
 
@@ -405,36 +417,52 @@ def extraer_recordatorios_clasificados(database_id, etiqueta_log):
             "fecha": fecha,
         }
 
+        if fecha is None:
+            creada = pagina.get("created_time")
+            bucket_sin_fecha.append((creada, item))
+            continue
+
+        bloque = evaluar_bloque_temporal(fecha)
+        if not bloque:
+            continue
+
         if bloque == "AYER":
-            bucket_ayer.append((creada, item))
+            bucket_ayer.append((fecha, item))
         elif bloque == "HOY":
-            bucket_hoy.append((creada, item))
+            bucket_hoy.append((fecha, item))
         elif bloque == "MANANA":
-            bucket_manana.append((creada, item))
+            bucket_manana.append((fecha, item))
 
-    def _ordenados_por_creacion(bucket):
-        return [item for _creada, item in sorted(bucket, key=lambda t: t[0])]
+    def _ordenados(bucket):
+        return [item for _clave, item in sorted(bucket, key=lambda t: t[0])]
 
-    return _ordenados_por_creacion(bucket_ayer), _ordenados_por_creacion(bucket_hoy), _ordenados_por_creacion(bucket_manana)
+    return (
+        _ordenados(bucket_ayer),
+        _ordenados(bucket_hoy),
+        _ordenados(bucket_manana),
+        _ordenados(bucket_sin_fecha),
+    )
 
 
 def extraer_recordatorios_varios_clasificados():
     """Wrapper fino sobre extraer_recordatorios_clasificados() para la BD
     "Mis Recordatorios varios V0" — mantiene el nombre/firma históricos para
-    no romper callers ni tests existentes."""
+    no romper callers ni tests existentes. Devuelve 4 listas desde v4.26
+    (se agregó el bloque "Sin fecha")."""
     return extraer_recordatorios_clasificados(DB_RECORDATORIOS_VARIOS, "RECORDATORIOS VARIOS")
 
 
 def sincronizar_recordatorios_varios(timestamps, app_version):
-    """Inyecta los tres bloques (Ayer/Hoy/Mañana) de Recordatorios Varios en
-    recordatorios-varios.html (SRS-FR-M4-403). No fatal: si el archivo no
-    existe todavía en este entorno, se loguea y se continúa."""
+    """Inyecta los cuatro bloques (Ayer/Hoy/Mañana/Sin fecha, este último
+    nuevo en v4.26) de Recordatorios Varios en recordatorios-varios.html
+    (SRS-FR-M4-403). No fatal: si el archivo no existe todavía en este
+    entorno, se loguea y se continúa."""
     html_path = BASE_DIR / "recordatorios-varios.html"
     if not html_path.exists():
         print("ℹ️ [RECORDATORIOS VARIOS]: recordatorios-varios.html no encontrado, se omite.")
         return
 
-    items_ayer, items_hoy, items_manana = extraer_recordatorios_varios_clasificados()
+    items_ayer, items_hoy, items_manana, items_sin_fecha = extraer_recordatorios_varios_clasificados()
 
     with open(html_path, "r", encoding="utf-8") as file:
         html_content = file.read()
@@ -445,6 +473,7 @@ def sincronizar_recordatorios_varios(timestamps, app_version):
         ("recordatoriosVariosAyer", items_ayer),
         ("recordatoriosVariosHoy", items_hoy),
         ("recordatoriosVariosManana", items_manana),
+        ("recordatoriosVariosSinFecha", items_sin_fecha),
     ):
         json_items = json.dumps(items, ensure_ascii=False).replace("</", "<\\/")
         html_content = re.sub(
@@ -494,22 +523,46 @@ def calcular_estado_evento(inicio_iso, fin_iso, ahora):
     return "FINALIZADO"
 
 
+_ESTADOS_TERMINALES_EVENTO = {"hecha", "sin asistir", "asisti"}
+
+
+def _evento_esta_activo_por_estado(props):
+    """True si el evento debe mostrarse según su propiedad `Estado` de Notion
+    (status): se descartan los estados terminales del grupo "Complete" de la
+    BD "Eventos y Recordatorios únicos" — Hecha, Sin asistir, Asisti — sin
+    importar su ventana temporal. "Pendiente"/"Planificada"/"Sin empezar"
+    (to_do) y "En curso" (in_progress) se muestran. Un evento sin `Estado`
+    cargado se muestra igual (fail-open): la ausencia del dato no debe
+    ocultarlo (SRS-FR-M5-502, v4.25)."""
+    estado = (props.get("Estado") or {}).get("status") or {}
+    nombre = (estado.get("name") or "").strip().lower()
+    if not nombre:
+        return True
+    return nombre not in _ESTADOS_TERMINALES_EVENTO
+
+
 def extraer_eventos_clasificados():
-    """Extrae y normaliza los eventos de la BD "Agenda Personal - Eventos",
+    """Extrae y normaliza los eventos de la BD "Eventos y Recordatorios
+    únicos" (antes "Agenda Personal - Eventos", reemplazada en v4.25 por
+    pedido explícito de Sabrina para poder mostrar el Tipo de cada evento),
     clasificados por su propia fecha PROGRAMADA (`Fecha.start`, vía
     evaluar_bloque_temporal) en las tres ventanas cronológicas Ayer/Hoy/Mañana
     — a diferencia de extraer_recordatorios_clasificados(), la clasificación
     usa la fecha del evento, no la de creación de la página.
 
-    Regla de negocio (SRS-FR-M5-502, pedido explícito de Sabrina): solo se
-    conservan los eventos cuyo estado temporal —vía `calcular_estado_evento()`,
-    que compara `inicio`/`fin` contra el instante actual, no solo la fecha—
-    sea "SIN_EMPEZAR" o "EN_CURSO". Los eventos "FINALIZADO" se descartan,
-    incluso si su fecha programada cae en la ventana Hoy o Ayer.
+    Reglas de negocio para descartar un evento (se aplican ambas):
+    1. (SRS-FR-M5-502) Estado temporal —vía `calcular_estado_evento()`, que
+       compara `inicio`/`fin` contra el instante actual, no solo la fecha—
+       debe ser "SIN_EMPEZAR" o "EN_CURSO". Un evento "FINALIZADO" se
+       descarta aunque su fecha programada caiga en la ventana Hoy o Ayer.
+    2. (SRS-FR-M5-502, nuevo v4.25) Estado de Notion (`Estado`, propiedad
+       `status` en la BD "Eventos y Recordatorios únicos") no debe ser un
+       estado terminal — ver `_evento_esta_activo_por_estado()`.
 
     Dentro de cada bloque, los eventos quedan ordenados ascendentemente por
-    hora de inicio (comparación lexicográfica de strings ISO-8601, igual
-    técnica que el orden por created_time de extraer_recordatorios_clasificados()).
+    hora de inicio (comparación lexicográfica de strings ISO-8601, misma
+    técnica de ordenamiento por string ISO-8601 que usa
+    extraer_recordatorios_clasificados() para sus bloques Ayer/Hoy/Mañana).
 
     Fallo aislado: cualquier error (BD sin configurar, 401/500, timeout) se
     loguea y devuelve tres listas vacías — nunca levanta una excepción hacia
@@ -542,9 +595,16 @@ def extraer_eventos_clasificados():
     def _texto_titulo(prop):
         return "".join(t.get("plain_text", "") for t in prop.get("title", []))
 
-    def _texto_rich(prop):
-        texto = "".join(t.get("plain_text", "") for t in prop.get("rich_text", []))
-        return texto or None
+    def _texto_place(prop):
+        # Lugar es tipo "place" en "Eventos y Recordatorios únicos" (antes
+        # "rich_text" en "Agenda Personal - Eventos") — el nombre del lugar
+        # vive en prop["place"]["name"], no en prop["rich_text"].
+        lugar = (prop or {}).get("place") or {}
+        return lugar.get("name") or None
+
+    def _texto_select(prop):
+        seleccion = (prop or {}).get("select") or {}
+        return seleccion.get("name") or None
 
     ahora = (datetime.now(timezone.utc) - timedelta(hours=3)).replace(tzinfo=None)
 
@@ -566,11 +626,15 @@ def extraer_eventos_clasificados():
         if calcular_estado_evento(inicio, fin, ahora) == "FINALIZADO":
             continue
 
+        if not _evento_esta_activo_por_estado(props):
+            continue
+
         item = {
             "nombre": _texto_titulo(props.get("Nombre", {})) or "Sin nombre",
             "inicio": inicio,
             "fin": fin,
-            "lugar": _texto_rich(props.get("Lugar", {})),
+            "lugar": _texto_place(props.get("Lugar", {})),
+            "tipo": _texto_select(props.get("Tipo de tarea", {})),
         }
 
         if bloque == "AYER":

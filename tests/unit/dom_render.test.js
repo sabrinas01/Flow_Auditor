@@ -11,7 +11,16 @@
 const dashboardLogic = require('../../src/utils/dashboard_logic.js');
 Object.assign(global, dashboardLogic);
 
-const { renderizarFilasEstados, toggleBloque } = require('../../src/utils/dom_render.js');
+const {
+  renderizarFilasEstados,
+  renderizarTareasSinEmpezar,
+  toggleBloque,
+  renderizarRecordatoriosVarios,
+  formatHora,
+  renderizarAgendaEventos,
+  crearManejadorDeRefresco,
+} = require('../../src/utils/dom_render.js');
+const debounce = require('../../src/utils/debounce.js');
 
 describe('renderizarFilasEstados', () => {
   beforeEach(() => {
@@ -59,6 +68,34 @@ describe('renderizarFilasEstados', () => {
   });
 });
 
+describe('renderizarTareasSinEmpezar', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '<div id="wrap-hoy-sin-empezar" class="hidden"><div id="list-hoy-sin-empezar"></div></div>';
+  });
+
+  test('renderiza una fila por tarea, solo con el nombre, y muestra el bloque', () => {
+    renderizarTareasSinEmpezar('hoy-sin-empezar', ['Lavar gorras', 'Pagar luz']);
+    const filas = document.querySelectorAll('#list-hoy-sin-empezar .status-row');
+    expect(filas.length).toBe(2);
+    expect(filas[0].textContent.trim()).toBe('Lavar gorras');
+    expect(document.getElementById('wrap-hoy-sin-empezar').classList.contains('hidden')).toBe(false);
+  });
+
+  test('sin tareas, oculta el bloque entero', () => {
+    document.getElementById('wrap-hoy-sin-empezar').classList.remove('hidden');
+    renderizarTareasSinEmpezar('hoy-sin-empezar', []);
+    expect(document.getElementById('wrap-hoy-sin-empezar').classList.contains('hidden')).toBe(true);
+    expect(document.getElementById('list-hoy-sin-empezar').innerHTML).toBe('');
+  });
+
+  test('escapa HTML en el nombre (previene XSS)', () => {
+    renderizarTareasSinEmpezar('hoy-sin-empezar', ['<img src=x onerror=alert(1)>']);
+    const html = document.getElementById('list-hoy-sin-empezar').innerHTML;
+    expect(html).not.toContain('<img');
+    expect(html).toContain('&lt;img');
+  });
+});
+
 describe('toggleBloque', () => {
   beforeEach(() => {
     document.body.innerHTML = `
@@ -82,5 +119,172 @@ describe('toggleBloque', () => {
     expect(document.getElementById('content-ayer').classList.contains('hidden')).toBe(false);
     expect(document.getElementById('chevron-ayer').style.transform).toBe('rotate(0deg)');
     expect(document.querySelector('button').getAttribute('aria-expanded')).toBe('true');
+  });
+});
+
+// Extraída de recordatorios-varios.html en v4.23 (SRS-FR-M4-404, HU Notion Épica 2 #11)
+describe('renderizarRecordatoriosVarios', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '<div id="list-varios-hoy"></div><span id="total-varios-hoy-lbl"></span>';
+  });
+
+  test('sin ítems, muestra el mensaje de "Sin recordatorios registrados"', () => {
+    renderizarRecordatoriosVarios('varios-hoy', []);
+    expect(document.getElementById('list-varios-hoy').textContent).toContain('Sin recordatorios registrados');
+  });
+
+  test('renderiza solo el Nombre de cada ítem, sin Estado/Prioridad/Área/Periodo/Fecha', () => {
+    renderizarRecordatoriosVarios('varios-hoy', [
+      { nombre: 'Pagar el alquiler', estado: 'Sin empezar', prioridad: 'Alta', area: 'Personal', periodo: 'Mensual', fecha: '10/09/2026' },
+    ]);
+    const fila = document.querySelector('#list-varios-hoy .status-row');
+    expect(fila.textContent.trim()).toBe('Pagar el alquiler');
+  });
+
+  test('muestra la cantidad correcta de ítems en el total', () => {
+    renderizarRecordatoriosVarios('varios-hoy', [
+      { nombre: 'a', estado: 'Hecha' },
+      { nombre: 'b', estado: 'Hecha' },
+    ]);
+    expect(document.getElementById('total-varios-hoy-lbl').innerText).toBe('2 ítems');
+  });
+
+  test.each(['Hecha', '❌ Fallida / Vencida', 'Sin empezar'])(
+    'no aplica borde de color para el estado "%s"', (estado) => {
+      renderizarRecordatoriosVarios('varios-hoy', [{ nombre: 'x', estado }]);
+      expect(document.querySelector('#list-varios-hoy .status-row').className).not.toContain('left-pill');
+    });
+
+  test('escapa HTML en el nombre (previene XSS)', () => {
+    renderizarRecordatoriosVarios('varios-hoy', [
+      { nombre: '<img src=x onerror=alert(1)>', estado: 'Sin empezar', area: '<script>alert(2)</script>' },
+    ]);
+    const html = document.getElementById('list-varios-hoy').innerHTML;
+    expect(html).not.toContain('<img');
+    expect(html).not.toContain('<script>alert');
+  });
+});
+
+// Extraída de agenda-personal.html en v4.23 (SRS-FR-M5-505, HU Notion Épica 2 #11)
+describe('formatHora', () => {
+  test('extrae HH:MM de un ISO-8601 completo', () => {
+    expect(formatHora('2026-09-15T14:30:00.000-03:00')).toBe('14:30');
+  });
+
+  test('sin horario (null/undefined), devuelve "--:--"', () => {
+    expect(formatHora(null)).toBe('--:--');
+    expect(formatHora(undefined)).toBe('--:--');
+  });
+
+  test('string sin formato de hora reconocible, devuelve "--:--"', () => {
+    expect(formatHora('no-es-una-fecha')).toBe('--:--');
+  });
+});
+
+describe('renderizarAgendaEventos', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '<div id="list-eventos-hoy"></div><span id="total-eventos-hoy-lbl"></span>';
+  });
+
+  test('sin eventos, muestra el mensaje de "Sin eventos registrados"', () => {
+    renderizarAgendaEventos('eventos-hoy', []);
+    expect(document.getElementById('list-eventos-hoy').textContent).toContain('Sin eventos registrados');
+  });
+
+  test('renderiza hora de inicio-fin, nombre, tipo y lugar de cada evento', () => {
+    renderizarAgendaEventos('eventos-hoy', [
+      { nombre: 'Turno médico', inicio: '2026-09-15T09:00:00-03:00', fin: '2026-09-15T10:00:00-03:00', tipo: 'ESTUDIO MÉDICO', lugar: 'Clínica Central' },
+    ]);
+    const fila = document.querySelector('#list-eventos-hoy .status-row');
+    expect(fila.textContent).toContain('Turno médico');
+    expect(fila.textContent).toContain('09:00');
+    expect(fila.textContent).toContain('10:00');
+    expect(fila.textContent).toContain('ESTUDIO MÉDICO · Clínica Central');
+  });
+
+  test('Escenario 3 (SRS-FR-M5-505): evento sin tipo no rompe el layout, solo omite ese dato', () => {
+    renderizarAgendaEventos('eventos-hoy', [
+      { nombre: 'Reunión sin tipo cargado', inicio: '2026-09-15T09:00:00-03:00', lugar: 'Oficina' },
+    ]);
+    const fila = document.querySelector('#list-eventos-hoy .status-row');
+    expect(fila.textContent).toContain('Reunión sin tipo cargado');
+    expect(fila.textContent).toContain('Oficina');
+    expect(fila.textContent).not.toContain('undefined');
+    expect(fila.textContent).not.toContain('null');
+  });
+
+  test('muestra la cantidad correcta de eventos en el total', () => {
+    renderizarAgendaEventos('eventos-hoy', [{ nombre: 'a' }, { nombre: 'b' }]);
+    expect(document.getElementById('total-eventos-hoy-lbl').innerText).toBe('2 eventos');
+  });
+
+  test.each([
+    ['eventos-ayer', 'left-pill-blue'],
+    ['eventos-hoy', 'left-pill-red'],
+    ['eventos-manana', 'left-pill-orange'],
+  ])('usa la pill correcta según el bloque cronológico (%s)', (prefijo, pillEsperada) => {
+    document.body.innerHTML = `<div id="list-${prefijo}"></div><span id="total-${prefijo}-lbl"></span>`;
+    renderizarAgendaEventos(prefijo, [{ nombre: 'x' }]);
+    expect(document.querySelector(`#list-${prefijo} .status-row`).className).toContain(pillEsperada);
+  });
+
+  test('escapa HTML en nombre y lugar (previene XSS)', () => {
+    renderizarAgendaEventos('eventos-hoy', [
+      { nombre: '<img src=x onerror=alert(1)>', lugar: '<script>alert(2)</script>' },
+    ]);
+    const html = document.getElementById('list-eventos-hoy').innerHTML;
+    expect(html).not.toContain('<img');
+    expect(html).not.toContain('<script>alert');
+  });
+});
+
+// Extraída de index.html/recordatorios-varios.html/agenda-personal.html en
+// v4.24 (SRS-FR-M3-305, HU Notion Épica 2 #12). onRecargar es inyectable
+// para no depender de location.reload(), que jsdom no implementa.
+describe('crearManejadorDeRefresco', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    document.body.innerHTML = '<button id="btn-refresh"><span id="icon-refresh"></span></button>';
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test('Escenario 1 (SRS-FR-M3-305): al presionar, agrega spin-animation y deshabilita el botón de inmediato, sin recargar todavía', () => {
+    const onRecargar = jest.fn();
+    const recargarDashboard = crearManejadorDeRefresco(debounce, { onRecargar });
+
+    recargarDashboard();
+
+    expect(document.getElementById('icon-refresh').classList.contains('spin-animation')).toBe(true);
+    expect(document.getElementById('btn-refresh').disabled).toBe(true);
+    expect(onRecargar).not.toHaveBeenCalled();
+  });
+
+  test('tras el debounce (1200ms), quita spin-animation, rehabilita el botón y dispara la recarga', () => {
+    const onRecargar = jest.fn();
+    const recargarDashboard = crearManejadorDeRefresco(debounce, { onRecargar });
+
+    recargarDashboard();
+    jest.advanceTimersByTime(1200);
+
+    expect(document.getElementById('icon-refresh').classList.contains('spin-animation')).toBe(false);
+    expect(document.getElementById('btn-refresh').disabled).toBe(false);
+    expect(onRecargar).toHaveBeenCalledTimes(1);
+  });
+
+  test('clicks repetidos dentro de la ventana de debounce colapsan en una sola recarga (sin llamados repetidos)', () => {
+    const onRecargar = jest.fn();
+    const recargarDashboard = crearManejadorDeRefresco(debounce, { onRecargar });
+
+    recargarDashboard();
+    jest.advanceTimersByTime(600);
+    recargarDashboard();
+    jest.advanceTimersByTime(600);
+    recargarDashboard();
+    jest.advanceTimersByTime(1200);
+
+    expect(onRecargar).toHaveBeenCalledTimes(1);
   });
 });

@@ -51,7 +51,7 @@ jobs:
           NOTION_DB_RECORDATORIOS_VARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_VARIOS }}
           NOTION_DB_EVENTOS: ${{ secrets.NOTION_DB_EVENTOS }}
 
-      - name: Run Notion Flow Auditor
+      - name: Run AsistenteSabry
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS }}

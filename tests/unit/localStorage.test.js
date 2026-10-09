@@ -30,7 +30,22 @@ describe('localStorage migrations', () => {
     // la clave antigua se elimina opcionalmente
     expect(localStorage.getItem(oldKey)).toBeNull();
     // nueva clave existe
-    expect(localStorage.getItem('flow_auditor:v1.0')).not.toBeNull();
+    expect(localStorage.getItem('asistente_sabry:v1.0')).not.toBeNull();
+  });
+
+  test('migrates legacy flow_auditor:v1.0 key to asistente_sabry:v1.0', () => {
+    const legacyKey = 'flow_auditor:v1.0';
+    localStorage.setItem(legacyKey, JSON.stringify({
+      _schema_version: '1.0',
+      uiState: { lastViewedTab: 'AYER' },
+      userPrefs: {},
+    }));
+
+    const result = initLocalStorage();
+
+    expect(result.uiState.lastViewedTab).toBe('AYER');
+    expect(localStorage.getItem(legacyKey)).toBeNull();
+    expect(localStorage.getItem('asistente_sabry:v1.0')).not.toBeNull();
   });
 
   test('initializes when no key exists', () => {

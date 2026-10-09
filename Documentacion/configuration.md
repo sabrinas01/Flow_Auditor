@@ -14,7 +14,7 @@ El código acepta varios nombres para la misma información, en orden de prefere
 NOTION_API_KEY or NOTION_TOKEN
 NOTION_DB_RECORDATORIOS_DIARIOS or NOTION_DATABASE_ID or NOTION_DB_ID
 NOTION_DB_RECORDATORIOS_VARIOS (sin fallback alternativo; OPCIONAL — a diferencia de las otras dos, su ausencia no hace fallar el script: extract_and_audit.py omite la sincronización de recordatorios-varios.html sin afectar a Recordatorios Diarios)
-NOTION_DB_EVENTOS (sin fallback alternativo; OPCIONAL — su ausencia omite la sincronización de eventos de agenda-personal.html, sin afectar al resto de la app; base "Agenda Personal - Eventos")
+NOTION_DB_EVENTOS (sin fallback alternativo; OPCIONAL — su ausencia omite la sincronización de eventos de agenda-personal.html, sin afectar al resto de la app; base "Eventos y Recordatorios únicos", reemplaza desde v4.25 a la anterior "Agenda Personal - Eventos")
 El helper valida presencia y longitud mínima (configurada en el codebase) y falla con mensajes claros si algo falta. NOTION_DB_RECORDATORIOS_VARIOS y NOTION_DB_EVENTOS son la excepción: se resuelven con required=False.
 DRY_RUN para pruebas
 Para pruebas locales o CI que no deben ejecutar llamadas externas: exporta/define DRY_RUN=true.

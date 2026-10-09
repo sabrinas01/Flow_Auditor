@@ -12,7 +12,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="NFA">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
     <!-- Tipografías del Design System "Obsidian Refined" (Stitch) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,13 +71,17 @@
         const timestampNextStr = "18/08/2026 21:20:23";
         const timestampServerStr = "18/08/2026 23:20:23";
 
-        // Recordatorios varios (BD "Mis Recordatorios varios V0"), clasificados en
-        // las mismas tres ventanas cronológicas que Recordatorios Diarios. Cada
-        // bloque es una LISTA de ítems completos (Nombre/Estado/Prioridad/Área/
-        // Periodo/Fecha) — a diferencia de index.html, acá no se agrega por estado.
+        // Recordatorios varios (BD "Mis Recordatorios varios V0"), clasificados por
+        // la propiedad Fecha (v4.26; hasta v4.25 se clasificaba por created_time)
+        // en las mismas tres ventanas cronológicas que Recordatorios Diarios, más
+        // un cuarto bloque "Sin fecha" para ítems sin Fecha cargada. Cada bloque es
+        // una LISTA de ítems completos (Nombre/Estado/Prioridad/Área/Periodo/Fecha)
+        // — a diferencia de index.html, acá no se agrega por estado. La UI muestra
+        // solo el Nombre de cada ítem (v4.29).
         const recordatoriosVariosAyer = [];
         const recordatoriosVariosHoy = [];
         const recordatoriosVariosManana = [];
+        const recordatoriosVariosSinFecha = [];
     </script>
 
     <!-- =================================================== -->
@@ -87,8 +91,7 @@
         <div class="flex items-center gap-3 mb-8 px-2">
             <img src="./grafica/logo 1-1 NF.png" alt="Logo Bitácora IT" class="w-10 h-10 rounded-lg object-cover">
             <div>
-                <h2 class="font-display-lg text-primary text-headline-md leading-tight">Segundo Cerebro</h2>
-                <p class="text-on-surface-variant font-body-sm text-body-sm">SabrIA</p>
+                <h2 class="font-display-lg text-primary text-headline-md leading-tight">Asistente de Sabry</h2>
             </div>
         </div>
 
@@ -97,6 +100,10 @@
                 <span class="material-symbols-outlined">home</span>
                 <span>Inicio</span>
             </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">event</span>
+                <span>Agenda personal</span>
+            </a>
             <a href="index.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
                 <span class="material-symbols-outlined">calendar_today</span>
                 <span>Recordatorios diarios</span>
@@ -104,10 +111,6 @@
             <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">list_alt</span>
                 <span>Recordatorios varios</span>
-            </a>
-            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
-                <span class="material-symbols-outlined">event</span>
-                <span>Agenda personal</span>
             </a>
         </nav>
     </aside>
@@ -126,10 +129,10 @@
                         <span class="material-symbols-outlined text-[20px]">menu</span>
                     </button>
                     <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
-                        <img src="./grafica/logo 1-1 NF.png" alt="Logo Notion Flow Auditor" class="w-full h-full object-cover">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
                     </div>
                     <div>
-                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">NOTION FLOW AUDITOR</span>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">ASISTENTESABRY</span>
                         <p class="text-[10px] font-label-caps text-primary tracking-widest">RECORDATORIOS VARIOS</p>
                     </div>
                 </div>
@@ -145,7 +148,7 @@
             <!-- =================================================== -->
             <!-- RECORDATORIOS VARIOS: AYER / HOY / MAÑANA -->
             <!-- =================================================== -->
-            <section class="grid grid-cols-1 lg:grid-cols-3 gap-grid-gutter">
+            <section class="grid grid-cols-1 lg:grid-cols-4 gap-grid-gutter">
 
                 <!-- Ayer -->
                 <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
@@ -209,11 +212,32 @@
                         </div>
                     </div>
                 </article>
+
+                <!-- Sin fecha (nuevo v4.26): ítems "Por hacer" sin la propiedad Fecha cargada -->
+                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#8e8e93] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">SIN FECHA</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Recordatorios sin fecha</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="total-varios-sin-fecha-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
+                            <button type="button" onclick="toggleBloque('varios-sin-fecha')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-sin-fecha">
+                                <span id="chevron-varios-sin-fecha" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="content-varios-sin-fecha">
+                        <div id="list-varios-sin-fecha" class="space-y-3">
+                            <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+                    </div>
+                </article>
             </section>
 
             <!-- Botón de Redirección Oficial a Notion DB -->
             <section class="flex flex-col items-center py-4">
-                <a href="https://app.notion.com/p/858a38bb7a6e83f993ab81719a72e505?v=015a38bb7a6e82fbbb0f88ba9997863c"
+                <a href="https://app.notion.com/p/22ca38bb7a6e8011b667ee8b299227ba?v=362a38bb7a6e80a1b42a000c2a8aeffe&source=copy_link"
                    target="_blank"
                    class="bg-[#c0453b] hover:bg-[#c0453b]/90 text-white font-bold text-[16px] py-4 px-10 rounded-xl flex items-center gap-3 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
                     <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
@@ -265,7 +289,7 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             // 0. Inicializar estado versionado en localStorage (crea o migra el
-            // esquema flow_auditor:v1.0 si hace falta) — src/utils/src_localStorage_index.js
+            // esquema asistente_sabry:v1.0 si hace falta) — src/utils/src_localStorage_index.js
             initLocalStorage();
 
             // 1. Inyectar Relojes de Telemetría
@@ -273,46 +297,17 @@
             document.getElementById("footer-next-time").innerText = timestampNextStr;
             document.getElementById("footer-version").innerText = appVersionStr;
 
-            // 2. Renderizar los tres bloques cronológicos de recordatorios varios
+            // 2. Renderizar los cuatro bloques de recordatorios varios (tres
+            // cronológicos + "Sin fecha", nuevo v4.26)
             renderizarRecordatoriosVarios("varios-ayer", recordatoriosVariosAyer);
             renderizarRecordatoriosVarios("varios-hoy", recordatoriosVariosHoy);
             renderizarRecordatoriosVarios("varios-manana", recordatoriosVariosManana);
+            renderizarRecordatoriosVarios("varios-sin-fecha", recordatoriosVariosSinFecha);
         });
 
-        /**
-         * Renderiza un bloque de Recordatorios Varios (un ítem por fila, con su
-         * propio Nombre/Estado/Prioridad/Área/Periodo/Fecha) — a diferencia de
-         * Recordatorios Diarios, acá no se agrega por estado. Reutiliza
-         * escapeHtml/obtenerEstiloEstado de src/utils/dashboard_logic.js para
-         * mantener la misma codificación visual (verde=hecha, rojo=fallida/vencida)
-         * en toda la app.
-         */
-        function renderizarRecordatoriosVarios(prefijo, items) {
-            const container = document.getElementById(`list-${prefijo}`);
-            document.getElementById(`total-${prefijo}-lbl`).innerText = `${items.length} ítems`;
-
-            if (!items || items.length === 0) {
-                container.innerHTML = `<div class="status-row left-pill-blue flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin recordatorios registrados</div>`;
-                return;
-            }
-
-            container.innerHTML = items.map((item) => {
-                const estilo = obtenerEstiloEstado(item.estado || "Sin estado");
-                const meta = [item.area, item.periodo, item.prioridad, item.fecha]
-                    .filter(Boolean)
-                    .map(escapeHtml)
-                    .join(" · ");
-                return `
-                    <div class="status-row ${estilo.pill} flex justify-between items-center px-4 py-3.5 gap-3">
-                        <div class="flex flex-col gap-1 min-w-0">
-                            <span class="text-white font-semibold truncate">${escapeHtml(item.nombre || "Sin nombre")}</span>
-                            ${meta ? `<span class="text-[#8e8e93] text-[12px] truncate">${meta}</span>` : ""}
-                        </div>
-                        <span class="${estilo.textClass} text-[13px] whitespace-nowrap">${escapeHtml(item.estado || "Sin estado")}</span>
-                    </div>
-                `;
-            }).join('');
-        }
+        // renderizarRecordatoriosVarios vive en src/utils/dom_render.js desde
+        // v4.23 (antes estaba inline acá, sin test) — testeada en
+        // tests/unit/dom_render.test.js.
 
         /**
          * Abre/cierra el menú lateral de navegación
@@ -334,18 +329,9 @@
         /**
          * Gatilla animación de refresco al presionar botón en cabecera
          */
-        // Recarga diferida 1.2s mediante el debounce compartido — src/utils/debounce.js
-        const dispararRecargaDiferida = debounce(() => {
-            document.getElementById("icon-refresh").classList.remove("spin-animation");
-            document.getElementById("btn-refresh").disabled = false;
-            location.reload();
-        }, 1200);
-
-        function recargarDashboard() {
-            document.getElementById("icon-refresh").classList.add("spin-animation");
-            document.getElementById("btn-refresh").disabled = true;
-            dispararRecargaDiferida();
-        }
+        // recargarDashboard vive en src/utils/dom_render.js desde v4.24 (antes
+        // inline acá, sin test) — testeada en tests/unit/dom_render.test.js.
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
 
         // Registro del Service Worker (PWA) — no bloquea el render inicial.
         if ("serviceWorker" in navigator) {

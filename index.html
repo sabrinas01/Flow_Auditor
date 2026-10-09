@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Notion Flow Auditor</title>
+    <title>AsistenteSabry</title>
     <!-- PWA: instalable en celular (ver Documentacion/SRS.md SRS-FR-M3-311) -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#0e0e0e">
@@ -12,7 +12,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="NFA">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
     <script>
         // inicio.html es la página principal del sitio; si se llega acá directo
         // (por URL o marcador) se redirige una sola vez por sesión, para no
@@ -95,6 +95,10 @@
         const conteoAyer = {"Sin empezar": 13, "⏭️ No necesaria": 4, "Hecha": 4, "❌ Fallida / Vencida": 6};
         const conteoHoy = {"Sin empezar": 20};
         const conteoManana = {};
+
+        // Nombres de las tareas de hoy en estado "Sin empezar" (lista colapsable
+        // dentro de "Progreso de hoy"). Solo el nombre, sin otros datos.
+        const tareasHoySinEmpezar = [];
     </script>
 
     <!-- =================================================== -->
@@ -102,10 +106,9 @@
     <!-- =================================================== -->
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-surface-container-low border-r border-outline-variant/40 w-64 -translate-x-full">
         <div class="flex items-center gap-3 mb-8 px-2">
-            <img src="./grafica/logo 1-1 NF.png" alt="Logo Notion Flow Auditor" class="w-10 h-10 rounded-lg object-cover">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
             <div>
-                <h2 class="font-display-lg text-primary text-headline-md leading-tight">Segundo Cerebro</h2>
-                <p class="text-on-surface-variant font-body-sm text-body-sm">SabrIA</p>
+                <h2 class="font-display-lg text-primary text-headline-md leading-tight">Asistente de Sabry</h2>
             </div>
         </div>
 
@@ -114,6 +117,10 @@
                 <span class="material-symbols-outlined">home</span>
                 <span>Inicio</span>
             </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">event</span>
+                <span>Agenda personal</span>
+            </a>
             <a href="index.html" class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all">
                 <span class="material-symbols-outlined">calendar_today</span>
                 <span>Recordatorios diarios</span>
@@ -121,10 +128,6 @@
             <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
                 <span class="material-symbols-outlined">list_alt</span>
                 <span>Recordatorios varios</span>
-            </a>
-            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
-                <span class="material-symbols-outlined">event</span>
-                <span>Agenda personal</span>
             </a>
         </nav>
     </aside>
@@ -143,10 +146,10 @@
                         <span class="material-symbols-outlined text-[20px]">menu</span>
                     </button>
                     <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
-                        <img src="./grafica/logo 1-1 NF.png" alt="Logo Notion Flow Auditor" class="w-full h-full object-cover">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
                     </div>
                     <div>
-                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">NOTION FLOW AUDITOR</span>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">ASISTENTESABRY</span>
                         <p class="text-[10px] font-label-caps text-primary tracking-widest">Recordatorios diarios</p>
                     </div>
                 </div>
@@ -220,6 +223,21 @@
                     <div id="content-hoy" class="flex flex-col gap-6">
                         <div id="list-hoy" class="space-y-3">
                             <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+
+                        <!-- Tareas de hoy en "Sin empezar": solo nombre, colapsable (se oculta si no hay ninguna) -->
+                        <div id="wrap-hoy-sin-empezar" class="space-y-3 hidden">
+                            <div class="flex justify-between items-center px-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS SIN EMPEZAR</p>
+                                <button type="button" onclick="toggleBloque('hoy-sin-empezar')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-hoy-sin-empezar">
+                                    <span id="chevron-hoy-sin-empezar" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                            <div id="content-hoy-sin-empezar">
+                                <div id="list-hoy-sin-empezar" class="space-y-2">
+                                    <!-- Se inyectan los nombres dinámicamente -->
+                                </div>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
@@ -343,7 +361,7 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             // 0. Inicializar estado versionado en localStorage (crea o migra el
-            // esquema flow_auditor:v1.0 si hace falta) — src/utils/src_localStorage_index.js
+            // esquema asistente_sabry:v1.0 si hace falta) — src/utils/src_localStorage_index.js
             initLocalStorage();
 
             // 1. Inyectar Relojes de Telemetría
@@ -354,6 +372,7 @@
             // 2. Procesar e Inyectar Bloques Temporales Complejos
             procesarSeccionMetrica("ayer", conteoAyer);
             procesarSeccionMetrica("hoy", conteoHoy);
+            renderizarTareasSinEmpezar("hoy-sin-empezar", tareasHoySinEmpezar);
         });
 
         /**
@@ -490,18 +509,9 @@
         /**
          * Gatilla animación de refresco al presionar botón en cabecera
          */
-        // Recarga diferida 1.2s mediante el debounce compartido — src/utils/debounce.js
-        const dispararRecargaDiferida = debounce(() => {
-            document.getElementById("icon-refresh").classList.remove("spin-animation");
-            document.getElementById("btn-refresh").disabled = false;
-            location.reload();
-        }, 1200);
-
-        function recargarDashboard() {
-            document.getElementById("icon-refresh").classList.add("spin-animation");
-            document.getElementById("btn-refresh").disabled = true;
-            dispararRecargaDiferida();
-        }
+        // recargarDashboard vive en src/utils/dom_render.js desde v4.24 (antes
+        // inline acá, sin test) — testeada en tests/unit/dom_render.test.js.
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
 
         // Registro del Service Worker (PWA) — no bloquea el render inicial.
         if ("serviceWorker" in navigator) {

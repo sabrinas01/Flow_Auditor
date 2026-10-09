@@ -1,8 +1,8 @@
-# Notion Flow Auditor (NFA) — instrucciones para Claude Code
+# AsistenteSabry (antes Notion Flow Auditor / NFA) — instrucciones para Claude Code
 
 ## Regla de documentación versionada
 
-Este proyecto documenta su evolución en tres lugares que deben moverse juntos.
+Este proyecto documenta su evolución en varios lugares que deben moverse juntos.
 **Cada vez que un cambio en este repo modifique comportamiento, alcance,
 arquitectura o requisitos** (no aplica a fixes de tipeo, formato, o cambios
 puramente internos sin impacto funcional), antes de dar la tarea por
@@ -36,7 +36,48 @@ terminada:
      `Quiero` / `Para` cuando implique una decisión de producto nueva (no una
      continuación obvia de algo ya charlado en la conversación).
 
-4. **Commit**: los cambios de documentación van en el mismo commit que el
+4. **Requisitos SRS en Notion** — base `📋 Requisitos SRS (RF + RNF) — v4.19`
+   (workspace de Sabrina).
+   - Data source: `collection://582dd387-00da-4075-bcf4-ca01517ace84`.
+   - Si el cambio en `Documentacion/SRS.md` agrega, modifica o retira un
+     requisito (`SRS-FR-*` / `SRS-NFR-*`), reflejar el mismo cambio acá:
+     crear la página con `Requisito`, `Nombre del Requisito`, `Descripción`,
+     `Tipo` (RF/RNF), `Módulo` y `Versión`, o actualizar la existente.
+   - El título de esta base incluye el número de versión del SRS
+     (`— vX.Y`) — actualizarlo cuando la base quede totalmente sincronizada
+     con una nueva versión del SRS, para que no vuelva a desincronizarse en
+     silencio como pasó entre v3.3 y v4.17 (14 requisitos faltantes y 2
+     marcados como fusionados/deprecados incorrectamente).
+   - Si existe una HU asociada, enlazarla vía la propiedad relacional
+     `Historias de Usuario` (o desde el otro lado, `Trazabilidad SRS (RF/RNF)`
+     en la HU).
+   - **Resolución de conflictos entre fuentes:** cuando `SRS.md`, el PRD o
+     Notion describan un mismo requisito de forma distinta, **manda lo que
+     efectivamente está implementado en el código** — no la fuente editada
+     más recientemente, ni la que "suena" más autorizada. Verificar contra
+     el código (`grep`/lectura directa del archivo relevante) antes de
+     corregir cualquiera de las tres fuentes. Precedentes reales de este
+     proyecto: `SRS-FR-M3-303` (SRS.md decía "tripartita", el código
+     confirma bipartita en `index.html` — Recordatorios Diarios es Ayer/Hoy,
+     Recordatorios Varios es el que es tripartito); `SRS-FR-M3-305`
+     (SRS.md describía un reloj UTC en el header que nunca se renderizó —
+     código muerto, `timestampServerStr` sin uso en el DOM); `SRS-NFR-USE-004`
+     / `SRS-NFR-PERF-005` (son mecanismos de código distintos — umbral 70%
+     en `dashboard_logic.js` vs. gate de Lighthouse — nunca fusionarlos).
+
+5. **Plan de Pruebas y Matriz de Trazabilidad** — página de Notion
+   "📄 Plan de Pruebas y Matriz de Trazabilidad" (bajo el título `Plan NFA`).
+   - Si el cambio agrega, modifica o retira un requisito SRS, o cambia la
+     cobertura de test existente (tests nuevos, tests eliminados, un gap que
+     se cierra): actualizar la matriz de trazabilidad FR/NFR correspondiente
+     (sección 2/3), la tabla de gaps (sección 5) si corresponde, y agregar un
+     escenario BDD nuevo (sección 4) si el cambio lo amerita.
+   - Usar `notion-fetch` para traer el contenido actual antes de editar, y
+     `notion-update-page` (`update_content` con `content_updates`, o
+     `insert_content`) para aplicar el cambio — nunca `replace_content` salvo
+     que se necesite reescribir el documento entero.
+
+6. **Commit**: los cambios de documentación van en el mismo commit que el
    cambio de código que los motiva (o, si ya se commiteó el código, en un
    commit inmediato siguiente `docs(sync): ...`). Así el historial de git
    queda como la fuente de verdad de *cuándo* cambió cada versión de la doc.
@@ -71,6 +112,11 @@ a `main` si se tocan archivos funcionales (`extract_and_audit.py`,
 amerita tocar la doc (config interna, CI de tooling, tests), agregar
 `[skip-docs]` en el mensaje del commit para saltear el check — pero evaluar
 primero si de verdad no aplica antes de usarlo.
+
+Este gate solo verifica `PRD.md`/`SRS.md`. Los tres destinos en Notion (HU,
+Requisitos SRS y Plan de Pruebas y Matriz de Trazabilidad) no tienen
+enforcement automático — dependen de seguir esta checklist en cada cambio
+funcional.
 
 ## Contexto rápido del proyecto
 
