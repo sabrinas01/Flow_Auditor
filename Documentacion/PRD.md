@@ -5,7 +5,7 @@
 * **Marca Asociada:** Bitácora IT
 * **Rol de Gobierno:** IT Functional Analyst (Sabrina) & Mentor Técnico de IA
 * **Estado:** Listo para Desarrollo (Base Lineal Validada)
-* **Versión:** 4.32
+* **Versión:** 4.33
 * **Zona Horaria de Referencia:** GMT -3 (San Juan, Argentina)
 
 ## 🎯 2. Visión General y Contexto
@@ -89,6 +89,10 @@ Tasa = (Σ Consistencia de las tareas creadas en el día / Total de Tareas Cread
   * "¿Moviste tu cuerpo hoy o volviste caminando a casa?" → base de Notion `NOTION_DB_SESIONESEJERCICIO`.
 * Son links estáticos por ID de base (pedido explícito de Sabrina) — no hay datos inyectados por el backend para esta sección, no requiere sincronización.
 
+### 5.7. Inicio (`inicio.html`) — Enlace al Dashboard bitacorait (v4.33)
+* Debajo del hero de bienvenida, se agrega el texto "Dashboard bitacorait" y un botón "Abrir dashboard" que enlaza a un recurso externo (artifact de Claude: `https://claude.ai/artifact/ExE3D2oJaCU7pbcG2thWfL`), abierto en una pestaña nueva.
+* Enlace estático de solo navegación — no hay inyección de datos ni lógica de backend asociada.
+
 ## 🔒 6. Requerimientos No Funcionales
 * **Seguridad:** `.env` local, tokens inyectados como secretos.
 * **Rendimiento:** Daemon < 2% CPU, < 50MB RAM.
@@ -145,8 +149,9 @@ Tasa = (Σ Consistencia de las tareas creadas en el día / Total de Tareas Cread
 | **v4.25** | Septiembre 2026 | **Agenda Personal: mensaje motivacional y tipo de evento (HU Notion Épica 2 #8, pedido explícito de Sabrina):** `NOTION_DB_EVENTOS` reemplaza la base "Agenda Personal - Eventos" por "🤞🏻 Eventos y Recordatorios únicos", que ya tenía el dato de tipo (`Tipo de tarea`) que faltaba. Cada fila de evento ahora muestra el tipo junto al lugar; un evento sin tipo omite ese dato sin romper el layout. Nueva regla de negocio: se descartan eventos en Estado terminal de Notion (Hecha/Sin asistir/Asisti), además del filtro temporal ya existente. Se agrega el mensaje motivacional estático debajo de la card "Eventos de hoy". **Acción manual pendiente:** el valor de `NOTION_DB_EVENTOS` debe actualizarse en el `.env` local y en el secret de GitHub Actions al ID de la nueva base (no se puede automatizar desde el repo). Ver `SRS.md` v4.25 — `SRS-FR-M5-502`/`505` reescritos. |
 | **v4.26** | Septiembre 2026 | **Recordatorios Varios: reclasificar por Fecha y agregar bloque "Sin fecha" (pedido explícito de Sabrina):** la clasificación Ayer/Hoy/Mañana vuelve a usar la propiedad `Fecha` (vencimiento/programación) en vez de la fecha de creación de la página (`created_time`, usada desde v4.12). Un ítem sin `Fecha` cargada ya no se pierde de la vista: se agrega un cuarto bloque colapsable, "Recordatorios sin fecha", ordenado por fecha de creación. Ver `SRS.md` v4.26 — `SRS-FR-M4-402` reescrito. |
 | **v4.27** | Septiembre 2026 | **Nueva sección "Accesos directos" en `inicio.html` (pedido explícito de Sabrina):** debajo del hero de bienvenida se agregan dos preguntas de autochequeo diario ("¿Registraste los gastos de hoy?" / "¿Moviste tu cuerpo hoy o volviste caminando a casa?"), cada una con un botón que abre en pestaña nueva la base de Notion correspondiente (`NOTION_DB_FINANZAS` / `NOTION_DB_SESIONESEJERCICIO`). Nuevo §5.6. Ver `SRS.md` v4.27 — nuevo `SRS-FR-M3-313`. |
-| **v4.32** *(Actual)* | Octubre 2026 | **Encabezado del sidebar renombrado (pedido explícito de Sabrina):** el título del menú lateral pasa de "Segundo Cerebro" a "Asistente de Sabry" y se elimina el subtítulo "SabrIA", en las 4 páginas. Ver `SRS.md` v4.32. |
+| **v4.32** | Octubre 2026 | **Encabezado del sidebar renombrado (pedido explícito de Sabrina):** el título del menú lateral pasa de "Segundo Cerebro" a "Asistente de Sabry" y se elimina el subtítulo "SabrIA", en las 4 páginas. Ver `SRS.md` v4.32. |
 | **v4.31** | Octubre 2026 | **Recordatorios Diarios, lista de tareas "Sin empezar" de hoy (pedido explícito de Sabrina):** la card "Progreso de hoy" suma una lista colapsable con el nombre de cada tarea de hoy en estado "Sin empezar", debajo de la fila de conteo. Solo hoy y solo nombre. Ver `SRS.md` v4.31 — nuevo `SRS-FR-M3-314`. |
 | **v4.30** | Octubre 2026 | **Agenda Personal, mensaje motivacional reubicado (pedido explícito de Sabrina):** el mensaje estático deja de estar dentro de la card "Eventos de hoy" y se muestra debajo del título "EVENTOS", encima de las cards. Ver `SRS.md` v4.30. |
 | **v4.29** | Octubre 2026 | **Recordatorios Varios simplificado (pedido explícito de Sabrina):** cada card muestra solo el Nombre del recordatorio, sin Estado, Prioridad, Área, Periodo ni Fecha, y sin borde de color. El botón "Ir a Recordatorios Varios" apunta a una nueva vista de Notion. Ver `SRS.md` v4.29. |
 | **v4.28** | Octubre 2026 | **Renombre del proyecto a AsistenteSabry (pedido explícito de Sabrina):** el producto deja de llamarse "Notion Flow Auditor (NFA)". Cambia el nombre visible (títulos, header, manifest PWA, `apple-mobile-web-app-title`), el README, el repositorio de GitHub y el prefijo de localStorage (`flow_auditor:v*` → `asistente_sabry:v*`, con migración automática de la clave anterior). Ver `SRS.md` v4.28. |
+| **v4.33** *(Actual)* | Octubre 2026 | **Home: nuevo enlace al Dashboard bitacorait (pedido explícito de Sabrina):** debajo del hero de bienvenida de `inicio.html` se agrega el texto "Dashboard bitacorait" y un botón que abre, en pestaña nueva, un artifact externo de Claude (`https://claude.ai/artifact/ExE3D2oJaCU7pbcG2thWfL`). Enlace estático, sin lógica de backend ni inyección de datos. Nuevo §5.7. Ver `SRS.md` v4.33 — nuevo `SRS-FR-M3-315`. |
