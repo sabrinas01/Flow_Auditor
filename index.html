@@ -86,19 +86,19 @@
     <!-- =================================================== -->
     <script>
         // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
-        const timestampLocalStr = "18/08/2026 20:20:23";
-        const appVersionStr = "dev";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
-        const timestampNextStr = "18/08/2026 21:20:23";
-        const timestampServerStr = "18/08/2026 23:20:23";
+        const timestampLocalStr = "10/10/2026 12:44:10";
+        const appVersionStr = "v4.32";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
+        const timestampNextStr = "10/10/2026 13:44:10";
+        const timestampServerStr = "10/10/2026 15:44:10";
 
         // Estructuras JSON reales de distribución por estados (Notion DB) - Telemetría de peticiones eliminada
-        const conteoAyer = {"Sin empezar": 13, "⏭️ No necesaria": 4, "Hecha": 4, "❌ Fallida / Vencida": 6};
-        const conteoHoy = {"Sin empezar": 20};
+        const conteoAyer = {"Sin empezar": 27};
+        const conteoHoy = {"Sin empezar": 10};
         const conteoManana = {};
 
         // Nombres de las tareas de hoy en estado "Sin empezar" (lista colapsable
         // dentro de "Progreso de hoy"). Solo el nombre, sin otros datos.
-        const tareasHoySinEmpezar = [];
+        const tareasHoySinEmpezar = ["[SOLO PREGUNTAR] Llenar tanque de agua-Mañana", "Colación-Mañana", "Skincare - Mañana", "Tomar T4", "Cepillado de dientes - [Mañana]", "Guardar ropa limpia", "Armar cama", "Vestirme", "Desayunar", "[SOLO PREGUNTAR] Llenar bidones de agua-Mañana"];
     </script>
 
     <!-- =================================================== -->

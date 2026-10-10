@@ -66,10 +66,10 @@
     <!-- =================================================== -->
     <script>
         // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
-        const timestampLocalStr = "18/08/2026 20:20:23";
-        const appVersionStr = "dev";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
-        const timestampNextStr = "18/08/2026 21:20:23";
-        const timestampServerStr = "18/08/2026 23:20:23";
+        const timestampLocalStr = "10/10/2026 12:44:10";
+        const appVersionStr = "v4.32";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
+        const timestampNextStr = "10/10/2026 13:44:10";
+        const timestampServerStr = "10/10/2026 15:44:10";
 
         // Recordatorios varios (BD "Mis Recordatorios varios V0"), clasificados por
         // la propiedad Fecha (v4.26; hasta v4.25 se clasificaba por created_time)
@@ -78,8 +78,8 @@
         // una LISTA de ítems completos (Nombre/Estado/Prioridad/Área/Periodo/Fecha)
         // — a diferencia de index.html, acá no se agrega por estado. La UI muestra
         // solo el Nombre de cada ítem (v4.29).
-        const recordatoriosVariosAyer = [];
-        const recordatoriosVariosHoy = [];
+        const recordatoriosVariosAyer = [{"nombre": "Lavar o repasar baño", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Higiene", "periodo": "SEMANAL", "fecha": "2026-10-09"}, {"nombre": "Chequear estado batería portátil", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Electronica", "periodo": "MENSUAL", "fecha": "2026-10-09"}, {"nombre": "Limpiar basurero del baño", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Hogar", "periodo": "SEMANAL", "fecha": "2026-10-09"}, {"nombre": "Limpiar basurero de la habitación", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Hogar", "periodo": "SEMANAL", "fecha": "2026-10-09"}, {"nombre": "Limpiar basurero del lavadero", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Hogar", "periodo": "SEMANAL", "fecha": "2026-10-09"}, {"nombre": "Desodorizar colchón", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "QUINCENAL", "fecha": "2026-10-09"}, {"nombre": "Girar colchón", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "QUINCENAL", "fecha": "2026-10-09"}];
+        const recordatoriosVariosHoy = [{"nombre": "[RECORDARLE A MAMÁ] Limpiar filtros lavarropa", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Hogar", "periodo": "MENSUAL", "fecha": "2026-10-10"}, {"nombre": "Limpiar rueditas de la silla", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Hogar", "periodo": "MENSUAL", "fecha": "2026-10-10"}, {"nombre": "Lavar crocks ", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "MENSUAL", "fecha": "2026-10-10"}];
         const recordatoriosVariosManana = [];
         const recordatoriosVariosSinFecha = [];
     </script>
