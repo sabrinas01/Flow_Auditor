@@ -66,10 +66,10 @@
     <!-- =================================================== -->
     <script>
         // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
-        const timestampLocalStr = "18/08/2026 20:20:23";
-        const appVersionStr = "dev";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
-        const timestampNextStr = "18/08/2026 21:20:23";
-        const timestampServerStr = "18/08/2026 23:20:23";
+        const timestampLocalStr = "31/10/2026 15:13:05";
+        const appVersionStr = "v4.32";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
+        const timestampNextStr = "31/10/2026 16:13:05";
+        const timestampServerStr = "31/10/2026 18:13:05";
 
         // Recordatorios varios (BD "Mis Recordatorios varios V0"), clasificados por
         // la propiedad Fecha (v4.26; hasta v4.25 se clasificaba por created_time)
@@ -79,7 +79,7 @@
         // — a diferencia de index.html, acá no se agrega por estado. La UI muestra
         // solo el Nombre de cada ítem (v4.29).
         const recordatoriosVariosAyer = [];
-        const recordatoriosVariosHoy = [];
+        const recordatoriosVariosHoy = [{"nombre": "Limpiar rueditas de la silla", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Hogar", "periodo": "MENSUAL", "fecha": "2026-10-31"}, {"nombre": "Lavar o repasar baño", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Higiene", "periodo": "SEMANAL", "fecha": "2026-10-31"}, {"nombre": "Lavar peines", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "QUINCENAL", "fecha": "2026-10-31"}, {"nombre": "Limpiar y acondicionar mi bici", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Hogar", "periodo": "QUINCENAL", "fecha": "2026-10-31"}];
         const recordatoriosVariosManana = [];
         const recordatoriosVariosSinFecha = [];
     </script>
