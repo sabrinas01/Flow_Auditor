@@ -66,10 +66,10 @@
     <!-- =================================================== -->
     <script>
         // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
-        const timestampLocalStr = "18/08/2026 20:20:23";
-        const appVersionStr = "dev";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
-        const timestampNextStr = "18/08/2026 21:20:23";
-        const timestampServerStr = "18/08/2026 23:20:23";
+        const timestampLocalStr = "07/11/2026 16:54:01";
+        const appVersionStr = "v4.32";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
+        const timestampNextStr = "07/11/2026 17:54:01";
+        const timestampServerStr = "07/11/2026 19:54:01";
 
         // Recordatorios varios (BD "Mis Recordatorios varios V0"), clasificados por
         // la propiedad Fecha (v4.26; hasta v4.25 se clasificaba por created_time)
@@ -79,7 +79,7 @@
         // — a diferencia de index.html, acá no se agrega por estado. La UI muestra
         // solo el Nombre de cada ítem (v4.29).
         const recordatoriosVariosAyer = [];
-        const recordatoriosVariosHoy = [];
+        const recordatoriosVariosHoy = [{"nombre": "[RECORDARLE A MAMÁ] Limpiar filtros lavarropa", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Hogar", "periodo": "MENSUAL", "fecha": "2026-11-07"}, {"nombre": "Lavar portacepillos", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Higiene", "periodo": "QUINCENAL", "fecha": "2026-11-07"}, {"nombre": "Limpiar rueditas de la silla", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Hogar", "periodo": "MENSUAL", "fecha": "2026-11-07"}, {"nombre": "Lavar peines", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "QUINCENAL", "fecha": "2026-11-07"}, {"nombre": "Limpiar y acondicionar mi bici", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Hogar", "periodo": "QUINCENAL", "fecha": "2026-11-07"}, {"nombre": "Lavar zapatillas jaguar de salir", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "MENSUAL", "fecha": "2026-11-07"}, {"nombre": "Lavar crocks ", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "MENSUAL", "fecha": "2026-11-07"}];
         const recordatoriosVariosManana = [];
         const recordatoriosVariosSinFecha = [];
     </script>
