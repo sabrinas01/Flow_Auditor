@@ -650,6 +650,71 @@ def extraer_eventos_clasificados():
     return _ordenados_por_inicio(bucket_ayer), _ordenados_por_inicio(bucket_hoy), _ordenados_por_inicio(bucket_manana)
 
 
+def crear_evento_agenda(datos):
+    """Crea una página nueva en la BD "Eventos y Recordatorios únicos"
+    (`NOTION_DB_EVENTOS`) a partir del payload enviado por el botón "Crear
+    tarea" de agenda-personal.html, vía `repository_dispatch` (ver
+    .github/workflows/crear_evento_agenda.yml) — SRS-FR-M5-507.
+
+    `datos` llega con las claves que construye construirPayloadEvento() en
+    src/utils/crear_evento.js: nombre, fecha_inicio, fecha_fin (puede ser
+    None), estado, tipo_tarea (puede ser None), prioridad (puede ser None),
+    descripcion (puede ser None). El campo `Lugar` (tipo `place` en Notion)
+    queda deliberadamente fuera: la API de Notion exige coordenadas lat/lon
+    para escribirlo y no geolocaliza un nombre de lugar — se completa a mano
+    en Notion si hace falta.
+
+    A diferencia del resto de las sincronizaciones de este módulo, un fallo
+    acá SÍ debe ser fatal (sys.exit(1)): esta función es la única razón de
+    ser del workflow que la invoca, así que un error silencioso dejaría a
+    Sabrina pensando que la tarea se creó cuando no fue así.
+    """
+    if not DB_AGENDA_EVENTOS:
+        print("❌ [CREAR EVENTO]: NOTION_DB_EVENTOS no configurada, no se puede crear el evento.")
+        sys.exit(1)
+
+    nombre = (datos.get("nombre") or "").strip()
+    fecha_inicio = datos.get("fecha_inicio")
+    if not nombre or not fecha_inicio:
+        print("❌ [CREAR EVENTO]: faltan campos obligatorios (nombre/fecha_inicio) en el payload recibido.")
+        sys.exit(1)
+
+    propiedades = {
+        "Nombre": {"title": [{"text": {"content": nombre}}]},
+        "Estado": {"status": {"name": datos.get("estado") or "Sin empezar"}},
+    }
+
+    fecha_prop = {"start": fecha_inicio}
+    if datos.get("fecha_fin"):
+        fecha_prop["end"] = datos["fecha_fin"]
+    propiedades["Fecha"] = {"date": fecha_prop}
+
+    if datos.get("tipo_tarea"):
+        propiedades["Tipo de tarea"] = {"select": {"name": datos["tipo_tarea"]}}
+    if datos.get("prioridad"):
+        propiedades["Prioridad"] = {"select": {"name": datos["prioridad"]}}
+    if datos.get("descripcion"):
+        propiedades["Descripción"] = {"rich_text": [{"text": {"content": datos["descripcion"]}}]}
+
+    url = "https://api.notion.com/v1/pages"
+    headers = {
+        "Authorization": f"Bearer {NOTION_API_KEY}",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json",
+    }
+    body = {"parent": {"database_id": DB_AGENDA_EVENTOS}, "properties": propiedades}
+
+    response = requests.post(url, json=body, headers=headers, timeout=15)
+    try:
+        response.raise_for_status()
+    except requests.exceptions.HTTPError:
+        print(f"❌ [CREAR EVENTO]: Notion respondió {response.status_code}: {response.text}")
+        sys.exit(1)
+
+    pagina_id = response.json().get("id", "¿?")
+    print(f"✅ [CREAR EVENTO]: evento '{nombre}' creado con éxito en Notion (id {pagina_id}).")
+
+
 def sincronizar_agenda_personal(timestamps, app_version):
     """Inyecta los eventos (Ayer/Hoy/Mañana) de Agenda Personal en
     agenda-personal.html (SRS-FR-M5-504). No fatal: si el archivo no existe
@@ -686,4 +751,17 @@ def sincronizar_agenda_personal(timestamps, app_version):
 
 
 if __name__ == "__main__":
+    # El workflow crear_evento_agenda.yml (repository_dispatch) inyecta el
+    # payload del botón "Crear tarea" de agenda-personal.html acá; el cron
+    # horario normal (notion_sync.yml) nunca define esta variable, así que
+    # su comportamiento no cambia (SRS-FR-M5-507).
+    payload_crear_evento = os.getenv("CREAR_EVENTO_PAYLOAD")
+    if payload_crear_evento:
+        validar_credenciales()
+        try:
+            crear_evento_agenda(json.loads(payload_crear_evento))
+        except json.JSONDecodeError as e:
+            print(f"❌ [CREAR EVENTO]: CREAR_EVENTO_PAYLOAD no es JSON válido ({e}).")
+            sys.exit(1)
+
     auditar_consistencia_tripartita()
