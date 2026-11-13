@@ -47,7 +47,7 @@ def validar_credenciales():
         sys.stderr.write("❌ [ERROR CRÍTICO]: Las credenciales locales parecen estar incompletas o corruptas.\n")
         sys.exit(1)
         
-    print("✅ Credenciales de Bitácora IT validadas correctamente.")
+    print("✅ Credenciales de AsistenteSabry validadas correctamente.")
 
 # =====================================================================
 # 2. PROCESAMIENTO HORARIO LOCAL DINÁMICO (REAL TIME DE TU PC)
