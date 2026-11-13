@@ -115,6 +115,134 @@
     <!-- Overlay -->
     <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
 
+    <!-- =================================================== -->
+    <!-- BOTÓN FLOTANTE + MODAL: CREAR TAREA (SRS-FR-M5-507) -->
+    <!-- =================================================== -->
+    <button id="btn-crear-tarea" type="button" onclick="abrirModalCrearTarea()"
+        class="fixed bottom-6 right-6 z-30 bg-primary-container hover:bg-primary-container/90 text-on-primary-container rounded-full w-14 h-14 flex items-center justify-center shadow-xl shadow-[#ff5f52]/30 transition-all transform active:scale-95"
+        title="Crear tarea">
+        <span class="material-symbols-outlined text-[26px]">add</span>
+    </button>
+
+    <div id="modal-crear-tarea" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalCrearTarea()">
+        <div class="glass-card rounded-xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-headline-md font-headline-md text-white">Crear tarea</h3>
+                <button type="button" onclick="cerrarModalCrearTarea()" class="p-1.5 hover:bg-white/5 rounded-full transition-colors text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+
+            <!-- Vista 1: alta de token de GitHub (solo la primera vez por navegador) -->
+            <div id="ct-vista-token" class="space-y-4 hidden">
+                <p class="text-[13px] text-[#e2beba] leading-relaxed">
+                    Para crear la tarea sin exponer las claves de Notion, el botón usa un token de GitHub
+                    acotado (solo permiso <strong>Actions: Read and write</strong> sobre este repo), que se
+                    guarda únicamente en este navegador — nunca se sube al repositorio.
+                </p>
+                <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener"
+                   class="text-[13px] text-primary-container underline inline-flex items-center gap-1">
+                    Crear token fine-grained en GitHub
+                    <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                </a>
+                <div>
+                    <label for="ct-token-input" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Pegá el token acá</label>
+                    <input id="ct-token-input" type="password" autocomplete="off"
+                           class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                </div>
+                <button type="button" onclick="guardarTokenCrearTarea()"
+                        class="w-full bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">
+                    Guardar token y continuar
+                </button>
+            </div>
+
+            <!-- Vista 2: formulario de la tarea -->
+            <form id="form-crear-tarea" class="space-y-4 hidden" onsubmit="return manejarSubmitCrearTarea(event)">
+                <div>
+                    <label for="ct-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre *</label>
+                    <input id="ct-nombre" name="nombre" type="text" required maxlength="200"
+                           class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="ct-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha *</label>
+                        <input id="ct-fecha" name="fecha" type="date" required
+                               class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                    <div>
+                        <label for="ct-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
+                        <select id="ct-estado" name="estado"
+                                class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container">
+                            <option value="Sin empezar">Sin empezar</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Planificada">Planificada</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="ct-hora-inicio" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Hora inicio</label>
+                        <input id="ct-hora-inicio" name="horaInicio" type="time"
+                               class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                    <div>
+                        <label for="ct-hora-fin" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Hora fin</label>
+                        <input id="ct-hora-fin" name="horaFin" type="time"
+                               class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="ct-tipo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Tipo de tarea</label>
+                        <select id="ct-tipo" name="tipoTarea"
+                                class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container">
+                            <option value="">Sin especificar</option>
+                            <option value="EVENTO">Evento</option>
+                            <option value="TURNO AGENDADO">Turno agendado</option>
+                            <option value="ESTUDIO MÉDICO">Estudio médico</option>
+                            <option value="TRANSPORTE">Transporte</option>
+                            <option value="REINTEGRO">Reintegro</option>
+                            <option value="VINCULOS">Vínculos</option>
+                            <option value="RECORDATORIO">Recordatorio</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="ct-prioridad" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Prioridad</label>
+                        <select id="ct-prioridad" name="prioridad"
+                                class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container">
+                            <option value="">Sin especificar</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Media">Media</option>
+                            <option value="Baja">Baja</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="ct-descripcion" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Descripción</label>
+                    <textarea id="ct-descripcion" name="descripcion" rows="2" maxlength="2000"
+                              class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container resize-none"></textarea>
+                </div>
+
+                <p class="text-[11px] text-[#8e8e93] leading-relaxed">No se puede cargar "Lugar" desde acá (la API de Notion exige coordenadas) — completalo en Notion si lo necesitás.</p>
+
+                <p id="ct-mensaje" class="text-[13px] hidden"></p>
+
+                <div class="flex gap-3 pt-1">
+                    <button type="button" onclick="cerrarModalCrearTarea()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl transition-all">Cancelar</button>
+                    <button id="ct-btn-guardar" type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">Guardar</button>
+                </div>
+
+                <button type="button" onclick="cambiarTokenCrearTarea()" class="w-full text-center text-[11px] text-[#8e8e93] hover:text-white transition-colors pt-1">
+                    🔑 Cambiar el token guardado
+                </button>
+            </form>
+        </div>
+    </div>
+
     <main class="min-h-screen">
         <!-- =================================================== -->
         <!-- TOP APP BAR -->
@@ -261,6 +389,7 @@
     <script src="./src/utils/src_localStorage_index.js"></script>
     <script src="./src/utils/dashboard_logic.js"></script>
     <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/crear_evento.js"></script>
 
     <!-- =================================================== -->
     <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
@@ -321,6 +450,131 @@
             window.addEventListener("load", () => {
                 navigator.serviceWorker.register("./sw.js").catch(() => {});
             });
+        }
+
+        // =================================================== //
+        // CREAR TAREA (SRS-FR-M5-507)                          //
+        // =================================================== //
+        // construirPayloadEvento/construirSolicitudDispatch viven en
+        // src/utils/crear_evento.js (testeadas en tests/unit/crear_evento.test.js,
+        // sin DOM ni red). Acá solo queda el manejo del modal, el token y el fetch.
+
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        // Clave propia, fuera del blob versionado de src_localStorage_index.js:
+        // un secreto no debe viajar con el resto del estado de la app si algún
+        // día se agrega una función de exportar/debuggear ese estado.
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        function obtenerTokenGuardado() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+
+        function guardarTokenCrearTarea() {
+            const token = document.getElementById("ct-token-input").value.trim();
+            if (!token) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, token); } catch (e) {}
+            document.getElementById("ct-token-input").value = "";
+            mostrarVistaFormularioCrearTarea();
+        }
+
+        function cambiarTokenCrearTarea() {
+            try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+            mostrarVistaTokenCrearTarea();
+        }
+
+        function mostrarVistaTokenCrearTarea() {
+            document.getElementById("ct-vista-token").classList.remove("hidden");
+            document.getElementById("form-crear-tarea").classList.add("hidden");
+        }
+
+        function mostrarVistaFormularioCrearTarea() {
+            document.getElementById("ct-vista-token").classList.add("hidden");
+            document.getElementById("form-crear-tarea").classList.remove("hidden");
+        }
+
+        function abrirModalCrearTarea() {
+            document.getElementById("modal-crear-tarea").classList.remove("hidden");
+            document.getElementById("modal-crear-tarea").classList.add("flex");
+            mostrarMensajeCrearTarea("", null);
+
+            if (obtenerTokenGuardado()) {
+                mostrarVistaFormularioCrearTarea();
+            } else {
+                mostrarVistaTokenCrearTarea();
+            }
+        }
+
+        function cerrarModalCrearTarea() {
+            document.getElementById("modal-crear-tarea").classList.add("hidden");
+            document.getElementById("modal-crear-tarea").classList.remove("flex");
+            document.getElementById("form-crear-tarea").reset();
+            mostrarMensajeCrearTarea("", null);
+        }
+
+        function mostrarMensajeCrearTarea(texto, tipo) {
+            const el = document.getElementById("ct-mensaje");
+            if (!texto) {
+                el.classList.add("hidden");
+                el.textContent = "";
+                return;
+            }
+            el.textContent = texto;
+            el.className = "text-[13px] " + (tipo === "error" ? "text-[#ff5f52]" : tipo === "exito" ? "text-[#53a759]" : "text-[#8e8e93]");
+        }
+
+        async function manejarSubmitCrearTarea(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const resultado = construirPayloadEvento({
+                nombre: form.nombre.value,
+                fecha: form.fecha.value,
+                horaInicio: form.horaInicio.value,
+                horaFin: form.horaFin.value,
+                estado: form.estado.value,
+                tipoTarea: form.tipoTarea.value,
+                prioridad: form.prioridad.value,
+                descripcion: form.descripcion.value,
+            });
+
+            if (!resultado.ok) {
+                mostrarMensajeCrearTarea(resultado.error, "error");
+                return false;
+            }
+
+            const token = obtenerTokenGuardado();
+            if (!token) {
+                mostrarVistaTokenCrearTarea();
+                return false;
+            }
+
+            const boton = document.getElementById("ct-btn-guardar");
+            boton.disabled = true;
+            boton.textContent = "Enviando...";
+            mostrarMensajeCrearTarea("Enviando a GitHub Actions — la tarea aparece en Notion y en el dashboard en unos segundos.", null);
+
+            try {
+                const { url, options } = construirSolicitudDispatch(GITHUB_OWNER, GITHUB_REPO, resultado.payload, token);
+                const respuesta = await fetch(url, options);
+
+                if (respuesta.status === 204) {
+                    mostrarMensajeCrearTarea("¡Listo! La tarea se está creando — actualizá el dashboard en unos segundos.", "exito");
+                    form.reset();
+                } else if (respuesta.status === 401 || respuesta.status === 404) {
+                    mostrarMensajeCrearTarea("El token no es válido o no tiene permiso sobre este repo. Volvé a cargarlo.", "error");
+                    cambiarTokenCrearTarea();
+                } else {
+                    mostrarMensajeCrearTarea(`GitHub respondió un error (${respuesta.status}). Probá de nuevo en un rato.`, "error");
+                }
+            } catch (e) {
+                mostrarMensajeCrearTarea("No se pudo conectar con GitHub. Revisá tu conexión e intentá de nuevo.", "error");
+            } finally {
+                boton.disabled = false;
+                boton.textContent = "Guardar";
+            }
+
+            return false;
         }
     </script>
 </body>

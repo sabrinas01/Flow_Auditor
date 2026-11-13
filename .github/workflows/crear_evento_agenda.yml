@@ -1,0 +1,61 @@
+name: Crear tarea desde Agenda Personal
+
+# Disparado por el botón "Crear tarea" de agenda-personal.html vía la API de
+# GitHub (repository_dispatch), con un token acotado (fine-grained, solo
+# permiso "Actions: write" sobre este repo) guardado únicamente en el
+# localStorage del navegador de Sabrina — nunca commiteado (SRS-FR-M5-507).
+# Reutiliza el NOTION_API_KEY ya existente como secret de este repo: ese
+# token nunca llega al navegador (SRS-NFR-SEC-001).
+on:
+  repository_dispatch:
+    types: [crear_evento_agenda]
+
+jobs:
+  crear:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # necesario para que Git pueda ver los tags
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Crear evento en Notion y sincronizar los 3 frontends
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS }}
+          NOTION_DB_RECORDATORIOS_VARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_VARIOS }}
+          NOTION_DB_EVENTOS: ${{ secrets.NOTION_DB_EVENTOS }}
+          CREAR_EVENTO_PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: python extract_and_audit.py
+
+      - name: Publish updated frontends to the gh-pages branch
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+          # Mismo criterio que notion_sync.yml: el bot nunca escribe en 'main',
+          # publica en 'gh-pages' reconstruida desde el 'main' actual + los
+          # frontends actualizados, así un --force acá no pisa commits humanos.
+          git checkout -B gh-pages
+          git add index.html recordatorios-varios.html agenda-personal.html
+
+          if ! git diff --staged --quiet; then
+            git commit -m "auto: nueva tarea creada desde Agenda Personal"
+            git push origin gh-pages --force
+            echo "✅ Tarea creada en Notion y publicada en GitHub Pages."
+          else
+            echo "⚠️ No se detectaron cambios en los frontends, omitiendo commit de forma segura."
+          fi
