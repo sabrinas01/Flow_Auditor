@@ -17,6 +17,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
+          ref: ${{ github.event.client_payload.env == 'develop' && 'develop' || 'main' }}
           fetch-depth: 0 # necesario para que Git pueda ver los tags
 
       - name: Set up Python
@@ -39,14 +40,27 @@ jobs:
         run: python extract_and_audit.py
 
       - name: Publish updated frontends to the gh-pages branch
+        env:
+          TARGET_ENV: ${{ github.event.client_payload.env }}
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
           git fetch origin gh-pages || true
-          git checkout -B gh-pages
-          git checkout origin/gh-pages -- dev 2>/dev/null || true
-          git add index.html recordatorios-varios.html agenda-personal.html
+          if [ "$TARGET_ENV" = "develop" ]; then
+            mkdir -p /tmp/dev_site
+            cp inicio.html index.html recordatorios-varios.html agenda-personal.html styles.css manifest.json sw.js /tmp/dev_site/
+            cp -r src grafica /tmp/dev_site/
+            git checkout -f -B gh-pages origin/gh-pages
+            rm -rf dev
+            mkdir -p dev
+            cp -r /tmp/dev_site/* dev/
+            git add dev/
+          else
+            git checkout -B gh-pages
+            git checkout origin/gh-pages -- dev 2>/dev/null || true
+            git add index.html recordatorios-varios.html agenda-personal.html
+          fi
 
           if ! git diff --staged --quiet; then
             git commit -m "auto: actualización en Notion desde AsistenteSabry"
