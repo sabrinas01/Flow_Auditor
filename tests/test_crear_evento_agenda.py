@@ -99,3 +99,58 @@ def test_fallo_http_de_notion_sale_fatal(monkeypatch):
     with patch.object(extract_and_audit.requests, "post", Mock(return_value=respuesta)):
         with pytest.raises(SystemExit):
             extract_and_audit.crear_evento_agenda({"nombre": "Turno", "fecha_inicio": "2026-11-14"})
+
+
+def test_actualizar_evento_agenda_envia_patch_y_limpia_opcionales(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    mock_patch = Mock(return_value=_mock_respuesta_creada("page-99"))
+    datos = {
+        "page_id": "page-99",
+        "nombre": "Turno actualizado",
+        "fecha_inicio": "2026-11-21T10:00:00-03:00",
+        "fecha_fin": None,
+        "estado": "En curso",
+        "tipo_tarea": None,
+        "prioridad": None,
+        "descripcion": None,
+    }
+    with patch.object(extract_and_audit.requests, "patch", mock_patch):
+        extract_and_audit.actualizar_evento_agenda(datos)
+
+    url, kwargs = mock_patch.call_args[0][0], mock_patch.call_args[1]
+    assert url == "https://api.notion.com/v1/pages/page-99"
+    props = kwargs["json"]["properties"]
+    assert props["Nombre"] == {"title": [{"text": {"content": "Turno actualizado"}}]}
+    assert props["Estado"] == {"status": {"name": "En curso"}}
+    assert props["Tipo de tarea"] == {"select": None}
+    assert props["Prioridad"] == {"select": None}
+    assert props["Descripción"] == {"rich_text": []}
+
+
+def test_actualizar_evento_sin_page_id_sale_fatal(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    with pytest.raises(SystemExit):
+        extract_and_audit.actualizar_evento_agenda({"nombre": "Turno", "fecha_inicio": "2026-11-21"})
+
+
+def test_archivar_pagina_notion_envia_archived_true(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    mock_patch = Mock(return_value=_mock_respuesta_creada("page-77"))
+    with patch.object(extract_and_audit.requests, "patch", mock_patch):
+        extract_and_audit.archivar_pagina_notion({"page_id": "page-77"})
+
+    url, kwargs = mock_patch.call_args[0][0], mock_patch.call_args[1]
+    assert url == "https://api.notion.com/v1/pages/page-77"
+    assert kwargs["json"] == {"archived": True}
+
+
+def test_archivar_pagina_sin_id_sale_fatal(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    with pytest.raises(SystemExit):
+        extract_and_audit.archivar_pagina_notion({})
+
+
+def test_ejecutar_accion_notion_desconocida_sale_fatal(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    with pytest.raises(SystemExit):
+        extract_and_audit.ejecutar_accion_notion({"accion": "inexistente", "datos": {}})

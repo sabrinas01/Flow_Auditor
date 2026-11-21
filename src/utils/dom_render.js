@@ -130,8 +130,23 @@ function renderizarAgendaEventos(prefijo, items) {
     : prefijo === "eventos-hoy" ? "left-pill-red"
     : "left-pill-orange";
 
-  container.innerHTML = items.map((item) => {
+  container.innerHTML = items.map((item, idx) => {
     const meta = [item.tipo, item.lugar].filter(Boolean).map(escapeHtml).join(" · ");
+    const tieneId = Boolean(item.id);
+    const accionesHtml = tieneId
+      ? `<div class="flex items-center gap-1 flex-shrink-0">
+            <button type="button" onclick="abrirModalEditarEvento('${escapeHtml(prefijo)}', ${idx})"
+                class="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-[#8e8e93] hover:text-white"
+                title="Editar tarea" aria-label="Editar tarea">
+                <span class="material-symbols-outlined text-[18px]">edit</span>
+            </button>
+            <button type="button" onclick="confirmarEliminarEvento('${escapeHtml(prefijo)}', ${idx})"
+                class="p-1.5 hover:bg-[#ff5f52]/15 rounded-lg transition-colors text-[#8e8e93] hover:text-[#ff5f52]"
+                title="Mandar a la papelera" aria-label="Mandar a la papelera">
+                <span class="material-symbols-outlined text-[18px]">delete</span>
+            </button>
+        </div>`
+      : "";
     return `
         <div class="status-row ${pill} flex items-center px-4 py-3.5 gap-4">
             <div class="flex flex-col items-center w-14 flex-shrink-0">
@@ -142,6 +157,7 @@ function renderizarAgendaEventos(prefijo, items) {
                 <span class="text-white font-semibold truncate">${escapeHtml(item.nombre || "Sin nombre")}</span>
                 ${meta ? `<span class="text-[#8e8e93] text-[12px] truncate">${meta}</span>` : ""}
             </div>
+            ${accionesHtml}
         </div>
     `;
   }).join('');

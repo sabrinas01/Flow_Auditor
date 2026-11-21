@@ -127,7 +127,7 @@
     <div id="modal-crear-tarea" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalCrearTarea()">
         <div class="glass-card rounded-xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-5">
-                <h3 class="text-headline-md font-headline-md text-white">Crear tarea</h3>
+                <h3 id="ct-modal-titulo" class="text-headline-md font-headline-md text-white">Crear tarea</h3>
                 <button type="button" onclick="cerrarModalCrearTarea()" class="p-1.5 hover:bg-white/5 rounded-full transition-colors text-[#8e8e93]">
                     <span class="material-symbols-outlined text-[20px]">close</span>
                 </button>
@@ -136,7 +136,7 @@
             <!-- Vista 1: alta de token de GitHub (solo la primera vez por navegador) -->
             <div id="ct-vista-token" class="space-y-4 hidden">
                 <p class="text-[13px] text-[#e2beba] leading-relaxed">
-                    Para crear la tarea sin exponer las claves de Notion, el botón usa un token de GitHub
+                    Para escribir en Notion sin exponer sus claves, el botón usa un token de GitHub
                     acotado (solo permiso <strong>Actions: Read and write</strong> sobre este repo), que se
                     guarda únicamente en este navegador — nunca se sube al repositorio.
                 </p>
@@ -156,8 +156,9 @@
                 </button>
             </div>
 
-            <!-- Vista 2: formulario de la tarea -->
+            <!-- Vista 2: formulario de la tarea (Crear / Editar) -->
             <form id="form-crear-tarea" class="space-y-4 hidden" onsubmit="return manejarSubmitCrearTarea(event)">
+                <input id="ct-page-id" name="pageId" type="hidden" value="" />
                 <div>
                     <label for="ct-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre *</label>
                     <input id="ct-nombre" name="nombre" type="text" required maxlength="200"
@@ -177,6 +178,10 @@
                             <option value="Sin empezar">Sin empezar</option>
                             <option value="Pendiente">Pendiente</option>
                             <option value="Planificada">Planificada</option>
+                            <option value="En curso">En curso</option>
+                            <option value="Hecha">Hecha</option>
+                            <option value="Asisti">Asisti</option>
+                            <option value="Sin asistir">Sin asistir</option>
                         </select>
                     </div>
                 </div>
@@ -232,6 +237,9 @@
                 <p id="ct-mensaje" class="text-[13px] hidden"></p>
 
                 <div class="flex gap-3 pt-1">
+                    <button id="ct-btn-eliminar" type="button" onclick="confirmarEliminarDesdeModal()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl transition-all" title="Mandar a la papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
                     <button type="button" onclick="cerrarModalCrearTarea()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl transition-all">Cancelar</button>
                     <button id="ct-btn-guardar" type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">Guardar</button>
                 </div>
@@ -240,6 +248,39 @@
                     🔑 Cambiar el token guardado
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- MODAL CONFIRMACIÓN PAPELERA                         -->
+    <!-- =================================================== -->
+    <div id="modal-confirmar-papelera" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="cerrarModalPapelera()">
+        <div class="glass-card rounded-xl p-6 w-full max-w-sm space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-3 text-[#ff5f52]">
+                <span class="material-symbols-outlined text-[24px]">delete</span>
+                <h3 class="text-headline-md font-headline-md text-white">Mandar a la papelera</h3>
+            </div>
+            <p id="papelera-texto" class="text-[14px] text-[#e2beba] leading-relaxed">
+                ¿Deseas mandar esta tarea a la papelera de Notion?
+            </p>
+            <div class="flex gap-3 pt-1">
+                <button type="button" onclick="cerrarModalPapelera()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cancelar</button>
+                <button type="button" onclick="ejecutarEnvioPapelera()" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-2.5 rounded-xl transition-all active:scale-95">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- SPINNER DE ESPERA Y CONFIRMACIÓN NOTION             -->
+    <!-- =================================================== -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarSpinnerNotion()" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cerrar</button>
         </div>
     </div>
 
@@ -390,6 +431,7 @@
     <script src="./src/utils/dashboard_logic.js"></script>
     <script src="./src/utils/dom_render.js"></script>
     <script src="./src/utils/crear_evento.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
 
     <!-- =================================================== -->
     <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
@@ -494,6 +536,50 @@
         }
 
         function abrirModalCrearTarea() {
+            document.getElementById("ct-modal-titulo").textContent = "Crear tarea";
+            document.getElementById("ct-page-id").value = "";
+            document.getElementById("form-crear-tarea").reset();
+            document.getElementById("ct-btn-eliminar").classList.add("hidden");
+            document.getElementById("modal-crear-tarea").classList.remove("hidden");
+            document.getElementById("modal-crear-tarea").classList.add("flex");
+            mostrarMensajeCrearTarea("", null);
+
+            if (obtenerTokenGuardado()) {
+                mostrarVistaFormularioCrearTarea();
+            } else {
+                mostrarVistaTokenCrearTarea();
+            }
+        }
+
+        function _obtenerEventoPorPrefijo(prefijo, idx) {
+            const mapa = {
+                "eventos-ayer": agendaEventosAyer,
+                "eventos-hoy": agendaEventosHoy,
+                "eventos-manana": agendaEventosManana,
+            };
+            const lista = mapa[prefijo] || [];
+            return lista[idx] || null;
+        }
+
+        function abrirModalEditarEvento(prefijo, idx) {
+            const item = _obtenerEventoPorPrefijo(prefijo, idx);
+            if (!item || !item.id) return;
+
+            const inicio = extraerFechaYHora(item.inicio);
+            const fin = extraerFechaYHora(item.fin);
+
+            document.getElementById("ct-modal-titulo").textContent = "Editar tarea";
+            document.getElementById("ct-page-id").value = item.id;
+            document.getElementById("ct-nombre").value = item.nombre || "";
+            document.getElementById("ct-fecha").value = inicio.fecha;
+            document.getElementById("ct-hora-inicio").value = inicio.hora;
+            document.getElementById("ct-hora-fin").value = fin.hora;
+            document.getElementById("ct-estado").value = item.estado || "Sin empezar";
+            document.getElementById("ct-tipo").value = item.tipo || "";
+            document.getElementById("ct-prioridad").value = item.prioridad || "";
+            document.getElementById("ct-descripcion").value = item.descripcion || "";
+            document.getElementById("ct-btn-eliminar").classList.remove("hidden");
+
             document.getElementById("modal-crear-tarea").classList.remove("hidden");
             document.getElementById("modal-crear-tarea").classList.add("flex");
             mostrarMensajeCrearTarea("", null);
@@ -509,7 +595,108 @@
             document.getElementById("modal-crear-tarea").classList.add("hidden");
             document.getElementById("modal-crear-tarea").classList.remove("flex");
             document.getElementById("form-crear-tarea").reset();
+            document.getElementById("ct-page-id").value = "";
+            document.getElementById("ct-btn-eliminar").classList.add("hidden");
             mostrarMensajeCrearTarea("", null);
+        }
+
+        let _papeleraTarget = null;
+
+        function confirmarEliminarEvento(prefijo, idx) {
+            const item = _obtenerEventoPorPrefijo(prefijo, idx);
+            if (!item || !item.id) return;
+            _papeleraTarget = { id: item.id, nombre: item.nombre || "esta tarea" };
+            document.getElementById("papelera-texto").textContent = `¿Deseas mandar "${_papeleraTarget.nombre}" a la papelera de Notion?`;
+            document.getElementById("modal-confirmar-papelera").classList.remove("hidden");
+            document.getElementById("modal-confirmar-papelera").classList.add("flex");
+        }
+
+        function confirmarEliminarDesdeModal() {
+            const pageId = document.getElementById("ct-page-id").value.trim();
+            const nombre = document.getElementById("ct-nombre").value.trim() || "esta tarea";
+            if (!pageId) return;
+            _papeleraTarget = { id: pageId, nombre };
+            document.getElementById("papelera-texto").textContent = `¿Deseas mandar "${nombre}" a la papelera de Notion?`;
+            document.getElementById("modal-confirmar-papelera").classList.remove("hidden");
+            document.getElementById("modal-confirmar-papelera").classList.add("flex");
+        }
+
+        function cerrarModalPapelera() {
+            document.getElementById("modal-confirmar-papelera").classList.add("hidden");
+            document.getElementById("modal-confirmar-papelera").classList.remove("flex");
+            _papeleraTarget = null;
+        }
+
+        async function ejecutarEnvioPapelera() {
+            if (!_papeleraTarget) return;
+            const target = _papeleraTarget;
+            cerrarModalPapelera();
+            cerrarModalCrearTarea();
+            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: target.id });
+        }
+
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+
+        function cerrarSpinnerNotion() {
+            document.getElementById("modal-spinner-notion").classList.add("hidden");
+            document.getElementById("modal-spinner-notion").classList.remove("flex");
+        }
+
+        async function ejecutarEscrituraConSpinner(accion, datos) {
+            const token = obtenerTokenGuardado();
+            if (!token) {
+                abrirModalCrearTarea();
+                mostrarVistaTokenCrearTarea();
+                return;
+            }
+
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, datos, token);
+                const respuesta = await fetch(url, options);
+
+                if (respuesta.status === 401 || respuesta.status === 404) {
+                    cerrarSpinnerNotion();
+                    abrirModalCrearTarea();
+                    mostrarMensajeCrearTarea("El token no es válido o no tiene permiso sobre este repo. Volvé a cargarlo.", "error");
+                    cambiarTokenCrearTarea();
+                    return;
+                }
+                if (respuesta.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${respuesta.status}). Probá de nuevo en un rato.`);
+                    return;
+                }
+
+                const confirmacion = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER,
+                    repo: GITHUB_REPO,
+                    token,
+                    workflowFile: WORKFLOW_NOTION_WRITE,
+                    dispatchedAfterMs,
+                });
+
+                if (confirmacion.ok) {
+                    mostrarSpinnerNotion("ok", "¡Notion actualizado!", "Recargando la agenda...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", confirmacion.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub. Revisá tu conexión e intentá de nuevo.");
+            }
         }
 
         function mostrarMensajeCrearTarea(texto, tipo) {
@@ -527,7 +714,9 @@
             event.preventDefault();
 
             const form = event.target;
+            const pageId = form.pageId.value.trim();
             const resultado = construirPayloadEvento({
+                pageId,
                 nombre: form.nombre.value,
                 fecha: form.fecha.value,
                 horaInicio: form.horaInicio.value,
@@ -543,37 +732,14 @@
                 return false;
             }
 
-            const token = obtenerTokenGuardado();
-            if (!token) {
+            if (!obtenerTokenGuardado()) {
                 mostrarVistaTokenCrearTarea();
                 return false;
             }
 
-            const boton = document.getElementById("ct-btn-guardar");
-            boton.disabled = true;
-            boton.textContent = "Enviando...";
-            mostrarMensajeCrearTarea("Enviando a GitHub Actions — la tarea aparece en Notion y en el dashboard en unos segundos.", null);
-
-            try {
-                const { url, options } = construirSolicitudDispatch(GITHUB_OWNER, GITHUB_REPO, resultado.payload, token);
-                const respuesta = await fetch(url, options);
-
-                if (respuesta.status === 204) {
-                    mostrarMensajeCrearTarea("¡Listo! La tarea se está creando — actualizá el dashboard en unos segundos.", "exito");
-                    form.reset();
-                } else if (respuesta.status === 401 || respuesta.status === 404) {
-                    mostrarMensajeCrearTarea("El token no es válido o no tiene permiso sobre este repo. Volvé a cargarlo.", "error");
-                    cambiarTokenCrearTarea();
-                } else {
-                    mostrarMensajeCrearTarea(`GitHub respondió un error (${respuesta.status}). Probá de nuevo en un rato.`, "error");
-                }
-            } catch (e) {
-                mostrarMensajeCrearTarea("No se pudo conectar con GitHub. Revisá tu conexión e intentá de nuevo.", "error");
-            } finally {
-                boton.disabled = false;
-                boton.textContent = "Guardar";
-            }
-
+            const accion = pageId ? "actualizar_evento" : "crear_evento";
+            cerrarModalCrearTarea();
+            await ejecutarEscrituraConSpinner(accion, resultado.payload);
             return false;
         }
     </script>

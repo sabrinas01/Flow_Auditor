@@ -43,9 +43,9 @@ describe('Orden fijo del menú de navegación (SRS-FR-M3-312) y link a Recordato
     ]);
   });
 
-  test('inicio.html: sin ítem "Inicio" (es la página actual) — Agenda personal, Recordatorios diarios, Recordatorios varios', () => {
+  test('inicio.html: Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios', () => {
     expect(extraerHrefsDelSidebar('inicio.html')).toEqual([
-      'agenda-personal.html', 'index.html', 'recordatorios-varios.html',
+      'inicio.html', 'agenda-personal.html', 'index.html', 'recordatorios-varios.html',
     ]);
   });
 });

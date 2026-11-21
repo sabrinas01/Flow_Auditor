@@ -23,6 +23,19 @@ function combinarFechaHora(fecha, hora) {
 }
 
 /**
+ * Extrae `{ fecha, hora }` (YYYY-MM-DD y HH:MM) desde un string ISO-8601
+ * o fecha sola, para pre-cargar el modal de edición de Agenda Personal.
+ */
+function extraerFechaYHora(isoStr) {
+  if (!isoStr || typeof isoStr !== "string") {
+    return { fecha: "", hora: "" };
+  }
+  const match = isoStr.match(/^(\d{4}-\d{2}-\d{2})(?:T(\d{2}:\d{2}))?/);
+  if (!match) return { fecha: "", hora: "" };
+  return { fecha: match[1], hora: match[2] || "" };
+}
+
+/**
  * Valida y normaliza los datos crudos del formulario. Devuelve
  * { ok: true, payload } o { ok: false, error } — nunca lanza.
  */
@@ -31,6 +44,7 @@ function construirPayloadEvento(datosFormulario) {
   const fecha = (datosFormulario.fecha || "").trim();
   const horaInicio = (datosFormulario.horaInicio || "").trim();
   const horaFin = (datosFormulario.horaFin || "").trim();
+  const pageId = (datosFormulario.pageId || "").trim();
 
   if (!nombre) {
     return { ok: false, error: "El nombre de la tarea es obligatorio." };
@@ -51,6 +65,10 @@ function construirPayloadEvento(datosFormulario) {
     prioridad: (datosFormulario.prioridad || "").trim() || null,
     descripcion: (datosFormulario.descripcion || "").trim() || null,
   };
+
+  if (pageId) {
+    payload.page_id = pageId;
+  }
 
   return { ok: true, payload };
 }
@@ -82,6 +100,7 @@ if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     EVENT_TYPE_DISPATCH,
     combinarFechaHora,
+    extraerFechaYHora,
     construirPayloadEvento,
     construirSolicitudDispatch,
   };

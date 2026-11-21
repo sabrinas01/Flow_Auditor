@@ -1,0 +1,55 @@
+name: Escritura y actualización en Notion
+
+# Disparado desde los frontends vía GitHub API (repository_dispatch: notion_write)
+# usando el token fine-grained guardado únicamente en localStorage.
+# Reutiliza NOTION_API_KEY de GitHub Secrets (nunca llega al navegador).
+on:
+  repository_dispatch:
+    types: [notion_write]
+
+jobs:
+  escribir:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # necesario para que Git pueda ver los tags
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar escritura en Notion y sincronizar los 3 frontends
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS }}
+          NOTION_DB_RECORDATORIOS_VARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_VARIOS }}
+          NOTION_DB_EVENTOS: ${{ secrets.NOTION_DB_EVENTOS }}
+          ACCION_NOTION_PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: python extract_and_audit.py
+
+      - name: Publish updated frontends to the gh-pages branch
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+          git checkout -B gh-pages
+          git add index.html recordatorios-varios.html agenda-personal.html
+
+          if ! git diff --staged --quiet; then
+            git commit -m "auto: actualización en Notion desde AsistenteSabry"
+            git push origin gh-pages --force
+            echo "✅ Notion actualizado y publicado en GitHub Pages."
+          else
+            echo "⚠️ No se detectaron cambios en los frontends, omitiendo commit de forma segura."
+          fi

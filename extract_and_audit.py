@@ -606,6 +606,13 @@ def extraer_eventos_clasificados():
         seleccion = (prop or {}).get("select") or {}
         return seleccion.get("name") or None
 
+    def _texto_status(prop):
+        estado = (prop or {}).get("status") or {}
+        return estado.get("name") or None
+
+    def _texto_rich_text(prop):
+        return "".join(t.get("plain_text", "") for t in (prop or {}).get("rich_text", [])) or None
+
     ahora = (datetime.now(timezone.utc) - timedelta(hours=3)).replace(tzinfo=None)
 
     bucket_ayer, bucket_hoy, bucket_manana = [], [], []
@@ -630,11 +637,15 @@ def extraer_eventos_clasificados():
             continue
 
         item = {
+            "id": pagina.get("id"),
             "nombre": _texto_titulo(props.get("Nombre", {})) or "Sin nombre",
             "inicio": inicio,
             "fin": fin,
             "lugar": _texto_place(props.get("Lugar", {})),
             "tipo": _texto_select(props.get("Tipo de tarea", {})),
+            "estado": _texto_status(props.get("Estado", {})),
+            "prioridad": _texto_select(props.get("Prioridad", {})),
+            "descripcion": _texto_rich_text(props.get("Descripción", {})),
         }
 
         if bloque == "AYER":
@@ -650,33 +661,15 @@ def extraer_eventos_clasificados():
     return _ordenados_por_inicio(bucket_ayer), _ordenados_por_inicio(bucket_hoy), _ordenados_por_inicio(bucket_manana)
 
 
-def crear_evento_agenda(datos):
-    """Crea una página nueva en la BD "Eventos y Recordatorios únicos"
-    (`NOTION_DB_EVENTOS`) a partir del payload enviado por el botón "Crear
-    tarea" de agenda-personal.html, vía `repository_dispatch` (ver
-    .github/workflows/crear_evento_agenda.yml) — SRS-FR-M5-507.
-
-    `datos` llega con las claves que construye construirPayloadEvento() en
-    src/utils/crear_evento.js: nombre, fecha_inicio, fecha_fin (puede ser
-    None), estado, tipo_tarea (puede ser None), prioridad (puede ser None),
-    descripcion (puede ser None). El campo `Lugar` (tipo `place` en Notion)
-    queda deliberadamente fuera: la API de Notion exige coordenadas lat/lon
-    para escribirlo y no geolocaliza un nombre de lugar — se completa a mano
-    en Notion si hace falta.
-
-    A diferencia del resto de las sincronizaciones de este módulo, un fallo
-    acá SÍ debe ser fatal (sys.exit(1)): esta función es la única razón de
-    ser del workflow que la invoca, así que un error silencioso dejaría a
-    Sabrina pensando que la tarea se creó cuando no fue así.
+def _construir_propiedades_evento(datos, modo_edicion=False):
+    """Construye el diccionario `properties` de Notion para crear o actualizar
+    un evento en la BD "Eventos y Recordatorios únicos". En modo edición, los
+    campos opcionales vacíos se limpian explícitamente para reflejar borrados.
     """
-    if not DB_AGENDA_EVENTOS:
-        print("❌ [CREAR EVENTO]: NOTION_DB_EVENTOS no configurada, no se puede crear el evento.")
-        sys.exit(1)
-
     nombre = (datos.get("nombre") or "").strip()
     fecha_inicio = datos.get("fecha_inicio")
     if not nombre or not fecha_inicio:
-        print("❌ [CREAR EVENTO]: faltan campos obligatorios (nombre/fecha_inicio) en el payload recibido.")
+        print("❌ [ESCRITURA EVENTO]: faltan campos obligatorios (nombre/fecha_inicio) en el payload recibido.")
         sys.exit(1)
 
     propiedades = {
@@ -691,28 +684,100 @@ def crear_evento_agenda(datos):
 
     if datos.get("tipo_tarea"):
         propiedades["Tipo de tarea"] = {"select": {"name": datos["tipo_tarea"]}}
+    elif modo_edicion:
+        propiedades["Tipo de tarea"] = {"select": None}
+
     if datos.get("prioridad"):
         propiedades["Prioridad"] = {"select": {"name": datos["prioridad"]}}
+    elif modo_edicion:
+        propiedades["Prioridad"] = {"select": None}
+
     if datos.get("descripcion"):
         propiedades["Descripción"] = {"rich_text": [{"text": {"content": datos["descripcion"]}}]}
+    elif modo_edicion:
+        propiedades["Descripción"] = {"rich_text": []}
 
-    url = "https://api.notion.com/v1/pages"
+    return nombre, propiedades
+
+
+def _ejecutar_request_notion(metodo, url, body, etiqueta):
+    """Ejecuta un POST o PATCH contra la API de Notion; ante error HTTP falla
+    de forma fatal (sys.exit(1)) para que GitHub Actions marque el run como failed.
+    """
     headers = {
         "Authorization": f"Bearer {NOTION_API_KEY}",
         "Notion-Version": "2022-06-28",
         "Content-Type": "application/json",
     }
-    body = {"parent": {"database_id": DB_AGENDA_EVENTOS}, "properties": propiedades}
-
-    response = requests.post(url, json=body, headers=headers, timeout=15)
+    fn = requests.post if metodo == "POST" else requests.patch
+    response = fn(url, json=body, headers=headers, timeout=15)
     try:
         response.raise_for_status()
     except requests.exceptions.HTTPError:
-        print(f"❌ [CREAR EVENTO]: Notion respondió {response.status_code}: {response.text}")
+        print(f"❌ [{etiqueta}]: Notion respondió {response.status_code}: {response.text}")
+        sys.exit(1)
+    return response.json()
+
+
+def crear_evento_agenda(datos):
+    """Crea una página nueva en la BD "Eventos y Recordatorios únicos"
+    (`NOTION_DB_EVENTOS`) a partir del payload enviado por el botón "Crear
+    tarea" de agenda-personal.html, vía `repository_dispatch` (ver
+    .github/workflows/crear_evento_agenda.yml y notion_write.yml) — SRS-FR-M5-507.
+    """
+    if not DB_AGENDA_EVENTOS:
+        print("❌ [CREAR EVENTO]: NOTION_DB_EVENTOS no configurada, no se puede crear el evento.")
         sys.exit(1)
 
-    pagina_id = response.json().get("id", "¿?")
+    nombre, propiedades = _construir_propiedades_evento(datos, modo_edicion=False)
+    body = {"parent": {"database_id": DB_AGENDA_EVENTOS}, "properties": propiedades}
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", body, "CREAR EVENTO")
+    pagina_id = res.get("id", "¿?")
     print(f"✅ [CREAR EVENTO]: evento '{nombre}' creado con éxito en Notion (id {pagina_id}).")
+
+
+def actualizar_evento_agenda(datos):
+    """Actualiza una página existente en la BD "Eventos y Recordatorios únicos"
+    (`PATCH /v1/pages/{page_id}`) — ABM Agenda Personal (Etapa 1).
+    """
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR EVENTO]: falta page_id en el payload recibido.")
+        sys.exit(1)
+
+    nombre, propiedades = _construir_propiedades_evento(datos, modo_edicion=True)
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    _ejecutar_request_notion("PATCH", url, {"properties": propiedades}, "ACTUALIZAR EVENTO")
+    print(f"✅ [ACTUALIZAR EVENTO]: evento '{nombre}' ({page_id}) actualizado con éxito en Notion.")
+
+
+def archivar_pagina_notion(datos):
+    """Envía una página de Notion a la Papelera (`archived: True` vía
+    `PATCH /v1/pages/{page_id}`). Genérica para Agenda Personal y futuros módulos.
+    """
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ARCHIVAR PAGINA]: falta page_id en el payload recibido.")
+        sys.exit(1)
+
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    _ejecutar_request_notion("PATCH", url, {"archived": True}, "ARCHIVAR PAGINA")
+    print(f"✅ [ARCHIVAR PAGINA]: página {page_id} enviada a la papelera de Notion.")
+
+
+def ejecutar_accion_notion(payload):
+    """Despacha acciones de escritura recibidas vía `ACCION_NOTION_PAYLOAD`."""
+    accion = (payload or {}).get("accion")
+    datos = (payload or {}).get("datos") or {}
+    if accion == "crear_evento":
+        crear_evento_agenda(datos)
+    elif accion == "actualizar_evento":
+        actualizar_evento_agenda(datos)
+    elif accion == "archivar_pagina":
+        archivar_pagina_notion(datos)
+    else:
+        print(f"❌ [ACCION NOTION]: acción desconocida '{accion}'.")
+        sys.exit(1)
 
 
 def sincronizar_agenda_personal(timestamps, app_version):
@@ -751,12 +816,20 @@ def sincronizar_agenda_personal(timestamps, app_version):
 
 
 if __name__ == "__main__":
-    # El workflow crear_evento_agenda.yml (repository_dispatch) inyecta el
-    # payload del botón "Crear tarea" de agenda-personal.html acá; el cron
-    # horario normal (notion_sync.yml) nunca define esta variable, así que
-    # su comportamiento no cambia (SRS-FR-M5-507).
+    # El workflow crear_evento_agenda.yml (legacy) y notion_write.yml
+    # (repository_dispatch) inyectan el payload acá; el cron horario normal
+    # (notion_sync.yml) nunca define estas variables.
+    payload_accion_notion = os.getenv("ACCION_NOTION_PAYLOAD")
     payload_crear_evento = os.getenv("CREAR_EVENTO_PAYLOAD")
-    if payload_crear_evento:
+
+    if payload_accion_notion:
+        validar_credenciales()
+        try:
+            ejecutar_accion_notion(json.loads(payload_accion_notion))
+        except json.JSONDecodeError as e:
+            print(f"❌ [ACCION NOTION]: ACCION_NOTION_PAYLOAD no es JSON válido ({e}).")
+            sys.exit(1)
+    elif payload_crear_evento:
         validar_credenciales()
         try:
             crear_evento_agenda(json.loads(payload_crear_evento))

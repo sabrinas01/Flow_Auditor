@@ -236,6 +236,15 @@ describe('renderizarAgendaEventos', () => {
     expect(html).not.toContain('<img');
     expect(html).not.toContain('<script>alert');
   });
+
+  test('renderiza botones de editar y mandar a papelera cuando el evento tiene id', () => {
+    renderizarAgendaEventos('eventos-hoy', [
+      { id: 'page-1', nombre: 'Turno con id', inicio: '2026-09-15T09:00:00-03:00' },
+    ]);
+    const html = document.getElementById('list-eventos-hoy').innerHTML;
+    expect(html).toContain("abrirModalEditarEvento('eventos-hoy', 0)");
+    expect(html).toContain("confirmarEliminarEvento('eventos-hoy', 0)");
+  });
 });
 
 // Extraída de index.html/recordatorios-varios.html/agenda-personal.html en
