@@ -409,6 +409,7 @@ def extraer_recordatorios_clasificados(database_id, etiqueta_log):
         fecha = fecha_data.get("start") if fecha_data else None
 
         item = {
+            "id": pagina.get("id"),
             "nombre": nombre or "Sin nombre",
             "estado": estado or "Sin estado",
             "prioridad": _select(props.get("Prioridad", {})),
@@ -452,6 +453,40 @@ def extraer_recordatorios_varios_clasificados():
     return extraer_recordatorios_clasificados(DB_RECORDATORIOS_VARIOS, "RECORDATORIOS VARIOS")
 
 
+_ESTADOS_VARIOS_FALLBACK = [
+    "Sin empezar",
+    "⏳ Pospuesta",
+    "En ejecución",
+    "En espera",
+    "Hecha por otra persona",
+    "⏭️ No necesaria",
+    "Hecha",
+    "❌ Fallida / Vencida",
+]
+
+
+def _extraer_opciones_estado_db(database_id):
+    """Consulta el esquema de una BD en Notion (`GET /v1/databases/{id}`) para
+    obtener las opciones reales de la propiedad `Estado`. Si falla o no está
+    disponible, devuelve la lista fallback sin interrumpir la sincronización.
+    """
+    if not database_id:
+        return list(_ESTADOS_VARIOS_FALLBACK)
+    try:
+        headers = {
+            "Authorization": f"Bearer {NOTION_API_KEY}",
+            "Notion-Version": "2022-06-28",
+        }
+        r = requests.get(f"https://api.notion.com/v1/databases/{database_id}", headers=headers, timeout=10)
+        r.raise_for_status()
+        prop = (r.json().get("properties") or {}).get("Estado") or {}
+        tipo = prop.get("type")
+        opciones = [o.get("name") for o in (prop.get(tipo) or {}).get("options", []) if o.get("name")]
+        return opciones if opciones else list(_ESTADOS_VARIOS_FALLBACK)
+    except Exception:
+        return list(_ESTADOS_VARIOS_FALLBACK)
+
+
 def sincronizar_recordatorios_varios(timestamps, app_version):
     """Inyecta los cuatro bloques (Ayer/Hoy/Mañana/Sin fecha, este último
     nuevo en v4.26) de Recordatorios Varios en recordatorios-varios.html
@@ -463,6 +498,7 @@ def sincronizar_recordatorios_varios(timestamps, app_version):
         return
 
     items_ayer, items_hoy, items_manana, items_sin_fecha = extraer_recordatorios_varios_clasificados()
+    estados_varios = _extraer_opciones_estado_db(DB_RECORDATORIOS_VARIOS)
 
     with open(html_path, "r", encoding="utf-8") as file:
         html_content = file.read()
@@ -474,6 +510,7 @@ def sincronizar_recordatorios_varios(timestamps, app_version):
         ("recordatoriosVariosHoy", items_hoy),
         ("recordatoriosVariosManana", items_manana),
         ("recordatoriosVariosSinFecha", items_sin_fecha),
+        ("recordatoriosVariosEstados", estados_varios),
     ):
         json_items = json.dumps(items, ensure_ascii=False).replace("</", "<\\/")
         html_content = re.sub(
@@ -765,6 +802,33 @@ def archivar_pagina_notion(datos):
     print(f"✅ [ARCHIVAR PAGINA]: página {page_id} enviada a la papelera de Notion.")
 
 
+def actualizar_recordatorio_varios(datos):
+    """Actualiza Fecha y/o Estado de un recordatorio en la BD de Recordatorios
+    Varios (`PATCH /v1/pages/{page_id}`) — Etapa 2.
+    """
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR VARIOS]: falta page_id en el payload recibido.")
+        sys.exit(1)
+
+    propiedades = {}
+    estado = (datos.get("estado") or "").strip()
+    if estado:
+        propiedades["Estado"] = {"status": {"name": estado}}
+
+    if "fecha" in datos:
+        fecha = (datos.get("fecha") or "").strip()
+        propiedades["Fecha"] = {"date": {"start": fecha}} if fecha else {"date": None}
+
+    if not propiedades:
+        print("❌ [ACTUALIZAR VARIOS]: no se enviaron propiedades para actualizar.")
+        sys.exit(1)
+
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    _ejecutar_request_notion("PATCH", url, {"properties": propiedades}, "ACTUALIZAR VARIOS")
+    print(f"✅ [ACTUALIZAR VARIOS]: recordatorio {page_id} actualizado con éxito en Notion.")
+
+
 def ejecutar_accion_notion(payload):
     """Despacha acciones de escritura recibidas vía `ACCION_NOTION_PAYLOAD`."""
     accion = (payload or {}).get("accion")
@@ -773,6 +837,8 @@ def ejecutar_accion_notion(payload):
         crear_evento_agenda(datos)
     elif accion == "actualizar_evento":
         actualizar_evento_agenda(datos)
+    elif accion == "actualizar_recordatorio_varios":
+        actualizar_recordatorio_varios(datos)
     elif accion == "archivar_pagina":
         archivar_pagina_notion(datos)
     else:

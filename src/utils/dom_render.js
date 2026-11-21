@@ -91,11 +91,22 @@ function renderizarRecordatoriosVarios(prefijo, items) {
     return;
   }
 
-  container.innerHTML = items.map((item) => `
-        <div class="status-row flex items-center px-4 py-3.5">
+  const esEditable = prefijo === "varios-ayer" || prefijo === "varios-hoy";
+  container.innerHTML = items.map((item, idx) => {
+    const botonEditar = esEditable && item.id
+      ? `<button type="button" onclick="abrirModalEditarVarios('${escapeHtml(prefijo)}', ${idx})"
+            class="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-[#8e8e93] hover:text-white flex-shrink-0"
+            title="Editar fecha y estado" aria-label="Editar fecha y estado">
+            <span class="material-symbols-outlined text-[18px]">edit</span>
+        </button>`
+      : "";
+    return `
+        <div class="status-row flex items-center justify-between px-4 py-3.5 gap-3">
             <span class="text-white font-semibold truncate">${escapeHtml(item.nombre || "Sin nombre")}</span>
+            ${botonEditar}
         </div>
-    `).join('');
+    `;
+  }).join('');
 }
 
 /**

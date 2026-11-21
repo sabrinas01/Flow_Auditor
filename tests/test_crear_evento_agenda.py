@@ -154,3 +154,42 @@ def test_ejecutar_accion_notion_desconocida_sale_fatal(monkeypatch):
     _preparar_credenciales(monkeypatch)
     with pytest.raises(SystemExit):
         extract_and_audit.ejecutar_accion_notion({"accion": "inexistente", "datos": {}})
+
+
+def test_actualizar_recordatorio_varios_envia_patch_fecha_y_estado(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    mock_patch = Mock(return_value=_mock_respuesta_creada("var-1"))
+    with patch.object(extract_and_audit.requests, "patch", mock_patch):
+        extract_and_audit.actualizar_recordatorio_varios({
+            "page_id": "var-1",
+            "fecha": "2026-11-25",
+            "estado": "Hecha",
+        })
+
+    url, kwargs = mock_patch.call_args[0][0], mock_patch.call_args[1]
+    assert url == "https://api.notion.com/v1/pages/var-1"
+    assert kwargs["json"]["properties"] == {
+        "Estado": {"status": {"name": "Hecha"}},
+        "Fecha": {"date": {"start": "2026-11-25"}},
+    }
+
+
+def test_actualizar_recordatorio_varios_limpia_fecha_vacia(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    mock_patch = Mock(return_value=_mock_respuesta_creada("var-2"))
+    with patch.object(extract_and_audit.requests, "patch", mock_patch):
+        extract_and_audit.actualizar_recordatorio_varios({
+            "page_id": "var-2",
+            "fecha": "",
+            "estado": "⏳ Pospuesta",
+        })
+
+    props = mock_patch.call_args[1]["json"]["properties"]
+    assert props["Fecha"] == {"date": None}
+    assert props["Estado"] == {"status": {"name": "⏳ Pospuesta"}}
+
+
+def test_actualizar_recordatorio_varios_sin_page_id_sale_fatal(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    with pytest.raises(SystemExit):
+        extract_and_audit.actualizar_recordatorio_varios({"estado": "Hecha"})

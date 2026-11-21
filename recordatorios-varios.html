@@ -82,6 +82,7 @@
         const recordatoriosVariosHoy = [];
         const recordatoriosVariosManana = [];
         const recordatoriosVariosSinFecha = [];
+        const recordatoriosVariosEstados = ["Sin empezar", "⏳ Pospuesta", "En ejecución", "En espera", "Hecha por otra persona", "⏭️ No necesaria", "Hecha", "❌ Fallida / Vencida"];
     </script>
 
     <!-- =================================================== -->
@@ -271,12 +272,90 @@
     </main>
 
     <!-- =================================================== -->
+    <!-- MODAL EDITAR RECORDATORIO VARIOS (Fecha + Estado)   -->
+    <!-- =================================================== -->
+    <div id="modal-editar-varios" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalEditarVarios()">
+        <div class="glass-card rounded-xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-headline-md font-headline-md text-white">Editar recordatorio</h3>
+                <button type="button" onclick="cerrarModalEditarVarios()" class="p-1.5 hover:bg-white/5 rounded-full transition-colors text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+
+            <div id="ev-vista-token" class="space-y-4 hidden">
+                <p class="text-[13px] text-[#e2beba] leading-relaxed">
+                    Para actualizar Notion sin exponer sus claves, se usa el token de GitHub guardado en este navegador
+                    (permisos <strong>Contents: Read and write</strong> y <strong>Actions: Read-only</strong> sobre este repo).
+                </p>
+                <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener"
+                   class="text-[13px] text-primary-container underline inline-flex items-center gap-1">
+                    Crear token fine-grained en GitHub
+                    <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                </a>
+                <div>
+                    <label for="ev-token-input" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Pegá el token acá</label>
+                    <input id="ev-token-input" type="password" autocomplete="off"
+                           class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                </div>
+                <button type="button" onclick="guardarTokenVarios()"
+                        class="w-full bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">
+                    Guardar token y continuar
+                </button>
+            </div>
+
+            <form id="form-editar-varios" class="space-y-4 hidden" onsubmit="return manejarSubmitEditarVarios(event)">
+                <input id="ev-page-id" type="hidden" value="" />
+                <p id="ev-nombre-lbl" class="text-[14px] font-semibold text-white bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 truncate"></p>
+
+                <div>
+                    <label for="ev-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha</label>
+                    <input id="ev-fecha" type="date"
+                           class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                </div>
+
+                <div>
+                    <label for="ev-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
+                    <select id="ev-estado"
+                            class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container"></select>
+                </div>
+
+                <p id="ev-mensaje" class="text-[13px] hidden"></p>
+
+                <div class="flex gap-3 pt-1">
+                    <button type="button" onclick="cerrarModalEditarVarios()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl transition-all">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">Guardar</button>
+                </div>
+
+                <button type="button" onclick="cambiarTokenVarios()" class="w-full text-center text-[11px] text-[#8e8e93] hover:text-white transition-colors pt-1">
+                    🔑 Cambiar el token guardado
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- SPINNER DE ESPERA Y CONFIRMACIÓN NOTION             -->
+    <!-- =================================================== -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarSpinnerNotion()" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
     <!-- UTILITARIOS COMPARTIDOS (vanilla, sin bundler) -->
     <!-- =================================================== -->
     <script src="./src/utils/debounce.js"></script>
     <script src="./src/utils/src_localStorage_index.js"></script>
     <script src="./src/utils/dashboard_logic.js"></script>
     <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
 
     <!-- =================================================== -->
     <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
@@ -338,6 +417,156 @@
             window.addEventListener("load", () => {
                 navigator.serviceWorker.register("./sw.js").catch(() => {});
             });
+        }
+
+        // =================================================== //
+        // EDITAR RECORDATORIOS VARIOS (Etapa 2)                //
+        // =================================================== //
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        function obtenerTokenGuardado() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+
+        function guardarTokenVarios() {
+            const token = document.getElementById("ev-token-input").value.trim();
+            if (!token) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, token); } catch (e) {}
+            document.getElementById("ev-token-input").value = "";
+            document.getElementById("ev-vista-token").classList.add("hidden");
+            document.getElementById("form-editar-varios").classList.remove("hidden");
+        }
+
+        function cambiarTokenVarios() {
+            try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+            document.getElementById("ev-vista-token").classList.remove("hidden");
+            document.getElementById("form-editar-varios").classList.add("hidden");
+        }
+
+        function _poblarSelectEstadosVarios(estadoActual) {
+            const select = document.getElementById("ev-estado");
+            const opciones = Array.isArray(recordatoriosVariosEstados) && recordatoriosVariosEstados.length
+                ? [...recordatoriosVariosEstados]
+                : ["Sin empezar"];
+            if (estadoActual && !opciones.includes(estadoActual)) {
+                opciones.unshift(estadoActual);
+            }
+            select.innerHTML = opciones
+                .map((op) => `<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`)
+                .join("");
+            if (estadoActual) select.value = estadoActual;
+        }
+
+        function abrirModalEditarVarios(prefijo, idx) {
+            const mapa = {
+                "varios-ayer": recordatoriosVariosAyer,
+                "varios-hoy": recordatoriosVariosHoy,
+            };
+            const item = (mapa[prefijo] || [])[idx];
+            if (!item || !item.id) return;
+
+            document.getElementById("ev-page-id").value = item.id;
+            document.getElementById("ev-nombre-lbl").textContent = item.nombre || "Sin nombre";
+            document.getElementById("ev-fecha").value = (item.fecha || "").slice(0, 10);
+            _poblarSelectEstadosVarios(item.estado);
+
+            const msg = document.getElementById("ev-mensaje");
+            msg.classList.add("hidden");
+            msg.textContent = "";
+
+            document.getElementById("modal-editar-varios").classList.remove("hidden");
+            document.getElementById("modal-editar-varios").classList.add("flex");
+
+            if (obtenerTokenGuardado()) {
+                document.getElementById("ev-vista-token").classList.add("hidden");
+                document.getElementById("form-editar-varios").classList.remove("hidden");
+            } else {
+                document.getElementById("ev-vista-token").classList.remove("hidden");
+                document.getElementById("form-editar-varios").classList.add("hidden");
+            }
+        }
+
+        function cerrarModalEditarVarios() {
+            document.getElementById("modal-editar-varios").classList.add("hidden");
+            document.getElementById("modal-editar-varios").classList.remove("flex");
+        }
+
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+
+        function cerrarSpinnerNotion() {
+            document.getElementById("modal-spinner-notion").classList.add("hidden");
+            document.getElementById("modal-spinner-notion").classList.remove("flex");
+        }
+
+        async function manejarSubmitEditarVarios(event) {
+            event.preventDefault();
+            const token = obtenerTokenGuardado();
+            if (!token) {
+                cambiarTokenVarios();
+                return false;
+            }
+
+            const pageId = document.getElementById("ev-page-id").value.trim();
+            const fecha = document.getElementById("ev-fecha").value.trim();
+            const estado = document.getElementById("ev-estado").value.trim();
+
+            cerrarModalEditarVarios();
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+
+            try {
+                const { url, options } = construirSolicitudNotionWrite(
+                    GITHUB_OWNER,
+                    GITHUB_REPO,
+                    "actualizar_recordatorio_varios",
+                    { page_id: pageId, fecha, estado },
+                    token,
+                );
+                const respuesta = await fetch(url, options);
+
+                if (respuesta.status === 401 || respuesta.status === 404) {
+                    cerrarSpinnerNotion();
+                    document.getElementById("modal-editar-varios").classList.remove("hidden");
+                    document.getElementById("modal-editar-varios").classList.add("flex");
+                    cambiarTokenVarios();
+                    return false;
+                }
+                if (respuesta.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${respuesta.status}). Probá de nuevo en un rato.`);
+                    return false;
+                }
+
+                const confirmacion = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER,
+                    repo: GITHUB_REPO,
+                    token,
+                    workflowFile: WORKFLOW_NOTION_WRITE,
+                    dispatchedAfterMs,
+                });
+
+                if (confirmacion.ok) {
+                    mostrarSpinnerNotion("ok", "¡Notion actualizado!", "Recargando recordatorios...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", confirmacion.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub. Revisá tu conexión e intentá de nuevo.");
+            }
+            return false;
         }
     </script>
 </body>

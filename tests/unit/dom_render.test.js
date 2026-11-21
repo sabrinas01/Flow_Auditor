@@ -163,6 +163,19 @@ describe('renderizarRecordatoriosVarios', () => {
     expect(html).not.toContain('<img');
     expect(html).not.toContain('<script>alert');
   });
+
+  test('renderiza botón de editar en varios-ayer y varios-hoy cuando tiene id, pero no en varios-manana', () => {
+    renderizarRecordatoriosVarios('varios-hoy', [
+      { id: 'v-1', nombre: 'Pagar luz', estado: 'Sin empezar', fecha: '2026-11-21' },
+    ]);
+    expect(document.getElementById('list-varios-hoy').innerHTML).toContain("abrirModalEditarVarios('varios-hoy', 0)");
+
+    document.body.innerHTML = '<div id="list-varios-manana"></div><span id="total-varios-manana-lbl"></span>';
+    renderizarRecordatoriosVarios('varios-manana', [
+      { id: 'v-2', nombre: 'Futuro', estado: 'Sin empezar', fecha: '2026-11-22' },
+    ]);
+    expect(document.getElementById('list-varios-manana').innerHTML).not.toContain('abrirModalEditarVarios');
+  });
 });
 
 // Extraída de agenda-personal.html en v4.23 (SRS-FR-M5-505, HU Notion Épica 2 #11)
