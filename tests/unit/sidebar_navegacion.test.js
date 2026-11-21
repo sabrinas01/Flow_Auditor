@@ -25,27 +25,33 @@ function extraerHrefsDelSidebar(archivo) {
 }
 
 describe('Orden fijo del menú de navegación (SRS-FR-M3-312) y link a Recordatorios Varios (SRS-FR-M3-310)', () => {
-  test('index.html: Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios', () => {
+  test('index.html: Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios, Finanzas', () => {
     expect(extraerHrefsDelSidebar('index.html')).toEqual([
-      'inicio.html', 'agenda-personal.html', 'index.html', 'recordatorios-varios.html',
+      'inicio.html', 'agenda-personal.html', 'index.html', 'recordatorios-varios.html', 'finanzas.html',
     ]);
   });
 
-  test('recordatorios-varios.html: Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios', () => {
+  test('recordatorios-varios.html: Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios, Finanzas', () => {
     expect(extraerHrefsDelSidebar('recordatorios-varios.html')).toEqual([
-      'inicio.html', 'agenda-personal.html', 'index.html', 'recordatorios-varios.html',
+      'inicio.html', 'agenda-personal.html', 'index.html', 'recordatorios-varios.html', 'finanzas.html',
     ]);
   });
 
-  test('agenda-personal.html: Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios', () => {
+  test('agenda-personal.html: Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios, Finanzas', () => {
     expect(extraerHrefsDelSidebar('agenda-personal.html')).toEqual([
-      'inicio.html', 'agenda-personal.html', 'index.html', 'recordatorios-varios.html',
+      'inicio.html', 'agenda-personal.html', 'index.html', 'recordatorios-varios.html', 'finanzas.html',
     ]);
   });
 
-  test('inicio.html: Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios', () => {
+  test('inicio.html: Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios, Finanzas', () => {
     expect(extraerHrefsDelSidebar('inicio.html')).toEqual([
-      'inicio.html', 'agenda-personal.html', 'index.html', 'recordatorios-varios.html',
+      'inicio.html', 'agenda-personal.html', 'index.html', 'recordatorios-varios.html', 'finanzas.html',
+    ]);
+  });
+
+  test('finanzas.html: Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios, Finanzas', () => {
+    expect(extraerHrefsDelSidebar('finanzas.html')).toEqual([
+      'inicio.html', 'agenda-personal.html', 'index.html', 'recordatorios-varios.html', 'finanzas.html',
     ]);
   });
 });

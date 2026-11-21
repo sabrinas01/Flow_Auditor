@@ -227,3 +227,58 @@ def test_actualizar_recordatorio_diario_incompleto_sale_fatal(monkeypatch):
     _preparar_credenciales(monkeypatch)
     with pytest.raises(SystemExit):
         extract_and_audit.actualizar_recordatorio_diario({"page_id": "dia-1"})
+
+
+def test_crear_y_actualizar_ingreso(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    monkeypatch.setattr(extract_and_audit, "DB_INGRESOS", "I" * 32)
+    mock_post = Mock(return_value=_mock_respuesta_creada("ing-1"))
+    with patch.object(extract_and_audit.requests, "post", mock_post):
+        extract_and_audit.crear_ingreso({
+            "titulo": "Sueldo",
+            "monto": 500000,
+            "fecha": "2026-11-01",
+            "tipo": "SUELDO",
+        })
+    body = mock_post.call_args[1]["json"]
+    assert body["parent"] == {"database_id": "I" * 32}
+    assert body["properties"]["Titulo"] == {"title": [{"text": {"content": "Sueldo"}}]}
+    assert body["properties"]["Monto"] == {"number": 500000.0}
+    assert body["properties"]["Tipo de Ingreso"] == {"select": {"name": "SUELDO"}}
+
+    mock_patch = Mock(return_value=_mock_respuesta_creada("ing-1"))
+    with patch.object(extract_and_audit.requests, "patch", mock_patch):
+        extract_and_audit.actualizar_ingreso({
+            "page_id": "ing-1",
+            "titulo": "Sueldo editado",
+            "monto": 550000,
+            "fecha": "2026-11-01",
+            "tipo": None,
+        })
+    assert mock_patch.call_args[1]["json"]["properties"]["Tipo de Ingreso"] == {"select": None}
+
+
+def test_crear_y_actualizar_egreso(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    monkeypatch.setattr(extract_and_audit, "DB_EGRESOS", "E" * 32)
+    mock_post = Mock(return_value=_mock_respuesta_creada("egr-1"))
+    with patch.object(extract_and_audit.requests, "post", mock_post):
+        extract_and_audit.crear_egreso({
+            "nombre": "Supermercado",
+            "monto": 35000,
+            "monto_usd": None,
+            "fecha": "2026-11-21",
+            "forma_pago": ["DÉBITO"],
+            "tarjeta": "GALICIA",
+            "cuotas": 1,
+            "categoria": ["SUPERMERCADO"],
+            "detalle": "Compra semanal",
+        })
+    props = mock_post.call_args[1]["json"]["properties"]
+    assert props["Nombre del gasto"] == {"title": [{"text": {"content": "Supermercado"}}]}
+    assert props["Monto"] == {"number": 35000.0}
+    assert props["Forma de pago"] == {"multi_select": [{"name": "DÉBITO"}]}
+    assert props["Tarjeta usada"] == {"select": {"name": "GALICIA"}}
+    assert props["Cantidad de cuotas"] == {"number": 1}
+    assert props["Categoría"] == {"multi_select": [{"name": "SUPERMERCADO"}]}
+    assert props["Detalle"] == {"rich_text": [{"text": {"content": "Compra semanal"}}]}

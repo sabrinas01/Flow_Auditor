@@ -57,6 +57,8 @@ jobs:
           NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS }}
           NOTION_DB_RECORDATORIOS_VARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_VARIOS }}
           NOTION_DB_EVENTOS: ${{ secrets.NOTION_DB_EVENTOS }}
+          NOTION_DB_INGRESOS: ${{ secrets.NOTION_DB_INGRESOS }}
+          NOTION_DB_EGRESOS: ${{ secrets.NOTION_DB_EGRESOS }}
         run: python extract_and_audit.py
 
       - name: Publish updated frontends to the gh-pages branch
@@ -72,7 +74,7 @@ jobs:
           git checkout -B gh-pages
           # Preservar la subcarpeta /dev/ del ambiente develop si existe en gh-pages
           git checkout origin/gh-pages -- dev 2>/dev/null || true
-          git add index.html recordatorios-varios.html agenda-personal.html
+          git add index.html recordatorios-varios.html agenda-personal.html finanzas.html
 
           # Comprobamos explícitamente si hay cambios staged reales para evitar commits vacíos
           if ! git diff --staged --quiet; then

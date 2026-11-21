@@ -89,19 +89,23 @@ NOTION_API_KEY = os.getenv("NOTION_API_KEY") or os.getenv("NOTION_TOKEN")
 DB_RECORDATORIOS_DIARIOS = os.getenv("NOTION_DB_RECORDATORIOS_DIARIOS") or os.getenv("NOTION_DATABASE_ID") or os.getenv("NOTION_DB_ID")
 DB_RECORDATORIOS_VARIOS = os.getenv("NOTION_DB_RECORDATORIOS_VARIOS")
 DB_AGENDA_EVENTOS = os.getenv("NOTION_DB_EVENTOS")
+DB_INGRESOS = os.getenv("NOTION_DB_INGRESOS")
+DB_EGRESOS = os.getenv("NOTION_DB_EGRESOS")
 
 
 def validar_credenciales():
     try:
         # Uso de helper interno para resolución robusta de variables de entorno
-        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
         # Opcionales: su ausencia (o cualquier fallo al consultarlas) no debe abortar
-        # la sincronización de Recordatorios Diarios — ver sincronizar_recordatorios_varios()
-        # y sincronizar_agenda_personal().
+        # la sincronización de Recordatorios Diarios — ver sincronizar_recordatorios_varios(),
+        # sincronizar_agenda_personal() y sincronizar_finanzas().
         DB_RECORDATORIOS_VARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_VARIOS"], required=False)
         DB_AGENDA_EVENTOS = get_env_var(["NOTION_DB_EVENTOS"], required=False)
+        DB_INGRESOS = get_env_var(["NOTION_DB_INGRESOS"], required=False)
+        DB_EGRESOS = get_env_var(["NOTION_DB_EGRESOS"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -346,6 +350,11 @@ def auditar_consistencia_tripartita():
         sincronizar_agenda_personal(timestamps, app_version)
     except Exception as e:
         print(f"⚠️ [AGENDA PERSONAL]: error inesperado al sincronizar ({e}), se omite.")
+
+    try:
+        sincronizar_finanzas(timestamps, app_version)
+    except Exception as e:
+        print(f"⚠️ [FINANZAS]: error inesperado al sincronizar ({e}), se omite.")
 
     verificar_consumo_ram()
 
@@ -878,6 +887,252 @@ def actualizar_recordatorio_diario(datos):
     print(f"✅ [ACTUALIZAR DIARIO]: tarea {page_id} actualizada a '{estado}' en Notion.")
 
 
+_FINANZAS_OPCIONES_FALLBACK = {
+    "tipos_ingreso": ["SUELDO", "AHORROS", "PRESTAMOS", "EXTRAS", "SALDO MES ANTERIOR", "INDEMNIZACIÓN", "SUBSIDIO"],
+    "formas_pago": ["TARJETA", "TARJETA (1 CUOTA)", "EFECTIVO", "DÉBITO", "CRÉDITO GALICIA"],
+    "tarjetas": ["BBVA", "GALICIA", "EFECTIVO", "NARANJA X", "UILO", "brubank", "SANTANDER", "MP", "Lemon", "BNA", "BCO SJ"],
+    "categorias": [
+        "TARJETAS", "COMPRAS HORMIGAS (caramelos gaseosa galletas chicles)", "TRANSPORTE",
+        "SALIDAS", "SUPERMERCADO", "SALUD", "SERVICIOS", "INDUMENTARIA", "TECNOLOGÍA",
+        "AHORRO e INVERSIONES", "TELÉFONO", "EDUCACIÓN", "PRESTAMO", "BELLEZA",
+        "IMPUESTOS", "ALIMENTO PERRO", "CHUCHES", "VIVERO", "GASTO NO TRACKEADO",
+        "AUTO", "CuidaMe", "DONACIONES", "BLANCA", "ACCESORIOS", "BICICLETA",
+        "HOGAR", "FERRETERÍA", "Tribu del Papel",
+    ],
+}
+
+
+def _extraer_finanzas_bd(database_id, etiqueta, mes_actual, parser_fn):
+    """Consulta una BD de Finanzas filtrando por el mes actual (GMT-3) y
+    devuelve `(items_ordenados, schema_props)` sin propagar errores."""
+    if not database_id:
+        print(f"ℹ️ [{etiqueta}]: variable no configurada, se omite.")
+        return [], {}
+
+    headers = {
+        "Authorization": f"Bearer {NOTION_API_KEY}",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json",
+    }
+    try:
+        r = requests.post(
+            f"https://api.notion.com/v1/databases/{database_id}/query",
+            json={"page_size": 100, "sorts": [{"property": "Fecha", "direction": "descending"}]},
+            headers=headers,
+            timeout=15,
+        )
+        r.raise_for_status()
+        results = r.json().get("results", [])
+    except Exception as e:
+        print(f"⚠️ [{etiqueta}]: error al consultar Notion ({e}), se omite.")
+        return [], {}
+
+    schema_props = {}
+    try:
+        sr = requests.get(f"https://api.notion.com/v1/databases/{database_id}", headers=headers, timeout=10)
+        sr.raise_for_status()
+        schema_props = sr.json().get("properties") or {}
+    except Exception:
+        pass
+
+    items = []
+    for pagina in results:
+        props = pagina.get("properties", {})
+        fecha = ((props.get("Fecha") or {}).get("date") or {}).get("start")
+        if not fecha or not fecha.startswith(mes_actual):
+            continue
+        items.append(parser_fn(pagina.get("id"), props, fecha))
+
+    return items, schema_props
+
+
+def _parsear_ingreso(page_id, props, fecha):
+    titulo = "".join(t.get("plain_text", "") for t in (props.get("Titulo") or {}).get("title", []))
+    tipo = ((props.get("Tipo de Ingreso") or {}).get("select") or {}).get("name")
+    return {
+        "id": page_id,
+        "titulo": titulo or "Sin título",
+        "monto": (props.get("Monto") or {}).get("number") or 0,
+        "fecha": fecha[:10],
+        "tipo": tipo,
+    }
+
+
+def _parsear_egreso(page_id, props, fecha):
+    nombre = "".join(t.get("plain_text", "") for t in (props.get("Nombre del gasto") or {}).get("title", []))
+    monto_usd = (props.get("Monto en USD") or {}).get("number")
+    if monto_usd is None:
+        monto_usd = (props.get("Monto  USD") or {}).get("number")
+    return {
+        "id": page_id,
+        "nombre": nombre or "Sin nombre",
+        "monto": (props.get("Monto") or {}).get("number") or 0,
+        "monto_usd": monto_usd,
+        "fecha": fecha[:10],
+        "forma_pago": [o.get("name") for o in (props.get("Forma de pago") or {}).get("multi_select", []) if o.get("name")],
+        "tarjeta": ((props.get("Tarjeta usada") or {}).get("select") or {}).get("name"),
+        "cuotas": (props.get("Cantidad de cuotas") or {}).get("number"),
+        "categoria": [o.get("name") for o in (props.get("Categoría") or {}).get("multi_select", []) if o.get("name")],
+        "detalle": "".join(t.get("plain_text", "") for t in (props.get("Detalle") or {}).get("rich_text", [])) or None,
+    }
+
+
+def _opciones_de_schema(schema_props, prop_name, tipo, fallback):
+    prop = schema_props.get(prop_name) or {}
+    opts = [o.get("name") for o in (prop.get(tipo) or {}).get("options", []) if o.get("name")]
+    return opts if opts else list(fallback)
+
+
+def sincronizar_finanzas(timestamps, app_version):
+    """Inyecta los Ingresos y Egresos del mes actual en finanzas.html (aislado y no fatal)."""
+    html_path = BASE_DIR / "finanzas.html"
+    if not html_path.exists():
+        print("ℹ️ [FINANZAS]: finanzas.html no encontrado, se omite.")
+        return
+
+    ahora_art = datetime.now(timezone.utc) - timedelta(hours=3)
+    mes_actual = ahora_art.strftime("%Y-%m")
+
+    ingresos, schema_ing = _extraer_finanzas_bd(DB_INGRESOS, "INGRESOS", mes_actual, _parsear_ingreso)
+    egresos, schema_egr = _extraer_finanzas_bd(DB_EGRESOS, "EGRESOS", mes_actual, _parsear_egreso)
+
+    opciones = {
+        "tipos_ingreso": _opciones_de_schema(schema_ing, "Tipo de Ingreso", "select", _FINANZAS_OPCIONES_FALLBACK["tipos_ingreso"]),
+        "formas_pago": _opciones_de_schema(schema_egr, "Forma de pago", "multi_select", _FINANZAS_OPCIONES_FALLBACK["formas_pago"]),
+        "tarjetas": _opciones_de_schema(schema_egr, "Tarjeta usada", "select", _FINANZAS_OPCIONES_FALLBACK["tarjetas"]),
+        "categorias": _opciones_de_schema(schema_egr, "Categoría", "multi_select", _FINANZAS_OPCIONES_FALLBACK["categorias"]),
+    }
+
+    with open(html_path, "r", encoding="utf-8") as file:
+        html_content = file.read()
+
+    html_content = _inyectar_timestamps_y_version(html_content, timestamps, app_version)
+    html_content = re.sub(r'const\s+finanzasMesActual\s*=\s*".*?"\s*;', f'const finanzasMesActual = "{mes_actual}";', html_content)
+
+    for nombre_const, valor in (
+        ("finanzasIngresos", ingresos),
+        ("finanzasEgresos", egresos),
+        ("finanzasOpciones", opciones),
+    ):
+        json_val = json.dumps(valor, ensure_ascii=False).replace("</", "<\\/")
+        patron = rf"const\s+{nombre_const}\s*=\s*(?:\[.*?\]|\{{.*?\}})\s*;"
+        html_content = re.sub(
+            patron,
+            lambda _m, nc=nombre_const, jv=json_val: f"const {nc} = {jv};",
+            html_content,
+            flags=re.DOTALL,
+        )
+
+    with open(html_path, "w", encoding="utf-8") as file:
+        file.write(html_content)
+
+    print("✅ Frontend finanzas.html sincronizado y actualizado con éxito.")
+
+
+def _construir_propiedades_ingreso(datos, modo_edicion=False):
+    titulo = (datos.get("titulo") or "").strip()
+    fecha = (datos.get("fecha") or "").strip()
+    monto = datos.get("monto")
+    if not titulo or not fecha or monto is None:
+        print("❌ [INGRESO]: faltan campos obligatorios (titulo/monto/fecha).")
+        sys.exit(1)
+
+    props = {
+        "Titulo": {"title": [{"text": {"content": titulo}}]},
+        "Monto": {"number": float(monto)},
+        "Fecha": {"date": {"start": fecha}},
+    }
+    if datos.get("tipo"):
+        props["Tipo de Ingreso"] = {"select": {"name": datos["tipo"]}}
+    elif modo_edicion:
+        props["Tipo de Ingreso"] = {"select": None}
+    return titulo, props
+
+
+def crear_ingreso(datos):
+    if not DB_INGRESOS:
+        print("❌ [CREAR INGRESO]: NOTION_DB_INGRESOS no configurada.")
+        sys.exit(1)
+    titulo, props = _construir_propiedades_ingreso(datos, modo_edicion=False)
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", {"parent": {"database_id": DB_INGRESOS}, "properties": props}, "CREAR INGRESO")
+    print(f"✅ [CREAR INGRESO]: '{titulo}' creado ({res.get('id', '?')}).")
+
+
+def actualizar_ingreso(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR INGRESO]: falta page_id.")
+        sys.exit(1)
+    titulo, props = _construir_propiedades_ingreso(datos, modo_edicion=True)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR INGRESO")
+    print(f"✅ [ACTUALIZAR INGRESO]: '{titulo}' ({page_id}) actualizado.")
+
+
+def _construir_propiedades_egreso(datos, modo_edicion=False):
+    nombre = (datos.get("nombre") or "").strip()
+    fecha = (datos.get("fecha") or "").strip()
+    monto = datos.get("monto")
+    if not nombre or not fecha or monto is None:
+        print("❌ [EGRESO]: faltan campos obligatorios (nombre/monto/fecha).")
+        sys.exit(1)
+
+    props = {
+        "Nombre del gasto": {"title": [{"text": {"content": nombre}}]},
+        "Monto": {"number": float(monto)},
+        "Fecha": {"date": {"start": fecha}},
+    }
+    if datos.get("monto_usd") is not None:
+        props["Monto en USD"] = {"number": float(datos["monto_usd"])}
+    elif modo_edicion:
+        props["Monto en USD"] = {"number": None}
+
+    if datos.get("forma_pago"):
+        props["Forma de pago"] = {"multi_select": [{"name": x} for x in datos["forma_pago"]]}
+    elif modo_edicion:
+        props["Forma de pago"] = {"multi_select": []}
+
+    if datos.get("tarjeta"):
+        props["Tarjeta usada"] = {"select": {"name": datos["tarjeta"]}}
+    elif modo_edicion:
+        props["Tarjeta usada"] = {"select": None}
+
+    if datos.get("cuotas") is not None:
+        props["Cantidad de cuotas"] = {"number": int(datos["cuotas"])}
+    elif modo_edicion:
+        props["Cantidad de cuotas"] = {"number": None}
+
+    if datos.get("categoria"):
+        props["Categoría"] = {"multi_select": [{"name": x} for x in datos["categoria"]]}
+    elif modo_edicion:
+        props["Categoría"] = {"multi_select": []}
+
+    if datos.get("detalle"):
+        props["Detalle"] = {"rich_text": [{"text": {"content": datos["detalle"]}}]}
+    elif modo_edicion:
+        props["Detalle"] = {"rich_text": []}
+
+    return nombre, props
+
+
+def crear_egreso(datos):
+    if not DB_EGRESOS:
+        print("❌ [CREAR EGRESO]: NOTION_DB_EGRESOS no configurada.")
+        sys.exit(1)
+    nombre, props = _construir_propiedades_egreso(datos, modo_edicion=False)
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", {"parent": {"database_id": DB_EGRESOS}, "properties": props}, "CREAR EGRESO")
+    print(f"✅ [CREAR EGRESO]: '{nombre}' creado ({res.get('id', '?')}).")
+
+
+def actualizar_egreso(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR EGRESO]: falta page_id.")
+        sys.exit(1)
+    nombre, props = _construir_propiedades_egreso(datos, modo_edicion=True)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR EGRESO")
+    print(f"✅ [ACTUALIZAR EGRESO]: '{nombre}' ({page_id}) actualizado.")
+
+
 def ejecutar_accion_notion(payload):
     """Despacha acciones de escritura recibidas vía `ACCION_NOTION_PAYLOAD`."""
     accion = (payload or {}).get("accion")
@@ -890,6 +1145,14 @@ def ejecutar_accion_notion(payload):
         actualizar_recordatorio_varios(datos)
     elif accion == "actualizar_recordatorio_diario":
         actualizar_recordatorio_diario(datos)
+    elif accion == "crear_ingreso":
+        crear_ingreso(datos)
+    elif accion == "actualizar_ingreso":
+        actualizar_ingreso(datos)
+    elif accion == "crear_egreso":
+        crear_egreso(datos)
+    elif accion == "actualizar_egreso":
+        actualizar_egreso(datos)
     elif accion == "archivar_pagina":
         archivar_pagina_notion(datos)
     else:

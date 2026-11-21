@@ -30,12 +30,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Ejecutar escritura en Notion y sincronizar los 3 frontends
+      - name: Ejecutar escritura en Notion y sincronizar los frontends
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DB_RECORDATORIOS_DIARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_DIARIOS }}
           NOTION_DB_RECORDATORIOS_VARIOS: ${{ secrets.NOTION_DB_RECORDATORIOS_VARIOS }}
           NOTION_DB_EVENTOS: ${{ secrets.NOTION_DB_EVENTOS }}
+          NOTION_DB_INGRESOS: ${{ secrets.NOTION_DB_INGRESOS }}
+          NOTION_DB_EGRESOS: ${{ secrets.NOTION_DB_EGRESOS }}
           ACCION_NOTION_PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: python extract_and_audit.py
 
@@ -49,7 +51,7 @@ jobs:
           git fetch origin gh-pages || true
           if [ "$TARGET_ENV" = "develop" ]; then
             mkdir -p /tmp/dev_site
-            cp inicio.html index.html recordatorios-varios.html agenda-personal.html styles.css manifest.json sw.js /tmp/dev_site/
+            cp inicio.html index.html recordatorios-varios.html agenda-personal.html finanzas.html styles.css manifest.json sw.js /tmp/dev_site/
             cp -r src grafica /tmp/dev_site/
             git checkout -f -B gh-pages origin/gh-pages
             rm -rf dev
@@ -59,7 +61,7 @@ jobs:
           else
             git checkout -B gh-pages
             git checkout origin/gh-pages -- dev 2>/dev/null || true
-            git add index.html recordatorios-varios.html agenda-personal.html
+            git add index.html recordatorios-varios.html agenda-personal.html finanzas.html
           fi
 
           if ! git diff --staged --quiet; then

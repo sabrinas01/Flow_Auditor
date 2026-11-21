@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Finanzas — AsistenteSabry</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0e0e0e">
+    <link rel="icon" href="./grafica/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./grafica/icons/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #0e0e0e;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #141416;
+            border: 1px solid #232326;
+        }
+        .status-row {
+            background: #1c1c1f;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+        .status-row:hover { background: #232326; }
+        .left-pill-green { border-left: 3px solid #53a759; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-red { border-left: 3px solid #ff5f52; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        #sidebar { transition: transform 0.3s ease; }
+        .spin-animation { animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden antialiased">
+
+    <script>
+        const timestampLocalStr = "18/08/2026 20:20:23";
+        const appVersionStr = "dev";
+        const timestampNextStr = "18/08/2026 21:20:23";
+        const timestampServerStr = "18/08/2026 23:20:23";
+
+        const finanzasMesActual = "2026-11";
+        const finanzasIngresos = [];
+        const finanzasEgresos = [];
+        const finanzasOpciones = {"tipos_ingreso": ["SUELDO", "AHORROS", "PRESTAMOS", "EXTRAS", "SALDO MES ANTERIOR", "INDEMNIZACIÓN", "SUBSIDIO"], "formas_pago": ["TARJETA", "TARJETA (1 CUOTA)", "EFECTIVO", "DÉBITO", "CRÉDITO GALICIA"], "tarjetas": ["BBVA", "GALICIA", "EFECTIVO", "NARANJA X", "UILO", "brubank", "SANTANDER", "MP", "Lemon", "BNA", "BCO SJ"], "categorias": ["TARJETAS", "TRANSPORTE", "SALIDAS", "SUPERMERCADO", "SALUD", "SERVICIOS", "INDUMENTARIA", "TECNOLOGÍA", "AHORRO e INVERSIONES", "HOGAR"]};
+    </script>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-surface-container-low border-r border-outline-variant/40 w-64 -translate-x-full">
+        <div class="flex items-center gap-3 mb-8 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-primary text-headline-md leading-tight">Asistente de Sabry</h2>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">event</span>
+                <span>Agenda personal</span>
+            </a>
+            <a href="index.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">calendar_today</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">list_alt</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="finanzas.html" class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+                <span>Finanzas</span>
+            </a>
+        </nav>
+    </aside>
+
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <main class="min-h-screen">
+        <!-- TOP APP BAR -->
+        <header class="bg-[#0e0e0e] border-b border-outline-variant/30 sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">ASISTENTESABRY</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">FINANZAS</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- RESUMEN DEL MES -->
+            <section class="space-y-4">
+                <div class="flex flex-wrap justify-between items-center gap-3 px-1">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">RESUMEN MENSUAL</p>
+                        <h2 id="finanzas-mes-lbl" class="text-headline-md font-headline-md text-white">Movimientos del mes</h2>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="abrirModalIngreso()"
+                                class="bg-[#53a759] hover:bg-[#53a759]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">add</span>
+                            <span>Registrar Ingreso</span>
+                        </button>
+                        <button type="button" onclick="abrirModalEgreso()"
+                                class="bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">add</span>
+                            <span>Registrar Egreso</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="glass-card rounded-xl p-6 border-l-4 border-l-[#53a759]">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">TOTAL INGRESOS</p>
+                        <p id="total-ingresos-val" class="text-metric-xl font-metric-xl text-[#53a759]">$ 0,00</p>
+                    </div>
+                    <div class="glass-card rounded-xl p-6 border-l-4 border-l-[#ff5f52]">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">TOTAL EGRESOS</p>
+                        <p id="total-egresos-val" class="text-metric-xl font-metric-xl text-[#ff5f52]">$ 0,00</p>
+                    </div>
+                    <div class="glass-card rounded-xl p-6 border-l-4 border-l-[#00aaff]">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">BALANCE DEL MES</p>
+                        <p id="balance-mes-val" class="text-metric-xl font-metric-xl text-white">$ 0,00</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LISTADOS DEL MES -->
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-grid-gutter">
+                <!-- Ingresos -->
+                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#53a759] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">INGRESOS</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Ingresos del mes</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="total-ingresos-lbl" class="bg-[#53a759]/10 text-[#53a759] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
+                            <button type="button" onclick="toggleBloque('ingresos')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-ingresos">
+                                <span id="chevron-ingresos" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="content-ingresos">
+                        <div id="list-ingresos" class="space-y-3"></div>
+                    </div>
+                </article>
+
+                <!-- Egresos -->
+                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">EGRESOS</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Egresos del mes</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="total-egresos-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 ítems</span>
+                            <button type="button" onclick="toggleBloque('egresos')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-egresos">
+                                <span id="chevron-egresos" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="content-egresos">
+                        <div id="list-egresos" class="space-y-3"></div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Redirección a la vista en Notion -->
+            <section class="flex flex-col items-center py-4">
+                <a href="https://app.notion.com/p/32aa38bb7a6e8076ba6be8b4c8dd89e2?v=32aa38bb7a6e80a38764000c90903153&source=copy_link"
+                   target="_blank"
+                   class="bg-[#c0453b] hover:bg-[#c0453b]/90 text-white font-bold text-[15px] py-3.5 px-8 rounded-xl flex items-center gap-2 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
+                    <span class="material-symbols-outlined text-[18px]">payments</span>
+                    <span>Ver Finanzas en Notion</span>
+                    <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                </a>
+            </section>
+        </div>
+
+        <footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">dev</span></p>
+                    </div>
+                    <div class="flex flex-wrap gap-x-8 gap-y-2">
+                        <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Sabri Studios &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL INGRESO -->
+    <div id="modal-ingreso" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalIngreso()">
+        <div class="glass-card rounded-xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="ing-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar Ingreso</h3>
+                <button type="button" onclick="cerrarModalIngreso()" class="p-1.5 hover:bg-white/5 rounded-full transition-colors text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-ingreso" class="space-y-4" onsubmit="return manejarSubmitIngreso(event)">
+                <input id="ing-page-id" type="hidden" value="" />
+                <div>
+                    <label for="ing-titulo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Título *</label>
+                    <input id="ing-titulo" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="ing-monto" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Monto ($) *</label>
+                        <input id="ing-monto" type="number" step="0.01" min="0.01" required class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                    <div>
+                        <label for="ing-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha *</label>
+                        <input id="ing-fecha" type="date" required class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                </div>
+                <div>
+                    <label for="ing-tipo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Tipo de Ingreso</label>
+                    <select id="ing-tipo" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container"></select>
+                </div>
+                <p id="ing-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button id="ing-btn-eliminar" type="button" onclick="confirmarEliminarIngresoDesdeModal()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl transition-all" title="Mandar a la papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
+                    <button type="button" onclick="cerrarModalIngreso()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl transition-all">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-[#53a759] hover:bg-[#53a759]/90 text-white font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL EGRESO -->
+    <div id="modal-egreso" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalEgreso()">
+        <div class="glass-card rounded-xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="egr-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar Egreso</h3>
+                <button type="button" onclick="cerrarModalEgreso()" class="p-1.5 hover:bg-white/5 rounded-full transition-colors text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-egreso" class="space-y-3.5" onsubmit="return manejarSubmitEgreso(event)">
+                <input id="egr-page-id" type="hidden" value="" />
+                <div>
+                    <label for="egr-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Nombre del gasto *</label>
+                    <input id="egr-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="egr-monto" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Monto ($) *</label>
+                        <input id="egr-monto" type="number" step="0.01" min="0.01" required class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                    <div>
+                        <label for="egr-monto-usd" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Monto en USD</label>
+                        <input id="egr-monto-usd" type="number" step="0.01" min="0" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="egr-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Fecha *</label>
+                        <input id="egr-fecha" type="date" required class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                    <div>
+                        <label for="egr-cuotas" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Cuotas</label>
+                        <input id="egr-cuotas" type="number" min="1" step="1" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="egr-forma-pago" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Forma de pago</label>
+                        <select id="egr-forma-pago" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container"></select>
+                    </div>
+                    <div>
+                        <label for="egr-tarjeta" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Tarjeta usada</label>
+                        <select id="egr-tarjeta" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container"></select>
+                    </div>
+                </div>
+                <div>
+                    <label for="egr-categoria" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Categoría</label>
+                    <select id="egr-categoria" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container"></select>
+                </div>
+                <div>
+                    <label for="egr-detalle" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Detalle</label>
+                    <textarea id="egr-detalle" rows="2" maxlength="1000" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container resize-none"></textarea>
+                </div>
+                <p id="egr-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button id="egr-btn-eliminar" type="button" onclick="confirmarEliminarEgresoDesdeModal()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl transition-all" title="Mandar a la papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
+                    <button type="button" onclick="cerrarModalEgreso()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl transition-all">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR PAPELERA -->
+    <div id="modal-confirmar-papelera" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="cerrarModalPapelera()">
+        <div class="glass-card rounded-xl p-6 w-full max-w-sm space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-3 text-[#ff5f52]">
+                <span class="material-symbols-outlined text-[24px]">delete</span>
+                <h3 class="text-headline-md font-headline-md text-white">Mandar a la papelera</h3>
+            </div>
+            <p id="papelera-texto" class="text-[14px] text-[#e2beba] leading-relaxed">¿Deseas mandar este registro a la papelera de Notion?</p>
+            <div class="flex gap-3 pt-1">
+                <button type="button" onclick="cerrarModalPapelera()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cancelar</button>
+                <button type="button" onclick="ejecutarEnvioPapelera()" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-2.5 rounded-xl transition-all active:scale-95">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TOKEN GITHUB -->
+    <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="cerrarModalTokenFinanzas()">
+        <div class="glass-card rounded-xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center">
+                <h3 class="text-headline-md font-headline-md text-white">Configurar token de GitHub</h3>
+                <button type="button" onclick="cerrarModalTokenFinanzas()" class="p-1.5 hover:bg-white/5 rounded-full transition-colors text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <p class="text-[13px] text-[#e2beba] leading-relaxed">
+                Para guardar en Notion sin exponer sus claves, se usa un token de GitHub guardado únicamente en este navegador
+                (<strong>Contents: Read and write</strong> y <strong>Actions: Read-only</strong> sobre este repo).
+            </p>
+            <div>
+                <label for="fin-token-input" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Pegá el token acá</label>
+                <input id="fin-token-input" type="password" autocomplete="off" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+            </div>
+            <button type="button" onclick="guardarTokenFinanzas()" class="w-full bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">Guardar token</button>
+        </div>
+    </div>
+
+    <!-- SPINNER CONFIRMACIÓN -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarSpinnerNotion()" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
+    <script src="./src/utils/finanzas_logic.js"></script>
+
+    <script>
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        function obtenerTokenGuardado() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+
+        function hoyLocalISO() {
+            const d = new Date();
+            const pad = (n) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        }
+
+        function _poblarSelect(id, opciones, valorActual) {
+            const el = document.getElementById(id);
+            const lista = ['<option value="">Sin especificar</option>'];
+            (opciones || []).forEach((op) => {
+                lista.push(`<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`);
+            });
+            el.innerHTML = lista.join("");
+            if (valorActual) el.value = valorActual;
+        }
+
+        function renderizarFinanzas() {
+            document.getElementById("finanzas-mes-lbl").textContent = `Movimientos (${finanzasMesActual})`;
+            const { totalIngresos, totalEgresos, balance } = calcularResumenFinanzas(finanzasIngresos, finanzasEgresos);
+            document.getElementById("total-ingresos-val").textContent = formatearMonedaARS(totalIngresos);
+            document.getElementById("total-egresos-val").textContent = formatearMonedaARS(totalEgresos);
+            const balEl = document.getElementById("balance-mes-val");
+            balEl.textContent = formatearMonedaARS(balance);
+            balEl.className = "text-metric-xl font-metric-xl " + (balance >= 0 ? "text-[#53a759]" : "text-[#ff5f52]");
+
+            document.getElementById("total-ingresos-lbl").textContent = `${finanzasIngresos.length} ítems`;
+            document.getElementById("total-egresos-lbl").textContent = `${finanzasEgresos.length} ítems`;
+
+            const contIng = document.getElementById("list-ingresos");
+            contIng.innerHTML = finanzasIngresos.length === 0
+                ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin ingresos registrados este mes</div>`
+                : finanzasIngresos.map((item, idx) => `
+                    <div class="status-row left-pill-green flex items-center justify-between px-4 py-3.5 gap-3">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-white font-semibold truncate">${escapeHtml(item.titulo)}</p>
+                            <p class="text-[12px] text-[#8e8e93] truncate">${escapeHtml(item.fecha)}${item.tipo ? " · " + escapeHtml(item.tipo) : ""}</p>
+                        </div>
+                        <span class="text-[#53a759] font-bold text-[14px] flex-shrink-0">${escapeHtml(formatearMonedaARS(item.monto))}</span>
+                        <div class="flex items-center gap-1 flex-shrink-0">
+                            <button type="button" onclick="abrirModalEditarIngreso(${idx})" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                            <button type="button" onclick="confirmarEliminarFinanza('${escapeHtml(item.id)}', '${escapeHtml(item.titulo)}')" class="p-1.5 hover:bg-[#ff5f52]/15 rounded-lg text-[#8e8e93] hover:text-[#ff5f52]" title="Mandar a papelera"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                        </div>
+                    </div>
+                `).join("");
+
+            const contEgr = document.getElementById("list-egresos");
+            contEgr.innerHTML = finanzasEgresos.length === 0
+                ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin egresos registrados este mes</div>`
+                : finanzasEgresos.map((item, idx) => {
+                    const meta = [item.fecha, ...(item.categoria || []), item.tarjeta].filter(Boolean).map(escapeHtml).join(" · ");
+                    return `
+                    <div class="status-row left-pill-red flex items-center justify-between px-4 py-3.5 gap-3">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-white font-semibold truncate">${escapeHtml(item.nombre)}</p>
+                            <p class="text-[12px] text-[#8e8e93] truncate">${meta}</p>
+                        </div>
+                        <span class="text-[#ff5f52] font-bold text-[14px] flex-shrink-0">${escapeHtml(formatearMonedaARS(item.monto))}</span>
+                        <div class="flex items-center gap-1 flex-shrink-0">
+                            <button type="button" onclick="abrirModalEditarEgreso(${idx})" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                            <button type="button" onclick="confirmarEliminarFinanza('${escapeHtml(item.id)}', '${escapeHtml(item.nombre)}')" class="p-1.5 hover:bg-[#ff5f52]/15 rounded-lg text-[#8e8e93] hover:text-[#ff5f52]" title="Mandar a papelera"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                        </div>
+                    </div>
+                `;}).join("");
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initLocalStorage();
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+            renderizarFinanzas();
+        });
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+            sidebar.classList.toggle('-translate-x-full', isOpen);
+            overlay.classList.toggle('hidden', isOpen);
+        }
+
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            });
+        }
+
+        function abrirModalIngreso() {
+            document.getElementById("ing-modal-titulo").textContent = "Registrar Ingreso";
+            document.getElementById("form-ingreso").reset();
+            document.getElementById("ing-page-id").value = "";
+            document.getElementById("ing-fecha").value = hoyLocalISO();
+            document.getElementById("ing-btn-eliminar").classList.add("hidden");
+            _poblarSelect("ing-tipo", finanzasOpciones.tipos_ingreso, "");
+            document.getElementById("ing-mensaje").classList.add("hidden");
+            document.getElementById("modal-ingreso").classList.remove("hidden");
+            document.getElementById("modal-ingreso").classList.add("flex");
+        }
+
+        function abrirModalEditarIngreso(idx) {
+            const item = finanzasIngresos[idx];
+            if (!item || !item.id) return;
+            document.getElementById("ing-modal-titulo").textContent = "Editar Ingreso";
+            document.getElementById("ing-page-id").value = item.id;
+            document.getElementById("ing-titulo").value = item.titulo || "";
+            document.getElementById("ing-monto").value = item.monto || "";
+            document.getElementById("ing-fecha").value = item.fecha || hoyLocalISO();
+            _poblarSelect("ing-tipo", finanzasOpciones.tipos_ingreso, item.tipo || "");
+            document.getElementById("ing-btn-eliminar").classList.remove("hidden");
+            document.getElementById("ing-mensaje").classList.add("hidden");
+            document.getElementById("modal-ingreso").classList.remove("hidden");
+            document.getElementById("modal-ingreso").classList.add("flex");
+        }
+
+        function cerrarModalIngreso() {
+            document.getElementById("modal-ingreso").classList.add("hidden");
+            document.getElementById("modal-ingreso").classList.remove("flex");
+        }
+
+        function abrirModalEgreso() {
+            document.getElementById("egr-modal-titulo").textContent = "Registrar Egreso";
+            document.getElementById("form-egreso").reset();
+            document.getElementById("egr-page-id").value = "";
+            document.getElementById("egr-fecha").value = hoyLocalISO();
+            document.getElementById("egr-btn-eliminar").classList.add("hidden");
+            _poblarSelect("egr-forma-pago", finanzasOpciones.formas_pago, "");
+            _poblarSelect("egr-tarjeta", finanzasOpciones.tarjetas, "");
+            _poblarSelect("egr-categoria", finanzasOpciones.categorias, "");
+            document.getElementById("egr-mensaje").classList.add("hidden");
+            document.getElementById("modal-egreso").classList.remove("hidden");
+            document.getElementById("modal-egreso").classList.add("flex");
+        }
+
+        function abrirModalEditarEgreso(idx) {
+            const item = finanzasEgresos[idx];
+            if (!item || !item.id) return;
+            document.getElementById("egr-modal-titulo").textContent = "Editar Egreso";
+            document.getElementById("egr-page-id").value = item.id;
+            document.getElementById("egr-nombre").value = item.nombre || "";
+            document.getElementById("egr-monto").value = item.monto || "";
+            document.getElementById("egr-monto-usd").value = item.monto_usd || "";
+            document.getElementById("egr-fecha").value = item.fecha || hoyLocalISO();
+            document.getElementById("egr-cuotas").value = item.cuotas || "";
+            _poblarSelect("egr-forma-pago", finanzasOpciones.formas_pago, (item.forma_pago || [])[0] || "");
+            _poblarSelect("egr-tarjeta", finanzasOpciones.tarjetas, item.tarjeta || "");
+            _poblarSelect("egr-categoria", finanzasOpciones.categorias, (item.categoria || [])[0] || "");
+            document.getElementById("egr-detalle").value = item.detalle || "";
+            document.getElementById("egr-btn-eliminar").classList.remove("hidden");
+            document.getElementById("egr-mensaje").classList.add("hidden");
+            document.getElementById("modal-egreso").classList.remove("hidden");
+            document.getElementById("modal-egreso").classList.add("flex");
+        }
+
+        function cerrarModalEgreso() {
+            document.getElementById("modal-egreso").classList.add("hidden");
+            document.getElementById("modal-egreso").classList.remove("flex");
+        }
+
+        let _papeleraTarget = null;
+        function confirmarEliminarFinanza(id, nombre) {
+            if (!id) return;
+            _papeleraTarget = { id, nombre: nombre || "este registro" };
+            document.getElementById("papelera-texto").textContent = `¿Deseas mandar "${_papeleraTarget.nombre}" a la papelera de Notion?`;
+            document.getElementById("modal-confirmar-papelera").classList.remove("hidden");
+            document.getElementById("modal-confirmar-papelera").classList.add("flex");
+        }
+        function confirmarEliminarIngresoDesdeModal() {
+            confirmarEliminarFinanza(document.getElementById("ing-page-id").value, document.getElementById("ing-titulo").value);
+        }
+        function confirmarEliminarEgresoDesdeModal() {
+            confirmarEliminarFinanza(document.getElementById("egr-page-id").value, document.getElementById("egr-nombre").value);
+        }
+        function cerrarModalPapelera() {
+            document.getElementById("modal-confirmar-papelera").classList.add("hidden");
+            document.getElementById("modal-confirmar-papelera").classList.remove("flex");
+            _papeleraTarget = null;
+        }
+        async function ejecutarEnvioPapelera() {
+            if (!_papeleraTarget) return;
+            const target = _papeleraTarget;
+            cerrarModalPapelera();
+            cerrarModalIngreso();
+            cerrarModalEgreso();
+            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: target.id });
+        }
+
+        function abrirModalTokenFinanzas() {
+            document.getElementById("modal-token-notion").classList.remove("hidden");
+            document.getElementById("modal-token-notion").classList.add("flex");
+        }
+        function cerrarModalTokenFinanzas() {
+            document.getElementById("modal-token-notion").classList.add("hidden");
+            document.getElementById("modal-token-notion").classList.remove("flex");
+        }
+        function guardarTokenFinanzas() {
+            const token = document.getElementById("fin-token-input").value.trim();
+            if (!token) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, token); } catch (e) {}
+            document.getElementById("fin-token-input").value = "";
+            cerrarModalTokenFinanzas();
+        }
+
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+        function cerrarSpinnerNotion() {
+            document.getElementById("modal-spinner-notion").classList.add("hidden");
+            document.getElementById("modal-spinner-notion").classList.remove("flex");
+        }
+
+        async function ejecutarEscrituraConSpinner(accion, datos) {
+            const token = obtenerTokenGuardado();
+            if (!token) {
+                abrirModalTokenFinanzas();
+                return;
+            }
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, datos, token);
+                const respuesta = await fetch(url, options);
+                if (respuesta.status === 401 || respuesta.status === 404) {
+                    cerrarSpinnerNotion();
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModalTokenFinanzas();
+                    return;
+                }
+                if (respuesta.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${respuesta.status}). Probá de nuevo.`);
+                    return;
+                }
+                const confirmacion = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER,
+                    repo: GITHUB_REPO,
+                    token,
+                    workflowFile: WORKFLOW_NOTION_WRITE,
+                    dispatchedAfterMs,
+                });
+                if (confirmacion.ok) {
+                    mostrarSpinnerNotion("ok", "¡Notion actualizado!", "Recargando Finanzas...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", confirmacion.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub. Revisá tu conexión.");
+            }
+        }
+
+        async function manejarSubmitIngreso(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("ing-page-id").value.trim();
+            const res = construirPayloadIngreso({
+                pageId,
+                titulo: document.getElementById("ing-titulo").value,
+                monto: document.getElementById("ing-monto").value,
+                fecha: document.getElementById("ing-fecha").value,
+                tipo: document.getElementById("ing-tipo").value,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("ing-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) {
+                abrirModalTokenFinanzas();
+                return false;
+            }
+            cerrarModalIngreso();
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_ingreso" : "crear_ingreso", res.payload);
+            return false;
+        }
+
+        async function manejarSubmitEgreso(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("egr-page-id").value.trim();
+            const res = construirPayloadEgreso({
+                pageId,
+                nombre: document.getElementById("egr-nombre").value,
+                monto: document.getElementById("egr-monto").value,
+                montoUsd: document.getElementById("egr-monto-usd").value,
+                fecha: document.getElementById("egr-fecha").value,
+                cuotas: document.getElementById("egr-cuotas").value,
+                formaPago: document.getElementById("egr-forma-pago").value,
+                tarjeta: document.getElementById("egr-tarjeta").value,
+                categoria: document.getElementById("egr-categoria").value,
+                detalle: document.getElementById("egr-detalle").value,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("egr-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) {
+                abrirModalTokenFinanzas();
+                return false;
+            }
+            cerrarModalEgreso();
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_egreso" : "crear_egreso", res.payload);
+            return false;
+        }
+    </script>
+</body>
+</html>
