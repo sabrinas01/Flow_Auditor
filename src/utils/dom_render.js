@@ -63,6 +63,49 @@ function renderizarTareasSinEmpezar(prefijo, nombres) {
 }
 
 /**
+ * Renderiza la lista de tareas de Recordatorios Diarios (Ayer/Hoy) con un
+ * desplegable `<select>` de los estados de Notion para cambiar el estado
+ * directamente desde index.html (Etapa 3).
+ */
+function renderizarTareasDiariasConEstado(prefijo, tareas, estadosDisponibles) {
+  const wrap = document.getElementById(`wrap-${prefijo}`);
+  const container = document.getElementById(`list-${prefijo}`);
+  if (!wrap || !container) return;
+
+  if (!tareas || tareas.length === 0) {
+    wrap.classList.add("hidden");
+    container.innerHTML = "";
+    return;
+  }
+
+  wrap.classList.remove("hidden");
+  const baseOpciones = Array.isArray(estadosDisponibles) && estadosDisponibles.length
+    ? estadosDisponibles
+    : ["Sin empezar", "En ejecución", "Hecha"];
+
+  container.innerHTML = tareas.map((t) => {
+    const opciones = baseOpciones.includes(t.estado) ? baseOpciones : [t.estado, ...baseOpciones];
+    const optionsHtml = opciones
+      .filter(Boolean)
+      .map((op) => `<option value="${escapeHtml(op)}"${op === t.estado ? " selected" : ""}>${escapeHtml(op)}</option>`)
+      .join("");
+    const selectHtml = t.id
+      ? `<select onchange="cambiarEstadoTareaDiaria('${escapeHtml(t.id)}', '${escapeHtml(t.tipo_estado || "status")}', this)"
+            aria-label="Estado de ${escapeHtml(t.nombre || "tarea")}"
+            class="bg-[#141416] border border-[#232326] rounded-lg px-2.5 py-1.5 text-[12px] text-white focus:outline-none focus:border-primary-container flex-shrink-0 max-w-[155px]">
+            ${optionsHtml}
+        </select>`
+      : "";
+    return `
+        <div class="status-row flex items-center justify-between px-4 py-3 gap-3">
+            <span class="text-white text-[14px] truncate">${escapeHtml(t.nombre || "Sin nombre")}</span>
+            ${selectHtml}
+        </div>
+    `;
+  }).join('');
+}
+
+/**
  * Colapsa/expande el contenido de un bloque (Ayer/Hoy), rotando el chevron.
  */
 function toggleBloque(prefijo) {
@@ -202,6 +245,7 @@ if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     renderizarFilasEstados,
     renderizarTareasSinEmpezar,
+    renderizarTareasDiariasConEstado,
     toggleBloque,
     renderizarRecordatoriosVarios,
     formatHora,

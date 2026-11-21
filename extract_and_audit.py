@@ -200,6 +200,7 @@ def consultar_y_clasificar(database_id, etiqueta_log):
                 columna_titulo = n_col
 
     # Mapeo y agrupamiento dinámico por estados en base a la ventana de tiempo
+    tareas_ayer, tareas_hoy = [], []
     for pagina in results:
         props = pagina.get("properties", {})
         fecha_p = props.get(columna_fecha, {}).get("date", {}).get("start") if columna_fecha else None
@@ -211,24 +212,42 @@ def consultar_y_clasificar(database_id, etiqueta_log):
             continue
 
         est_val = "Sin empezar"
+        tipo_estado = "status"
         if columna_estado:
             st_data = props.get(columna_estado, {})
             if st_data.get("type") == "status" and st_data.get("status"):
                 est_val = st_data["status"].get("name", "Sin empezar")
+                tipo_estado = "status"
             elif st_data.get("type") == "select" and st_data.get("select"):
                 est_val = st_data["select"].get("name", "Sin empezar")
+                tipo_estado = "select"
+
+        nombre_tarea = ""
+        if columna_titulo:
+            nombre_tarea = "".join(t.get("plain_text", "") for t in props.get(columna_titulo, {}).get("title", []))
 
         if bloque == "AYER":
             conteo_ayer[est_val] = conteo_ayer.get(est_val, 0) + 1
+            tareas_ayer.append({
+                "id": pagina.get("id"),
+                "nombre": nombre_tarea or "Sin nombre",
+                "estado": est_val,
+                "tipo_estado": tipo_estado,
+            })
         elif bloque == "HOY":
             conteo_hoy[est_val] = conteo_hoy.get(est_val, 0) + 1
             if "sin empezar" in est_val.lower() and columna_titulo:
-                nombre = "".join(t.get("plain_text", "") for t in props.get(columna_titulo, {}).get("title", []))
-                nombres_hoy_sin_empezar.append(nombre or "Sin nombre")
+                nombres_hoy_sin_empezar.append(nombre_tarea or "Sin nombre")
+            tareas_hoy.append({
+                "id": pagina.get("id"),
+                "nombre": nombre_tarea or "Sin nombre",
+                "estado": est_val,
+                "tipo_estado": tipo_estado,
+            })
         elif bloque == "MANANA":
             conteo_manana[est_val] = conteo_manana.get(est_val, 0) + 1
 
-    return conteo_ayer, conteo_hoy, conteo_manana, nombres_hoy_sin_empezar
+    return conteo_ayer, conteo_hoy, conteo_manana, nombres_hoy_sin_empezar, tareas_ayer, tareas_hoy
 
 
 def _serializar_conteos(conteo_ayer, conteo_hoy, conteo_manana):
@@ -261,7 +280,8 @@ def auditar_consistencia_tripartita():
     validar_credenciales()
 
     try:
-        conteo_ayer, conteo_hoy, conteo_manana, nombres_hoy_sin_empezar = consultar_y_clasificar(DB_RECORDATORIOS_DIARIOS, "Recordatorios Diarios")
+        conteo_ayer, conteo_hoy, conteo_manana, nombres_hoy_sin_empezar, tareas_ayer, tareas_hoy = consultar_y_clasificar(DB_RECORDATORIOS_DIARIOS, "Recordatorios Diarios")
+        estados_diarios = _extraer_opciones_estado_db(DB_RECORDATORIOS_DIARIOS)
 
         # Generación de marcas de tiempo del diagnóstico de infraestructura
         ahora_utc = datetime.now(timezone.utc)
@@ -280,14 +300,22 @@ def auditar_consistencia_tripartita():
         html_content = re.sub(r"const\s+conteoManana\s*=\s*\{.*?\}\s*;", f"const conteoManana = {json_manana};", html_content)
 
         # Nombres de las tareas de hoy en "Sin empezar" (lista colapsable en
-        # "Progreso de hoy"). Reemplazo por función: el JSON puede traer
-        # backslashes (comillas escapadas) que re.sub interpretaría como grupos.
-        json_nombres = json.dumps(nombres_hoy_sin_empezar, ensure_ascii=False).replace("</", "<\\/")
-        html_content = re.sub(
-            r"const\s+tareasHoySinEmpezar\s*=\s*\[.*?\]\s*;",
-            lambda _m: f"const tareasHoySinEmpezar = {json_nombres};",
-            html_content,
-        )
+        # "Progreso de hoy") + tareas de Ayer/Hoy con estado editable (Etapa 3).
+        # Reemplazo por función: el JSON puede traer backslashes que re.sub
+        # interpretaría como grupos.
+        for nombre_const, valor in (
+            ("tareasHoySinEmpezar", nombres_hoy_sin_empezar),
+            ("tareasDiariasAyer", tareas_ayer),
+            ("tareasDiariasHoy", tareas_hoy),
+            ("recordatoriosDiariosEstados", estados_diarios),
+        ):
+            json_valor = json.dumps(valor, ensure_ascii=False).replace("</", "<\\/")
+            html_content = re.sub(
+                rf"const\s+{nombre_const}\s*=\s*\[.*?\]\s*;",
+                lambda _m, nc=nombre_const, jv=json_valor: f"const {nc} = {jv};",
+                html_content,
+                flags=re.DOTALL,
+            )
 
         # Sobrescribir el frontend de forma atómica y segura
         with open(html_path, "w", encoding="utf-8") as file:
@@ -829,6 +857,27 @@ def actualizar_recordatorio_varios(datos):
     print(f"✅ [ACTUALIZAR VARIOS]: recordatorio {page_id} actualizado con éxito en Notion.")
 
 
+def actualizar_recordatorio_diario(datos):
+    """Actualiza únicamente el `Estado` de una tarea en Recordatorios Diarios
+    (`PATCH /v1/pages/{page_id}`) — Etapa 3.
+    """
+    page_id = (datos.get("page_id") or "").strip()
+    estado = (datos.get("estado") or "").strip()
+    tipo_estado = (datos.get("tipo_estado") or "status").strip()
+    if not page_id or not estado:
+        print("❌ [ACTUALIZAR DIARIO]: faltan page_id o estado en el payload recibido.")
+        sys.exit(1)
+
+    if tipo_estado == "select":
+        prop_estado = {"select": {"name": estado}}
+    else:
+        prop_estado = {"status": {"name": estado}}
+
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    _ejecutar_request_notion("PATCH", url, {"properties": {"Estado": prop_estado}}, "ACTUALIZAR DIARIO")
+    print(f"✅ [ACTUALIZAR DIARIO]: tarea {page_id} actualizada a '{estado}' en Notion.")
+
+
 def ejecutar_accion_notion(payload):
     """Despacha acciones de escritura recibidas vía `ACCION_NOTION_PAYLOAD`."""
     accion = (payload or {}).get("accion")
@@ -839,6 +888,8 @@ def ejecutar_accion_notion(payload):
         actualizar_evento_agenda(datos)
     elif accion == "actualizar_recordatorio_varios":
         actualizar_recordatorio_varios(datos)
+    elif accion == "actualizar_recordatorio_diario":
+        actualizar_recordatorio_diario(datos)
     elif accion == "archivar_pagina":
         archivar_pagina_notion(datos)
     else:

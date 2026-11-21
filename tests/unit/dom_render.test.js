@@ -14,6 +14,7 @@ Object.assign(global, dashboardLogic);
 const {
   renderizarFilasEstados,
   renderizarTareasSinEmpezar,
+  renderizarTareasDiariasConEstado,
   toggleBloque,
   renderizarRecordatoriosVarios,
   formatHora,
@@ -175,6 +176,31 @@ describe('renderizarRecordatoriosVarios', () => {
       { id: 'v-2', nombre: 'Futuro', estado: 'Sin empezar', fecha: '2026-11-22' },
     ]);
     expect(document.getElementById('list-varios-manana').innerHTML).not.toContain('abrirModalEditarVarios');
+  });
+});
+
+describe('renderizarTareasDiariasConEstado', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '<div id="wrap-tareas-ayer" class="hidden"><div id="list-tareas-ayer"></div></div>';
+  });
+
+  test('oculta el bloque si no hay tareas', () => {
+    renderizarTareasDiariasConEstado('tareas-ayer', [], ['Sin empezar', 'Hecha']);
+    expect(document.getElementById('wrap-tareas-ayer').classList.contains('hidden')).toBe(true);
+  });
+
+  test('renderiza el nombre y el select con el estado actual seleccionado', () => {
+    renderizarTareasDiariasConEstado(
+      'tareas-ayer',
+      [{ id: 'd-1', nombre: 'Tomar agua', estado: 'En ejecución', tipo_estado: 'status' }],
+      ['Sin empezar', 'En ejecución', 'Hecha'],
+    );
+    const wrap = document.getElementById('wrap-tareas-ayer');
+    expect(wrap.classList.contains('hidden')).toBe(false);
+    expect(wrap.textContent).toContain('Tomar agua');
+    const select = wrap.querySelector('select');
+    expect(select.value).toBe('En ejecución');
+    expect(select.getAttribute('onchange')).toContain("cambiarEstadoTareaDiaria('d-1', 'status', this)");
   });
 });
 

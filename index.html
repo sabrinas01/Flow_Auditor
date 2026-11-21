@@ -99,6 +99,10 @@
         // Nombres de las tareas de hoy en estado "Sin empezar" (lista colapsable
         // dentro de "Progreso de hoy"). Solo el nombre, sin otros datos.
         const tareasHoySinEmpezar = [];
+        // Tareas de Ayer y Hoy con id y estado para desplegable editable (Etapa 3)
+        const tareasDiariasAyer = [];
+        const tareasDiariasHoy = [];
+        const recordatoriosDiariosEstados = ["Sin empezar", "En ejecución", "Hecha por otra persona", "⏭️ No necesaria", "Hecha", "❌ Fallida / Vencida"];
     </script>
 
     <!-- =================================================== -->
@@ -187,6 +191,19 @@
                             <!-- Se inyectan las filas dinámicamente -->
                         </div>
 
+                        <!-- Tareas de ayer con selector de estado (Etapa 3) -->
+                        <div id="wrap-tareas-ayer" class="space-y-3 hidden">
+                            <div class="flex justify-between items-center px-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE AYER</p>
+                                <button type="button" onclick="toggleBloque('tareas-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-tareas-ayer">
+                                    <span id="chevron-tareas-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                            <div id="content-tareas-ayer">
+                                <div id="list-tareas-ayer" class="space-y-2"></div>
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-2 gap-4">
                             <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
                                 <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
@@ -237,6 +254,19 @@
                                 <div id="list-hoy-sin-empezar" class="space-y-2">
                                     <!-- Se inyectan los nombres dinámicamente -->
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Tareas de hoy con selector de estado (Etapa 3) -->
+                        <div id="wrap-tareas-hoy" class="space-y-3 hidden">
+                            <div class="flex justify-between items-center px-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TODAS LAS TAREAS DE HOY</p>
+                                <button type="button" onclick="toggleBloque('tareas-hoy')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-tareas-hoy">
+                                    <span id="chevron-tareas-hoy" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                            <div id="content-tareas-hoy">
+                                <div id="list-tareas-hoy" class="space-y-2"></div>
                             </div>
                         </div>
 
@@ -344,12 +374,54 @@
     </main>
 
     <!-- =================================================== -->
+    <!-- MODAL TOKEN GITHUB (solo si aún no está guardado)   -->
+    <!-- =================================================== -->
+    <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="cerrarModalTokenDiarios()">
+        <div class="glass-card rounded-xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center">
+                <h3 class="text-headline-md font-headline-md text-white">Configurar token de GitHub</h3>
+                <button type="button" onclick="cerrarModalTokenDiarios()" class="p-1.5 hover:bg-white/5 rounded-full transition-colors text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <p class="text-[13px] text-[#e2beba] leading-relaxed">
+                Para actualizar Notion sin exponer sus claves, se usa un token de GitHub guardado únicamente en este navegador
+                (<strong>Contents: Read and write</strong> y <strong>Actions: Read-only</strong> sobre este repo).
+            </p>
+            <div>
+                <label for="diarios-token-input" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Pegá el token acá</label>
+                <input id="diarios-token-input" type="password" autocomplete="off"
+                       class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+            </div>
+            <button type="button" onclick="guardarTokenDiarios()"
+                    class="w-full bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">
+                Guardar token
+            </button>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- SPINNER DE ESPERA Y CONFIRMACIÓN NOTION             -->
+    <!-- =================================================== -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarSpinnerNotion()" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
     <!-- UTILITARIOS COMPARTIDOS (vanilla, sin bundler) -->
     <!-- =================================================== -->
     <script src="./src/utils/debounce.js"></script>
     <script src="./src/utils/src_localStorage_index.js"></script>
     <script src="./src/utils/dashboard_logic.js"></script>
     <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
 
     <!-- =================================================== -->
     <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
@@ -373,6 +445,8 @@
             procesarSeccionMetrica("ayer", conteoAyer);
             procesarSeccionMetrica("hoy", conteoHoy);
             renderizarTareasSinEmpezar("hoy-sin-empezar", tareasHoySinEmpezar);
+            renderizarTareasDiariasConEstado("tareas-ayer", tareasDiariasAyer, recordatoriosDiariosEstados);
+            renderizarTareasDiariasConEstado("tareas-hoy", tareasDiariasHoy, recordatoriosDiariosEstados);
         });
 
         /**
@@ -518,6 +592,106 @@
             window.addEventListener("load", () => {
                 navigator.serviceWorker.register("./sw.js").catch(() => {});
             });
+        }
+
+        // =================================================== //
+        // CAMBIAR ESTADO EN RECORDATORIOS DIARIOS (Etapa 3)   //
+        // =================================================== //
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        function obtenerTokenGuardado() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+
+        function abrirModalTokenDiarios() {
+            document.getElementById("modal-token-notion").classList.remove("hidden");
+            document.getElementById("modal-token-notion").classList.add("flex");
+        }
+
+        function cerrarModalTokenDiarios() {
+            document.getElementById("modal-token-notion").classList.add("hidden");
+            document.getElementById("modal-token-notion").classList.remove("flex");
+        }
+
+        function guardarTokenDiarios() {
+            const token = document.getElementById("diarios-token-input").value.trim();
+            if (!token) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, token); } catch (e) {}
+            document.getElementById("diarios-token-input").value = "";
+            cerrarModalTokenDiarios();
+        }
+
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+
+        function cerrarSpinnerNotion() {
+            document.getElementById("modal-spinner-notion").classList.add("hidden");
+            document.getElementById("modal-spinner-notion").classList.remove("flex");
+        }
+
+        async function cambiarEstadoTareaDiaria(pageId, tipoEstado, selectEl) {
+            const nuevoEstado = (selectEl && selectEl.value || "").trim();
+            if (!pageId || !nuevoEstado) return;
+
+            const token = obtenerTokenGuardado();
+            if (!token) {
+                abrirModalTokenDiarios();
+                return;
+            }
+
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+
+            try {
+                const { url, options } = construirSolicitudNotionWrite(
+                    GITHUB_OWNER,
+                    GITHUB_REPO,
+                    "actualizar_recordatorio_diario",
+                    { page_id: pageId, estado: nuevoEstado, tipo_estado: tipoEstado || "status" },
+                    token,
+                );
+                const respuesta = await fetch(url, options);
+
+                if (respuesta.status === 401 || respuesta.status === 404) {
+                    cerrarSpinnerNotion();
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModalTokenDiarios();
+                    return;
+                }
+                if (respuesta.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${respuesta.status}). Probá de nuevo en un rato.`);
+                    return;
+                }
+
+                const confirmacion = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER,
+                    repo: GITHUB_REPO,
+                    token,
+                    workflowFile: WORKFLOW_NOTION_WRITE,
+                    dispatchedAfterMs,
+                });
+
+                if (confirmacion.ok) {
+                    mostrarSpinnerNotion("ok", "¡Notion actualizado!", "Recargando recordatorios...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", confirmacion.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub. Revisá tu conexión e intentá de nuevo.");
+            }
         }
     </script>
 </body>

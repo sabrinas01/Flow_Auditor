@@ -193,3 +193,37 @@ def test_actualizar_recordatorio_varios_sin_page_id_sale_fatal(monkeypatch):
     _preparar_credenciales(monkeypatch)
     with pytest.raises(SystemExit):
         extract_and_audit.actualizar_recordatorio_varios({"estado": "Hecha"})
+
+
+def test_actualizar_recordatorio_diario_envia_patch_status(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    mock_patch = Mock(return_value=_mock_respuesta_creada("dia-1"))
+    with patch.object(extract_and_audit.requests, "patch", mock_patch):
+        extract_and_audit.actualizar_recordatorio_diario({
+            "page_id": "dia-1",
+            "estado": "Hecha",
+            "tipo_estado": "status",
+        })
+
+    url, kwargs = mock_patch.call_args[0][0], mock_patch.call_args[1]
+    assert url == "https://api.notion.com/v1/pages/dia-1"
+    assert kwargs["json"]["properties"] == {"Estado": {"status": {"name": "Hecha"}}}
+
+
+def test_actualizar_recordatorio_diario_soporta_select(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    mock_patch = Mock(return_value=_mock_respuesta_creada("dia-2"))
+    with patch.object(extract_and_audit.requests, "patch", mock_patch):
+        extract_and_audit.actualizar_recordatorio_diario({
+            "page_id": "dia-2",
+            "estado": "Hecha",
+            "tipo_estado": "select",
+        })
+
+    assert mock_patch.call_args[1]["json"]["properties"] == {"Estado": {"select": {"name": "Hecha"}}}
+
+
+def test_actualizar_recordatorio_diario_incompleto_sale_fatal(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    with pytest.raises(SystemExit):
+        extract_and_audit.actualizar_recordatorio_diario({"page_id": "dia-1"})
