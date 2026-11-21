@@ -5,9 +5,25 @@
  */
 const {
   combinarFechaHora,
+  extraerFechaYHora,
   construirPayloadEvento,
   construirSolicitudDispatch,
 } = require('../../src/utils/crear_evento.js');
+
+describe('extraerFechaYHora', () => {
+  test('extrae fecha y hora de un ISO-8601 con offset', () => {
+    expect(extraerFechaYHora('2026-11-14T15:30:00-03:00')).toEqual({ fecha: '2026-11-14', hora: '15:30' });
+  });
+
+  test('extrae solo fecha cuando es evento de todo el día', () => {
+    expect(extraerFechaYHora('2026-11-14')).toEqual({ fecha: '2026-11-14', hora: '' });
+  });
+
+  test('devuelve vacío si recibe null o string inválido', () => {
+    expect(extraerFechaYHora(null)).toEqual({ fecha: '', hora: '' });
+    expect(extraerFechaYHora('')).toEqual({ fecha: '', hora: '' });
+  });
+});
 
 describe('combinarFechaHora', () => {
   test('sin hora, devuelve la fecha sola (evento de todo el día)', () => {
@@ -99,5 +115,15 @@ describe('construirSolicitudDispatch', () => {
       event_type: 'crear_evento_agenda',
       client_payload: payload,
     });
+  });
+
+  test('incluye page_id en construirPayloadEvento cuando se pasa pageId para edición', () => {
+    const resultado = construirPayloadEvento({
+      pageId: 'page-uuid-123',
+      nombre: 'Turno editado',
+      fecha: '2026-11-21',
+    });
+    expect(resultado.ok).toBe(true);
+    expect(resultado.payload.page_id).toBe('page-uuid-123');
   });
 });
