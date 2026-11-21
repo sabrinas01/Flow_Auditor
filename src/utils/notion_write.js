@@ -10,9 +10,16 @@
 const EVENT_TYPE_NOTION_WRITE = "notion_write";
 const WORKFLOW_NOTION_WRITE = "notion_write.yml";
 
+function _detectarEntorno() {
+  if (typeof window !== "undefined" && window.location && typeof window.location.pathname === "string") {
+    return window.location.pathname.includes("/dev/") ? "develop" : "production";
+  }
+  return "production";
+}
+
 /**
  * Construye el request HTTP para disparar `repository_dispatch` con
- * `event_type: "notion_write"` y payload `{ accion, datos }`.
+ * `event_type: "notion_write"` y payload `{ accion, datos, env }`.
  */
 function construirSolicitudNotionWrite(owner, repo, accion, datos, token) {
   return {
@@ -26,7 +33,7 @@ function construirSolicitudNotionWrite(owner, repo, accion, datos, token) {
       },
       body: JSON.stringify({
         event_type: EVENT_TYPE_NOTION_WRITE,
-        client_payload: { accion, datos },
+        client_payload: { accion, datos, env: _detectarEntorno() },
       }),
     },
   };

@@ -28,6 +28,7 @@ describe('construirSolicitudNotionWrite', () => {
       client_payload: {
         accion: 'actualizar_evento',
         datos: { page_id: 'abc', nombre: 'Turno' },
+        env: 'production',
       },
     });
   });

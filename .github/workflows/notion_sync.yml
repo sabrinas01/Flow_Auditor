@@ -68,7 +68,10 @@ jobs:
           # mantiene, reconstruida cada corrida a partir del 'main' actual + los frontends
           # actualizados. Así un --force acá no puede pisar commits humanos ni ajenos,
           # porque nadie más comitea en esta rama.
+          git fetch origin gh-pages || true
           git checkout -B gh-pages
+          # Preservar la subcarpeta /dev/ del ambiente develop si existe en gh-pages
+          git checkout origin/gh-pages -- dev 2>/dev/null || true
           git add index.html recordatorios-varios.html agenda-personal.html
 
           # Comprobamos explícitamente si hay cambios staged reales para evitar commits vacíos
