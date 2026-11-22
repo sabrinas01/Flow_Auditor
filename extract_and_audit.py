@@ -91,7 +91,7 @@ DB_RECORDATORIOS_VARIOS = os.getenv("NOTION_DB_RECORDATORIOS_VARIOS")
 DB_AGENDA_EVENTOS = os.getenv("NOTION_DB_EVENTOS")
 DB_INGRESOS = os.getenv("NOTION_DB_INGRESOS")
 DB_EGRESOS = os.getenv("NOTION_DB_EGRESOS")
-DB_CUOTAS_TARJETA = os.getenv("NOTION_DB_TARJETA")
+DB_CUOTAS_TARJETA = os.getenv("NOTION_DB_CUOTASPENDIENTES") or os.getenv("NOTION_DB_TARJETA")
 
 
 def validar_credenciales():
@@ -107,7 +107,7 @@ def validar_credenciales():
         DB_AGENDA_EVENTOS = get_env_var(["NOTION_DB_EVENTOS"], required=False)
         DB_INGRESOS = get_env_var(["NOTION_DB_INGRESOS"], required=False)
         DB_EGRESOS = get_env_var(["NOTION_DB_EGRESOS"], required=False)
-        DB_CUOTAS_TARJETA = get_env_var(["NOTION_DB_TARJETA"], required=False)
+        DB_CUOTAS_TARJETA = get_env_var(["NOTION_DB_CUOTASPENDIENTES", "NOTION_DB_TARJETA"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
