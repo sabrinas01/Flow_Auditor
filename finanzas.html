@@ -459,7 +459,8 @@
             contEgr.innerHTML = finanzasEgresos.length === 0
                 ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin egresos registrados este mes</div>`
                 : finanzasEgresos.map((item, idx) => {
-                    const meta = [item.fecha, ...(item.categoria || []), item.tarjeta].filter(Boolean).map(escapeHtml).join(" · ");
+                    const cuotaTxt = item.cuota_mensual ? `Cuota/mes: ${formatearMonedaARS(item.cuota_mensual)}` : null;
+                    const meta = [item.fecha, ...(item.categoria || []), item.tarjeta, cuotaTxt].filter(Boolean).map(escapeHtml).join(" · ");
                     return `
                     <div class="status-row left-pill-red flex items-center justify-between px-4 py-3.5 gap-3">
                         <div class="min-w-0 flex-1">

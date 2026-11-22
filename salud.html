@@ -420,7 +420,8 @@
             cont.innerHTML = saludSesiones.length === 0
                 ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin sesiones registradas</div>`
                 : saludSesiones.slice(0, 8).map((s) => {
-                    const meta = [s.fecha, s.duracion ? `${s.duracion} min` : null, s.estado].filter(Boolean).map(escapeHtml).join(" · ");
+                    const semTxt = s.semana !== null && s.semana !== undefined ? `Sem. ${s.semana}` : null;
+                    const meta = [s.fecha, s.duracion ? `${s.duracion} min` : null, semTxt, s.estado].filter(Boolean).map(escapeHtml).join(" · ");
                     return `
                         <div class="status-row flex items-center justify-between px-4 py-3 gap-3">
                             <span class="text-white font-semibold truncate">${escapeHtml(s.nombre)}</span>
@@ -464,8 +465,13 @@
         }
 
         function renderizarCicloResumen() {
-            const { faseActual, proximoInicio } = obtenerResumenCiclo(saludCiclo, hoyLocalISO());
-            document.getElementById("ciclo-fase-actual").textContent = faseActual;
+            const hoyIso = hoyLocalISO();
+            const { faseActual, proximoInicio } = obtenerResumenCiclo(saludCiclo, hoyIso);
+            const faseObj = saludCiclo.find((f) => f.nombre === faseActual);
+            const diasTxt = faseObj && faseObj.cantidad_dias !== null && faseObj.cantidad_dias !== undefined
+                ? ` (${faseObj.cantidad_dias} días)`
+                : "";
+            document.getElementById("ciclo-fase-actual").textContent = `${faseActual}${diasTxt}`;
             document.getElementById("ciclo-proximo-inicio").textContent = proximoInicio || "Sin fecha calculada";
             renderizarCalendarioCiclo();
         }
@@ -476,10 +482,16 @@
                 ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin pendientes registrados</div>`
                 : saludPendientes.map((p) => {
                     const meta = [p.tipo, p.fecha_limite, p.estado].filter(Boolean).map(escapeHtml).join(" · ");
+                    const retrasoHtml = p.con_retraso
+                        ? `<span class="bg-[#ff5f52]/15 text-[#ff5f52] px-2 py-0.5 rounded text-[11px] font-bold flex-shrink-0">Con retraso</span>`
+                        : "";
                     return `
                         <div class="status-row flex items-center justify-between px-4 py-3 gap-3">
                             <span class="text-white font-semibold truncate">${escapeHtml(p.nombre)}</span>
-                            <span class="text-[12px] text-[#8e8e93] flex-shrink-0">${meta}</span>
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                ${retrasoHtml}
+                                <span class="text-[12px] text-[#8e8e93]">${meta}</span>
+                            </div>
                         </div>
                     `;
                 }).join("");

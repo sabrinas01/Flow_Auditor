@@ -971,6 +971,18 @@ def _parsear_ingreso(page_id, props, fecha):
     }
 
 
+def _valor_formula(prop):
+    """Extrae el valor de una propiedad `formula` de Notion (string, number,
+    boolean o date.start) de forma segura."""
+    formula = (prop or {}).get("formula") or {}
+    tipo = formula.get("type")
+    if tipo == "date":
+        return (formula.get("date") or {}).get("start")
+    if tipo in ("string", "number", "boolean"):
+        return formula.get(tipo)
+    return None
+
+
 def _parsear_egreso(page_id, props, fecha):
     nombre = "".join(t.get("plain_text", "") for t in (props.get("Nombre del gasto") or {}).get("title", []))
     monto_usd = (props.get("Monto en USD") or {}).get("number")
@@ -985,6 +997,7 @@ def _parsear_egreso(page_id, props, fecha):
         "forma_pago": [o.get("name") for o in (props.get("Forma de pago") or {}).get("multi_select", []) if o.get("name")],
         "tarjeta": ((props.get("Tarjeta usada") or {}).get("select") or {}).get("name"),
         "cuotas": (props.get("Cantidad de cuotas") or {}).get("number"),
+        "cuota_mensual": _valor_formula(props.get("A pagar por mes(CUOTAS SIN INTERES)")),
         "categoria": [o.get("name") for o in (props.get("Categoría") or {}).get("multi_select", []) if o.get("name")],
         "detalle": "".join(t.get("plain_text", "") for t in (props.get("Detalle") or {}).get("rich_text", [])) or None,
     }
@@ -1280,20 +1293,21 @@ def sincronizar_salud(timestamps, app_version):
             "fecha": ((pr.get("Fecha") or {}).get("date") or {}).get("start"),
             "duracion": (pr.get("Duración (en min)") or {}).get("number"),
             "estado": ((pr.get("Estado de la sesión") or {}).get("select") or {}).get("name"),
+            "semana": _valor_formula(pr.get("Semana del año")),
+            "completadas": _valor_formula(pr.get("Completadas")),
         })
 
     fases_ciclo = []
     for p in res_cic:
         pr = p.get("properties", {})
         dur = (pr.get("Duración de la fase") or {}).get("date") or {}
-        prox_formula = (pr.get("Póximo inicio") or {}).get("formula") or {}
-        prox = (prox_formula.get("date") or {}).get("start") if prox_formula.get("type") == "date" else None
         fases_ciclo.append({
             "id": p.get("id"),
             "nombre": "".join(t.get("plain_text", "") for t in (pr.get("Nombre") or {}).get("title", [])) or "Fase",
             "inicio": dur.get("start"),
             "fin": dur.get("end"),
-            "proximo_inicio": prox,
+            "proximo_inicio": _valor_formula(pr.get("Póximo inicio")),
+            "cantidad_dias": _valor_formula(pr.get("Cantidad de días")),
             "sintomas": [o.get("name") for o in (pr.get("Síntomas") or {}).get("multi_select", []) if o.get("name")],
         })
 
@@ -1309,6 +1323,7 @@ def sincronizar_salud(timestamps, app_version):
             "tipo": ((pr.get("Tipo de tarea") or {}).get("select") or {}).get("name"),
             "fecha_limite": ((pr.get("Fecha límite") or {}).get("date") or {}).get("start"),
             "estado": estado,
+            "con_retraso": _valor_formula(pr.get("Con retraso")),
         })
 
     opciones = {
