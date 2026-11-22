@@ -185,7 +185,7 @@
                     </div>
                 </div>
 
-                <!-- Vista de calendario -->
+                <!-- Vista de calendario estilo Notion -->
                 <div class="bg-[#0e0e0f] rounded-xl border border-[#232326] p-5 space-y-4">
                     <div class="flex justify-between items-center">
                         <button type="button" onclick="cambiarMesCalendario(-1)" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" aria-label="Mes anterior">
@@ -196,10 +196,14 @@
                             <span class="material-symbols-outlined text-[20px]">chevron_right</span>
                         </button>
                     </div>
-                    <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-label-caps text-[#8e8e93]">
-                        <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span><span>Do</span>
+                    <div class="overflow-x-auto">
+                        <div class="min-w-[620px] space-y-2">
+                            <div class="grid grid-cols-7 gap-1.5 text-center text-[11px] font-label-caps text-[#8e8e93] pb-1 border-b border-[#232326]">
+                                <span>lun</span><span>mar</span><span>mié</span><span>jue</span><span>vie</span><span>sáb</span><span>dom</span>
+                            </div>
+                            <div id="calendario-grid" class="space-y-2"></div>
+                        </div>
                     </div>
-                    <div id="calendario-grid" class="grid grid-cols-7 gap-1.5 text-center text-[13px]"></div>
                 </div>
             </section>
 
@@ -455,30 +459,79 @@
                 }).join("");
         }
 
+        function _fechaISO(d) {
+            const p = (n) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+        }
+
         function renderizarCalendarioCiclo() {
             const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            const mesesCortos = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
             document.getElementById("calendario-mes-titulo").textContent = `${meses[calMes]} ${calAnio}`;
 
             const primerDia = new Date(calAnio, calMes, 1);
             const offsetLunes = (primerDia.getDay() + 6) % 7;
             const diasEnMes = new Date(calAnio, calMes + 1, 0).getDate();
+            const totalCeldas = Math.ceil((offsetLunes + diasEnMes) / 7) * 7;
             const hoyIso = hoyLocalISO();
-            const pad = (n) => String(n).padStart(2, "0");
 
-            const celdas = [];
-            for (let i = 0; i < offsetLunes; i++) {
-                celdas.push(`<div></div>`);
+            const inicioGrid = new Date(calAnio, calMes, 1 - offsetLunes);
+            const semanas = [];
+            for (let i = 0; i < totalCeldas; i += 7) {
+                const sem = [];
+                for (let j = 0; j < 7; j++) {
+                    const dt = new Date(inicioGrid.getFullYear(), inicioGrid.getMonth(), inicioGrid.getDate() + i + j);
+                    sem.push({ dt, iso: _fechaISO(dt), esMesActual: dt.getMonth() === calMes });
+                }
+                semanas.push(sem);
             }
-            for (let d = 1; d <= diasEnMes; d++) {
-                const fechaIso = `${calAnio}-${pad(calMes + 1)}-${pad(d)}`;
-                const fase = saludCiclo.find((f) => f.inicio && fechaIso >= f.inicio && fechaIso <= (f.fin || f.inicio));
-                const infoFase = fase ? clasificarFasePorNombre(fase.nombre) : null;
-                const esHoy = fechaIso === hoyIso;
-                const clsBase = infoFase ? `${infoFase.bgClass} border` : "bg-[#1c1c1f] text-[#e5e2e1]";
-                const clsHoy = esHoy ? " ring-2 ring-white" : "";
-                celdas.push(`<div class="py-2 rounded-lg font-semibold ${clsBase}${clsHoy}" title="${fase ? escapeHtml(fase.nombre) : ""}">${d}</div>`);
-            }
-            document.getElementById("calendario-grid").innerHTML = celdas.join("");
+
+            const htmlSemanas = semanas.map((sem) => {
+                const semIni = sem[0].iso;
+                const semFin = sem[6].iso;
+
+                const headerDias = sem.map((cel) => {
+                    const esHoy = cel.iso === hoyIso;
+                    const etiqueta = cel.dt.getDate() === 1 ? `1 ${mesesCortos[cel.dt.getMonth()]}` : `${cel.dt.getDate()}`;
+                    const cls = esHoy
+                        ? "inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-[#ff5f52] text-white font-bold"
+                        : cel.esMesActual ? "text-[#e5e2e1] font-semibold" : "text-[#8e8e93]/60";
+                    return `<div class="text-right px-1.5 py-1 text-[12px]"><span class="${cls}">${etiqueta}</span></div>`;
+                }).join("");
+
+                const barras = (saludCiclo || [])
+                    .filter((f) => f.inicio && (f.fin || f.inicio) >= semIni && f.inicio <= semFin)
+                    .map((f) => {
+                        const fIni = f.inicio < semIni ? semIni : f.inicio;
+                        const fFinReal = f.fin || f.inicio;
+                        const fFin = fFinReal > semFin ? semFin : fFinReal;
+                        const colStart = sem.findIndex((c) => c.iso === fIni) + 1;
+                        const colEnd = sem.findIndex((c) => c.iso === fFin) + 1;
+                        const span = Math.max(1, colEnd - colStart + 1);
+                        const info = clasificarFasePorNombre(f.nombre);
+                        const clsColor = info ? info.bgClass : "bg-[#1c1c1f] text-white border-[#232326]";
+                        const diasTxt = f.cantidad_dias !== null && f.cantidad_dias !== undefined ? `${f.cantidad_dias} días` : "";
+                        const proxTxt = f.proximo_inicio ? `Próx: ${f.proximo_inicio}` : "";
+
+                        return `
+                            <div style="grid-column: ${colStart} / span ${span};"
+                                 class="rounded-lg border px-2.5 py-2 text-left ${clsColor}">
+                                <p class="text-[12px] font-bold truncate">${escapeHtml(f.nombre)}</p>
+                                ${diasTxt ? `<p class="text-[11px] opacity-90">${escapeHtml(diasTxt)}</p>` : ""}
+                                ${proxTxt ? `<p class="text-[10px] opacity-75 truncate">${escapeHtml(proxTxt)}</p>` : ""}
+                            </div>
+                        `;
+                    }).join("");
+
+                return `
+                    <div class="border border-[#232326] rounded-xl p-2 bg-[#141416]/60">
+                        <div class="grid grid-cols-7 gap-1.5">${headerDias}</div>
+                        ${barras ? `<div class="grid grid-cols-7 gap-1.5 mt-1.5">${barras}</div>` : `<div class="h-4"></div>`}
+                    </div>
+                `;
+            }).join("");
+
+            document.getElementById("calendario-grid").innerHTML = htmlSemanas;
         }
 
         function cambiarMesCalendario(delta) {
