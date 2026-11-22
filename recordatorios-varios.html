@@ -155,30 +155,9 @@
 
         <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
             <!-- =================================================== -->
-            <!-- RECORDATORIOS VARIOS: AYER / HOY / MAÑANA -->
+            <!-- RECORDATORIOS VARIOS: HOY / MAÑANA / AYER / SIN FECHA -->
             <!-- =================================================== -->
-            <section class="grid grid-cols-1 lg:grid-cols-4 gap-grid-gutter">
-
-                <!-- Ayer -->
-                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
-                    <div class="flex justify-between items-start">
-                        <div class="space-y-1">
-                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">AYER</p>
-                            <h2 class="text-headline-md font-headline-md text-white">Recordatorios de ayer</h2>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span id="total-varios-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
-                            <button type="button" onclick="toggleBloque('varios-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-ayer">
-                                <span id="chevron-varios-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div id="content-varios-ayer">
-                        <div id="list-varios-ayer" class="space-y-3">
-                            <!-- Se inyectan las filas dinámicamente -->
-                        </div>
-                    </div>
-                </article>
+            <section class="grid grid-cols-1 gap-grid-gutter">
 
                 <!-- Hoy -->
                 <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6">
@@ -217,6 +196,27 @@
                     </div>
                     <div id="content-varios-manana">
                         <div id="list-varios-manana" class="space-y-3">
+                            <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Ayer -->
+                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">AYER</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Recordatorios de ayer</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="total-varios-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
+                            <button type="button" onclick="toggleBloque('varios-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-ayer">
+                                <span id="chevron-varios-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="content-varios-ayer">
+                        <div id="list-varios-ayer" class="space-y-3">
                             <!-- Se inyectan las filas dinámicamente -->
                         </div>
                     </div>
