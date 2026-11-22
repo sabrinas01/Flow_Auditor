@@ -130,20 +130,36 @@
                         <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">MOVIMIENTO</p>
                         <h2 class="text-headline-md font-headline-md text-white">Diario de sesiones</h2>
                     </div>
-                    <button type="button" onclick="abrirModalSesion()"
-                            class="bg-[#53a759] hover:bg-[#53a759]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
-                        <span class="material-symbols-outlined text-[18px]">add</span>
-                        <span>Registrar sesión</span>
-                    </button>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <a href="https://app.notion.com/p/27ca38bb7a6e80f39a12fef0dd401367?v=27ca38bb7a6e80578eca000cdc6ed0ee&source=copy_link"
+                           target="_blank" rel="noopener"
+                           class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
+                            <span>Ver en Notion</span>
+                            <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                        </a>
+                        <button type="button" onclick="abrirModalSesion()"
+                                class="bg-[#53a759] hover:bg-[#53a759]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">add</span>
+                            <span>Registrar sesión</span>
+                        </button>
+                    </div>
                 </div>
                 <div id="list-sesiones" class="space-y-3"></div>
             </section>
 
             <!-- 2. CICLO MENSTRUAL -->
             <section class="glass-card rounded-xl p-8 border-l-4 border-l-[#ff5f52] space-y-6">
-                <div class="space-y-1">
-                    <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">SEGUIMIENTO</p>
-                    <h2 class="text-headline-md font-headline-md text-white">Ciclo menstrual</h2>
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div class="space-y-1">
+                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">SEGUIMIENTO</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Ciclo menstrual</h2>
+                    </div>
+                    <a href="https://app.notion.com/p/332a38bb7a6e80d2b280ea0aba56fee6?v=332a38bb7a6e80a3b37b000c4575586b&source=copy_link"
+                       target="_blank" rel="noopener"
+                       class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
+                        <span>Ver en Notion</span>
+                        <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                    </a>
                 </div>
 
                 <!-- Fase actual y Próximo inicio -->
@@ -194,11 +210,19 @@
                         <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS MÉDICAS</p>
                         <h2 class="text-headline-md font-headline-md text-white">Salud</h2>
                     </div>
-                    <button type="button" onclick="abrirModalPendiente()"
-                            class="bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
-                        <span class="material-symbols-outlined text-[18px]">add</span>
-                        <span>Registrar pendiente</span>
-                    </button>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <a href="https://app.notion.com/p/332a38bb7a6e80099b50f227e57f7d7a?v=332a38bb7a6e80998a85000cb18b0a30&source=copy_link"
+                           target="_blank" rel="noopener"
+                           class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
+                            <span>Ver en Notion</span>
+                            <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                        </a>
+                        <button type="button" onclick="abrirModalPendiente()"
+                                class="bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">add</span>
+                            <span>Registrar pendiente</span>
+                        </button>
+                    </div>
                 </div>
                 <div id="list-pendientes-salud" class="space-y-3"></div>
             </section>
