@@ -299,6 +299,7 @@
                 </button>
             </div>
             <form id="form-ciclo" class="space-y-4" onsubmit="return manejarSubmitCiclo(event)">
+                <input id="cic-page-id" type="hidden" value="" />
                 <input id="cic-fase" type="hidden" value="" />
                 <div>
                     <label for="cic-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre *</label>
@@ -330,10 +331,28 @@
                 </div>
                 <p id="cic-mensaje" class="text-[13px] hidden"></p>
                 <div class="flex gap-3 pt-1">
+                    <button id="cic-btn-eliminar" type="button" onclick="confirmarEliminarCicloDesdeModal()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl transition-all" title="Mandar a la papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
                     <button type="button" onclick="cerrarModal('modal-ciclo')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
                     <button type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl">Guardar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR PAPELERA -->
+    <div id="modal-confirmar-papelera" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="cerrarModal('modal-confirmar-papelera')">
+        <div class="glass-card rounded-xl p-6 w-full max-w-sm space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-3 text-[#ff5f52]">
+                <span class="material-symbols-outlined text-[24px]">delete</span>
+                <h3 class="text-headline-md font-headline-md text-white">Mandar a la papelera</h3>
+            </div>
+            <p id="papelera-texto" class="text-[14px] text-[#e2beba] leading-relaxed">¿Deseas mandar esta fase a la papelera de Notion?</p>
+            <div class="flex gap-3 pt-1">
+                <button type="button" onclick="cerrarModal('modal-confirmar-papelera')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl">Cancelar</button>
+                <button type="button" onclick="ejecutarEnvioPapelera()" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-2.5 rounded-xl">Sí, eliminar</button>
+            </div>
         </div>
     </div>
 
@@ -518,8 +537,10 @@
 
                         return `
                             <div style="grid-column: ${colStart} / span ${span}; grid-row: 1;"
-                                 class="rounded-lg border px-2.5 py-2 text-left ${clsColor}">
-                                <p class="text-[12px] font-bold truncate">${escapeHtml(f.nombre)}</p>
+                                 onclick="abrirModalEditarCiclo('${escapeHtml(f.id || "")}')"
+                                 title="Clic para editar esta fase"
+                                 class="rounded-lg border px-2.5 py-2 text-left cursor-pointer hover:opacity-90 transition-opacity ${clsColor}">
+                                <p class="text-[12px] font-bold truncate">${escapeHtml(f.nombre)} ✎</p>
                                 ${diasTxt ? `<p class="text-[11px] opacity-90">${escapeHtml(diasTxt)}</p>` : ""}
                                 ${proxTxt ? `<p class="text-[10px] opacity-75 truncate">${escapeHtml(proxTxt)}</p>` : ""}
                             </div>
@@ -623,23 +644,67 @@
             abrirModal("modal-sesion");
         }
 
+        function _poblarCheckboxesSintomas(seleccionados) {
+            const setSel = new Set(seleccionados || []);
+            const contSintomas = document.getElementById("cic-sintomas-list");
+            contSintomas.innerHTML = (saludOpciones.sintomas || []).map((s) => `
+                <label class="flex items-center gap-2 text-[13px] text-[#e5e2e1] cursor-pointer px-1.5 py-1 rounded hover:bg-white/5">
+                    <input type="checkbox" name="cic-sintoma" value="${escapeHtml(s)}"${setSel.has(s) ? " checked" : ""} class="accent-[#ff5f52] rounded" />
+                    <span class="truncate">${escapeHtml(s)}</span>
+                </label>
+            `).join("");
+        }
+
         function abrirModalCiclo(fase) {
             const hoy = hoyLocalISO();
             document.getElementById("form-ciclo").reset();
+            document.getElementById("cic-page-id").value = "";
             document.getElementById("cic-fase").value = fase;
             document.getElementById("cic-modal-titulo").textContent = `Registrar ${fase}`;
             document.getElementById("cic-nombre").value = `[${hoy.slice(5, 7)}]-${fase}`;
             document.getElementById("cic-inicio").value = hoy;
             document.getElementById("cic-inicio-real").value = hoy;
-            const contSintomas = document.getElementById("cic-sintomas-list");
-            contSintomas.innerHTML = (saludOpciones.sintomas || []).map((s) => `
-                <label class="flex items-center gap-2 text-[13px] text-[#e5e2e1] cursor-pointer px-1.5 py-1 rounded hover:bg-white/5">
-                    <input type="checkbox" name="cic-sintoma" value="${escapeHtml(s)}" class="accent-[#ff5f52] rounded" />
-                    <span class="truncate">${escapeHtml(s)}</span>
-                </label>
-            `).join("");
+            document.getElementById("cic-btn-eliminar").classList.add("hidden");
+            _poblarCheckboxesSintomas([]);
             document.getElementById("cic-mensaje").classList.add("hidden");
             abrirModal("modal-ciclo");
+        }
+
+        function abrirModalEditarCiclo(faseId) {
+            const f = (saludCiclo || []).find((x) => x.id === faseId);
+            if (!f || !f.id) return;
+            document.getElementById("form-ciclo").reset();
+            document.getElementById("cic-page-id").value = f.id;
+            document.getElementById("cic-fase").value = f.nombre || "";
+            document.getElementById("cic-modal-titulo").textContent = "Editar etapa del ciclo";
+            document.getElementById("cic-nombre").value = f.nombre || "";
+            document.getElementById("cic-inicio").value = f.inicio || "";
+            document.getElementById("cic-fin").value = f.fin || "";
+            document.getElementById("cic-inicio-real").value = f.inicio_real || f.inicio || "";
+            document.getElementById("cic-fin-real").value = f.fin_real || "";
+            document.getElementById("cic-btn-eliminar").classList.remove("hidden");
+            _poblarCheckboxesSintomas(f.sintomas || []);
+            document.getElementById("cic-mensaje").classList.add("hidden");
+            abrirModal("modal-ciclo");
+        }
+
+        let _papeleraCicloId = null;
+        function confirmarEliminarCicloDesdeModal() {
+            const pageId = document.getElementById("cic-page-id").value.trim();
+            const nombre = document.getElementById("cic-nombre").value.trim() || "esta fase";
+            if (!pageId) return;
+            _papeleraCicloId = pageId;
+            document.getElementById("papelera-texto").textContent = `¿Deseas mandar "${nombre}" a la papelera de Notion?`;
+            abrirModal("modal-confirmar-papelera");
+        }
+
+        async function ejecutarEnvioPapelera() {
+            if (!_papeleraCicloId) return;
+            const id = _papeleraCicloId;
+            _papeleraCicloId = null;
+            cerrarModal("modal-confirmar-papelera");
+            cerrarModal("modal-ciclo");
+            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: id });
         }
 
         function abrirModalPendiente() {
@@ -729,8 +794,10 @@
 
         async function manejarSubmitCiclo(event) {
             event.preventDefault();
+            const pageId = document.getElementById("cic-page-id").value.trim();
             const sintomas = [...document.querySelectorAll('input[name="cic-sintoma"]:checked')].map((el) => el.value);
             const res = construirPayloadCiclo({
+                pageId,
                 fase: document.getElementById("cic-fase").value,
                 nombre: document.getElementById("cic-nombre").value,
                 inicio: document.getElementById("cic-inicio").value,
@@ -747,7 +814,7 @@
             }
             if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
             cerrarModal("modal-ciclo");
-            await ejecutarEscrituraConSpinner("crear_fase_ciclo", res.payload);
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_fase_ciclo" : "crear_fase_ciclo", res.payload);
             return false;
         }
 

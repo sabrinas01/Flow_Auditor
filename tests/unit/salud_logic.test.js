@@ -68,6 +68,16 @@ describe('construirPayloadCiclo', () => {
       },
     });
   });
+
+  test('incluye page_id cuando se pasa pageId para edición', () => {
+    const res = construirPayloadCiclo({
+      pageId: 'cic-99',
+      nombre: '[11]-Fase Folicular',
+      inicio: '2026-11-21',
+    });
+    expect(res.ok).toBe(true);
+    expect(res.payload.page_id).toBe('cic-99');
+  });
 });
 
 describe('construirPayloadPendienteSalud', () => {
@@ -87,5 +97,15 @@ describe('construirPayloadPendienteSalud', () => {
         estado: 'Pendiente',
       },
     });
+  });
+
+  test('incluye page_id cuando se pasa pageId para edición', () => {
+    const res = construirPayloadCiclo({
+      pageId: 'cic-99',
+      nombre: '[11]-Fase Folicular',
+      inicio: '2026-11-21',
+    });
+    expect(res.ok).toBe(true);
+    expect(res.payload.page_id).toBe('cic-99');
   });
 });

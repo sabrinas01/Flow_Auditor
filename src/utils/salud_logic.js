@@ -71,28 +71,30 @@ function construirPayloadSesion(datos) {
 
 function construirPayloadCiclo(datos) {
   const fase = (datos.fase || "").trim();
+  const nombreDirecto = (datos.nombre || "").trim();
   const inicio = (datos.inicio || "").trim();
-  if (!fase) return { ok: false, error: "La etapa del ciclo es obligatoria." };
+  const pageId = (datos.pageId || "").trim();
+  if (!fase && !nombreDirecto) return { ok: false, error: "La etapa del ciclo es obligatoria." };
   if (!inicio) return { ok: false, error: "La fecha de inicio es obligatoria." };
 
   const mes = inicio.slice(5, 7);
-  const nombre = (datos.nombre || "").trim() || `[${mes}]-${fase}`;
+  const nombre = nombreDirecto || `[${mes}]-${fase}`;
   const fin = (datos.fin || "").trim() || null;
   if (fin && fin < inicio) {
     return { ok: false, error: "La fecha de fin no puede ser anterior al inicio." };
   }
 
-  return {
-    ok: true,
-    payload: {
-      nombre,
-      inicio,
-      fin,
-      inicio_real: (datos.inicioReal || "").trim() || inicio,
-      fin_real: (datos.finReal || "").trim() || null,
-      sintomas: Array.isArray(datos.sintomas) ? datos.sintomas.filter(Boolean) : (datos.sintomas ? [datos.sintomas] : []),
-    },
+  const payload = {
+    nombre,
+    inicio,
+    fin,
+    inicio_real: (datos.inicioReal || "").trim() || inicio,
+    fin_real: (datos.finReal || "").trim() || null,
+    sintomas: Array.isArray(datos.sintomas) ? datos.sintomas.filter(Boolean) : (datos.sintomas ? [datos.sintomas] : []),
   };
+  if (pageId) payload.page_id = pageId;
+
+  return { ok: true, payload };
 }
 
 function construirPayloadPendienteSalud(datos) {

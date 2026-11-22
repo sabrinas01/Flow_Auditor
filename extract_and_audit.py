@@ -1306,6 +1306,8 @@ def sincronizar_salud(timestamps, app_version):
             "nombre": "".join(t.get("plain_text", "") for t in (pr.get("Nombre") or {}).get("title", [])) or "Fase",
             "inicio": dur.get("start"),
             "fin": dur.get("end"),
+            "inicio_real": ((pr.get("Inicio (real)") or {}).get("date") or {}).get("start"),
+            "fin_real": ((pr.get("Finalización (real)") or {}).get("date") or {}).get("start"),
             "proximo_inicio": _valor_formula(pr.get("Póximo inicio")),
             "cantidad_dias": _valor_formula(pr.get("Cantidad de días")),
             "sintomas": [o.get("name") for o in (pr.get("Síntomas") or {}).get("multi_select", []) if o.get("name")],
@@ -1382,14 +1384,11 @@ def crear_sesion_salud(datos):
     print(f"✅ [CREAR SESION]: '{nombre}' creada ({res.get('id', '?')}).")
 
 
-def crear_fase_ciclo(datos):
-    if not DB_CICLO:
-        print("❌ [CREAR CICLO]: NOTION_DB_CICLO no configurada.")
-        sys.exit(1)
+def _construir_propiedades_ciclo(datos, modo_edicion=False):
     nombre = (datos.get("nombre") or "").strip()
     inicio = (datos.get("inicio") or "").strip()
     if not nombre or not inicio:
-        print("❌ [CREAR CICLO]: faltan nombre o inicio.")
+        print("❌ [CICLO]: faltan nombre o inicio.")
         sys.exit(1)
 
     dur_prop = {"start": inicio}
@@ -1403,11 +1402,34 @@ def crear_fase_ciclo(datos):
     }
     if datos.get("fin_real"):
         props["Finalización (real)"] = {"date": {"start": datos["fin_real"]}}
+    elif modo_edicion:
+        props["Finalización (real)"] = {"date": None}
+
     if datos.get("sintomas"):
         props["Síntomas"] = {"multi_select": [{"name": s} for s in datos["sintomas"]]}
+    elif modo_edicion:
+        props["Síntomas"] = {"multi_select": []}
 
+    return nombre, props
+
+
+def crear_fase_ciclo(datos):
+    if not DB_CICLO:
+        print("❌ [CREAR CICLO]: NOTION_DB_CICLO no configurada.")
+        sys.exit(1)
+    nombre, props = _construir_propiedades_ciclo(datos, modo_edicion=False)
     res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", {"parent": {"database_id": DB_CICLO}, "properties": props}, "CREAR CICLO")
     print(f"✅ [CREAR CICLO]: '{nombre}' registrada ({res.get('id', '?')}).")
+
+
+def actualizar_fase_ciclo(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR CICLO]: falta page_id.")
+        sys.exit(1)
+    nombre, props = _construir_propiedades_ciclo(datos, modo_edicion=True)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR CICLO")
+    print(f"✅ [ACTUALIZAR CICLO]: '{nombre}' ({page_id}) actualizada.")
 
 
 def crear_pendiente_salud(datos):
@@ -1456,6 +1478,8 @@ def ejecutar_accion_notion(payload):
         crear_sesion_salud(datos)
     elif accion == "crear_fase_ciclo":
         crear_fase_ciclo(datos)
+    elif accion == "actualizar_fase_ciclo":
+        actualizar_fase_ciclo(datos)
     elif accion == "crear_pendiente_salud":
         crear_pendiente_salud(datos)
     elif accion == "archivar_pagina":

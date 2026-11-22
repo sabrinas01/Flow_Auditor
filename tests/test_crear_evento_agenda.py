@@ -355,3 +355,16 @@ def test_crear_sesion_ciclo_y_pendiente_salud(monkeypatch):
         assert mock_post.call_args[1]["json"]["properties"]["Nombre de tarea"] == {
             "title": [{"text": {"content": "Sacar turno"}}]
         }
+
+    mock_patch = Mock(return_value=_mock_respuesta_creada("cic-1"))
+    with patch.object(extract_and_audit.requests, "patch", mock_patch):
+        extract_and_audit.actualizar_fase_ciclo({
+            "page_id": "cic-1",
+            "nombre": "[11]-Fase Folicular",
+            "inicio": "2026-11-21",
+            "fin": "2026-11-28",
+            "sintomas": [],
+        })
+    props = mock_patch.call_args[1]["json"]["properties"]
+    assert props["Finalización (real)"] == {"date": None}
+    assert props["Síntomas"] == {"multi_select": []}
