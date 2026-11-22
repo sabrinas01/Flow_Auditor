@@ -507,14 +507,17 @@
                         const fFin = fFinReal > semFin ? semFin : fFinReal;
                         const colStart = sem.findIndex((c) => c.iso === fIni) + 1;
                         const colEnd = sem.findIndex((c) => c.iso === fFin) + 1;
-                        const span = Math.max(1, colEnd - colStart + 1);
+                        return { f, colStart, span: Math.max(1, colEnd - colStart + 1) };
+                    })
+                    .sort((a, b) => a.colStart - b.colStart)
+                    .map(({ f, colStart, span }) => {
                         const info = clasificarFasePorNombre(f.nombre);
                         const clsColor = info ? info.bgClass : "bg-[#1c1c1f] text-white border-[#232326]";
                         const diasTxt = f.cantidad_dias !== null && f.cantidad_dias !== undefined ? `${f.cantidad_dias} días` : "";
                         const proxTxt = f.proximo_inicio ? `Próx: ${f.proximo_inicio}` : "";
 
                         return `
-                            <div style="grid-column: ${colStart} / span ${span};"
+                            <div style="grid-column: ${colStart} / span ${span}; grid-row: 1;"
                                  class="rounded-lg border px-2.5 py-2 text-left ${clsColor}">
                                 <p class="text-[12px] font-bold truncate">${escapeHtml(f.nombre)}</p>
                                 ${diasTxt ? `<p class="text-[11px] opacity-90">${escapeHtml(diasTxt)}</p>` : ""}
