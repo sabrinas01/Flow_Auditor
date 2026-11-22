@@ -318,3 +318,40 @@ def test_crear_egreso_con_tarjeta_crea_cuotas(monkeypatch):
     assert cuota1["properties"]["Fecha de Corte TC"] == {"date": {"start": "2026-11-30"}}
     assert cuota2["properties"]["Fecha de Corte TC"] == {"date": {"start": "2026-12-30"}}
     assert cuota3["properties"]["Fecha de Corte TC"] == {"date": {"start": "2027-01-30"}}
+
+
+def test_crear_sesion_ciclo_y_pendiente_salud(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    monkeypatch.setattr(extract_and_audit, "DB_SESIONES", "S" * 32)
+    monkeypatch.setattr(extract_and_audit, "DB_CICLO", "C" * 32)
+    monkeypatch.setattr(extract_and_audit, "DB_SALUD_PENDIENTES", "P" * 32)
+
+    mock_post = Mock(return_value=_mock_respuesta_creada("sal-1"))
+    with patch.object(extract_and_audit.requests, "post", mock_post):
+        extract_and_audit.crear_sesion_salud({
+            "nombre": "Caminata",
+            "fecha": "2026-11-21",
+            "duracion": 40,
+            "estado": "Hecha",
+        })
+        assert mock_post.call_args[1]["json"]["properties"]["Duración (en min)"] == {"number": 40.0}
+
+        extract_and_audit.crear_fase_ciclo({
+            "nombre": "[11]-Fase Folicular",
+            "inicio": "2026-11-21",
+            "fin": "2026-11-28",
+            "sintomas": ["Cansancio físico"],
+        })
+        assert mock_post.call_args[1]["json"]["properties"]["Duración de la fase"] == {
+            "date": {"start": "2026-11-21", "end": "2026-11-28"}
+        }
+
+        extract_and_audit.crear_pendiente_salud({
+            "nombre": "Sacar turno",
+            "tipo": "💬 Pedir turno",
+            "fecha_limite": "2026-11-29",
+            "estado": "Pendiente",
+        })
+        assert mock_post.call_args[1]["json"]["properties"]["Nombre de tarea"] == {
+            "title": [{"text": {"content": "Sacar turno"}}]
+        }

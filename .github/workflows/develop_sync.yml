@@ -38,6 +38,9 @@ jobs:
           NOTION_DB_EVENTOS: ${{ secrets.NOTION_DB_EVENTOS }}
           NOTION_DB_INGRESOS: ${{ secrets.NOTION_DB_INGRESOS }}
           NOTION_DB_EGRESOS: ${{ secrets.NOTION_DB_EGRESOS }}
+          NOTION_DB_SESIONES: ${{ secrets.NOTION_DB_SESIONES }}
+          NOTION_DB_CICLO: ${{ secrets.NOTION_DB_CICLO }}
+          NOTION_DB_SALUD_PENDIENTES: ${{ secrets.NOTION_DB_SALUD_PENDIENTES }}
         run: python extract_and_audit.py
 
       - name: Publicar en gh-pages/dev/
@@ -47,7 +50,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
 
           mkdir -p /tmp/dev_site
-          cp inicio.html index.html recordatorios-diarios.html recordatorios-varios.html agenda-personal.html finanzas.html styles.css manifest.json sw.js /tmp/dev_site/
+          cp inicio.html index.html recordatorios-diarios.html recordatorios-varios.html agenda-personal.html finanzas.html salud.html styles.css manifest.json sw.js /tmp/dev_site/
           cp -r src grafica /tmp/dev_site/
 
           git fetch origin gh-pages || true

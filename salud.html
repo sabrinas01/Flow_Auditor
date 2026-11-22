@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Salud — AsistenteSabry</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0e0e0e">
+    <link rel="icon" href="./grafica/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./grafica/icons/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #0e0e0e;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #141416;
+            border: 1px solid #232326;
+        }
+        .status-row {
+            background: #1c1c1f;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+        .status-row:hover { background: #232326; }
+        #sidebar { transition: transform 0.3s ease; }
+        .spin-animation { animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden antialiased">
+
+    <script>
+        const timestampLocalStr = "18/08/2026 20:20:23";
+        const appVersionStr = "dev";
+        const timestampNextStr = "18/08/2026 21:20:23";
+        const timestampServerStr = "18/08/2026 23:20:23";
+
+        const saludSesiones = [];
+        const saludCiclo = [];
+        const saludPendientes = [];
+        const saludOpciones = {"estados_sesion": ["Hecha", "Sin empezar"], "sintomas": ["Hinchazón abdominal", "Dolor abdominal", "Cansancio físico", "Cansancio Mental"], "tipos_pendiente": ["💻 Pedir autorización", "💬 Pedir turno", "🗓️TURNO AGENDADO", "📄Fichadetratamiento", "Única vez", "💊Medicación", "Estudio"], "estados_pendiente": ["Pendiente", "Sin empezar", "En curso", "Listo"]};
+    </script>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-surface-container-low border-r border-outline-variant/40 w-64 -translate-x-full">
+        <div class="flex items-center gap-3 mb-8 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-primary text-headline-md leading-tight">Asistente de Sabry</h2>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">event</span>
+                <span>Agenda personal</span>
+            </a>
+            <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">calendar_today</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">list_alt</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="finanzas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all">
+                <span class="material-symbols-outlined">payments</span>
+                <span>Finanzas</span>
+            </a>
+            <a href="salud.html" class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                <span>Salud</span>
+            </a>
+        </nav>
+    </aside>
+
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <main class="min-h-screen">
+        <!-- TOP APP BAR -->
+        <header class="bg-[#0e0e0e] border-b border-outline-variant/30 sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">ASISTENTESABRY</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">SALUD</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- 1. DIARIO DE SESIONES -->
+            <section class="glass-card rounded-xl p-8 border-l-4 border-l-[#53a759] space-y-6">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div class="space-y-1">
+                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">MOVIMIENTO</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Diario de sesiones</h2>
+                    </div>
+                    <button type="button" onclick="abrirModalSesion()"
+                            class="bg-[#53a759] hover:bg-[#53a759]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">add</span>
+                        <span>Registrar sesión</span>
+                    </button>
+                </div>
+                <div id="list-sesiones" class="space-y-3"></div>
+            </section>
+
+            <!-- 2. CICLO MENSTRUAL -->
+            <section class="glass-card rounded-xl p-8 border-l-4 border-l-[#ff5f52] space-y-6">
+                <div class="space-y-1">
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">SEGUIMIENTO</p>
+                    <h2 class="text-headline-md font-headline-md text-white">Ciclo menstrual</h2>
+                </div>
+
+                <!-- Fase actual y Próximo inicio -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-[#0e0e0f] p-5 rounded-xl border border-[#232326]">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">FASE ACTUAL</p>
+                        <p id="ciclo-fase-actual" class="text-[18px] font-bold text-white">Sin registros</p>
+                    </div>
+                    <div class="bg-[#0e0e0f] p-5 rounded-xl border border-[#232326]">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">INICIO DE PRÓXIMA FASE</p>
+                        <p id="ciclo-proximo-inicio" class="text-[18px] font-bold text-[#ffb961]">—</p>
+                    </div>
+                </div>
+
+                <!-- Botones por etapa -->
+                <div class="space-y-2">
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">REGISTRAR ETAPA</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        <button type="button" onclick="abrirModalCiclo('Fase menstrual')" class="bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 border border-[#ff5f52]/40 text-[#ff5f52] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">Fase menstrual</button>
+                        <button type="button" onclick="abrirModalCiclo('Fase Folicular')" class="bg-[#53a759]/15 hover:bg-[#53a759]/25 border border-[#53a759]/40 text-[#53a759] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">Fase Folicular</button>
+                        <button type="button" onclick="abrirModalCiclo('Fase ovulatoria')" class="bg-[#ffb961]/15 hover:bg-[#ffb961]/25 border border-[#ffb961]/40 text-[#ffb961] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">Fase ovulatoria</button>
+                        <button type="button" onclick="abrirModalCiclo('Fase Lútea')" class="bg-[#00aaff]/15 hover:bg-[#00aaff]/25 border border-[#00aaff]/40 text-[#00aaff] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">Fase Lútea</button>
+                    </div>
+                </div>
+
+                <!-- Vista de calendario -->
+                <div class="bg-[#0e0e0f] rounded-xl border border-[#232326] p-5 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <button type="button" onclick="cambiarMesCalendario(-1)" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" aria-label="Mes anterior">
+                            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                        </button>
+                        <h3 id="calendario-mes-titulo" class="text-[15px] font-bold text-white uppercase tracking-wider"></h3>
+                        <button type="button" onclick="cambiarMesCalendario(1)" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" aria-label="Mes siguiente">
+                            <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-label-caps text-[#8e8e93]">
+                        <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span><span>Do</span>
+                    </div>
+                    <div id="calendario-grid" class="grid grid-cols-7 gap-1.5 text-center text-[13px]"></div>
+                </div>
+            </section>
+
+            <!-- 3. SALUD (PENDIENTES) -->
+            <section class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] space-y-6">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div class="space-y-1">
+                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS MÉDICAS</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Salud</h2>
+                    </div>
+                    <button type="button" onclick="abrirModalPendiente()"
+                            class="bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">add</span>
+                        <span>Registrar pendiente</span>
+                    </button>
+                </div>
+                <div id="list-pendientes-salud" class="space-y-3"></div>
+            </section>
+        </div>
+
+        <footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">dev</span></p>
+                    </div>
+                    <div class="flex flex-wrap gap-x-8 gap-y-2">
+                        <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Sabri Studios &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL REGISTRAR SESIÓN -->
+    <div id="modal-sesion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-sesion')">
+        <div class="glass-card rounded-xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-headline-md font-headline-md text-white">Registrar sesión</h3>
+                <button type="button" onclick="cerrarModal('modal-sesion')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-sesion" class="space-y-4" onsubmit="return manejarSubmitSesion(event)">
+                <div>
+                    <label for="ses-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre *</label>
+                    <input id="ses-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="ses-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha *</label>
+                        <input id="ses-fecha" type="date" required class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div>
+                        <label for="ses-duracion" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Duración (min)</label>
+                        <input id="ses-duracion" type="number" min="0" step="1" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                </div>
+                <div>
+                    <label for="ses-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado de la sesión</label>
+                    <select id="ses-estado" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                </div>
+                <p id="ses-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button type="button" onclick="cerrarModal('modal-sesion')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-[#53a759] hover:bg-[#53a759]/90 text-white font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRAR FASE CICLO -->
+    <div id="modal-ciclo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-ciclo')">
+        <div class="glass-card rounded-xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="cic-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar etapa del ciclo</h3>
+                <button type="button" onclick="cerrarModal('modal-ciclo')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-ciclo" class="space-y-4" onsubmit="return manejarSubmitCiclo(event)">
+                <input id="cic-fase" type="hidden" value="" />
+                <div>
+                    <label for="cic-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre *</label>
+                    <input id="cic-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="cic-inicio" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Inicio de fase *</label>
+                        <input id="cic-inicio" type="date" required class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div>
+                        <label for="cic-fin" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fin de fase</label>
+                        <input id="cic-fin" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="cic-inicio-real" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Inicio (real)</label>
+                        <input id="cic-inicio-real" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div>
+                        <label for="cic-fin-real" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Finalización (real)</label>
+                        <input id="cic-fin-real" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                </div>
+                <div>
+                    <label for="cic-sintoma" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Síntoma principal</label>
+                    <select id="cic-sintoma" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                </div>
+                <p id="cic-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button type="button" onclick="cerrarModal('modal-ciclo')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRAR PENDIENTE SALUD -->
+    <div id="modal-pendiente" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-pendiente')">
+        <div class="glass-card rounded-xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-headline-md font-headline-md text-white">Registrar pendiente</h3>
+                <button type="button" onclick="cerrarModal('modal-pendiente')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-pendiente" class="space-y-4" onsubmit="return manejarSubmitPendiente(event)">
+                <div>
+                    <label for="pen-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre de tarea *</label>
+                    <input id="pen-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="pen-tipo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Tipo de tarea</label>
+                        <select id="pen-tipo" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                    <div>
+                        <label for="pen-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
+                        <select id="pen-estado" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                </div>
+                <div>
+                    <label for="pen-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha límite</label>
+                    <input id="pen-fecha" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <p id="pen-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button type="button" onclick="cerrarModal('modal-pendiente')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TOKEN GITHUB -->
+    <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="cerrarModal('modal-token-notion')">
+        <div class="glass-card rounded-xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center">
+                <h3 class="text-headline-md font-headline-md text-white">Configurar token de GitHub</h3>
+                <button type="button" onclick="cerrarModal('modal-token-notion')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <p class="text-[13px] text-[#e2beba] leading-relaxed">
+                Para guardar en Notion sin exponer sus claves, se usa un token de GitHub guardado únicamente en este navegador
+                (<strong>Contents: Read and write</strong> y <strong>Actions: Read-only</strong> sobre este repo).
+            </p>
+            <div>
+                <label for="sal-token-input" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Pegá el token acá</label>
+                <input id="sal-token-input" type="password" autocomplete="off" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+            </div>
+            <button type="button" onclick="guardarTokenSalud()" class="w-full bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl">Guardar token</button>
+        </div>
+    </div>
+
+    <!-- SPINNER CONFIRMACIÓN -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarModal('modal-spinner-notion')" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
+    <script src="./src/utils/salud_logic.js"></script>
+
+    <script>
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        const hoyDate = new Date();
+        let calAnio = hoyDate.getFullYear();
+        let calMes = hoyDate.getMonth();
+
+        function hoyLocalISO() {
+            const d = new Date();
+            const p = (n) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+        }
+
+        function obtenerTokenGuardado() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+
+        function _poblarSelect(id, opciones, incluirVacio, valor) {
+            const el = document.getElementById(id);
+            const html = incluirVacio ? ['<option value="">Sin especificar</option>'] : [];
+            (opciones || []).forEach((op) => {
+                html.push(`<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`);
+            });
+            el.innerHTML = html.join("");
+            if (valor) el.value = valor;
+        }
+
+        function renderizarSesiones() {
+            const cont = document.getElementById("list-sesiones");
+            cont.innerHTML = saludSesiones.length === 0
+                ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin sesiones registradas</div>`
+                : saludSesiones.slice(0, 8).map((s) => {
+                    const meta = [s.fecha, s.duracion ? `${s.duracion} min` : null, s.estado].filter(Boolean).map(escapeHtml).join(" · ");
+                    return `
+                        <div class="status-row flex items-center justify-between px-4 py-3 gap-3">
+                            <span class="text-white font-semibold truncate">${escapeHtml(s.nombre)}</span>
+                            <span class="text-[12px] text-[#8e8e93] flex-shrink-0">${meta}</span>
+                        </div>
+                    `;
+                }).join("");
+        }
+
+        function renderizarCalendarioCiclo() {
+            const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById("calendario-mes-titulo").textContent = `${meses[calMes]} ${calAnio}`;
+
+            const primerDia = new Date(calAnio, calMes, 1);
+            const offsetLunes = (primerDia.getDay() + 6) % 7;
+            const diasEnMes = new Date(calAnio, calMes + 1, 0).getDate();
+            const hoyIso = hoyLocalISO();
+            const pad = (n) => String(n).padStart(2, "0");
+
+            const celdas = [];
+            for (let i = 0; i < offsetLunes; i++) {
+                celdas.push(`<div></div>`);
+            }
+            for (let d = 1; d <= diasEnMes; d++) {
+                const fechaIso = `${calAnio}-${pad(calMes + 1)}-${pad(d)}`;
+                const fase = saludCiclo.find((f) => f.inicio && fechaIso >= f.inicio && fechaIso <= (f.fin || f.inicio));
+                const infoFase = fase ? clasificarFasePorNombre(fase.nombre) : null;
+                const esHoy = fechaIso === hoyIso;
+                const clsBase = infoFase ? `${infoFase.bgClass} border` : "bg-[#1c1c1f] text-[#e5e2e1]";
+                const clsHoy = esHoy ? " ring-2 ring-white" : "";
+                celdas.push(`<div class="py-2 rounded-lg font-semibold ${clsBase}${clsHoy}" title="${fase ? escapeHtml(fase.nombre) : ""}">${d}</div>`);
+            }
+            document.getElementById("calendario-grid").innerHTML = celdas.join("");
+        }
+
+        function cambiarMesCalendario(delta) {
+            calMes += delta;
+            if (calMes < 0) { calMes = 11; calAnio -= 1; }
+            if (calMes > 11) { calMes = 0; calAnio += 1; }
+            renderizarCalendarioCiclo();
+        }
+
+        function renderizarCicloResumen() {
+            const { faseActual, proximoInicio } = obtenerResumenCiclo(saludCiclo, hoyLocalISO());
+            document.getElementById("ciclo-fase-actual").textContent = faseActual;
+            document.getElementById("ciclo-proximo-inicio").textContent = proximoInicio || "Sin fecha calculada";
+            renderizarCalendarioCiclo();
+        }
+
+        function renderizarPendientesSalud() {
+            const cont = document.getElementById("list-pendientes-salud");
+            cont.innerHTML = saludPendientes.length === 0
+                ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin pendientes registrados</div>`
+                : saludPendientes.map((p) => {
+                    const meta = [p.tipo, p.fecha_limite, p.estado].filter(Boolean).map(escapeHtml).join(" · ");
+                    return `
+                        <div class="status-row flex items-center justify-between px-4 py-3 gap-3">
+                            <span class="text-white font-semibold truncate">${escapeHtml(p.nombre)}</span>
+                            <span class="text-[12px] text-[#8e8e93] flex-shrink-0">${meta}</span>
+                        </div>
+                    `;
+                }).join("");
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initLocalStorage();
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+            renderizarSesiones();
+            renderizarCicloResumen();
+            renderizarPendientesSalud();
+        });
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+            sidebar.classList.toggle('-translate-x-full', isOpen);
+            overlay.classList.toggle('hidden', isOpen);
+        }
+
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            });
+        }
+
+        function abrirModal(id) {
+            document.getElementById(id).classList.remove("hidden");
+            document.getElementById(id).classList.add("flex");
+        }
+        function cerrarModal(id) {
+            document.getElementById(id).classList.add("hidden");
+            document.getElementById(id).classList.remove("flex");
+        }
+
+        function abrirModalSesion() {
+            document.getElementById("form-sesion").reset();
+            document.getElementById("ses-fecha").value = hoyLocalISO();
+            _poblarSelect("ses-estado", saludOpciones.estados_sesion, false, "Hecha");
+            document.getElementById("ses-mensaje").classList.add("hidden");
+            abrirModal("modal-sesion");
+        }
+
+        function abrirModalCiclo(fase) {
+            const hoy = hoyLocalISO();
+            document.getElementById("form-ciclo").reset();
+            document.getElementById("cic-fase").value = fase;
+            document.getElementById("cic-modal-titulo").textContent = `Registrar ${fase}`;
+            document.getElementById("cic-nombre").value = `[${hoy.slice(5, 7)}]-${fase}`;
+            document.getElementById("cic-inicio").value = hoy;
+            document.getElementById("cic-inicio-real").value = hoy;
+            _poblarSelect("cic-sintoma", saludOpciones.sintomas, true, "");
+            document.getElementById("cic-mensaje").classList.add("hidden");
+            abrirModal("modal-ciclo");
+        }
+
+        function abrirModalPendiente() {
+            document.getElementById("form-pendiente").reset();
+            _poblarSelect("pen-tipo", saludOpciones.tipos_pendiente, true, "");
+            _poblarSelect("pen-estado", saludOpciones.estados_pendiente, false, "Pendiente");
+            document.getElementById("pen-mensaje").classList.add("hidden");
+            abrirModal("modal-pendiente");
+        }
+
+        function guardarTokenSalud() {
+            const token = document.getElementById("sal-token-input").value.trim();
+            if (!token) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, token); } catch (e) {}
+            document.getElementById("sal-token-input").value = "";
+            cerrarModal("modal-token-notion");
+        }
+
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            abrirModal("modal-spinner-notion");
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+
+        async function ejecutarEscrituraConSpinner(accion, datos) {
+            const token = obtenerTokenGuardado();
+            if (!token) {
+                abrirModal("modal-token-notion");
+                return;
+            }
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, datos, token);
+                const respuesta = await fetch(url, options);
+                if (respuesta.status === 401 || respuesta.status === 404) {
+                    cerrarModal("modal-spinner-notion");
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModal("modal-token-notion");
+                    return;
+                }
+                if (respuesta.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${respuesta.status}). Probá de nuevo.`);
+                    return;
+                }
+                const confirmacion = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER,
+                    repo: GITHUB_REPO,
+                    token,
+                    workflowFile: WORKFLOW_NOTION_WRITE,
+                    dispatchedAfterMs,
+                });
+                if (confirmacion.ok) {
+                    mostrarSpinnerNotion("ok", "¡Notion actualizado!", "Recargando Salud...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", confirmacion.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub. Revisá tu conexión.");
+            }
+        }
+
+        async function manejarSubmitSesion(event) {
+            event.preventDefault();
+            const res = construirPayloadSesion({
+                nombre: document.getElementById("ses-nombre").value,
+                fecha: document.getElementById("ses-fecha").value,
+                duracion: document.getElementById("ses-duracion").value,
+                estado: document.getElementById("ses-estado").value,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("ses-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
+            cerrarModal("modal-sesion");
+            await ejecutarEscrituraConSpinner("crear_sesion_salud", res.payload);
+            return false;
+        }
+
+        async function manejarSubmitCiclo(event) {
+            event.preventDefault();
+            const sintoma = document.getElementById("cic-sintoma").value;
+            const res = construirPayloadCiclo({
+                fase: document.getElementById("cic-fase").value,
+                nombre: document.getElementById("cic-nombre").value,
+                inicio: document.getElementById("cic-inicio").value,
+                fin: document.getElementById("cic-fin").value,
+                inicioReal: document.getElementById("cic-inicio-real").value,
+                finReal: document.getElementById("cic-fin-real").value,
+                sintomas: sintoma ? [sintoma] : [],
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("cic-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
+            cerrarModal("modal-ciclo");
+            await ejecutarEscrituraConSpinner("crear_fase_ciclo", res.payload);
+            return false;
+        }
+
+        async function manejarSubmitPendiente(event) {
+            event.preventDefault();
+            const res = construirPayloadPendienteSalud({
+                nombre: document.getElementById("pen-nombre").value,
+                tipo: document.getElementById("pen-tipo").value,
+                fechaLimite: document.getElementById("pen-fecha").value,
+                estado: document.getElementById("pen-estado").value,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("pen-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
+            cerrarModal("modal-pendiente");
+            await ejecutarEscrituraConSpinner("crear_pendiente_salud", res.payload);
+            return false;
+        }
+    </script>
+</body>
+</html>

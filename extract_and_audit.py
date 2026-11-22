@@ -92,22 +92,28 @@ DB_AGENDA_EVENTOS = os.getenv("NOTION_DB_EVENTOS")
 DB_INGRESOS = os.getenv("NOTION_DB_INGRESOS")
 DB_EGRESOS = os.getenv("NOTION_DB_EGRESOS")
 DB_CUOTAS_TARJETA = os.getenv("NOTION_DB_CUOTASPENDIENTES") or os.getenv("NOTION_DB_TARJETA")
+DB_SESIONES = os.getenv("NOTION_DB_SESIONES")
+DB_CICLO = os.getenv("NOTION_DB_CICLO")
+DB_SALUD_PENDIENTES = os.getenv("NOTION_DB_SALUD_PENDIENTES")
 
 
 def validar_credenciales():
     try:
         # Uso de helper interno para resolución robusta de variables de entorno
-        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
         # Opcionales: su ausencia (o cualquier fallo al consultarlas) no debe abortar
         # la sincronización de Recordatorios Diarios — ver sincronizar_recordatorios_varios(),
-        # sincronizar_agenda_personal() y sincronizar_finanzas().
+        # sincronizar_agenda_personal(), sincronizar_finanzas() y sincronizar_salud().
         DB_RECORDATORIOS_VARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_VARIOS"], required=False)
         DB_AGENDA_EVENTOS = get_env_var(["NOTION_DB_EVENTOS"], required=False)
         DB_INGRESOS = get_env_var(["NOTION_DB_INGRESOS"], required=False)
         DB_EGRESOS = get_env_var(["NOTION_DB_EGRESOS"], required=False)
         DB_CUOTAS_TARJETA = get_env_var(["NOTION_DB_CUOTASPENDIENTES", "NOTION_DB_TARJETA"], required=False)
+        DB_SESIONES = get_env_var(["NOTION_DB_SESIONES"], required=False)
+        DB_CICLO = get_env_var(["NOTION_DB_CICLO"], required=False)
+        DB_SALUD_PENDIENTES = get_env_var(["NOTION_DB_SALUD_PENDIENTES"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -357,6 +363,11 @@ def auditar_consistencia_tripartita():
         sincronizar_finanzas(timestamps, app_version)
     except Exception as e:
         print(f"⚠️ [FINANZAS]: error inesperado al sincronizar ({e}), se omite.")
+
+    try:
+        sincronizar_salud(timestamps, app_version)
+    except Exception as e:
+        print(f"⚠️ [SALUD]: error inesperado al sincronizar ({e}), se omite.")
 
     verificar_consumo_ram()
 
@@ -1202,6 +1213,210 @@ def actualizar_egreso(datos):
     print(f"✅ [ACTUALIZAR EGRESO]: '{nombre}' ({page_id}) actualizado.")
 
 
+_SALUD_OPCIONES_FALLBACK = {
+    "estados_sesion": ["Hecha", "Sin empezar"],
+    "sintomas": [
+        "Hinchazón abdominal", "Dolor abdominal", "Dolor de piernas", "Dolor de senos",
+        "Irritación", "Cansancio físico", "Cansancio Mental", "Hinchazón en las piernas",
+        "Retención de liquido", "Hinchazón en los senos", "Libido alta",
+        "Hinchazón en los tobillos", "Libido media", "Dolor de ovario izquierdo",
+        "Irritabilidad", "Dolor del lado izquierdo",
+    ],
+    "tipos_pendiente": [
+        "💻 Pedir autorización", "💬 Pedir turno", "🗓️TURNO AGENDADO",
+        "📄Fichadetratamiento", "Única vez", "💊Medicación", "Estudio",
+    ],
+    "estados_pendiente": ["Pendiente", "Sin empezar", "En curso", "Listo"],
+}
+
+
+def _consultar_bd_salud(database_id, etiqueta, sorts=None, page_size=30):
+    if not database_id:
+        print(f"ℹ️ [{etiqueta}]: variable no configurada, se omite.")
+        return [], {}
+    headers = {
+        "Authorization": f"Bearer {NOTION_API_KEY}",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json",
+    }
+    body = {"page_size": page_size}
+    if sorts:
+        body["sorts"] = sorts
+    try:
+        r = requests.post(f"https://api.notion.com/v1/databases/{database_id}/query", json=body, headers=headers, timeout=15)
+        r.raise_for_status()
+        results = r.json().get("results", [])
+    except Exception as e:
+        print(f"⚠️ [{etiqueta}]: error al consultar Notion ({e}), se omite.")
+        return [], {}
+
+    schema_props = {}
+    try:
+        sr = requests.get(f"https://api.notion.com/v1/databases/{database_id}", headers=headers, timeout=10)
+        sr.raise_for_status()
+        schema_props = sr.json().get("properties") or {}
+    except Exception:
+        pass
+    return results, schema_props
+
+
+def sincronizar_salud(timestamps, app_version):
+    """Inyecta sesiones, ciclo menstrual y pendientes de salud en salud.html (aislado)."""
+    html_path = BASE_DIR / "salud.html"
+    if not html_path.exists():
+        print("ℹ️ [SALUD]: salud.html no encontrado, se omite.")
+        return
+
+    res_ses, sch_ses = _consultar_bd_salud(DB_SESIONES, "SALUD SESIONES", sorts=[{"property": "Fecha", "direction": "descending"}], page_size=20)
+    res_cic, sch_cic = _consultar_bd_salud(DB_CICLO, "SALUD CICLO", sorts=[{"property": "Duración de la fase", "direction": "descending"}], page_size=30)
+    res_pen, sch_pen = _consultar_bd_salud(DB_SALUD_PENDIENTES, "SALUD PENDIENTES", page_size=50)
+
+    sesiones = []
+    for p in res_ses:
+        pr = p.get("properties", {})
+        sesiones.append({
+            "id": p.get("id"),
+            "nombre": "".join(t.get("plain_text", "") for t in (pr.get("Nombre") or {}).get("title", [])) or "Sin nombre",
+            "fecha": ((pr.get("Fecha") or {}).get("date") or {}).get("start"),
+            "duracion": (pr.get("Duración (en min)") or {}).get("number"),
+            "estado": ((pr.get("Estado de la sesión") or {}).get("select") or {}).get("name"),
+        })
+
+    fases_ciclo = []
+    for p in res_cic:
+        pr = p.get("properties", {})
+        dur = (pr.get("Duración de la fase") or {}).get("date") or {}
+        prox_formula = (pr.get("Póximo inicio") or {}).get("formula") or {}
+        prox = (prox_formula.get("date") or {}).get("start") if prox_formula.get("type") == "date" else None
+        fases_ciclo.append({
+            "id": p.get("id"),
+            "nombre": "".join(t.get("plain_text", "") for t in (pr.get("Nombre") or {}).get("title", [])) or "Fase",
+            "inicio": dur.get("start"),
+            "fin": dur.get("end"),
+            "proximo_inicio": prox,
+            "sintomas": [o.get("name") for o in (pr.get("Síntomas") or {}).get("multi_select", []) if o.get("name")],
+        })
+
+    pendientes = []
+    for p in res_pen:
+        pr = p.get("properties", {})
+        estado = ((pr.get("Estado") or {}).get("status") or {}).get("name") or "Sin estado"
+        if estado.strip().lower() == "listo":
+            continue
+        pendientes.append({
+            "id": p.get("id"),
+            "nombre": "".join(t.get("plain_text", "") for t in (pr.get("Nombre de tarea") or {}).get("title", [])) or "Sin nombre",
+            "tipo": ((pr.get("Tipo de tarea") or {}).get("select") or {}).get("name"),
+            "fecha_limite": ((pr.get("Fecha límite") or {}).get("date") or {}).get("start"),
+            "estado": estado,
+        })
+
+    opciones = {
+        "estados_sesion": _opciones_de_schema(sch_ses, "Estado de la sesión", "select", _SALUD_OPCIONES_FALLBACK["estados_sesion"]),
+        "sintomas": _opciones_de_schema(sch_cic, "Síntomas", "multi_select", _SALUD_OPCIONES_FALLBACK["sintomas"]),
+        "tipos_pendiente": _opciones_de_schema(sch_pen, "Tipo de tarea", "select", _SALUD_OPCIONES_FALLBACK["tipos_pendiente"]),
+        "estados_pendiente": _opciones_de_schema(sch_pen, "Estado", "status", _SALUD_OPCIONES_FALLBACK["estados_pendiente"]),
+    }
+
+    with open(html_path, "r", encoding="utf-8") as file:
+        html_content = file.read()
+
+    html_content = _inyectar_timestamps_y_version(html_content, timestamps, app_version)
+
+    for nombre_const, valor in (
+        ("saludSesiones", sesiones),
+        ("saludCiclo", fases_ciclo),
+        ("saludPendientes", pendientes),
+        ("saludOpciones", opciones),
+    ):
+        json_val = json.dumps(valor, ensure_ascii=False).replace("</", "<\\/")
+        patron = rf"const\s+{nombre_const}\s*=\s*(?:\[.*?\]|\{{.*?\}})\s*;"
+        html_content = re.sub(
+            patron,
+            lambda _m, nc=nombre_const, jv=json_val: f"const {nc} = {jv};",
+            html_content,
+            flags=re.DOTALL,
+        )
+
+    with open(html_path, "w", encoding="utf-8") as file:
+        file.write(html_content)
+
+    print("✅ Frontend salud.html sincronizado y actualizado con éxito.")
+
+
+def crear_sesion_salud(datos):
+    if not DB_SESIONES:
+        print("❌ [CREAR SESION]: NOTION_DB_SESIONES no configurada.")
+        sys.exit(1)
+    nombre = (datos.get("nombre") or "").strip()
+    fecha = (datos.get("fecha") or "").strip()
+    if not nombre or not fecha:
+        print("❌ [CREAR SESION]: faltan nombre o fecha.")
+        sys.exit(1)
+
+    props = {
+        "Nombre": {"title": [{"text": {"content": nombre}}]},
+        "Fecha": {"date": {"start": fecha}},
+    }
+    if datos.get("duracion") is not None:
+        props["Duración (en min)"] = {"number": float(datos["duracion"])}
+    if datos.get("estado"):
+        props["Estado de la sesión"] = {"select": {"name": datos["estado"]}}
+
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", {"parent": {"database_id": DB_SESIONES}, "properties": props}, "CREAR SESION")
+    print(f"✅ [CREAR SESION]: '{nombre}' creada ({res.get('id', '?')}).")
+
+
+def crear_fase_ciclo(datos):
+    if not DB_CICLO:
+        print("❌ [CREAR CICLO]: NOTION_DB_CICLO no configurada.")
+        sys.exit(1)
+    nombre = (datos.get("nombre") or "").strip()
+    inicio = (datos.get("inicio") or "").strip()
+    if not nombre or not inicio:
+        print("❌ [CREAR CICLO]: faltan nombre o inicio.")
+        sys.exit(1)
+
+    dur_prop = {"start": inicio}
+    if datos.get("fin"):
+        dur_prop["end"] = datos["fin"]
+
+    props = {
+        "Nombre": {"title": [{"text": {"content": nombre}}]},
+        "Duración de la fase": {"date": dur_prop},
+        "Inicio (real)": {"date": {"start": datos.get("inicio_real") or inicio}},
+    }
+    if datos.get("fin_real"):
+        props["Finalización (real)"] = {"date": {"start": datos["fin_real"]}}
+    if datos.get("sintomas"):
+        props["Síntomas"] = {"multi_select": [{"name": s} for s in datos["sintomas"]]}
+
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", {"parent": {"database_id": DB_CICLO}, "properties": props}, "CREAR CICLO")
+    print(f"✅ [CREAR CICLO]: '{nombre}' registrada ({res.get('id', '?')}).")
+
+
+def crear_pendiente_salud(datos):
+    if not DB_SALUD_PENDIENTES:
+        print("❌ [CREAR PENDIENTE SALUD]: NOTION_DB_SALUD_PENDIENTES no configurada.")
+        sys.exit(1)
+    nombre = (datos.get("nombre") or "").strip()
+    if not nombre:
+        print("❌ [CREAR PENDIENTE SALUD]: falta nombre.")
+        sys.exit(1)
+
+    props = {
+        "Nombre de tarea": {"title": [{"text": {"content": nombre}}]},
+        "Estado": {"status": {"name": datos.get("estado") or "Pendiente"}},
+    }
+    if datos.get("tipo"):
+        props["Tipo de tarea"] = {"select": {"name": datos["tipo"]}}
+    if datos.get("fecha_limite"):
+        props["Fecha límite"] = {"date": {"start": datos["fecha_limite"]}}
+
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", {"parent": {"database_id": DB_SALUD_PENDIENTES}, "properties": props}, "CREAR PENDIENTE SALUD")
+    print(f"✅ [CREAR PENDIENTE SALUD]: '{nombre}' creada ({res.get('id', '?')}).")
+
+
 def ejecutar_accion_notion(payload):
     """Despacha acciones de escritura recibidas vía `ACCION_NOTION_PAYLOAD`."""
     accion = (payload or {}).get("accion")
@@ -1222,6 +1437,12 @@ def ejecutar_accion_notion(payload):
         crear_egreso(datos)
     elif accion == "actualizar_egreso":
         actualizar_egreso(datos)
+    elif accion == "crear_sesion_salud":
+        crear_sesion_salud(datos)
+    elif accion == "crear_fase_ciclo":
+        crear_fase_ciclo(datos)
+    elif accion == "crear_pendiente_salud":
+        crear_pendiente_salud(datos)
     elif accion == "archivar_pagina":
         archivar_pagina_notion(datos)
     else:
