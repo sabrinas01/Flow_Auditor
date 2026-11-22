@@ -7,10 +7,10 @@
  */
 
 const FASES_CICLO = [
-  { key: "menstrual", label: "Fase menstrual", color: "#ff5f52", bgClass: "bg-[#ff5f52]/25 text-[#ff5f52] border-[#ff5f52]/50" },
-  { key: "folicular", label: "Fase Folicular", color: "#53a759", bgClass: "bg-[#53a759]/25 text-[#53a759] border-[#53a759]/50" },
-  { key: "ovulatoria", label: "Fase ovulatoria", color: "#ffb961", bgClass: "bg-[#ffb961]/25 text-[#ffb961] border-[#ffb961]/50" },
-  { key: "lutea", label: "Fase Lútea", color: "#00aaff", bgClass: "bg-[#00aaff]/25 text-[#00aaff] border-[#00aaff]/50" },
+  { key: "menstrual", label: "Fase menstrual", emoji: "❄️", estacion: "Invierno", color: "#ff5f52", bgClass: "bg-[#ff5f52]/25 text-[#ff5f52] border-[#ff5f52]/50" },
+  { key: "folicular", label: "Fase Folicular", emoji: "🌸", estacion: "Primavera", color: "#53a759", bgClass: "bg-[#53a759]/25 text-[#53a759] border-[#53a759]/50" },
+  { key: "ovulatoria", label: "Fase ovulatoria", emoji: "☀️", estacion: "Verano", color: "#ffb961", bgClass: "bg-[#ffb961]/25 text-[#ffb961] border-[#ffb961]/50" },
+  { key: "lutea", label: "Fase Lútea", emoji: "🍂", estacion: "Otoño", color: "#00aaff", bgClass: "bg-[#00aaff]/25 text-[#00aaff] border-[#00aaff]/50" },
 ];
 
 function clasificarFasePorNombre(nombre) {

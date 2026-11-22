@@ -78,6 +78,14 @@ describe('construirPayloadCiclo', () => {
     expect(res.ok).toBe(true);
     expect(res.payload.page_id).toBe('cic-99');
   });
+
+  test('clasificarFasePorNombre asigna el emoji de estación a cada fase', () => {
+    const { clasificarFasePorNombre } = require('../../src/utils/salud_logic');
+    expect(clasificarFasePorNombre('[11]-Fase menstrual').emoji).toBe('❄️');
+    expect(clasificarFasePorNombre('[11]-Fase Folicular').emoji).toBe('🌸');
+    expect(clasificarFasePorNombre('[11]-Fase ovulatoria').emoji).toBe('☀️');
+    expect(clasificarFasePorNombre('[11]-Fase Lútea').emoji).toBe('🍂');
+  });
 });
 
 describe('construirPayloadPendienteSalud', () => {
@@ -107,5 +115,13 @@ describe('construirPayloadPendienteSalud', () => {
     });
     expect(res.ok).toBe(true);
     expect(res.payload.page_id).toBe('cic-99');
+  });
+
+  test('clasificarFasePorNombre asigna el emoji de estación a cada fase', () => {
+    const { clasificarFasePorNombre } = require('../../src/utils/salud_logic');
+    expect(clasificarFasePorNombre('[11]-Fase menstrual').emoji).toBe('❄️');
+    expect(clasificarFasePorNombre('[11]-Fase Folicular').emoji).toBe('🌸');
+    expect(clasificarFasePorNombre('[11]-Fase ovulatoria').emoji).toBe('☀️');
+    expect(clasificarFasePorNombre('[11]-Fase Lútea').emoji).toBe('🍂');
   });
 });
