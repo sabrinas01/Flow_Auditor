@@ -7,10 +7,10 @@
  */
 
 const FASES_CICLO = [
-  { key: "menstrual", label: "Fase menstrual", emoji: "❄️", estacion: "Invierno", color: "#ff5f52", bgClass: "bg-[#ff5f52]/25 text-[#ff5f52] border-[#ff5f52]/50" },
-  { key: "folicular", label: "Fase Folicular", emoji: "🌸", estacion: "Primavera", color: "#53a759", bgClass: "bg-[#53a759]/25 text-[#53a759] border-[#53a759]/50" },
-  { key: "ovulatoria", label: "Fase ovulatoria", emoji: "☀️", estacion: "Verano", color: "#ffb961", bgClass: "bg-[#ffb961]/25 text-[#ffb961] border-[#ffb961]/50" },
-  { key: "lutea", label: "Fase Lútea", emoji: "🍂", estacion: "Otoño", color: "#00aaff", bgClass: "bg-[#00aaff]/25 text-[#00aaff] border-[#00aaff]/50" },
+  { key: "menstrual", label: "Fase menstrual", emoji: "❄️", estacion: "Invierno", color: "#38bdf8", bgClass: "bg-[#38bdf8]/25 text-[#38bdf8] border-[#38bdf8]/50" },
+  { key: "folicular", label: "Fase Folicular", emoji: "🌸", estacion: "Primavera", color: "#f472b6", bgClass: "bg-[#f472b6]/25 text-[#f472b6] border-[#f472b6]/50" },
+  { key: "ovulatoria", label: "Fase ovulatoria", emoji: "☀️", estacion: "Verano", color: "#facc15", bgClass: "bg-[#facc15]/25 text-[#facc15] border-[#facc15]/50" },
+  { key: "lutea", label: "Fase Lútea", emoji: "🍂", estacion: "Otoño", color: "#fb923c", bgClass: "bg-[#fb923c]/25 text-[#fb923c] border-[#fb923c]/50" },
 ];
 
 function clasificarFasePorNombre(nombre) {
@@ -37,14 +37,9 @@ function obtenerResumenCiclo(fases, hoyIso) {
   const ordenadas = [...lista].sort((a, b) => (b.inicio || "").localeCompare(a.inicio || ""));
   const referencia = activa || ordenadas[0];
 
-  const futuros = lista
-    .map((f) => f.proximo_inicio)
-    .filter((d) => d && d >= hoyIso)
-    .sort();
-
   return {
     faseActual: referencia ? referencia.nombre : "Sin registros",
-    proximoInicio: futuros[0] || (referencia ? referencia.proximo_inicio : null) || null,
+    proximoInicio: (referencia && referencia.proximo_inicio) || null,
   };
 }
 

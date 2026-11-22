@@ -19,14 +19,14 @@ describe('clasificarFasePorNombre', () => {
 });
 
 describe('obtenerResumenCiclo', () => {
-  test('detecta la fase activa para hoy y la próxima fecha futura', () => {
+  test('detecta la fase activa para hoy y usa su fórmula próximo inicio de Notion', () => {
     const fases = [
       { nombre: '[11]-Fase Folicular', inicio: '2026-11-05', fin: '2026-11-14', proximo_inicio: '2026-11-29' },
       { nombre: '[11]-Fase ovulatoria', inicio: '2026-11-15', fin: '2026-11-22', proximo_inicio: '2026-12-09' },
     ];
     expect(obtenerResumenCiclo(fases, '2026-11-21')).toEqual({
       faseActual: '[11]-Fase ovulatoria',
-      proximoInicio: '2026-11-29',
+      proximoInicio: '2026-12-09',
     });
   });
 
