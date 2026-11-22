@@ -161,60 +161,9 @@
 
         <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
             <!-- =================================================== -->
-            <!-- HERO STATS ROW: AYER / HOY -->
+            <!-- HERO STATS ROW: HOY / AYER (vertical)               -->
             <!-- =================================================== -->
-            <section class="grid grid-cols-1 lg:grid-cols-2 gap-grid-gutter">
-
-                <!-- Progreso de ayer -->
-                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
-                    <div class="flex justify-between items-start">
-                        <div class="space-y-1">
-                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE AYER</p>
-                            <h2 class="text-headline-md font-headline-md text-white">Progreso de ayer</h2>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span id="total-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 tareas</span>
-                            <button type="button" onclick="toggleBloque('ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-ayer">
-                                <span id="chevron-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="content-ayer" class="flex flex-col gap-6">
-                        <div id="list-ayer" class="space-y-3">
-                            <!-- Se inyectan las filas dinámicamente -->
-                        </div>
-
-                        <!-- Tareas de ayer con selector de estado (Etapa 3) -->
-                        <div id="wrap-tareas-ayer" class="space-y-3 hidden">
-                            <div class="flex justify-between items-center px-1">
-                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE AYER</p>
-                                <button type="button" onclick="toggleBloque('tareas-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-tareas-ayer">
-                                    <span id="chevron-tareas-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
-                                </button>
-                            </div>
-                            <div id="content-tareas-ayer">
-                                <div id="list-tareas-ayer" class="space-y-2"></div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
-                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
-                                <p id="hechas-ayer-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
-                            </div>
-                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#e49102]/20 text-center">
-                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
-                                <p id="consistencia-ayer-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
-                            </div>
-                        </div>
-
-                        <div id="alert-ayer" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
-                            <span class="material-symbols-outlined text-[#e49102] text-[20px]">warning</span>
-                            <p class="text-[13px] text-[#e49102] font-semibold" id="alert-ayer-text"></p>
-                        </div>
-                    </div>
-                </article>
+            <section class="grid grid-cols-1 gap-grid-gutter">
 
                 <!-- Progreso de Hoy -->
                 <article id="hoy-card" class="glass-card rounded-xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6 transition-colors">
@@ -278,6 +227,57 @@
                         <div id="alert-hoy" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
                             <span class="material-symbols-outlined text-[#e49102] text-[20px]">report_problem</span>
                             <p class="text-[13px] text-[#e49102] font-semibold" id="alert-hoy-text"></p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Progreso de ayer -->
+                <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE AYER</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Progreso de ayer</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="total-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 tareas</span>
+                            <button type="button" onclick="toggleBloque('ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-ayer">
+                                <span id="chevron-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="content-ayer" class="flex flex-col gap-6">
+                        <div id="list-ayer" class="space-y-3">
+                            <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+
+                        <!-- Tareas de ayer con selector de estado (Etapa 3) -->
+                        <div id="wrap-tareas-ayer" class="space-y-3 hidden">
+                            <div class="flex justify-between items-center px-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE AYER</p>
+                                <button type="button" onclick="toggleBloque('tareas-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-tareas-ayer">
+                                    <span id="chevron-tareas-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                            <div id="content-tareas-ayer">
+                                <div id="list-tareas-ayer" class="space-y-2"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
+                                <p id="hechas-ayer-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
+                            </div>
+                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#e49102]/20 text-center">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
+                                <p id="consistencia-ayer-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
+                            </div>
+                        </div>
+
+                        <div id="alert-ayer" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
+                            <span class="material-symbols-outlined text-[#e49102] text-[20px]">warning</span>
+                            <p class="text-[13px] text-[#e49102] font-semibold" id="alert-ayer-text"></p>
                         </div>
                     </div>
                 </article>
