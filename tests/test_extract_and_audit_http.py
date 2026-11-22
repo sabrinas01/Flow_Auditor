@@ -3,7 +3,7 @@ Tests con HTTP mockeado para auditar_consistencia_tripartita (extract_and_audit.
 No hacen llamadas reales a la red ni tocan los HTML reales del repo:
 BASE_DIR se redirige a un directorio temporal con plantillas mínimas.
 
-Recordatorios Diarios (index.html) es fatal ante cualquier fallo (SRS-FR-M1-105).
+Recordatorios Diarios (recordatorios-diarios.html) es fatal ante cualquier fallo (SRS-FR-M1-105).
 Recordatorios Varios (recordatorios-varios.html) es aislado y no fatal
 (SRS-FR-M4-401): un problema con esa base nunca debe interrumpir ni revertir
 la sincronización de Recordatorios Diarios, que corre primero. Solo se
@@ -67,7 +67,7 @@ PLANTILLA_AGENDA = """<html><body>
 
 
 def _preparar_directorio_temporal(tmp_path, monkeypatch, con_pagina_varios=True, con_pagina_agenda=True):
-    (tmp_path / "index.html").write_text(PLANTILLA_INDEX, encoding="utf-8")
+    (tmp_path / "recordatorios-diarios.html").write_text(PLANTILLA_INDEX, encoding="utf-8")
     if con_pagina_varios:
         (tmp_path / "recordatorios-varios.html").write_text(PLANTILLA_VARIOS, encoding="utf-8")
     if con_pagina_agenda:
@@ -180,7 +180,7 @@ def test_conexion_exitosa_sincroniza_ambos_frontends(tmp_path, monkeypatch):
     with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
         extract_and_audit.auditar_consistencia_tripartita()
 
-    salida_diarios = (tmp_path / "index.html").read_text(encoding="utf-8")
+    salida_diarios = (tmp_path / "recordatorios-diarios.html").read_text(encoding="utf-8")
     assert 'const timestampLocalStr = "";' not in salida_diarios
     assert 'const appVersionStr = "dev";' in salida_diarios
 
@@ -220,7 +220,7 @@ def test_diarios_inyecta_nombres_de_tareas_de_hoy_sin_empezar(tmp_path, monkeypa
     with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
         extract_and_audit.auditar_consistencia_tripartita()
 
-    salida = (tmp_path / "index.html").read_text(encoding="utf-8")
+    salida = (tmp_path / "recordatorios-diarios.html").read_text(encoding="utf-8")
     assert 'const tareasHoySinEmpezar = ["Llamar a \\"Juan\\""];' in salida
     assert "Tarea hecha hoy" not in salida
     assert "Tarea de ayer" not in salida
@@ -366,7 +366,7 @@ def test_recordatorios_varios_no_configurada_no_rompe_diarios(tmp_path, monkeypa
     with patch.object(extract_and_audit.requests, "post", return_value=_mock_respuesta_notion([_pagina_diarios()])):
         extract_and_audit.auditar_consistencia_tripartita()
 
-    assert 'const timestampLocalStr = "";' not in (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert 'const timestampLocalStr = "";' not in (tmp_path / "recordatorios-diarios.html").read_text(encoding="utf-8")
     salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
     assert "const recordatoriosVariosAyer = [];" in salida_varios
     assert "const recordatoriosVariosHoy = [];" in salida_varios
@@ -387,10 +387,10 @@ def test_recordatorios_varios_401_no_aborta_diarios(tmp_path, monkeypatch, capsy
         extract_and_audit.auditar_consistencia_tripartita()
 
     salida = capsys.readouterr().out
-    assert "✅ Frontend index.html sincronizado" in salida
+    assert "✅ Frontend recordatorios-diarios.html sincronizado" in salida
     assert "RECORDATORIOS VARIOS" in salida
 
-    assert 'const timestampLocalStr = "";' not in (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert 'const timestampLocalStr = "";' not in (tmp_path / "recordatorios-diarios.html").read_text(encoding="utf-8")
     salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
     assert "const recordatoriosVariosAyer = [];" in salida_varios
     assert "const recordatoriosVariosHoy = [];" in salida_varios
@@ -409,7 +409,7 @@ def test_recordatorios_varios_500_no_aborta_diarios(tmp_path, monkeypatch):
     with patch.object(extract_and_audit.requests, "post", side_effect=fake_post):
         extract_and_audit.auditar_consistencia_tripartita()
 
-    assert 'const timestampLocalStr = "";' not in (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert 'const timestampLocalStr = "";' not in (tmp_path / "recordatorios-diarios.html").read_text(encoding="utf-8")
 
 
 def test_recordatorios_varios_sin_archivo_no_rompe_diarios(tmp_path, monkeypatch):
@@ -420,7 +420,7 @@ def test_recordatorios_varios_sin_archivo_no_rompe_diarios(tmp_path, monkeypatch
     with patch.object(extract_and_audit.requests, "post", return_value=_mock_respuesta_notion([_pagina_diarios()])):
         extract_and_audit.auditar_consistencia_tripartita()
 
-    assert 'const timestampLocalStr = "";' not in (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert 'const timestampLocalStr = "";' not in (tmp_path / "recordatorios-diarios.html").read_text(encoding="utf-8")
     assert not (tmp_path / "recordatorios-varios.html").exists()
 
 
@@ -440,7 +440,7 @@ def test_falla_401_en_diarios_hace_exit_1_y_no_toca_ningun_archivo(tmp_path, mon
 
     # El fallo ocurre en raise_for_status() de Recordatorios Diarios, antes de
     # escribir ningún archivo — Recordatorios Varios ni siquiera llega a consultarse.
-    assert (tmp_path / "index.html").read_text(encoding="utf-8") == PLANTILLA_INDEX
+    assert (tmp_path / "recordatorios-diarios.html").read_text(encoding="utf-8") == PLANTILLA_INDEX
     assert (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8") == PLANTILLA_VARIOS
 
 
@@ -456,7 +456,7 @@ def test_falla_500_en_diarios_tambien_hace_exit_1(tmp_path, monkeypatch):
             extract_and_audit.auditar_consistencia_tripartita()
 
     assert exc_info.value.code == 1
-    assert (tmp_path / "index.html").read_text(encoding="utf-8") == PLANTILLA_INDEX
+    assert (tmp_path / "recordatorios-diarios.html").read_text(encoding="utf-8") == PLANTILLA_INDEX
 
 
 # =================================================================
@@ -627,10 +627,10 @@ def test_agenda_personal_eventos_401_no_afecta_otros_modulos(tmp_path, monkeypat
         extract_and_audit.auditar_consistencia_tripartita()
 
     salida = capsys.readouterr().out
-    assert "✅ Frontend index.html sincronizado" in salida
+    assert "✅ Frontend recordatorios-diarios.html sincronizado" in salida
     assert "AGENDA EVENTOS" in salida
 
-    assert 'const timestampLocalStr = "";' not in (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert 'const timestampLocalStr = "";' not in (tmp_path / "recordatorios-diarios.html").read_text(encoding="utf-8")
     salida_varios = (tmp_path / "recordatorios-varios.html").read_text(encoding="utf-8")
     assert "Lavar gorras" in salida_varios
 
@@ -649,7 +649,7 @@ def test_agenda_personal_no_configurada_no_rompe_nada(tmp_path, monkeypatch):
     with patch.object(extract_and_audit.requests, "post", return_value=_mock_respuesta_notion([_pagina_diarios()])):
         extract_and_audit.auditar_consistencia_tripartita()
 
-    assert 'const timestampLocalStr = "";' not in (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert 'const timestampLocalStr = "";' not in (tmp_path / "recordatorios-diarios.html").read_text(encoding="utf-8")
     salida_agenda = (tmp_path / "agenda-personal.html").read_text(encoding="utf-8")
     assert "const agendaEventosAyer = [];" in salida_agenda
     assert "const agendaEventosHoy = [];" in salida_agenda
@@ -664,5 +664,5 @@ def test_agenda_personal_sin_archivo_no_rompe_nada(tmp_path, monkeypatch):
     with patch.object(extract_and_audit.requests, "post", return_value=_mock_respuesta_notion([_pagina_diarios()])):
         extract_and_audit.auditar_consistencia_tripartita()
 
-    assert 'const timestampLocalStr = "";' not in (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert 'const timestampLocalStr = "";' not in (tmp_path / "recordatorios-diarios.html").read_text(encoding="utf-8")
     assert not (tmp_path / "agenda-personal.html").exists()

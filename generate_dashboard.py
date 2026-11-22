@@ -172,9 +172,9 @@ def normalizar_datos(paginas):
 def construir_interfaz_html(conteo_ayer, conteo_hoy, conteo_manana, total_raw):
     """Lee el index.html como plantilla maestra y compila el archivo dashboard.html local."""
     
-    html_template_path = BASE_DIR / "index.html"
+    html_template_path = BASE_DIR / "recordatorios-diarios.html"
     if not html_template_path.exists():
-        sys.stderr.write("❌ [ERROR CRÍTICO]: El archivo index.html no fue encontrado para ser usado como plantilla.\n")
+        sys.stderr.write("❌ [ERROR CRÍTICO]: El archivo recordatorios-diarios.html no fue encontrado para ser usado como plantilla.\n")
         sys.exit(1)
         
     with open(html_template_path, "r", encoding="utf-8") as f:

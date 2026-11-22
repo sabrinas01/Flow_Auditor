@@ -7,7 +7,7 @@ const CACHE_NAME = "asistentesabry-shell-v1";
 const APP_SHELL = [
     "./",
     "./inicio.html",
-    "./index.html",
+    "./recordatorios-diarios.html",
     "./recordatorios-varios.html",
     "./agenda-personal.html",
     "./styles.css",

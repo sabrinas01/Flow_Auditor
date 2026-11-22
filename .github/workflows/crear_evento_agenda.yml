@@ -50,7 +50,7 @@ jobs:
           # publica en 'gh-pages' reconstruida desde el 'main' actual + los
           # frontends actualizados, así un --force acá no pisa commits humanos.
           git checkout -B gh-pages
-          git add index.html recordatorios-varios.html agenda-personal.html
+          git add index.html recordatorios-diarios.html recordatorios-varios.html agenda-personal.html finanzas.html
 
           if ! git diff --staged --quiet; then
             git commit -m "auto: nueva tarea creada desde Agenda Personal"

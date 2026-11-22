@@ -296,7 +296,7 @@ def auditar_consistencia_tripartita():
 
         json_ayer, json_hoy, json_manana = _serializar_conteos(conteo_ayer, conteo_hoy, conteo_manana)
 
-        html_path = BASE_DIR / "index.html"
+        html_path = BASE_DIR / "recordatorios-diarios.html"
         with open(html_path, "r", encoding="utf-8") as file:
             html_content = file.read()
 
@@ -327,7 +327,7 @@ def auditar_consistencia_tripartita():
         with open(html_path, "w", encoding="utf-8") as file:
             file.write(html_content)
 
-        print("✅ Frontend index.html sincronizado y actualizado con éxito de forma horaria.")
+        print("✅ Frontend recordatorios-diarios.html sincronizado y actualizado con éxito de forma horaria.")
 
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 401:

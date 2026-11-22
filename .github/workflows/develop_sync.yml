@@ -47,7 +47,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
 
           mkdir -p /tmp/dev_site
-          cp inicio.html index.html recordatorios-varios.html agenda-personal.html finanzas.html styles.css manifest.json sw.js /tmp/dev_site/
+          cp inicio.html index.html recordatorios-diarios.html recordatorios-varios.html agenda-personal.html finanzas.html styles.css manifest.json sw.js /tmp/dev_site/
           cp -r src grafica /tmp/dev_site/
 
           git fetch origin gh-pages || true

@@ -79,23 +79,22 @@ describe('inicio.html — marca de aterrizaje (SRS-FR-M3-309)', () => {
   });
 });
 
-describe('index.html — no rebota si ya se aterrizó en inicio.html (SRS-FR-M3-309)', () => {
-  const scriptIndex = extraerScriptDeAterrizaje('index.html');
+describe('index.html — siempre redirige a inicio.html como página predeterminada (v4.43)', () => {
+  const htmlIndex = fs.readFileSync(path.join(RAIZ, 'index.html'), 'utf8');
+  const scriptMatch = htmlIndex.match(/<script>([\s\S]*?)<\/script>/);
+  const scriptIndex = scriptMatch ? scriptMatch[1] : '';
 
   test('el destino de redirección sigue siendo inicio.html', () => {
     expect(scriptIndex).toEqual(expect.stringContaining("location.replace('inicio.html')"));
   });
 
-  test('Escenario 2: con la marca ya seteada (por inicio.html), no redirige', () => {
+  test('siempre redirige a inicio.html incluso si nfa_landed ya estaba seteado', () => {
     const { intentosDeNavegacion } = ejecutarScript(scriptIndex, { nfa_landed: '1' });
-
-    expect(intentosDeNavegacion).toHaveLength(0);
+    expect(intentosDeNavegacion).toHaveLength(1);
   });
 
-  test('regresión del bug original (v4.6): sin marca, sí redirige y la deja seteada', () => {
-    const { window, intentosDeNavegacion } = ejecutarScript(scriptIndex);
-
-    expect(window.sessionStorage.getItem('nfa_landed')).toBe('1');
-    expect(intentosDeNavegacion).toHaveLength(1);
+  test('recordatorios-diarios.html no contiene script de redirección a inicio.html', () => {
+    const htmlDiarios = fs.readFileSync(path.join(RAIZ, 'recordatorios-diarios.html'), 'utf8');
+    expect(htmlDiarios).not.toContain("location.replace('inicio.html')");
   });
 });
