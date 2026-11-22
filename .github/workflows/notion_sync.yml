@@ -1,6 +1,8 @@
 name: Flujo de Sincronización Automática
 
 on:
+  push:
+    branches: [ main ]
   schedule:
     # Sincronización automática de forma autónoma cada 1 hora (24/7)
     - cron: '0 * * * *'
