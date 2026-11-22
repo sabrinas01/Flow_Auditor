@@ -95,6 +95,7 @@ describe('construirPayloadEgreso', () => {
         cuotas: 1,
         categoria: ['SUPERMERCADO'],
         detalle: 'Compra semanal',
+        fecha_corte: null,
       },
     });
   });

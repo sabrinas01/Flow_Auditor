@@ -84,6 +84,7 @@ function construirPayloadEgreso(datos) {
     cuotas: Number.isFinite(cuotasRaw) && cuotasRaw > 0 ? cuotasRaw : null,
     categoria: Array.isArray(datos.categoria) ? datos.categoria.filter(Boolean) : (datos.categoria ? [datos.categoria] : []),
     detalle: (datos.detalle || "").trim() || null,
+    fecha_corte: (datos.fechaCorte || "").trim() || null,
   };
   if (pageId) payload.page_id = pageId;
   return { ok: true, payload };

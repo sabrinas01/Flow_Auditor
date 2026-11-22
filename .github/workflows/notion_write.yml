@@ -38,6 +38,7 @@ jobs:
           NOTION_DB_EVENTOS: ${{ secrets.NOTION_DB_EVENTOS }}
           NOTION_DB_INGRESOS: ${{ secrets.NOTION_DB_INGRESOS }}
           NOTION_DB_EGRESOS: ${{ secrets.NOTION_DB_EGRESOS }}
+          NOTION_DB_TARJETA: ${{ secrets.NOTION_DB_TARJETA }}
           ACCION_NOTION_PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: python extract_and_audit.py
 

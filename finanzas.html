@@ -310,12 +310,17 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label for="egr-forma-pago" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Forma de pago</label>
-                        <select id="egr-forma-pago" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container"></select>
+                        <select id="egr-forma-pago" onchange="actualizarVisibilidadFechaCorte()" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container"></select>
                     </div>
                     <div>
                         <label for="egr-tarjeta" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Tarjeta usada</label>
                         <select id="egr-tarjeta" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container"></select>
                     </div>
+                </div>
+                <div id="egr-wrap-fecha-corte" class="hidden space-y-1">
+                    <label for="egr-fecha-corte" class="block text-[12px] font-semibold text-[#8e8e93]">Fecha de Corte TC (1ª cuota)</label>
+                    <input id="egr-fecha-corte" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    <p class="text-[11px] text-[#8e8e93]">Se crearán también las cuotas en Cuotas Pendientes BD-V0.</p>
                 </div>
                 <div>
                     <label for="egr-categoria" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Categoría</label>
@@ -522,6 +527,13 @@
             document.getElementById("modal-ingreso").classList.remove("flex");
         }
 
+        function actualizarVisibilidadFechaCorte() {
+            const val = (document.getElementById("egr-forma-pago").value || "").trim().toUpperCase();
+            const esTarjeta = val === "TARJETA" || val === "TARJETA (1 CUOTA)";
+            const esNuevo = !document.getElementById("egr-page-id").value.trim();
+            document.getElementById("egr-wrap-fecha-corte").classList.toggle("hidden", !(esTarjeta && esNuevo));
+        }
+
         function abrirModalEgreso() {
             document.getElementById("egr-modal-titulo").textContent = "Registrar Egreso";
             document.getElementById("form-egreso").reset();
@@ -531,6 +543,7 @@
             _poblarSelect("egr-forma-pago", finanzasOpciones.formas_pago, "");
             _poblarSelect("egr-tarjeta", finanzasOpciones.tarjetas, "");
             _poblarSelect("egr-categoria", finanzasOpciones.categorias, "");
+            actualizarVisibilidadFechaCorte();
             document.getElementById("egr-mensaje").classList.add("hidden");
             document.getElementById("modal-egreso").classList.remove("hidden");
             document.getElementById("modal-egreso").classList.add("flex");
@@ -550,6 +563,7 @@
             _poblarSelect("egr-tarjeta", finanzasOpciones.tarjetas, item.tarjeta || "");
             _poblarSelect("egr-categoria", finanzasOpciones.categorias, (item.categoria || [])[0] || "");
             document.getElementById("egr-detalle").value = item.detalle || "";
+            actualizarVisibilidadFechaCorte();
             document.getElementById("egr-btn-eliminar").classList.remove("hidden");
             document.getElementById("egr-mensaje").classList.add("hidden");
             document.getElementById("modal-egreso").classList.remove("hidden");
@@ -699,6 +713,7 @@
                 tarjeta: document.getElementById("egr-tarjeta").value,
                 categoria: document.getElementById("egr-categoria").value,
                 detalle: document.getElementById("egr-detalle").value,
+                fechaCorte: document.getElementById("egr-fecha-corte").value,
             });
             if (!res.ok) {
                 const msg = document.getElementById("egr-mensaje");

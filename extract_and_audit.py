@@ -91,12 +91,13 @@ DB_RECORDATORIOS_VARIOS = os.getenv("NOTION_DB_RECORDATORIOS_VARIOS")
 DB_AGENDA_EVENTOS = os.getenv("NOTION_DB_EVENTOS")
 DB_INGRESOS = os.getenv("NOTION_DB_INGRESOS")
 DB_EGRESOS = os.getenv("NOTION_DB_EGRESOS")
+DB_CUOTAS_TARJETA = os.getenv("NOTION_DB_TARJETA")
 
 
 def validar_credenciales():
     try:
         # Uso de helper interno para resolución robusta de variables de entorno
-        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
         # Opcionales: su ausencia (o cualquier fallo al consultarlas) no debe abortar
@@ -106,6 +107,7 @@ def validar_credenciales():
         DB_AGENDA_EVENTOS = get_env_var(["NOTION_DB_EVENTOS"], required=False)
         DB_INGRESOS = get_env_var(["NOTION_DB_INGRESOS"], required=False)
         DB_EGRESOS = get_env_var(["NOTION_DB_EGRESOS"], required=False)
+        DB_CUOTAS_TARJETA = get_env_var(["NOTION_DB_TARJETA"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -1114,13 +1116,80 @@ def _construir_propiedades_egreso(datos, modo_edicion=False):
     return nombre, props
 
 
+def _sumar_meses_iso(fecha_iso, meses):
+    """Suma `meses` calendario a una fecha `YYYY-MM-DD`, acotando al último día
+    del mes destino si el día original no existe (ej. 31 -> 28/30).
+    """
+    import calendar
+    anio, mes, dia = (int(x) for x in fecha_iso[:10].split("-"))
+    total_meses = (anio * 12 + (mes - 1)) + meses
+    nuevo_anio, nuevo_mes_idx = divmod(total_meses, 12)
+    nuevo_mes = nuevo_mes_idx + 1
+    ultimo_dia = calendar.monthrange(nuevo_anio, nuevo_mes)[1]
+    return f"{nuevo_anio:04d}-{nuevo_mes:02d}-{min(dia, ultimo_dia):02d}"
+
+
+def _es_pago_con_tarjeta(formas_pago):
+    normalizadas = {f.strip().upper() for f in (formas_pago or []) if f}
+    return bool(normalizadas & {"TARJETA", "TARJETA (1 CUOTA)"})
+
+
+def crear_cuotas_tarjeta(egreso_id, datos):
+    """Crea las cuotas correspondientes en `Cuotas Pendientes BD-V0`
+    (`NOTION_DB_TARJETA`) cuando un egreso se registra con forma de pago
+    `TARJETA` o `TARJETA (1 CUOTA)`.
+    """
+    if not DB_CUOTAS_TARJETA or not egreso_id:
+        return
+
+    formas = [f.strip().upper() for f in (datos.get("forma_pago") or []) if f]
+    if "TARJETA (1 CUOTA)" in formas and "TARJETA" not in formas:
+        total_cuotas = 1
+    else:
+        total_cuotas = max(1, int(datos.get("cuotas") or 1))
+
+    nombre = (datos.get("nombre") or "").strip()
+    fecha_compra = (datos.get("fecha") or "").strip()
+    fecha_corte = (datos.get("fecha_corte") or "").strip()
+    tarjeta = (datos.get("tarjeta") or "").strip()
+    monto_cuota_ars = round(float(datos["monto"]) / total_cuotas, 2)
+    monto_cuota_usd = round(float(datos["monto_usd"]) / total_cuotas, 2) if datos.get("monto_usd") is not None else None
+
+    for nro in range(1, total_cuotas + 1):
+        props = {
+            "Nombre de cuota": {"title": [{"text": {"content": f"Cuota n°: {nro} - {nombre}"}}]},
+            "EGRESOS": {"relation": [{"id": egreso_id}]},
+            "Gasto principal": {"relation": [{"id": egreso_id}]},
+            "Monto  por mes en ARS": {"number": monto_cuota_ars},
+            "Fecha de la compra": {"date": {"start": fecha_compra}},
+            "Pagado": {"checkbox": False},
+        }
+        if monto_cuota_usd is not None:
+            props["Monto  por mes en USD"] = {"number": monto_cuota_usd}
+        if fecha_corte:
+            props["Fecha de Corte TC"] = {"date": {"start": _sumar_meses_iso(fecha_corte, nro - 1)}}
+        if tarjeta:
+            props["Tarjeta usada"] = {"rich_text": [{"text": {"content": tarjeta}}]}
+
+        _ejecutar_request_notion(
+            "POST",
+            "https://api.notion.com/v1/pages",
+            {"parent": {"database_id": DB_CUOTAS_TARJETA}, "properties": props},
+            "CREAR CUOTA TARJETA",
+        )
+    print(f"✅ [CREAR CUOTA TARJETA]: {total_cuotas} cuota(s) creadas para '{nombre}'.")
+
+
 def crear_egreso(datos):
     if not DB_EGRESOS:
         print("❌ [CREAR EGRESO]: NOTION_DB_EGRESOS no configurada.")
         sys.exit(1)
     nombre, props = _construir_propiedades_egreso(datos, modo_edicion=False)
     res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", {"parent": {"database_id": DB_EGRESOS}, "properties": props}, "CREAR EGRESO")
-    print(f"✅ [CREAR EGRESO]: '{nombre}' creado ({res.get('id', '?')}).")
+    egreso_id = res.get("id")
+    print(f"✅ [CREAR EGRESO]: '{nombre}' creado ({egreso_id or '?'}).")
+    if _es_pago_con_tarjeta(datos.get("forma_pago")):
+        crear_cuotas_tarjeta(egreso_id, datos)
 
 
 def actualizar_egreso(datos):

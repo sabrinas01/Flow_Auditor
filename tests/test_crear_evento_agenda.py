@@ -282,3 +282,39 @@ def test_crear_y_actualizar_egreso(monkeypatch):
     assert props["Cantidad de cuotas"] == {"number": 1}
     assert props["Categoría"] == {"multi_select": [{"name": "SUPERMERCADO"}]}
     assert props["Detalle"] == {"rich_text": [{"text": {"content": "Compra semanal"}}]}
+
+
+def test_crear_egreso_con_tarjeta_crea_cuotas(monkeypatch):
+    _preparar_credenciales(monkeypatch)
+    monkeypatch.setattr(extract_and_audit, "DB_EGRESOS", "E" * 32)
+    monkeypatch.setattr(extract_and_audit, "DB_CUOTAS_TARJETA", "T" * 32)
+
+    llamadas = []
+
+    def _mock_post(url, json=None, headers=None, timeout=15):
+        llamadas.append(json)
+        idx = len(llamadas)
+        return _mock_respuesta_creada(f"id-{idx}")
+
+    with patch.object(extract_and_audit.requests, "post", _mock_post):
+        extract_and_audit.crear_egreso({
+            "nombre": "Zapatillas",
+            "monto": 90000,
+            "fecha": "2026-11-21",
+            "forma_pago": ["TARJETA"],
+            "tarjeta": "GALICIA",
+            "cuotas": 3,
+            "fecha_corte": "2026-11-30",
+        })
+
+    # 1 egreso + 3 cuotas
+    assert len(llamadas) == 4
+    cuota1, cuota2, cuota3 = llamadas[1], llamadas[2], llamadas[3]
+    assert cuota1["parent"] == {"database_id": "T" * 32}
+    assert cuota1["properties"]["Nombre de cuota"] == {"title": [{"text": {"content": "Cuota n°: 1 - Zapatillas"}}]}
+    assert cuota1["properties"]["Monto  por mes en ARS"] == {"number": 30000.0}
+    assert cuota1["properties"]["EGRESOS"] == {"relation": [{"id": "id-1"}]}
+    assert cuota1["properties"]["Gasto principal"] == {"relation": [{"id": "id-1"}]}
+    assert cuota1["properties"]["Fecha de Corte TC"] == {"date": {"start": "2026-11-30"}}
+    assert cuota2["properties"]["Fecha de Corte TC"] == {"date": {"start": "2026-12-30"}}
+    assert cuota3["properties"]["Fecha de Corte TC"] == {"date": {"start": "2027-01-30"}}
