@@ -568,7 +568,7 @@
 
         function renderizarCicloResumen() {
             const hoyIso = hoyLocalISO();
-            const { faseActual, proximoInicio } = obtenerResumenCiclo(saludCiclo, hoyIso);
+            const { faseActual, proximoInicio, proximaFase, proximaFaseEmoji } = obtenerResumenCiclo(saludCiclo, hoyIso);
             const infoActual = clasificarFasePorNombre(faseActual);
             const emojiActual = infoActual && infoActual.emoji ? `${infoActual.emoji} ` : "";
             const faseObj = saludCiclo.find((f) => f.nombre === faseActual);
@@ -579,7 +579,10 @@
                 ? ` · ${faseObj.inicio}${faseObj.fin ? " a " + faseObj.fin : ""}`
                 : "";
             document.getElementById("ciclo-fase-actual").textContent = `${emojiActual}${faseActual}${diasTxt}${rangoTxt}`;
-            document.getElementById("ciclo-proximo-inicio").textContent = proximoInicio || "Sin fecha calculada";
+            const proxLabel = proximaFase
+                ? `${proximaFaseEmoji ? `${proximaFaseEmoji} ` : ""}${proximaFase} · ${proximoInicio || "Sin fecha calculada"}`
+                : (proximoInicio || "Sin fecha calculada");
+            document.getElementById("ciclo-proximo-inicio").textContent = proxLabel;
             renderizarCalendarioCiclo();
         }
 

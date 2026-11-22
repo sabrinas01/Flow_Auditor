@@ -19,14 +19,18 @@ describe('clasificarFasePorNombre', () => {
 });
 
 describe('obtenerResumenCiclo', () => {
-  test('detecta la fase activa para hoy y usa su fórmula próximo inicio de Notion', () => {
+  test('detecta la fase activa y obtiene nombre y próximo inicio de la siguiente fase del ciclo', () => {
     const fases = [
+      { nombre: '[10-11]-Fase menstrual', inicio: '2026-10-30', fin: '2026-11-04', proximo_inicio: '2026-11-23' },
       { nombre: '[11]-Fase Folicular', inicio: '2026-11-05', fin: '2026-11-14', proximo_inicio: '2026-11-29' },
-      { nombre: '[11]-Fase ovulatoria', inicio: '2026-11-15', fin: '2026-11-22', proximo_inicio: '2026-12-09' },
+      { nombre: '[11]-Fase ovulatoria', inicio: '2026-11-15', fin: '2026-11-19', proximo_inicio: '2026-12-09' },
+      { nombre: '[11]-Fase Lútea', inicio: '2026-11-20', fin: '2026-11-25', proximo_inicio: '2026-12-14' },
     ];
-    expect(obtenerResumenCiclo(fases, '2026-11-21')).toEqual({
-      faseActual: '[11]-Fase ovulatoria',
-      proximoInicio: '2026-12-09',
+    expect(obtenerResumenCiclo(fases, '2026-11-22')).toEqual({
+      faseActual: '[11]-Fase Lútea',
+      proximoInicio: '2026-11-23',
+      proximaFase: 'Fase menstrual',
+      proximaFaseEmoji: '❄️',
     });
   });
 
@@ -34,6 +38,8 @@ describe('obtenerResumenCiclo', () => {
     expect(obtenerResumenCiclo([], '2026-11-21')).toEqual({
       faseActual: 'Sin registros',
       proximoInicio: null,
+      proximaFase: null,
+      proximaFaseEmoji: null,
     });
   });
 });

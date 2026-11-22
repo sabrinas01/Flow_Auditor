@@ -25,7 +25,7 @@ function clasificarFasePorNombre(nombre) {
 function obtenerResumenCiclo(fases, hoyIso) {
   const lista = Array.isArray(fases) ? fases : [];
   if (lista.length === 0) {
-    return { faseActual: "Sin registros", proximoInicio: null };
+    return { faseActual: "Sin registros", proximoInicio: null, proximaFase: null, proximaFaseEmoji: null };
   }
 
   const activa = lista.find((f) => {
@@ -37,9 +37,32 @@ function obtenerResumenCiclo(fases, hoyIso) {
   const ordenadas = [...lista].sort((a, b) => (b.inicio || "").localeCompare(a.inicio || ""));
   const referencia = activa || ordenadas[0];
 
+  const infoActual = referencia ? clasificarFasePorNombre(referencia.nombre) : null;
+  const idxActual = infoActual ? FASES_CICLO.findIndex((f) => f.key === infoActual.key) : -1;
+  const siguienteInfo = idxActual >= 0 ? FASES_CICLO[(idxActual + 1) % FASES_CICLO.length] : null;
+
+  let proximoInicio = null;
+  if (siguienteInfo) {
+    const regSiguiente = ordenadas.find((f) => {
+      const inf = clasificarFasePorNombre(f.nombre);
+      return inf && inf.key === siguienteInfo.key;
+    });
+    if (regSiguiente) {
+      const refIni = (referencia && referencia.inicio) || "";
+      proximoInicio = (regSiguiente.inicio && regSiguiente.inicio > refIni)
+        ? regSiguiente.inicio
+        : (regSiguiente.proximo_inicio || null);
+    }
+  }
+  if (!proximoInicio && referencia) {
+    proximoInicio = referencia.proximo_inicio || null;
+  }
+
   return {
     faseActual: referencia ? referencia.nombre : "Sin registros",
-    proximoInicio: (referencia && referencia.proximo_inicio) || null,
+    proximoInicio,
+    proximaFase: siguienteInfo ? siguienteInfo.label : null,
+    proximaFaseEmoji: siguienteInfo ? siguienteInfo.emoji : null,
   };
 }
 
