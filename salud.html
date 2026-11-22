@@ -297,8 +297,8 @@
                     </div>
                 </div>
                 <div>
-                    <label for="cic-sintoma" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Síntoma principal</label>
-                    <select id="cic-sintoma" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    <label class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Síntomas (podés elegir varios)</label>
+                    <div id="cic-sintomas-list" class="max-h-40 overflow-y-auto bg-[#1c1c1f] border border-[#232326] rounded-lg p-2.5 grid grid-cols-1 sm:grid-cols-2 gap-1.5"></div>
                 </div>
                 <p id="cic-mensaje" class="text-[13px] hidden"></p>
                 <div class="flex gap-3 pt-1">
@@ -536,7 +536,13 @@
             document.getElementById("cic-nombre").value = `[${hoy.slice(5, 7)}]-${fase}`;
             document.getElementById("cic-inicio").value = hoy;
             document.getElementById("cic-inicio-real").value = hoy;
-            _poblarSelect("cic-sintoma", saludOpciones.sintomas, true, "");
+            const contSintomas = document.getElementById("cic-sintomas-list");
+            contSintomas.innerHTML = (saludOpciones.sintomas || []).map((s) => `
+                <label class="flex items-center gap-2 text-[13px] text-[#e5e2e1] cursor-pointer px-1.5 py-1 rounded hover:bg-white/5">
+                    <input type="checkbox" name="cic-sintoma" value="${escapeHtml(s)}" class="accent-[#ff5f52] rounded" />
+                    <span class="truncate">${escapeHtml(s)}</span>
+                </label>
+            `).join("");
             document.getElementById("cic-mensaje").classList.add("hidden");
             abrirModal("modal-ciclo");
         }
@@ -628,7 +634,7 @@
 
         async function manejarSubmitCiclo(event) {
             event.preventDefault();
-            const sintoma = document.getElementById("cic-sintoma").value;
+            const sintomas = [...document.querySelectorAll('input[name="cic-sintoma"]:checked')].map((el) => el.value);
             const res = construirPayloadCiclo({
                 fase: document.getElementById("cic-fase").value,
                 nombre: document.getElementById("cic-nombre").value,
@@ -636,7 +642,7 @@
                 fin: document.getElementById("cic-fin").value,
                 inicioReal: document.getElementById("cic-inicio-real").value,
                 finReal: document.getElementById("cic-fin-real").value,
-                sintomas: sintoma ? [sintoma] : [],
+                sintomas,
             });
             if (!res.ok) {
                 const msg = document.getElementById("cic-mensaje");
