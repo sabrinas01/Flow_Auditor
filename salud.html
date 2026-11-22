@@ -548,7 +548,10 @@
             const diasTxt = faseObj && faseObj.cantidad_dias !== null && faseObj.cantidad_dias !== undefined
                 ? ` (${faseObj.cantidad_dias} días)`
                 : "";
-            document.getElementById("ciclo-fase-actual").textContent = `${faseActual}${diasTxt}`;
+            const rangoTxt = faseObj && faseObj.inicio
+                ? ` · ${faseObj.inicio}${faseObj.fin ? " a " + faseObj.fin : ""}`
+                : "";
+            document.getElementById("ciclo-fase-actual").textContent = `${faseActual}${diasTxt}${rangoTxt}`;
             document.getElementById("ciclo-proximo-inicio").textContent = proximoInicio || "Sin fecha calculada";
             renderizarCalendarioCiclo();
         }
