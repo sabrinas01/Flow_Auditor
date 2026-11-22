@@ -131,11 +131,18 @@ function calcularResumenSemanal(cache, ultimos7Dias) {
   return { filas, diasBajosCount, mostrarAlerta: diasBajosCount >= 4 };
 }
 
+function esEstadoPendienteOEnCurso(estado) {
+  const norm = (estado || "").toLowerCase();
+  const r = rankEstado(norm);
+  return r === 1 || r === 2 || norm.includes("pendiente") || norm.includes("curso");
+}
+
 // CommonJS opcional (para tests con Jest/Node) sin afectar el uso como <script> global.
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     escapeHtml,
     esEstadoCompletado,
+    esEstadoPendienteOEnCurso,
     obtenerEstiloEstado,
     rankEstado,
     ordenarEntradasPorJerarquia,

@@ -439,8 +439,8 @@
             procesarSeccionMetrica("ayer", conteoAyer);
             procesarSeccionMetrica("hoy", conteoHoy);
             renderizarTareasSinEmpezar("hoy-sin-empezar", tareasHoySinEmpezar);
-            const tareasAyerSinHacer = (tareasDiariasAyer || []).filter((t) => !esEstadoCompletado(t.estado || ""));
-            renderizarTareasDiariasConEstado("tareas-ayer", tareasAyerSinHacer, recordatoriosDiariosEstados);
+            const tareasAyerPendientes = (tareasDiariasAyer || []).filter((t) => esEstadoPendienteOEnCurso(t.estado));
+            renderizarTareasDiariasConEstado("tareas-ayer", tareasAyerPendientes, recordatoriosDiariosEstados);
             renderizarTareasDiariasConEstado("tareas-hoy", tareasDiariasHoy, recordatoriosDiariosEstados);
         });
 

@@ -7,6 +7,7 @@
 const {
   escapeHtml,
   esEstadoCompletado,
+  esEstadoPendienteOEnCurso,
   obtenerEstiloEstado,
   rankEstado,
   ordenarEntradasPorJerarquia,
@@ -39,6 +40,21 @@ describe('esEstadoCompletado', () => {
     ['Fallida / Vencida', false],
   ])('%s -> %s', (estado, esperado) => {
     expect(esEstadoCompletado(estado)).toBe(esperado);
+  });
+});
+
+describe('esEstadoPendienteOEnCurso', () => {
+  test.each([
+    ['Sin empezar', true],
+    ['En ejecución', true],
+    ['Pendiente', true],
+    ['En curso', true],
+    ['Hecha', false],
+    ['Hecha por otra persona', false],
+    ['⏭️ No necesaria', false],
+    ['❌ Fallida / Vencida', false],
+  ])('%s -> %s', (estado, esperado) => {
+    expect(esEstadoPendienteOEnCurso(estado)).toBe(esperado);
   });
 });
 
