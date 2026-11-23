@@ -120,7 +120,7 @@
                         <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
                     </div>
                     <div>
-                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">ASISTENTESABRY</span>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">ASISTENTESABRY</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
                         <p class="text-[10px] font-label-caps text-primary tracking-widest">SALUD</p>
                     </div>
                 </div>
@@ -532,9 +532,9 @@
                     const esHoy = cel.iso === hoyIso;
                     const etiqueta = cel.dt.getDate() === 1 ? `1 ${mesesCortos[cel.dt.getMonth()]}` : `${cel.dt.getDate()}`;
                     const cls = esHoy
-                        ? "inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-[#ff5f52] text-white font-bold"
+                        ? "inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-[#ff5f52] text-white font-bold shadow-md shadow-[#ff5f52]/30"
                         : cel.esMesActual ? "text-[#e5e2e1] font-semibold" : "text-[#8e8e93]/60";
-                    return `<div class="text-right px-1.5 py-1 text-[12px]"><span class="${cls}">${etiqueta}</span></div>`;
+                    return `<div class="text-right px-1.5 py-1 text-[12px]"><span class="${cls}">${esHoy ? "Hoy · " + etiqueta : etiqueta}</span></div>`;
                 }).join("");
 
                 const barras = (saludCiclo || [])
@@ -610,14 +610,18 @@
             cont.innerHTML = saludPendientes.length === 0
                 ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin pendientes registrados</div>`
                 : saludPendientes.map((p) => {
-                    const meta = [p.tipo, p.fecha_limite, p.estado].filter(Boolean).map(escapeHtml).join(" · ");
+                    const tipoBadge = p.tipo
+                        ? `<span class="bg-[#00aaff]/15 text-[#00aaff] border border-[#00aaff]/30 px-2 py-0.5 rounded-full text-[11px] font-semibold flex-shrink-0">${escapeHtml(p.tipo)}</span>`
+                        : "";
+                    const meta = [p.fecha_limite, p.estado].filter(Boolean).map(escapeHtml).join(" · ");
                     const retrasoHtml = p.con_retraso
-                        ? `<span class="bg-[#ff5f52]/15 text-[#ff5f52] px-2 py-0.5 rounded text-[11px] font-bold flex-shrink-0">Con retraso</span>`
+                        ? `<span class="bg-[#ff5f52]/15 text-[#ff5f52] px-2 py-0.5 rounded-full text-[11px] font-bold flex-shrink-0">Con retraso</span>`
                         : "";
                     return `
                         <div class="status-row flex items-center justify-between px-4 py-3 gap-3">
                             <span class="text-white font-semibold truncate">${escapeHtml(p.nombre)}</span>
                             <div class="flex items-center gap-2 flex-shrink-0">
+                                ${tipoBadge}
                                 ${retrasoHtml}
                                 <span class="text-[12px] text-[#8e8e93]">${meta}</span>
                             </div>
@@ -631,6 +635,7 @@
             document.getElementById("footer-sync-time").innerText = timestampLocalStr;
             document.getElementById("footer-next-time").innerText = timestampNextStr;
             document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
             renderizarSesiones();
             renderizarCicloResumen();
             renderizarPendientesSalud();

@@ -157,7 +157,7 @@
                         <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
                     </div>
                     <div>
-                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">ASISTENTESABRY</span>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">ASISTENTESABRY</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
                         <p class="text-[10px] font-label-caps text-primary tracking-widest">Recordatorios diarios</p>
                     </div>
                 </div>
@@ -194,6 +194,25 @@
                     </div>
 
                     <div id="content-hoy" class="flex flex-col gap-6">
+                        <div id="hoy-mini-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <div class="bg-[#0e0e0f] rounded-xl border border-white/[0.06] px-3 py-2.5 text-center">
+                                <p class="text-[10px] text-[#8e8e93] uppercase tracking-wider">Sin empezar</p>
+                                <p id="mini-hoy-sin" class="text-[18px] font-bold text-[#00aaff] mt-0.5">0</p>
+                            </div>
+                            <div class="bg-[#0e0e0f] rounded-xl border border-white/[0.06] px-3 py-2.5 text-center">
+                                <p class="text-[10px] text-[#8e8e93] uppercase tracking-wider">Hecha</p>
+                                <p id="mini-hoy-hecha" class="text-[18px] font-bold text-[#53a759] mt-0.5">0</p>
+                            </div>
+                            <div class="bg-[#0e0e0f] rounded-xl border border-white/[0.06] px-3 py-2.5 text-center">
+                                <p class="text-[10px] text-[#8e8e93] uppercase tracking-wider">No necesaria</p>
+                                <p id="mini-hoy-nonec" class="text-[18px] font-bold text-[#e5e2e1] mt-0.5">0</p>
+                            </div>
+                            <div class="bg-[#0e0e0f] rounded-xl border border-white/[0.06] px-3 py-2.5 text-center">
+                                <p class="text-[10px] text-[#8e8e93] uppercase tracking-wider">Fallida</p>
+                                <p id="mini-hoy-fallida" class="text-[18px] font-bold text-[#ff5f52] mt-0.5">0</p>
+                            </div>
+                        </div>
+
                         <div id="list-hoy" class="space-y-3">
                             <!-- Se inyectan las filas dinámicamente -->
                         </div>
@@ -447,6 +466,7 @@
             document.getElementById("footer-sync-time").innerText = timestampLocalStr;
             document.getElementById("footer-next-time").innerText = timestampNextStr;
             document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
 
             // 2. Procesar e Inyectar Bloques Temporales Complejos
             procesarSeccionMetrica("ayer", conteoAyer);
@@ -476,6 +496,21 @@
                 : "text-metric-xl font-metric-xl text-[#e49102]";
 
             renderizarFilasEstados(`list-${prefijo}`, data);
+
+            if (prefijo === "hoy") {
+                let cSin = 0, cHecha = 0, cNoNec = 0, cFallida = 0;
+                Object.entries(data || {}).forEach(([est, cant]) => {
+                    const n = est.toLowerCase();
+                    if (n.includes("sin empezar")) cSin += cant;
+                    else if (n.includes("no neces")) cNoNec += cant;
+                    else if (n.includes("fallida") || n.includes("vencida")) cFallida += cant;
+                    else if (esEstadoCompletado(est)) cHecha += cant;
+                });
+                const elS = document.getElementById("mini-hoy-sin"); if (elS) elS.textContent = String(cSin);
+                const elH = document.getElementById("mini-hoy-hecha"); if (elH) elH.textContent = String(cHecha);
+                const elN = document.getElementById("mini-hoy-nonec"); if (elN) elN.textContent = String(cNoNec);
+                const elF = document.getElementById("mini-hoy-fallida"); if (elF) elF.textContent = String(cFallida);
+            }
 
             // Alerta individual del cuadro de hoy/ayer si cae del 70%
             const alertBox = document.getElementById(`alert-${prefijo}`);

@@ -122,7 +122,7 @@
                         <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
                     </div>
                     <div>
-                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">ASISTENTESABRY</span>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">ASISTENTESABRY</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
                         <p class="text-[10px] font-label-caps text-primary tracking-widest">FINANZAS</p>
                     </div>
                 </div>
@@ -511,6 +511,7 @@
             document.getElementById("footer-sync-time").innerText = timestampLocalStr;
             document.getElementById("footer-next-time").innerText = timestampNextStr;
             document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
             renderizarFinanzas();
         });
 
