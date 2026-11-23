@@ -115,7 +115,7 @@
         <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
             <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
                 <div class="flex items-center gap-3">
-                    <button onclick="toggleMenu()" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                    <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
                         <span class="material-symbols-outlined text-[20px]">menu</span>
                     </button>
                     <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
@@ -127,6 +127,9 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
+                    <span class="hidden sm:inline-flex items-center gap-1.5 bg-[#111115] px-3 py-1.5 rounded-lg border border-white/[0.08] text-xs text-[#8e8e93]">
+                        <span class="material-symbols-outlined text-[16px]">today</span>Hoy
+                    </span>
                     <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
                         <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
                     </button>
@@ -171,6 +174,13 @@
                     </div>
                 </div>
             </section>
+
+            <!-- BUSCADOR RÁPIDO -->
+            <div class="relative">
+                <span class="material-symbols-outlined text-[18px] text-[#8e8e93] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">search</span>
+                <input id="fin-buscador" type="text" oninput="renderizarFinanzas()" placeholder="Buscar movimientos por nombre, categoría o tarjeta..."
+                       class="w-full bg-[#111115] border border-white/[0.08] rounded-xl pl-10 pr-4 py-2.5 text-[14px] text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#ff5f52]/50" />
+            </div>
 
             <!-- LISTADOS DEL MES -->
             <section class="grid grid-cols-1 lg:grid-cols-2 gap-grid-gutter">
@@ -448,10 +458,18 @@
             document.getElementById("total-ingresos-lbl").textContent = `${finanzasIngresos.length} ítems`;
             document.getElementById("total-egresos-lbl").textContent = `${finanzasEgresos.length} ítems`;
 
+            const q = ((document.getElementById("fin-buscador") || {}).value || "").trim().toLowerCase();
+            const ingFiltrados = finanzasIngresos.map((item, idx) => ({ item, idx })).filter(({ item }) =>
+                !q || `${item.titulo} ${item.tipo || ""} ${item.fecha || ""}`.toLowerCase().includes(q)
+            );
+            const egrFiltrados = finanzasEgresos.map((item, idx) => ({ item, idx })).filter(({ item }) =>
+                !q || `${item.nombre} ${(item.categoria || []).join(" ")} ${item.tarjeta || ""} ${item.fecha || ""}`.toLowerCase().includes(q)
+            );
+
             const contIng = document.getElementById("list-ingresos");
-            contIng.innerHTML = finanzasIngresos.length === 0
-                ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin ingresos registrados este mes</div>`
-                : finanzasIngresos.map((item, idx) => `
+            contIng.innerHTML = ingFiltrados.length === 0
+                ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin ingresos para mostrar</div>`
+                : ingFiltrados.map(({ item, idx }) => `
                     <div class="status-row left-pill-green flex items-center justify-between px-4 py-3.5 gap-3">
                         <div class="min-w-0 flex-1">
                             <p class="text-white font-semibold truncate">${escapeHtml(item.titulo)}</p>
@@ -466,16 +484,18 @@
                 `).join("");
 
             const contEgr = document.getElementById("list-egresos");
-            contEgr.innerHTML = finanzasEgresos.length === 0
-                ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin egresos registrados este mes</div>`
-                : finanzasEgresos.map((item, idx) => {
-                    const cuotaTxt = item.cuota_mensual ? `Cuota/mes: ${formatearMonedaARS(item.cuota_mensual)}` : null;
-                    const meta = [item.fecha, ...(item.categoria || []), item.tarjeta, cuotaTxt].filter(Boolean).map(escapeHtml).join(" · ");
+            contEgr.innerHTML = egrFiltrados.length === 0
+                ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin egresos para mostrar</div>`
+                : egrFiltrados.map(({ item, idx }) => {
+                    const cuotaPill = item.cuota_mensual
+                        ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/[0.06] text-[11px] text-[#e5e2e1] mr-1"><span class="material-symbols-outlined text-[13px] text-[#ffb961]">credit_card</span>${escapeHtml(formatearMonedaARS(item.cuota_mensual))}/mes</span>`
+                        : "";
+                    const meta = [item.fecha, ...(item.categoria || []), item.tarjeta].filter(Boolean).map(escapeHtml).join(" · ");
                     return `
                     <div class="status-row left-pill-red flex items-center justify-between px-4 py-3.5 gap-3">
                         <div class="min-w-0 flex-1">
                             <p class="text-white font-semibold truncate">${escapeHtml(item.nombre)}</p>
-                            <p class="text-[12px] text-[#8e8e93] truncate">${meta}</p>
+                            <p class="text-[12px] text-[#8e8e93] truncate">${cuotaPill}${meta}</p>
                         </div>
                         <span class="text-[#ff5f52] font-bold text-[14px] flex-shrink-0">${escapeHtml(formatearMonedaARS(item.monto))}</span>
                         <div class="flex items-center gap-1 flex-shrink-0">

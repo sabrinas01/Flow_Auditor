@@ -156,6 +156,9 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
+                    <span class="hidden sm:inline-flex items-center gap-1.5 bg-[#111115] px-3 py-1.5 rounded-lg border border-white/[0.08] text-xs text-[#8e8e93]">
+                        <span class="material-symbols-outlined text-[16px]">today</span>Hoy
+                    </span>
                     <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
                         <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
                     </button>
@@ -164,6 +167,22 @@
         </header>
 
         <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- Mini-resumen Stitch -->
+            <section class="grid grid-cols-3 gap-3">
+                <div class="glass-card rounded-2xl p-4 border-l-4 border-l-[#ff5f52]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93]">HOY</p>
+                    <p id="varios-resumen-hoy" class="text-[22px] font-bold text-white mt-1">0</p>
+                </div>
+                <div class="glass-card rounded-2xl p-4 border-l-4 border-l-[#e49102]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93]">PRÓXIMOS DÍAS</p>
+                    <p id="varios-resumen-manana" class="text-[22px] font-bold text-white mt-1">0</p>
+                </div>
+                <div class="glass-card rounded-2xl p-4 border-l-4 border-l-[#00aaff]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93]">AYER / SIN FECHA</p>
+                    <p id="varios-resumen-resto" class="text-[22px] font-bold text-white mt-1">0</p>
+                </div>
+            </section>
+
             <!-- =================================================== -->
             <!-- RECORDATORIOS VARIOS: HOY / MAÑANA / AYER / SIN FECHA -->
             <!-- =================================================== -->
@@ -400,6 +419,9 @@
             renderizarRecordatoriosVarios("varios-hoy", recordatoriosVariosHoy);
             renderizarRecordatoriosVarios("varios-manana", recordatoriosVariosManana);
             renderizarRecordatoriosVarios("varios-sin-fecha", recordatoriosVariosSinFecha);
+            document.getElementById("varios-resumen-hoy").textContent = String(recordatoriosVariosHoy.length);
+            document.getElementById("varios-resumen-manana").textContent = String(recordatoriosVariosManana.length);
+            document.getElementById("varios-resumen-resto").textContent = String(recordatoriosVariosAyer.length + recordatoriosVariosSinFecha.length);
         });
 
         // renderizarRecordatoriosVarios vive en src/utils/dom_render.js desde
