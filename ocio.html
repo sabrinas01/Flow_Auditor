@@ -444,21 +444,20 @@
         let tabActual = "libros";
 
         function cargarDatosOcio() {
-            let base = JSON.parse(JSON.stringify(OCIO_SEED));
+            let kanban = JSON.parse(JSON.stringify(OCIO_SEED.kanban));
             try {
                 const raw = localStorage.getItem(OCIO_STORAGE_KEY);
-                if (raw) base = JSON.parse(raw);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed.kanban)) kanban = parsed.kanban;
+                }
             } catch (e) {}
-            if (Array.isArray(ocioLibrosNotion) && ocioLibrosNotion.length > 0) {
-                base.libros = ocioLibrosNotion;
-            }
-            if (Array.isArray(ocioSeriesNotion) && ocioSeriesNotion.length > 0) {
-                base.series = ocioSeriesNotion;
-            }
-            if (Array.isArray(ocioPeliculasNotion) && ocioPeliculasNotion.length > 0) {
-                base.peliculas = ocioPeliculasNotion;
-            }
-            return base;
+            return {
+                libros: Array.isArray(ocioLibrosNotion) ? ocioLibrosNotion : [],
+                series: Array.isArray(ocioSeriesNotion) ? ocioSeriesNotion : [],
+                peliculas: Array.isArray(ocioPeliculasNotion) ? ocioPeliculasNotion : [],
+                kanban,
+            };
         }
 
         function guardarDatosOcio() {
