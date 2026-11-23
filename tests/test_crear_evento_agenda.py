@@ -368,3 +368,32 @@ def test_crear_sesion_ciclo_y_pendiente_salud(monkeypatch):
     props = mock_patch.call_args[1]["json"]["properties"]
     assert props["Finalización (real)"] == {"date": None}
     assert props["Síntomas"] == {"multi_select": []}
+
+
+def test_crear_y_actualizar_libro_ocio(monkeypatch):
+    monkeypatch.setattr(extract_and_audit, "NOTION_API_KEY", "secret-token-de-prueba")
+    monkeypatch.setattr(extract_and_audit, "DB_LIBROS", "17ba38bb7a6e80fbabd1e13ae0a85b69")
+
+    mock_post = Mock(return_value=_mock_respuesta_creada("lib-1"))
+    with patch.object(extract_and_audit.requests, "post", mock_post):
+        extract_and_audit.crear_libro_ocio({
+            "titulo": "El Principito",
+            "autor": "Antoine de Saint-Exupéry",
+            "categoria": "Ficción",
+            "estado": "Leyendo",
+            "puntuacion": 5,
+        })
+    body = mock_post.call_args[1]["json"]
+    assert body["parent"] == {"database_id": "17ba38bb7a6e80fbabd1e13ae0a85b69"}
+    assert body["icon"] == {"type": "icon", "icon": {"name": "book-closed", "color": "gray"}}
+    assert body["properties"]["Title"] == {"title": [{"text": {"content": "El Principito"}}]}
+    assert body["properties"]["Valoración"] == {"select": {"name": "⭐️⭐️⭐️⭐️⭐️"}}
+
+    mock_patch = Mock(return_value=_mock_respuesta_creada("lib-1"))
+    with patch.object(extract_and_audit.requests, "patch", mock_patch):
+        extract_and_audit.actualizar_libro_ocio({
+            "page_id": "lib-1",
+            "titulo": "El Principito",
+            "estado": "Completado",
+        })
+    assert mock_patch.call_args[1]["json"]["properties"]["Estado"] == {"status": {"name": "Completado"}}

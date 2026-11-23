@@ -64,6 +64,7 @@ jobs:
           NOTION_DB_SESIONES: ${{ secrets.NOTION_DB_SESIONES }}
           NOTION_DB_CICLO: ${{ secrets.NOTION_DB_CICLO }}
           NOTION_DB_SALUD_PENDIENTES: ${{ secrets.NOTION_DB_SALUD_PENDIENTES }}
+          NOTION_DB_LIBROS: ${{ secrets.NOTION_DB_LIBROS }}
         run: python extract_and_audit.py
 
       - name: Publish updated frontends to the gh-pages branch

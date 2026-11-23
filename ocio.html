@@ -46,6 +46,8 @@
         const appVersionStr = "dev";
         const timestampNextStr = "18/08/2026 21:20:23";
         const timestampServerStr = "18/08/2026 23:20:23";
+        const ocioLibrosNotion = [];
+        const ocioOpciones = {};
     </script>
 
     <!-- SIDEBAR -->
@@ -162,6 +164,10 @@
                         <span class="material-symbols-outlined text-[17px] text-[#83da85]">movie</span>
                         <span>+ Agregar película</span>
                     </button>
+                    <a href="https://app.notion.com/p/17ba38bb7a6e80fbabd1e13ae0a85b69?v=17ba38bb7a6e81219b5e000c466a2a83&source=copy_link" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#111115] hover:bg-[#1c1c21] border border-white/[0.08] text-[#e5e2e1] font-semibold text-xs transition-all">
+                        <span>Ver Libros en Notion</span>
+                        <span class="material-symbols-outlined text-[15px]">open_in_new</span>
+                    </a>
                 </div>
             </section>
 
@@ -399,21 +405,54 @@
         </div>
     </div>
 
+    <!-- MODAL TOKEN GITHUB Y SPINNER DE NOTION -->
+    <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="cerrarModalTokenOcio()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <h3 class="text-[17px] font-bold text-white">Conectar con GitHub Actions</h3>
+            <p class="text-[13px] text-[#8e8e93]">Pegá tu Personal Access Token (permiso Actions: Read &amp; Write en este repo) para guardar Libros directo en Notion.</p>
+            <input id="ocio-token-input" type="password" placeholder="github_pat_..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="cerrarModalTokenOcio()" class="px-4 py-2 rounded-xl bg-[#18181d] text-xs font-bold text-[#8e8e93]">Cancelar</button>
+                <button type="button" onclick="guardarTokenOcio()" class="px-4 py-2 rounded-xl bg-[#ff5f52] text-xs font-bold text-white">Guardar token</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarSpinnerNotion()" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cerrar</button>
+        </div>
+    </div>
+
     <script src="./src/utils/debounce.js"></script>
     <script src="./src/utils/src_localStorage_index.js"></script>
     <script src="./src/utils/dashboard_logic.js"></script>
     <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
     <script src="./src/utils/ocio_logic.js"></script>
     <script>
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
         let ocioDatos = null;
         let tabActual = "libros";
 
         function cargarDatosOcio() {
+            let base = JSON.parse(JSON.stringify(OCIO_SEED));
             try {
                 const raw = localStorage.getItem(OCIO_STORAGE_KEY);
-                if (raw) return JSON.parse(raw);
+                if (raw) base = JSON.parse(raw);
             } catch (e) {}
-            return JSON.parse(JSON.stringify(OCIO_SEED));
+            if (Array.isArray(ocioLibrosNotion) && ocioLibrosNotion.length > 0) {
+                base.libros = ocioLibrosNotion;
+            }
+            return base;
         }
 
         function guardarDatosOcio() {
@@ -546,11 +585,24 @@
             document.getElementById("labelProgress").textContent = cfg.prog;
 
             const existente = editId ? (ocioDatos[tipo] || []).find((x) => x.id === editId) : null;
+            if (tipo === "libros") {
+                const selEst = document.getElementById("inputEstado");
+                selEst.innerHTML = (ocioOpciones.estados || ["No empezado", "Leyendo", "Completado"])
+                    .map((op) => `<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`).join("");
+                if (!existente) selEst.value = "Leyendo";
+            } else {
+                document.getElementById("inputEstado").innerHTML = `
+                    <option value="Por empezar / En lista">Por empezar / En lista</option>
+                    <option value="En curso / Viendo" selected>En curso / Viendo</option>
+                    <option value="Completado / Vista">Completado / Vista</option>
+                `;
+            }
+
             document.getElementById("modalTitle").textContent = existente ? `Editar ${cfg.titulo}` : `Nuevo ${cfg.titulo}`;
             document.getElementById("inputTitle").value = existente ? existente.titulo : "";
             document.getElementById("inputSecondary").value = existente ? existente.secundario : "";
             document.getElementById("inputGenre").value = existente ? existente.genero : "";
-            document.getElementById("inputEstado").value = existente ? existente.estado : "En curso / Viendo";
+            if (existente) document.getElementById("inputEstado").value = existente.estado;
             document.getElementById("inputProgress").value = existente ? existente.progreso : "";
             document.getElementById("inputScore").value = existente ? existente.puntuacion : "5.0";
             document.getElementById("inputNotes").value = existente ? (existente.notas || "") : "";
@@ -566,7 +618,71 @@
             m.classList.remove("flex");
         }
 
-        function manejarSubmitOcio(e) {
+        function obtenerTokenOcio() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+        function abrirModalTokenOcio() {
+            const m = document.getElementById("modal-token-notion");
+            m.classList.remove("hidden"); m.classList.add("flex");
+        }
+        function cerrarModalTokenOcio() {
+            const m = document.getElementById("modal-token-notion");
+            m.classList.add("hidden"); m.classList.remove("flex");
+        }
+        function guardarTokenOcio() {
+            const t = document.getElementById("ocio-token-input").value.trim();
+            if (!t) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, t); } catch (e) {}
+            document.getElementById("ocio-token-input").value = "";
+            cerrarModalTokenOcio();
+        }
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.remove("hidden"); modal.classList.add("flex");
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+        function cerrarSpinnerNotion() {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.add("hidden"); modal.classList.remove("flex");
+        }
+
+        async function despacharAccionOcioNotion(accion, datos, msgOk) {
+            const token = obtenerTokenOcio();
+            if (!token) { abrirModalTokenOcio(); return false; }
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, datos, token);
+                const resp = await fetch(url, options);
+                if (resp.status === 401 || resp.status === 404) {
+                    cerrarSpinnerNotion();
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModalTokenOcio();
+                    return false;
+                }
+                if (resp.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${resp.status}).`);
+                    return false;
+                }
+                const conf = await esperarConfirmacionWorkflow({ owner: GITHUB_OWNER, repo: GITHUB_REPO, token, workflowFile: WORKFLOW_NOTION_WRITE, dispatchedAfterMs });
+                if (conf.ok) {
+                    mostrarSpinnerNotion("ok", msgOk, "Recargando página...");
+                    setTimeout(() => window.location.reload(), 1200);
+                    return true;
+                }
+                mostrarSpinnerNotion("error", "No se pudo confirmar", conf.error);
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub.");
+            }
+            return false;
+        }
+
+        async function manejarSubmitOcio(e) {
             e.preventDefault();
             const tipo = document.getElementById("ocio-edit-tipo").value;
             const editId = document.getElementById("ocio-edit-id").value;
@@ -586,6 +702,19 @@
                 errEl.classList.remove("hidden");
                 return;
             }
+            if (tipo === "libros" && (!editId || !editId.startsWith("lib-"))) {
+                const payload = {
+                    titulo: res.item.titulo,
+                    autor: res.item.secundario,
+                    categoria: res.item.genero,
+                    estado: res.item.estado,
+                    puntuacion: res.item.puntuacion,
+                };
+                if (editId) payload.page_id = editId;
+                cerrarModalOcio();
+                await despacharAccionOcioNotion(editId ? "actualizar_libro_ocio" : "crear_libro_ocio", payload, "¡Libro guardado en Notion!");
+                return;
+            }
             if (editId) {
                 ocioDatos[tipo] = ocioDatos[tipo].map((x) => (x.id === editId ? res.item : x));
             } else {
@@ -597,7 +726,11 @@
             renderizarTodoOcio();
         }
 
-        function eliminarItemOcio(tipo, id) {
+        async function eliminarItemOcio(tipo, id) {
+            if (tipo === "libros" && id && !id.startsWith("lib-") && !id.startsWith("ocio-")) {
+                await despacharAccionOcioNotion("archivar_pagina", { page_id: id }, "¡Libro enviado a la papelera!");
+                return;
+            }
             ocioDatos[tipo] = (ocioDatos[tipo] || []).filter((x) => x.id !== id);
             guardarDatosOcio();
             renderizarTodoOcio();

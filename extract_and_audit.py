@@ -95,12 +95,13 @@ DB_CUOTAS_TARJETA = os.getenv("NOTION_DB_CUOTASPENDIENTES") or os.getenv("NOTION
 DB_SESIONES = os.getenv("NOTION_DB_SESIONES")
 DB_CICLO = os.getenv("NOTION_DB_CICLO")
 DB_SALUD_PENDIENTES = os.getenv("NOTION_DB_SALUD_PENDIENTES")
+DB_LIBROS = os.getenv("NOTION_DB_LIBROS")
 
 
 def validar_credenciales():
     try:
         # Uso de helper interno para resolución robusta de variables de entorno
-        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
         # Opcionales: su ausencia (o cualquier fallo al consultarlas) no debe abortar
@@ -114,6 +115,7 @@ def validar_credenciales():
         DB_SESIONES = get_env_var(["NOTION_DB_SESIONES"], required=False)
         DB_CICLO = get_env_var(["NOTION_DB_CICLO"], required=False)
         DB_SALUD_PENDIENTES = get_env_var(["NOTION_DB_SALUD_PENDIENTES"], required=False)
+        DB_LIBROS = get_env_var(["NOTION_DB_LIBROS"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -368,6 +370,11 @@ def auditar_consistencia_tripartita():
         sincronizar_salud(timestamps, app_version)
     except Exception as e:
         print(f"⚠️ [SALUD]: error inesperado al sincronizar ({e}), se omite.")
+
+    try:
+        sincronizar_ocio(timestamps, app_version)
+    except Exception as e:
+        print(f"⚠️ [OCIO]: error inesperado al sincronizar ({e}), se omite.")
 
     verificar_consumo_ram()
 
@@ -1454,6 +1461,134 @@ def crear_pendiente_salud(datos):
     print(f"✅ [CREAR PENDIENTE SALUD]: '{nombre}' creada ({res.get('id', '?')}).")
 
 
+_OCIO_ESTADOS_FALLBACK = ["No empezado", "Leyendo", "Completado"]
+_OCIO_CATEGORIAS_FALLBACK = [
+    "Realismo mágico", "Ficción", "No ficción", "Biografía", "Misterio", "Fantasía",
+    "Ciencia ficción", "Histórico", "Romance", "Thriller", "Autoayuda", "Poesía",
+    "Novela gráfica", "Aventura", "Horror", "Crimen real", "Para niños", "Adulto joven",
+    "Literatura clásica", "Filosofía", "Antología",
+]
+_OCIO_VALORACIONES_FALLBACK = ["⭐️⭐️⭐️⭐️⭐️", "⭐️⭐️⭐️⭐️", "⭐️⭐️⭐️", "⭐️⭐️", "⭐️"]
+
+
+def sincronizar_ocio(timestamps, app_version):
+    """Inyecta libros de Notion (DB_LIBROS) en ocio.html (aislado, no fatal)."""
+    html_path = BASE_DIR / "ocio.html"
+    if not html_path.exists():
+        print("ℹ️ [OCIO]: ocio.html no encontrado, se omite.")
+        return
+    if not DB_LIBROS:
+        print("ℹ️ [OCIO]: NOTION_DB_LIBROS no configurada, se omite sync.")
+        return
+
+    res_lib, sch_lib = _consultar_bd_salud(DB_LIBROS, "OCIO LIBROS", page_size=50)
+    libros = []
+    for p in res_lib:
+        pr = p.get("properties", {})
+        titulo = "".join(t.get("plain_text", "") for t in (pr.get("Title") or {}).get("title", [])) or "Sin título"
+        autor = "".join(t.get("plain_text", "") for t in (pr.get("Autor") or {}).get("rich_text", [])) or ""
+        categoria = ((pr.get("Categoría") or {}).get("select") or {}).get("name") or "General"
+        estado = ((pr.get("Estado") or {}).get("status") or {}).get("name") or "No empezado"
+        val_txt = ((pr.get("Valoración") or {}).get("select") or {}).get("name") or ""
+        estrellas = val_txt.count("⭐") if val_txt else 5
+        progreso = "100%" if estado.lower() == "completado" else ("50%" if estado.lower() == "leyendo" else "0%")
+        libros.append({
+            "id": p.get("id"),
+            "titulo": titulo,
+            "secundario": autor or "Autor pendiente",
+            "genero": categoria,
+            "estado": estado,
+            "progreso": progreso,
+            "detalle": val_txt or estado,
+            "puntuacion": estrellas,
+            "valoracion": val_txt,
+            "notas": "",
+        })
+
+    opciones = {
+        "categorias": _opciones_de_schema(sch_lib, "Categoría", "select", _OCIO_CATEGORIAS_FALLBACK),
+        "estados": _opciones_de_schema(sch_lib, "Estado", "status", _OCIO_ESTADOS_FALLBACK),
+        "valoraciones": _opciones_de_schema(sch_lib, "Valoración", "select", _OCIO_VALORACIONES_FALLBACK),
+    }
+
+    with open(html_path, "r", encoding="utf-8") as file:
+        html_content = file.read()
+
+    html_content = _inyectar_timestamps_y_version(html_content, timestamps, app_version)
+
+    json_libros = json.dumps(libros, ensure_ascii=False).replace("</", "<\\/")
+    html_content = re.sub(
+        r"const\s+ocioLibrosNotion\s*=\s*\[.*?\]\s*;",
+        lambda _m, jv=json_libros: f"const ocioLibrosNotion = {jv};",
+        html_content,
+        flags=re.DOTALL,
+    )
+    json_opc = json.dumps(opciones, ensure_ascii=False).replace("</", "<\\/")
+    html_content = re.sub(
+        r"const\s+ocioOpciones\s*=\s*\{.*?\}\s*;",
+        lambda _m, jv=json_opc: f"const ocioOpciones = {jv};",
+        html_content,
+        flags=re.DOTALL,
+    )
+
+    with open(html_path, "w", encoding="utf-8") as file:
+        file.write(html_content)
+    print(f"✅ Frontend ocio.html sincronizado ({len(libros)} libros).")
+
+
+def _construir_propiedades_libro_ocio(datos):
+    titulo = (datos.get("titulo") or "").strip()
+    if not titulo:
+        print("❌ [LIBRO OCIO]: falta título.")
+        sys.exit(1)
+    props = {
+        "Title": {"title": [{"text": {"content": titulo}}]},
+    }
+    autor = (datos.get("autor") or datos.get("secundario") or "").strip()
+    if autor:
+        props["Autor"] = {"rich_text": [{"text": {"content": autor}}]}
+    categoria = (datos.get("categoria") or datos.get("genero") or "").strip()
+    if categoria:
+        props["Categoría"] = {"select": {"name": categoria}}
+    estado = (datos.get("estado") or "").strip()
+    if estado:
+        props["Estado"] = {"status": {"name": estado}}
+    valoracion = (datos.get("valoracion") or "").strip()
+    if not valoracion and datos.get("puntuacion") is not None:
+        try:
+            n = max(1, min(5, round(float(datos.get("puntuacion")))))
+            valoracion = "⭐️" * n
+        except (TypeError, ValueError):
+            valoracion = ""
+    if valoracion:
+        props["Valoración"] = {"select": {"name": valoracion}}
+    return titulo, props
+
+
+def crear_libro_ocio(datos):
+    if not DB_LIBROS:
+        print("❌ [CREAR LIBRO]: NOTION_DB_LIBROS no configurada.")
+        sys.exit(1)
+    titulo, props = _construir_propiedades_libro_ocio(datos)
+    body = {
+        "parent": {"database_id": DB_LIBROS},
+        "icon": {"type": "icon", "icon": {"name": "book-closed", "color": "gray"}},
+        "properties": props,
+    }
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", body, "CREAR LIBRO")
+    print(f"✅ [CREAR LIBRO]: '{titulo}' registrado ({res.get('id', '?')}).")
+
+
+def actualizar_libro_ocio(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR LIBRO]: falta page_id.")
+        sys.exit(1)
+    titulo, props = _construir_propiedades_libro_ocio(datos)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR LIBRO")
+    print(f"✅ [ACTUALIZAR LIBRO]: '{titulo}' ({page_id}) actualizado.")
+
+
 def ejecutar_accion_notion(payload):
     """Despacha acciones de escritura recibidas vía `ACCION_NOTION_PAYLOAD`."""
     accion = (payload or {}).get("accion")
@@ -1482,6 +1617,10 @@ def ejecutar_accion_notion(payload):
         actualizar_fase_ciclo(datos)
     elif accion == "crear_pendiente_salud":
         crear_pendiente_salud(datos)
+    elif accion == "crear_libro_ocio":
+        crear_libro_ocio(datos)
+    elif accion == "actualizar_libro_ocio":
+        actualizar_libro_ocio(datos)
     elif accion == "archivar_pagina":
         archivar_pagina_notion(datos)
     else:
