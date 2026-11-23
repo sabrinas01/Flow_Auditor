@@ -262,10 +262,16 @@
                         <input id="ocio-buscador" type="text" oninput="renderizarCatalogoOcio()" placeholder="Buscar por título, autor, plataforma o género..."
                                class="w-full bg-[#08080a] border border-white/[0.08] rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#ff5f52]/50" />
                     </div>
-                    <button type="button" onclick="abrirModalOcio(tabActual)" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#ff5f52] text-white font-bold text-xs hover:opacity-90">
-                        <span class="material-symbols-outlined text-[16px]">add</span>
-                        <span id="btn-nuevo-tab-lbl">Nuevo libro</span>
-                    </button>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button type="button" onclick="toggleVistaCatalogoOcio()" id="btn-vista-ocio" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#18181d] border border-white/[0.08] text-xs font-bold text-[#e5e2e1] hover:bg-[#232329]">
+                            <span class="material-symbols-outlined text-[16px]">view_kanban</span>
+                            <span>Vista: Tablero</span>
+                        </button>
+                        <button type="button" onclick="abrirModalOcio(tabActual)" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#ff5f52] text-white font-bold text-xs hover:opacity-90">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span id="btn-nuevo-tab-lbl">Nuevo libro</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div id="grid-catalogo-ocio" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"></div>
@@ -442,6 +448,7 @@
 
         let ocioDatos = null;
         let tabActual = "libros";
+        let vistaCatalogo = "tablero";
 
         function cargarDatosOcio() {
             let kanban = JSON.parse(JSON.stringify(OCIO_SEED.kanban));
@@ -503,42 +510,78 @@
             renderizarCatalogoOcio();
         }
 
+        function toggleVistaCatalogoOcio() {
+            vistaCatalogo = vistaCatalogo === "tablero" ? "grilla" : "tablero";
+            const btn = document.getElementById("btn-vista-ocio");
+            if (btn) {
+                btn.innerHTML = vistaCatalogo === "tablero"
+                    ? '<span class="material-symbols-outlined text-[16px]">view_kanban</span><span>Vista: Tablero</span>'
+                    : '<span class="material-symbols-outlined text-[16px]">grid_view</span><span>Vista: Grilla</span>';
+            }
+            renderizarCatalogoOcio();
+        }
+
+        function _renderCardCatalogo(item) {
+            const esDone = (item.estado || "").toLowerCase().includes("completad") || (item.estado || "").toLowerCase().includes("vista");
+            const badgeCls = esDone ? "bg-[#83da85]/20 text-[#83da85]" : "bg-[#ffb961]/20 text-[#ffb961]";
+            const pct = parseInt(item.progreso, 10);
+            const widthPct = Number.isFinite(pct) ? Math.min(100, Math.max(0, pct)) : (esDone ? 100 : 30);
+            return `
+                <div class="p-4 rounded-2xl bg-[#18181d] border border-white/[0.06] hover:border-white/[0.15] flex flex-col justify-between gap-3 transition-all">
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${badgeCls}">${escapeHtml(item.estado)}</span>
+                            <span class="text-[#ffb961] text-xs font-bold">★ ${escapeHtml(String(item.puntuacion || 5))}</span>
+                        </div>
+                        <h3 class="font-headline-md font-bold text-sm text-white truncate">${escapeHtml(item.titulo)}</h3>
+                        <p class="text-xs text-[#a1a1aa] truncate">${escapeHtml(item.secundario)}${item.genero && item.genero !== item.secundario ? " · " + escapeHtml(item.genero) : ""}</p>
+                    </div>
+                    <div class="space-y-2 pt-2 border-t border-white/[0.06]">
+                        <div class="flex justify-between text-[11px] text-[#8e8e93]">
+                            <span>${escapeHtml(item.detalle || item.progreso)}</span>
+                            <span class="text-white font-semibold">${widthPct}%</span>
+                        </div>
+                        <div class="w-full bg-white/[0.08] h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-[#83da85] h-full rounded-full" style="width: ${widthPct}%;"></div>
+                        </div>
+                        <div class="flex justify-end gap-1 pt-0.5">
+                            <button type="button" onclick="abrirModalOcio('${tabActual}', '${escapeHtml(item.id)}')" class="p-1.5 rounded-lg hover:bg-white/10 text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+                            <button type="button" onclick="eliminarItemOcio('${tabActual}', '${escapeHtml(item.id)}')" class="p-1.5 rounded-lg hover:bg-[#ff5f52]/15 text-[#8e8e93] hover:text-[#ff5f52]" title="Eliminar"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderizarCatalogoOcio() {
             const q = (document.getElementById("ocio-buscador").value || "");
             const lista = filtrarCatalogoOcio(ocioDatos[tabActual] || [], q);
             const cont = document.getElementById("grid-catalogo-ocio");
-            if (lista.length === 0) {
-                cont.innerHTML = `<div class="col-span-full py-8 text-center text-sm text-[#8e8e93]">Sin registros para mostrar</div>`;
+            if (vistaCatalogo === "grilla") {
+                cont.className = "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4";
+                cont.innerHTML = lista.length === 0
+                    ? `<div class="col-span-full py-8 text-center text-sm text-[#8e8e93]">Sin registros para mostrar</div>`
+                    : lista.map(_renderCardCatalogo).join("");
                 return;
             }
-            cont.innerHTML = lista.map((item) => {
-                const esDone = (item.estado || "").toLowerCase().includes("completad") || (item.estado || "").toLowerCase().includes("vista");
-                const badgeCls = esDone ? "bg-[#83da85]/20 text-[#83da85]" : "bg-[#ffb961]/20 text-[#ffb961]";
-                const pct = parseInt(item.progreso, 10);
-                const widthPct = Number.isFinite(pct) ? Math.min(100, Math.max(0, pct)) : (esDone ? 100 : 30);
+
+            const estadosCols = tabActual === "libros"
+                ? (ocioOpciones.estados || ["No empezado", "Leyendo", "Completado"])
+                : tabActual === "series"
+                    ? ["POR VER", "VIENDO", "VISTA"]
+                    : ["POR VER", "VISTA"];
+            const colsClass = estadosCols.length === 2 ? "grid grid-cols-1 md:grid-cols-2 gap-4" : "grid grid-cols-1 md:grid-cols-3 gap-4";
+            cont.className = colsClass;
+            cont.innerHTML = estadosCols.map((est) => {
+                const itemsCol = lista.filter((x) => (x.estado || "").toLowerCase() === est.toLowerCase());
                 return `
-                    <div class="p-4 rounded-2xl bg-[#18181d] border border-white/[0.06] hover:border-white/[0.15] flex flex-col justify-between gap-4 transition-all">
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between gap-2">
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${badgeCls}">${escapeHtml(item.estado)}</span>
-                                <span class="text-[#ffb961] text-xs font-bold">★ ${escapeHtml(String(item.puntuacion || 5))}</span>
-                            </div>
-                            <h3 class="font-headline-md font-bold text-sm text-white truncate">${escapeHtml(item.titulo)}</h3>
-                            <p class="text-xs text-[#a1a1aa] truncate">${escapeHtml(item.secundario)} · ${escapeHtml(item.genero)}</p>
-                            ${item.notas ? `<p class="text-[11px] text-[#8e8e93] line-clamp-2">${escapeHtml(item.notas)}</p>` : ""}
+                    <div class="rounded-2xl bg-[#08080a] border border-white/[0.08] p-3.5 space-y-3 min-h-[220px]">
+                        <div class="flex items-center justify-between px-1">
+                            <span class="text-xs font-bold text-white uppercase tracking-wider">${escapeHtml(est)}</span>
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-white/[0.06] text-[#8e8e93]">${itemsCol.length}</span>
                         </div>
-                        <div class="space-y-2 pt-2 border-t border-white/[0.06]">
-                            <div class="flex justify-between text-[11px] text-[#8e8e93]">
-                                <span>${escapeHtml(item.detalle || item.progreso)}</span>
-                                <span class="text-white font-semibold">${widthPct}%</span>
-                            </div>
-                            <div class="w-full bg-white/[0.08] h-1.5 rounded-full overflow-hidden">
-                                <div class="bg-[#83da85] h-full rounded-full" style="width: ${widthPct}%;"></div>
-                            </div>
-                            <div class="flex justify-end gap-1 pt-1">
-                                <button type="button" onclick="abrirModalOcio('${tabActual}', '${escapeHtml(item.id)}')" class="p-1.5 rounded-lg hover:bg-white/10 text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[16px]">edit</span></button>
-                                <button type="button" onclick="eliminarItemOcio('${tabActual}', '${escapeHtml(item.id)}')" class="p-1.5 rounded-lg hover:bg-[#ff5f52]/15 text-[#8e8e93] hover:text-[#ff5f52]" title="Eliminar"><span class="material-symbols-outlined text-[16px]">delete</span></button>
-                            </div>
+                        <div class="space-y-2.5">
+                            ${itemsCol.length === 0 ? `<p class="text-xs text-[#8e8e93] py-6 text-center">Sin ítems</p>` : itemsCol.map(_renderCardCatalogo).join("")}
                         </div>
                     </div>
                 `;
