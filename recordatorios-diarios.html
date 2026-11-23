@@ -232,19 +232,6 @@
                             </div>
                         </div>
 
-                        <!-- Tareas de hoy con selector de estado (Etapa 3) -->
-                        <div id="wrap-tareas-hoy" class="space-y-3 hidden">
-                            <div class="flex justify-between items-center px-1">
-                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TODAS LAS TAREAS DE HOY</p>
-                                <button type="button" onclick="toggleBloque('tareas-hoy')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-tareas-hoy">
-                                    <span id="chevron-tareas-hoy" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
-                                </button>
-                            </div>
-                            <div id="content-tareas-hoy">
-                                <div id="list-tareas-hoy" class="space-y-2"></div>
-                            </div>
-                        </div>
-
                         <div class="grid grid-cols-2 gap-4">
                             <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
                                 <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
@@ -474,7 +461,6 @@
             renderizarTareasSinEmpezar("hoy-sin-empezar", tareasHoySinEmpezar);
             const tareasAyerPendientes = (tareasDiariasAyer || []).filter((t) => esEstadoPendienteOEnCurso(t.estado));
             renderizarTareasDiariasConEstado("tareas-ayer", tareasAyerPendientes, recordatoriosDiariosEstados);
-            renderizarTareasDiariasConEstado("tareas-hoy", tareasDiariasHoy, recordatoriosDiariosEstados);
         });
 
         /**
