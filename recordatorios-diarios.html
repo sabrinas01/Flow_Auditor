@@ -458,7 +458,12 @@
             // 2. Procesar e Inyectar Bloques Temporales Complejos
             procesarSeccionMetrica("ayer", conteoAyer);
             procesarSeccionMetrica("hoy", conteoHoy);
-            renderizarTareasSinEmpezar("hoy-sin-empezar", tareasHoySinEmpezar);
+            const tareasHoySinEmpezarConEstado = (tareasDiariasHoy || []).filter((t) => (t.estado || "").toLowerCase().includes("sin empezar"));
+            if (tareasHoySinEmpezarConEstado.length > 0 || (tareasDiariasHoy || []).length > 0) {
+                renderizarTareasDiariasConEstado("hoy-sin-empezar", tareasHoySinEmpezarConEstado, recordatoriosDiariosEstados);
+            } else {
+                renderizarTareasSinEmpezar("hoy-sin-empezar", tareasHoySinEmpezar);
+            }
             const tareasAyerPendientes = (tareasDiariasAyer || []).filter((t) => esEstadoPendienteOEnCurso(t.estado));
             renderizarTareasDiariasConEstado("tareas-ayer", tareasAyerPendientes, recordatoriosDiariosEstados);
         });
