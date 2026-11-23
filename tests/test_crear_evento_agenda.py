@@ -428,3 +428,35 @@ def test_crear_serie_y_actualizar_pelicula_ocio(monkeypatch):
             "puntuacion": 5,
         })
     assert mock_patch.call_args[1]["json"]["properties"]["Estado"] == {"select": {"name": "VISTA"}}
+
+
+def test_crear_y_actualizar_registro_emocional(monkeypatch):
+    monkeypatch.setattr(extract_and_audit, "NOTION_API_KEY", "secret-token-de-prueba")
+    monkeypatch.setattr(extract_and_audit, "DB_GESTION_EMOCIONAL", "9a7a38bb7a6e8303be4b81797e888fe5")
+
+    mock_post = Mock(return_value=_mock_respuesta_creada("emo-1"))
+    with patch.object(extract_and_audit.requests, "post", mock_post):
+        extract_and_audit.crear_registro_emocional({
+            "nombre": "Pausa tarde",
+            "fecha": "2026-11-23",
+            "barometro": "😌 En calma",
+            "calma": 8,
+            "energia": 7,
+            "stop": True,
+        })
+    body = mock_post.call_args[1]["json"]
+    assert body["parent"] == {"database_id": "9a7a38bb7a6e8303be4b81797e888fe5"}
+    assert body["icon"] == {"type": "emoji", "emoji": "🧠"}
+    assert body["properties"]["Protocolo S.T.O.P."] == {"checkbox": True}
+    assert body["properties"]["Barómetro"] == {"select": {"name": "😌 En calma"}}
+
+    mock_patch = Mock(return_value=_mock_respuesta_creada("emo-1"))
+    with patch.object(extract_and_audit.requests, "patch", mock_patch):
+        extract_and_audit.actualizar_registro_emocional({
+            "page_id": "emo-1",
+            "nombre": "Pausa tarde",
+            "fecha": "2026-11-23",
+            "calma": 9,
+            "stop": False,
+        })
+    assert mock_patch.call_args[1]["json"]["properties"]["Nivel de calma"] == {"number": 9.0}

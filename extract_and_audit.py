@@ -98,12 +98,14 @@ DB_SALUD_PENDIENTES = os.getenv("NOTION_DB_SALUD_PENDIENTES")
 DB_LIBROS = os.getenv("NOTION_DB_LIBROS")
 DB_SERIES = os.getenv("NOTION_DB_SERIES")
 DB_PELICULAS = os.getenv("NOTION_DB_PELICULAS")
+DB_GESTION_EMOCIONAL = os.getenv("NOTION_DB_GESTION_EMOCIONAL")
+DB_EMOCIONES = os.getenv("NOTION_DB_EMOCIONES")
 
 
 def validar_credenciales():
     try:
         # Uso de helper interno para resolución robusta de variables de entorno
-        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS, DB_GESTION_EMOCIONAL, DB_EMOCIONES
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
         # Opcionales: su ausencia (o cualquier fallo al consultarlas) no debe abortar
@@ -120,6 +122,8 @@ def validar_credenciales():
         DB_LIBROS = get_env_var(["NOTION_DB_LIBROS"], required=False)
         DB_SERIES = get_env_var(["NOTION_DB_SERIES"], required=False)
         DB_PELICULAS = get_env_var(["NOTION_DB_PELICULAS"], required=False)
+        DB_GESTION_EMOCIONAL = get_env_var(["NOTION_DB_GESTION_EMOCIONAL"], required=False)
+        DB_EMOCIONES = get_env_var(["NOTION_DB_EMOCIONES"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -379,6 +383,11 @@ def auditar_consistencia_tripartita():
         sincronizar_ocio(timestamps, app_version)
     except Exception as e:
         print(f"⚠️ [OCIO]: error inesperado al sincronizar ({e}), se omite.")
+
+    try:
+        sincronizar_gestion_emocional(timestamps, app_version)
+    except Exception as e:
+        print(f"⚠️ [GESTIÓN EMOCIONAL]: error inesperado al sincronizar ({e}), se omite.")
 
     verificar_consumo_ram()
 
@@ -1715,6 +1724,142 @@ def actualizar_pelicula_ocio(datos):
     print(f"✅ [ACTUALIZAR PELICULA]: '{titulo}' ({page_id}) actualizada.")
 
 
+_BAROMETRO_FALLBACK = [
+    "😌 En calma", "🎯 Enfocada", "✨ Inspirada", "😰 Ansiosa",
+    "😴 Agotada", "😢 Triste", "😠 Frustrada",
+]
+
+
+def sincronizar_gestion_emocional(timestamps, app_version):
+    """Inyecta registros de 🧠 Gestión emocional y catálogo Emociones-V1 en gestion-emocional.html."""
+    html_path = BASE_DIR / "gestion-emocional.html"
+    if not html_path.exists():
+        print("ℹ️ [GESTIÓN EMOCIONAL]: gestion-emocional.html no encontrado, se omite.")
+        return
+    if not DB_GESTION_EMOCIONAL:
+        print("ℹ️ [GESTIÓN EMOCIONAL]: NOTION_DB_GESTION_EMOCIONAL no configurada, se omite sync.")
+        return
+
+    res_reg, sch_reg = _consultar_bd_salud(
+        DB_GESTION_EMOCIONAL, "GESTION EMOCIONAL",
+        sorts=[{"property": "Fecha", "direction": "descending"}], page_size=50,
+    )
+    res_emo, _ = _consultar_bd_salud(DB_EMOCIONES, "EMOCIONES V1", page_size=50)
+    emociones = []
+    emo_map = {}
+    for e in res_emo:
+        e_pr = e.get("properties", {})
+        e_nom = "".join(t.get("plain_text", "") for t in (e_pr.get("Emocion") or {}).get("title", [])) or ""
+        if e_nom:
+            emociones.append({"id": e.get("id"), "nombre": e_nom})
+            emo_map[e.get("id")] = e_nom
+
+    registros = []
+    for p in res_reg:
+        pr = p.get("properties", {})
+        rel = (pr.get("Emoción (BD)") or {}).get("relation") or []
+        emo_id = rel[0].get("id") if rel else None
+        registros.append({
+            "id": p.get("id"),
+            "nombre": "".join(t.get("plain_text", "") for t in (pr.get("Nombre") or {}).get("title", [])) or "Registro",
+            "fecha": ((pr.get("Fecha") or {}).get("date") or {}).get("start"),
+            "barometro": ((pr.get("Barómetro") or {}).get("select") or {}).get("name"),
+            "emocion_id": emo_id,
+            "emocion_nombre": emo_map.get(emo_id) if emo_id else None,
+            "calma": (pr.get("Nivel de calma") or {}).get("number"),
+            "energia": (pr.get("Nivel de energía") or {}).get("number"),
+            "disparador": "".join(t.get("plain_text", "") for t in (pr.get("Disparador / Contexto") or {}).get("rich_text", [])),
+            "reflexion": "".join(t.get("plain_text", "") for t in (pr.get("Reflexión / Nota") or {}).get("rich_text", [])),
+            "stop": bool((pr.get("Protocolo S.T.O.P.") or {}).get("checkbox")),
+        })
+
+    opciones = {
+        "barometro": _opciones_de_schema(sch_reg, "Barómetro", "select", _BAROMETRO_FALLBACK),
+    }
+
+    with open(html_path, "r", encoding="utf-8") as file:
+        html_content = file.read()
+
+    html_content = _inyectar_timestamps_y_version(html_content, timestamps, app_version)
+
+    for nombre_const, valor in (
+        ("gestionEmocionalRegistros", registros),
+        ("emocionesCatalogo", emociones),
+    ):
+        json_val = json.dumps(valor, ensure_ascii=False).replace("</", "<\\/")
+        html_content = re.sub(
+            rf"const\s+{nombre_const}\s*=\s*\[.*?\]\s*;",
+            lambda _m, nc=nombre_const, jv=json_val: f"const {nc} = {jv};",
+            html_content,
+            flags=re.DOTALL,
+        )
+    json_opc = json.dumps(opciones, ensure_ascii=False).replace("</", "<\\/")
+    html_content = re.sub(
+        r"const\s+gestionEmocionalOpciones\s*=\s*\{.*?\}\s*;",
+        lambda _m, jv=json_opc: f"const gestionEmocionalOpciones = {jv};",
+        html_content,
+        flags=re.DOTALL,
+    )
+
+    with open(html_path, "w", encoding="utf-8") as file:
+        file.write(html_content)
+    print(f"✅ Frontend gestion-emocional.html sincronizado ({len(registros)} registros).")
+
+
+def _construir_propiedades_emocional(datos):
+    nombre = (datos.get("nombre") or "").strip()
+    fecha = (datos.get("fecha") or "").strip()
+    if not nombre or not fecha:
+        print("❌ [GESTION EMOCIONAL]: faltan nombre o fecha.")
+        sys.exit(1)
+    props = {
+        "Nombre": {"title": [{"text": {"content": nombre}}]},
+        "Fecha": {"date": {"start": fecha}},
+        "Protocolo S.T.O.P.": {"checkbox": bool(datos.get("stop"))},
+    }
+    bar = (datos.get("barometro") or "").strip()
+    if bar:
+        props["Barómetro"] = {"select": {"name": bar}}
+    emo_id = (datos.get("emocion_id") or "").strip()
+    if emo_id:
+        props["Emoción (BD)"] = {"relation": [{"id": emo_id}]}
+    if datos.get("calma") is not None:
+        props["Nivel de calma"] = {"number": float(datos["calma"])}
+    if datos.get("energia") is not None:
+        props["Nivel de energía"] = {"number": float(datos["energia"])}
+    disp = (datos.get("disparador") or "").strip()
+    if disp:
+        props["Disparador / Contexto"] = {"rich_text": [{"text": {"content": disp}}]}
+    refl = (datos.get("reflexion") or "").strip()
+    if refl:
+        props["Reflexión / Nota"] = {"rich_text": [{"text": {"content": refl}}]}
+    return nombre, props
+
+
+def crear_registro_emocional(datos):
+    if not DB_GESTION_EMOCIONAL:
+        print("❌ [CREAR EMOCIONAL]: NOTION_DB_GESTION_EMOCIONAL no configurada.")
+        sys.exit(1)
+    nombre, props = _construir_propiedades_emocional(datos)
+    body = {
+        "parent": {"database_id": DB_GESTION_EMOCIONAL},
+        "icon": {"type": "emoji", "emoji": "🧠"},
+        "properties": props,
+    }
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", body, "CREAR EMOCIONAL")
+    print(f"✅ [CREAR EMOCIONAL]: '{nombre}' registrado ({res.get('id', '?')}).")
+
+
+def actualizar_registro_emocional(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR EMOCIONAL]: falta page_id.")
+        sys.exit(1)
+    nombre, props = _construir_propiedades_emocional(datos)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR EMOCIONAL")
+    print(f"✅ [ACTUALIZAR EMOCIONAL]: '{nombre}' ({page_id}) actualizado.")
+
+
 def ejecutar_accion_notion(payload):
     """Despacha acciones de escritura recibidas vía `ACCION_NOTION_PAYLOAD`."""
     accion = (payload or {}).get("accion")
@@ -1755,6 +1900,10 @@ def ejecutar_accion_notion(payload):
         crear_pelicula_ocio(datos)
     elif accion == "actualizar_pelicula_ocio":
         actualizar_pelicula_ocio(datos)
+    elif accion == "crear_registro_emocional":
+        crear_registro_emocional(datos)
+    elif accion == "actualizar_registro_emocional":
+        actualizar_registro_emocional(datos)
     elif accion == "archivar_pagina":
         archivar_pagina_notion(datos)
     else:
