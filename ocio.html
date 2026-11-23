@@ -47,6 +47,8 @@
         const timestampNextStr = "18/08/2026 21:20:23";
         const timestampServerStr = "18/08/2026 23:20:23";
         const ocioLibrosNotion = [];
+        const ocioSeriesNotion = [];
+        const ocioPeliculasNotion = [];
         const ocioOpciones = {};
     </script>
 
@@ -323,37 +325,35 @@
                     <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Título *</label>
                     <input id="inputTitle" type="text" required placeholder="Ej: Nombre de la obra" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50">
                 </div>
+                <div id="wrap-campos-libro" class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label id="labelSecondary" class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Autor</label>
+                        <input id="inputSecondary" type="text" placeholder="Ej: James Clear" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Categoría</label>
+                        <select id="inputCategoriaLibro" class="w-full px-3 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50"></select>
+                    </div>
+                </div>
+                <div id="wrap-generos-av" class="hidden space-y-1.5">
+                    <label class="block text-[11px] font-label-caps text-[#8e8e93]">Géneros</label>
+                    <div id="ocio-generos-checks" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-36 overflow-y-auto p-2 rounded-xl bg-[#08080a] border border-white/[0.08]"></div>
+                </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label id="labelSecondary" class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Autor *</label>
-                        <input id="inputSecondary" type="text" required placeholder="Autor / Plataforma / Director" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Género / Duración</label>
-                        <input id="inputGenre" type="text" placeholder="Ej: Sci-Fi / 2h 15m" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50">
-                    </div>
-                </div>
-                <div class="grid grid-cols-3 gap-3">
-                    <div>
                         <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Estado</label>
-                        <select id="inputEstado" class="w-full px-3 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50">
-                            <option value="Por empezar / En lista">Por empezar / En lista</option>
-                            <option value="En curso / Viendo" selected>En curso / Viendo</option>
-                            <option value="Completado / Vista">Completado / Vista</option>
+                        <select id="inputEstado" class="w-full px-3 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50"></select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Puntuación (1–5)</label>
+                        <select id="inputScore" class="w-full px-3 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50">
+                            <option value="5">⭐️⭐️⭐️⭐️⭐️ (5)</option>
+                            <option value="4">⭐️⭐️⭐️⭐️ (4)</option>
+                            <option value="3">⭐️⭐️⭐️ (3)</option>
+                            <option value="2">⭐️⭐️ (2)</option>
+                            <option value="1">⭐️ (1)</option>
                         </select>
                     </div>
-                    <div>
-                        <label id="labelProgress" class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Progreso / %</label>
-                        <input id="inputProgress" type="text" placeholder="Ej: 50% o 4/8 eps" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Puntuación</label>
-                        <input id="inputScore" type="number" min="1" max="5" step="0.1" value="5.0" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Reseña o Nota</label>
-                    <textarea id="inputNotes" rows="2" placeholder="Notas clave, sensaciones o recomendaciones..." class="w-full px-3.5 py-2 rounded-xl bg-[#08080a] border border-white/[0.08] text-xs text-white focus:outline-none focus:border-[#ff5f52]/50"></textarea>
                 </div>
                 <p id="ocio-form-err" class="hidden text-xs text-[#ff5f52] font-semibold"></p>
                 <div class="pt-2 flex justify-end gap-2.5">
@@ -451,6 +451,12 @@
             } catch (e) {}
             if (Array.isArray(ocioLibrosNotion) && ocioLibrosNotion.length > 0) {
                 base.libros = ocioLibrosNotion;
+            }
+            if (Array.isArray(ocioSeriesNotion) && ocioSeriesNotion.length > 0) {
+                base.series = ocioSeriesNotion;
+            }
+            if (Array.isArray(ocioPeliculasNotion) && ocioPeliculasNotion.length > 0) {
+                base.peliculas = ocioPeliculasNotion;
             }
             return base;
         }
@@ -576,36 +582,48 @@
             document.getElementById("ocio-edit-id").value = editId;
             document.getElementById("ocio-form-err").classList.add("hidden");
             const cfg = {
-                libros: { icon: "auto_stories", titulo: "Libro", sec: "Autor *", prog: "Páginas / %" },
-                series: { icon: "tv", titulo: "Serie", sec: "Plataforma *", prog: "Episodios (ej: 60%)" },
-                peliculas: { icon: "movie", titulo: "Película", sec: "Director / Año *", prog: "Formato / %" },
+                libros: { icon: "auto_stories", titulo: "Libro" },
+                series: { icon: "tv", titulo: "Serie" },
+                peliculas: { icon: "movie", titulo: "Película" },
             }[tipo];
             document.getElementById("modalIcon").textContent = cfg.icon;
-            document.getElementById("labelSecondary").textContent = cfg.sec;
-            document.getElementById("labelProgress").textContent = cfg.prog;
 
             const existente = editId ? (ocioDatos[tipo] || []).find((x) => x.id === editId) : null;
-            if (tipo === "libros") {
-                const selEst = document.getElementById("inputEstado");
-                selEst.innerHTML = (ocioOpciones.estados || ["No empezado", "Leyendo", "Completado"])
-                    .map((op) => `<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`).join("");
-                if (!existente) selEst.value = "Leyendo";
-            } else {
-                document.getElementById("inputEstado").innerHTML = `
-                    <option value="Por empezar / En lista">Por empezar / En lista</option>
-                    <option value="En curso / Viendo" selected>En curso / Viendo</option>
-                    <option value="Completado / Vista">Completado / Vista</option>
-                `;
-            }
-
             document.getElementById("modalTitle").textContent = existente ? `Editar ${cfg.titulo}` : `Nuevo ${cfg.titulo}`;
             document.getElementById("inputTitle").value = existente ? existente.titulo : "";
-            document.getElementById("inputSecondary").value = existente ? existente.secundario : "";
-            document.getElementById("inputGenre").value = existente ? existente.genero : "";
-            if (existente) document.getElementById("inputEstado").value = existente.estado;
-            document.getElementById("inputProgress").value = existente ? existente.progreso : "";
-            document.getElementById("inputScore").value = existente ? existente.puntuacion : "5.0";
-            document.getElementById("inputNotes").value = existente ? (existente.notas || "") : "";
+            document.getElementById("inputScore").value = existente ? String(Math.max(1, Math.min(5, Math.round(existente.puntuacion || 5)))) : "5";
+
+            const esLibro = tipo === "libros";
+            document.getElementById("wrap-campos-libro").classList.toggle("hidden", !esLibro);
+            document.getElementById("wrap-generos-av").classList.toggle("hidden", esLibro);
+
+            const selEst = document.getElementById("inputEstado");
+            if (esLibro) {
+                document.getElementById("inputSecondary").value = existente ? (existente.secundario || "") : "";
+                const cats = ocioOpciones.categorias || ["Ficción", "No ficción", "Autoayuda", "Fantasía", "Romance", "Thriller"];
+                const selCat = document.getElementById("inputCategoriaLibro");
+                selCat.innerHTML = cats.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+                if (existente && existente.genero) selCat.value = existente.genero;
+                const estOps = ocioOpciones.estados || ["No empezado", "Leyendo", "Completado"];
+                selEst.innerHTML = estOps.map((op) => `<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`).join("");
+                selEst.value = existente ? existente.estado : "Leyendo";
+            } else {
+                const gens = tipo === "series"
+                    ? (ocioOpciones.generos_series || ["drama", "comedia", "thriller", "romance", "fantasía"])
+                    : (ocioOpciones.generos_peliculas || ["drama", "comedia", "thriller", "romance", "acción"]);
+                const actuales = new Set((existente && Array.isArray(existente.generos)) ? existente.generos : []);
+                document.getElementById("ocio-generos-checks").innerHTML = gens.map((g) => `
+                    <label class="flex items-center gap-1.5 text-xs text-[#e5e2e1] cursor-pointer px-1.5 py-1 rounded hover:bg-white/5">
+                        <input type="checkbox" name="ocio-genero-av" value="${escapeHtml(g)}" ${actuales.has(g) ? "checked" : ""} class="rounded border-white/20 bg-[#18181d] text-[#ff5f52]" />
+                        <span class="truncate">${escapeHtml(g)}</span>
+                    </label>
+                `).join("");
+                const estOps = tipo === "series"
+                    ? (ocioOpciones.estados_series || ["POR VER", "VIENDO", "VISTA"])
+                    : (ocioOpciones.estados_peliculas || ["POR VER", "VISTA"]);
+                selEst.innerHTML = estOps.map((op) => `<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`).join("");
+                selEst.value = existente ? existente.estado : "POR VER";
+            }
 
             const m = document.getElementById("mediaModal");
             m.classList.remove("hidden");
@@ -686,49 +704,44 @@
             e.preventDefault();
             const tipo = document.getElementById("ocio-edit-tipo").value;
             const editId = document.getElementById("ocio-edit-id").value;
-            const res = construirItemOcio({
-                id: editId,
-                titulo: document.getElementById("inputTitle").value,
-                secundario: document.getElementById("inputSecondary").value,
-                genero: document.getElementById("inputGenre").value,
-                estado: document.getElementById("inputEstado").value,
-                progreso: document.getElementById("inputProgress").value,
-                puntuacion: document.getElementById("inputScore").value,
-                notas: document.getElementById("inputNotes").value,
-            });
-            if (!res.ok) {
+            const titulo = (document.getElementById("inputTitle").value || "").trim();
+            if (!titulo) {
                 const errEl = document.getElementById("ocio-form-err");
-                errEl.textContent = res.error;
+                errEl.textContent = "El título es obligatorio.";
                 errEl.classList.remove("hidden");
                 return;
             }
-            if (tipo === "libros" && (!editId || !editId.startsWith("lib-"))) {
+            const estado = document.getElementById("inputEstado").value;
+            const puntuacion = Number(document.getElementById("inputScore").value || 5);
+
+            if (tipo === "libros") {
                 const payload = {
-                    titulo: res.item.titulo,
-                    autor: res.item.secundario,
-                    categoria: res.item.genero,
-                    estado: res.item.estado,
-                    puntuacion: res.item.puntuacion,
+                    titulo,
+                    autor: (document.getElementById("inputSecondary").value || "").trim(),
+                    categoria: document.getElementById("inputCategoriaLibro").value,
+                    estado,
+                    puntuacion,
                 };
                 if (editId) payload.page_id = editId;
                 cerrarModalOcio();
                 await despacharAccionOcioNotion(editId ? "actualizar_libro_ocio" : "crear_libro_ocio", payload, "¡Libro guardado en Notion!");
                 return;
             }
-            if (editId) {
-                ocioDatos[tipo] = ocioDatos[tipo].map((x) => (x.id === editId ? res.item : x));
-            } else {
-                ocioDatos[tipo].unshift(res.item);
-            }
-            guardarDatosOcio();
+
+            const generos = Array.from(document.querySelectorAll('input[name="ocio-genero-av"]:checked')).map((el) => el.value);
+            const payload = { titulo, generos, estado, puntuacion };
+            if (editId) payload.page_id = editId;
+            const accion = tipo === "series"
+                ? (editId ? "actualizar_serie_ocio" : "crear_serie_ocio")
+                : (editId ? "actualizar_pelicula_ocio" : "crear_pelicula_ocio");
+            const msgOk = tipo === "series" ? "¡Serie guardada en Notion!" : "¡Película guardada en Notion!";
             cerrarModalOcio();
-            cambiarTabOcio(tipo);
-            renderizarTodoOcio();
+            await despacharAccionOcioNotion(accion, payload, msgOk);
         }
 
         async function eliminarItemOcio(tipo, id) {
-            if (tipo === "libros" && id && !id.startsWith("lib-") && !id.startsWith("ocio-")) {
-                await despacharAccionOcioNotion("archivar_pagina", { page_id: id }, "¡Libro enviado a la papelera!");
+            if (id && !id.startsWith("lib-") && !id.startsWith("ser-") && !id.startsWith("pel-") && !id.startsWith("ocio-")) {
+                await despacharAccionOcioNotion("archivar_pagina", { page_id: id }, "¡Registro enviado a la papelera!");
                 return;
             }
             ocioDatos[tipo] = (ocioDatos[tipo] || []).filter((x) => x.id !== id);

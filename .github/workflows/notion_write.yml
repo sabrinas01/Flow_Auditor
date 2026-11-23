@@ -43,6 +43,8 @@ jobs:
           NOTION_DB_CICLO: ${{ secrets.NOTION_DB_CICLO }}
           NOTION_DB_SALUD_PENDIENTES: ${{ secrets.NOTION_DB_SALUD_PENDIENTES }}
           NOTION_DB_LIBROS: ${{ secrets.NOTION_DB_LIBROS }}
+          NOTION_DB_SERIES: ${{ secrets.NOTION_DB_SERIES }}
+          NOTION_DB_PELICULAS: ${{ secrets.NOTION_DB_PELICULAS }}
           ACCION_NOTION_PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: python extract_and_audit.py
 

@@ -96,12 +96,14 @@ DB_SESIONES = os.getenv("NOTION_DB_SESIONES")
 DB_CICLO = os.getenv("NOTION_DB_CICLO")
 DB_SALUD_PENDIENTES = os.getenv("NOTION_DB_SALUD_PENDIENTES")
 DB_LIBROS = os.getenv("NOTION_DB_LIBROS")
+DB_SERIES = os.getenv("NOTION_DB_SERIES")
+DB_PELICULAS = os.getenv("NOTION_DB_PELICULAS")
 
 
 def validar_credenciales():
     try:
         # Uso de helper interno para resolución robusta de variables de entorno
-        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
         # Opcionales: su ausencia (o cualquier fallo al consultarlas) no debe abortar
@@ -116,6 +118,8 @@ def validar_credenciales():
         DB_CICLO = get_env_var(["NOTION_DB_CICLO"], required=False)
         DB_SALUD_PENDIENTES = get_env_var(["NOTION_DB_SALUD_PENDIENTES"], required=False)
         DB_LIBROS = get_env_var(["NOTION_DB_LIBROS"], required=False)
+        DB_SERIES = get_env_var(["NOTION_DB_SERIES"], required=False)
+        DB_PELICULAS = get_env_var(["NOTION_DB_PELICULAS"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -1471,17 +1475,57 @@ _OCIO_CATEGORIAS_FALLBACK = [
 _OCIO_VALORACIONES_FALLBACK = ["⭐️⭐️⭐️⭐️⭐️", "⭐️⭐️⭐️⭐️", "⭐️⭐️⭐️", "⭐️⭐️", "⭐️"]
 
 
+_OCIO_SERIES_GENEROS_FALLBACK = [
+    "romance", "terror", "comedia", "thriller", "acción", "drama",
+    "crimen", "misterio", "suspenso", "fantasía", "drama sobrenatural", "drama médico",
+]
+_OCIO_SERIES_ESTADOS_FALLBACK = ["VISTA", "POR VER", "VIENDO"]
+_OCIO_PELIS_GENEROS_FALLBACK = [
+    "romance", "terror", "comedia", "thriller", "acción", "melodrama", "drama", "fantasía/aventura",
+]
+_OCIO_PELIS_ESTADOS_FALLBACK = ["VISTA", "POR VER"]
+
+
+def _extraer_audiovisual(res_pages):
+    items = []
+    for p in res_pages:
+        pr = p.get("properties", {})
+        titulo = "".join(t.get("plain_text", "") for t in (pr.get("Título") or {}).get("title", [])) or "Sin título"
+        generos = [o.get("name") for o in (pr.get("Género") or {}).get("multi_select", []) if o.get("name")]
+        estado = ((pr.get("Estado") or {}).get("select") or {}).get("name") or "POR VER"
+        punt_txt = ((pr.get("Puntuación") or {}).get("select") or {}).get("name") or ""
+        estrellas = punt_txt.count("⭐") if punt_txt else 5
+        progreso = "100%" if estado.upper() == "VISTA" else ("50%" if estado.upper() == "VIENDO" else "0%")
+        items.append({
+            "id": p.get("id"),
+            "titulo": titulo,
+            "secundario": ", ".join(generos) or "Sin género",
+            "generos": generos,
+            "genero": ", ".join(generos) or "General",
+            "estado": estado,
+            "progreso": progreso,
+            "detalle": punt_txt or estado,
+            "puntuacion": estrellas,
+            "valoracion": punt_txt,
+            "notas": "",
+        })
+    return items
+
+
 def sincronizar_ocio(timestamps, app_version):
-    """Inyecta libros de Notion (DB_LIBROS) en ocio.html (aislado, no fatal)."""
+    """Inyecta libros, series y películas de Notion en ocio.html (aislado, no fatal)."""
     html_path = BASE_DIR / "ocio.html"
     if not html_path.exists():
         print("ℹ️ [OCIO]: ocio.html no encontrado, se omite.")
         return
-    if not DB_LIBROS:
-        print("ℹ️ [OCIO]: NOTION_DB_LIBROS no configurada, se omite sync.")
+    if not (DB_LIBROS or DB_SERIES or DB_PELICULAS):
+        print("ℹ️ [OCIO]: ninguna BD de Ocio configurada, se omite sync.")
         return
 
     res_lib, sch_lib = _consultar_bd_salud(DB_LIBROS, "OCIO LIBROS", page_size=50)
+    res_ser, sch_ser = _consultar_bd_salud(DB_SERIES, "OCIO SERIES", page_size=50)
+    res_pel, sch_pel = _consultar_bd_salud(DB_PELICULAS, "OCIO PELICULAS", page_size=50)
+
     libros = []
     for p in res_lib:
         pr = p.get("properties", {})
@@ -1505,10 +1549,17 @@ def sincronizar_ocio(timestamps, app_version):
             "notas": "",
         })
 
+    series = _extraer_audiovisual(res_ser)
+    peliculas = _extraer_audiovisual(res_pel)
+
     opciones = {
         "categorias": _opciones_de_schema(sch_lib, "Categoría", "select", _OCIO_CATEGORIAS_FALLBACK),
         "estados": _opciones_de_schema(sch_lib, "Estado", "status", _OCIO_ESTADOS_FALLBACK),
         "valoraciones": _opciones_de_schema(sch_lib, "Valoración", "select", _OCIO_VALORACIONES_FALLBACK),
+        "generos_series": _opciones_de_schema(sch_ser, "Género", "multi_select", _OCIO_SERIES_GENEROS_FALLBACK),
+        "estados_series": _opciones_de_schema(sch_ser, "Estado", "select", _OCIO_SERIES_ESTADOS_FALLBACK),
+        "generos_peliculas": _opciones_de_schema(sch_pel, "Género", "multi_select", _OCIO_PELIS_GENEROS_FALLBACK),
+        "estados_peliculas": _opciones_de_schema(sch_pel, "Estado", "select", _OCIO_PELIS_ESTADOS_FALLBACK),
     }
 
     with open(html_path, "r", encoding="utf-8") as file:
@@ -1516,13 +1567,18 @@ def sincronizar_ocio(timestamps, app_version):
 
     html_content = _inyectar_timestamps_y_version(html_content, timestamps, app_version)
 
-    json_libros = json.dumps(libros, ensure_ascii=False).replace("</", "<\\/")
-    html_content = re.sub(
-        r"const\s+ocioLibrosNotion\s*=\s*\[.*?\]\s*;",
-        lambda _m, jv=json_libros: f"const ocioLibrosNotion = {jv};",
-        html_content,
-        flags=re.DOTALL,
-    )
+    for nombre_const, valor in (
+        ("ocioLibrosNotion", libros),
+        ("ocioSeriesNotion", series),
+        ("ocioPeliculasNotion", peliculas),
+    ):
+        json_val = json.dumps(valor, ensure_ascii=False).replace("</", "<\\/")
+        html_content = re.sub(
+            rf"const\s+{nombre_const}\s*=\s*\[.*?\]\s*;",
+            lambda _m, nc=nombre_const, jv=json_val: f"const {nc} = {jv};",
+            html_content,
+            flags=re.DOTALL,
+        )
     json_opc = json.dumps(opciones, ensure_ascii=False).replace("</", "<\\/")
     html_content = re.sub(
         r"const\s+ocioOpciones\s*=\s*\{.*?\}\s*;",
@@ -1533,7 +1589,7 @@ def sincronizar_ocio(timestamps, app_version):
 
     with open(html_path, "w", encoding="utf-8") as file:
         file.write(html_content)
-    print(f"✅ Frontend ocio.html sincronizado ({len(libros)} libros).")
+    print(f"✅ Frontend ocio.html sincronizado ({len(libros)} libros, {len(series)} series, {len(peliculas)} pelis).")
 
 
 def _construir_propiedades_libro_ocio(datos):
@@ -1589,6 +1645,76 @@ def actualizar_libro_ocio(datos):
     print(f"✅ [ACTUALIZAR LIBRO]: '{titulo}' ({page_id}) actualizado.")
 
 
+def _construir_propiedades_audiovisual(datos):
+    titulo = (datos.get("titulo") or "").strip()
+    if not titulo:
+        print("❌ [AUDIOVISUAL OCIO]: falta título.")
+        sys.exit(1)
+    props = {"Título": {"title": [{"text": {"content": titulo}}]}}
+    generos = datos.get("generos") or []
+    if isinstance(generos, str):
+        generos = [g.strip() for g in generos.split(",") if g.strip()]
+    if generos:
+        props["Género"] = {"multi_select": [{"name": g} for g in generos]}
+    estado = (datos.get("estado") or "").strip()
+    if estado:
+        props["Estado"] = {"select": {"name": estado}}
+    punt = (datos.get("puntuacion_txt") or "").strip()
+    if not punt and datos.get("puntuacion") is not None:
+        try:
+            n = max(1, min(5, round(float(datos.get("puntuacion")))))
+            punt = "⭐️" * n
+        except (TypeError, ValueError):
+            punt = ""
+    if punt:
+        props["Puntuación"] = {"select": {"name": punt}}
+    return titulo, props
+
+
+def crear_serie_ocio(datos):
+    if not DB_SERIES:
+        print("❌ [CREAR SERIE]: NOTION_DB_SERIES no configurada.")
+        sys.exit(1)
+    titulo, props = _construir_propiedades_audiovisual(datos)
+    body = {
+        "parent": {"database_id": DB_SERIES},
+        "icon": {"type": "emoji", "emoji": "🟩"},
+        "properties": props,
+    }
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", body, "CREAR SERIE")
+    print(f"✅ [CREAR SERIE]: '{titulo}' registrada ({res.get('id', '?')}).")
+
+
+def actualizar_serie_ocio(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR SERIE]: falta page_id.")
+        sys.exit(1)
+    titulo, props = _construir_propiedades_audiovisual(datos)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR SERIE")
+    print(f"✅ [ACTUALIZAR SERIE]: '{titulo}' ({page_id}) actualizada.")
+
+
+def crear_pelicula_ocio(datos):
+    if not DB_PELICULAS:
+        print("❌ [CREAR PELICULA]: NOTION_DB_PELICULAS no configurada.")
+        sys.exit(1)
+    titulo, props = _construir_propiedades_audiovisual(datos)
+    body = {"parent": {"database_id": DB_PELICULAS}, "properties": props}
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", body, "CREAR PELICULA")
+    print(f"✅ [CREAR PELICULA]: '{titulo}' registrada ({res.get('id', '?')}).")
+
+
+def actualizar_pelicula_ocio(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR PELICULA]: falta page_id.")
+        sys.exit(1)
+    titulo, props = _construir_propiedades_audiovisual(datos)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR PELICULA")
+    print(f"✅ [ACTUALIZAR PELICULA]: '{titulo}' ({page_id}) actualizada.")
+
+
 def ejecutar_accion_notion(payload):
     """Despacha acciones de escritura recibidas vía `ACCION_NOTION_PAYLOAD`."""
     accion = (payload or {}).get("accion")
@@ -1621,6 +1747,14 @@ def ejecutar_accion_notion(payload):
         crear_libro_ocio(datos)
     elif accion == "actualizar_libro_ocio":
         actualizar_libro_ocio(datos)
+    elif accion == "crear_serie_ocio":
+        crear_serie_ocio(datos)
+    elif accion == "actualizar_serie_ocio":
+        actualizar_serie_ocio(datos)
+    elif accion == "crear_pelicula_ocio":
+        crear_pelicula_ocio(datos)
+    elif accion == "actualizar_pelicula_ocio":
+        actualizar_pelicula_ocio(datos)
     elif accion == "archivar_pagina":
         archivar_pagina_notion(datos)
     else:

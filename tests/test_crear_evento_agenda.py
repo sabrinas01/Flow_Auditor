@@ -397,3 +397,34 @@ def test_crear_y_actualizar_libro_ocio(monkeypatch):
             "estado": "Completado",
         })
     assert mock_patch.call_args[1]["json"]["properties"]["Estado"] == {"status": {"name": "Completado"}}
+
+
+def test_crear_serie_y_actualizar_pelicula_ocio(monkeypatch):
+    monkeypatch.setattr(extract_and_audit, "NOTION_API_KEY", "secret-token-de-prueba")
+    monkeypatch.setattr(extract_and_audit, "DB_SERIES", "17ca38bb7a6e816e8a60e32f044f891f")
+    monkeypatch.setattr(extract_and_audit, "DB_PELICULAS", "17ca38bb7a6e81e68b21ef264e76a001")
+
+    mock_post = Mock(return_value=_mock_respuesta_creada("ser-1"))
+    with patch.object(extract_and_audit.requests, "post", mock_post):
+        extract_and_audit.crear_serie_ocio({
+            "titulo": "The Bear",
+            "generos": ["drama", "comedia"],
+            "estado": "VIENDO",
+            "puntuacion": 5,
+        })
+    body = mock_post.call_args[1]["json"]
+    assert body["parent"] == {"database_id": "17ca38bb7a6e816e8a60e32f044f891f"}
+    assert body["icon"] == {"type": "emoji", "emoji": "🟩"}
+    assert body["properties"]["Género"] == {"multi_select": [{"name": "drama"}, {"name": "comedia"}]}
+    assert body["properties"]["Estado"] == {"select": {"name": "VIENDO"}}
+
+    mock_patch = Mock(return_value=_mock_respuesta_creada("pel-1"))
+    with patch.object(extract_and_audit.requests, "patch", mock_patch):
+        extract_and_audit.actualizar_pelicula_ocio({
+            "page_id": "pel-1",
+            "titulo": "Dune 2",
+            "generos": ["acción"],
+            "estado": "VISTA",
+            "puntuacion": 5,
+        })
+    assert mock_patch.call_args[1]["json"]["properties"]["Estado"] == {"select": {"name": "VISTA"}}
