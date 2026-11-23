@@ -113,10 +113,13 @@ amerita tocar la doc (config interna, CI de tooling, tests), agregar
 `[skip-docs]` en el mensaje del commit para saltear el check — pero evaluar
 primero si de verdad no aplica antes de usarlo.
 
-Este gate solo verifica `PRD.md`/`SRS.md`. Los tres destinos en Notion (HU,
-Requisitos SRS y Plan de Pruebas y Matriz de Trazabilidad) no tienen
-enforcement automático — dependen de seguir esta checklist en cada cambio
-funcional.
+Este gate solo verifica `PRD.md`/`SRS.md`. Los destinos en Notion (`Solicitudes de funciones`, `📜 NFA Tareas de desarrollo`, `📋 Requisitos SRS` y `📄 Plan de Pruebas y Matriz de Trazabilidad`) no tienen enforcement automático — **es obligatorio sincronizarlos siempre junto con cada cambio funcional que vayamos haciendo**.
+
+## Reglas de trabajo y pausas obligatorias
+
+- **Sincronización continua en Notion:** cada cambio funcional debe reflejarse también en las bases de Notion correspondientes (`Solicitudes de funciones`, HUs, Requisitos SRS y Plan de Pruebas/Matriz de Trazabilidad).
+- **Pausar ante inconsistencias o dudas:** si al revisar código, documentación o Notion se detecta cualquier inconsistencia, contradicción o duda de negocio/alcance, **pausar inmediatamente y pedir definición a Sabrina** antes de asumir o modificar datos.
+- **Idioma:** responder siempre en español.
 
 ## Contexto rápido del proyecto
 
