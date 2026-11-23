@@ -117,6 +117,7 @@ Este gate solo verifica `PRD.md`/`SRS.md`. Los destinos en Notion (`Solicitudes 
 
 ## Reglas de trabajo y pausas obligatorias
 
+- **Notion como base de datos única:** todos los módulos usan Notion como BD; antes de diseñar formularios o propiedades, inspeccionar el esquema real de cada base en Notion y construir la UI estrictamente en base a sus campos reales.
 - **Sincronización continua en Notion:** cada cambio funcional debe reflejarse también en las bases de Notion correspondientes (`Solicitudes de funciones`, HUs, Requisitos SRS y Plan de Pruebas/Matriz de Trazabilidad).
 - **Pausar ante inconsistencias o dudas:** si al revisar código, documentación o Notion se detecta cualquier inconsistencia, contradicción o duda de negocio/alcance, **pausar inmediatamente y pedir definición a Sabrina** antes de asumir o modificar datos.
 - **Idioma:** responder siempre en español.
