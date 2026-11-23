@@ -135,7 +135,7 @@
     <!-- =================================================== -->
     <!-- SIDEBAR (oculto por defecto, se activa con el menú) -->
     <!-- =================================================== -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#111115] border-r border-white/[0.08] w-64 -translate-x-full">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
         <div class="flex items-center gap-3 mb-8 px-2">
             <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
             <div>
@@ -150,19 +150,19 @@
                 <span>Inicio</span>
             </a>
             <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
-                <span class="material-symbols-outlined">event</span>
+                <span class="material-symbols-outlined">calendar_month</span>
                 <span>Agenda personal</span>
             </a>
             <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
-                <span class="material-symbols-outlined">calendar_today</span>
+                <span class="material-symbols-outlined">alarm</span>
                 <span>Recordatorios diarios</span>
             </a>
             <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
-                <span class="material-symbols-outlined">list_alt</span>
+                <span class="material-symbols-outlined">check_box</span>
                 <span>Recordatorios varios</span>
             </a>
             <a href="finanzas.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
-                <span class="material-symbols-outlined">payments</span>
+                <span class="material-symbols-outlined">account_balance_wallet</span>
                 <span>Finanzas</span>
             </a>
             <a href="salud.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
@@ -180,14 +180,14 @@
     </aside>
 
     <!-- Overlay -->
-    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
 
     <!-- =================================================== -->
     <!-- TOP APP BAR -->
     <!-- =================================================== -->
-    <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] flex justify-between items-center px-container-padding w-full h-16 fixed top-0 z-30">
+    <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] flex justify-between items-center px-container-padding w-full lg:w-[calc(100%-16rem)] lg:left-64 h-16 fixed top-0 z-30">
         <div class="flex items-center gap-4">
-            <button onclick="toggleMenu()" class="p-2 text-primary hover:text-primary-fixed-dim transition-colors active:scale-95">
+            <button onclick="toggleMenu()" class="lg:hidden p-2 text-primary hover:text-primary-fixed-dim transition-colors active:scale-95">
                 <span class="material-symbols-outlined">menu</span>
             </button>
             <span class="font-display-lg text-[20px] text-primary-fixed tracking-tight">Home</span>
@@ -197,7 +197,7 @@
     <!-- =================================================== -->
     <!-- MAIN CONTENT -->
     <!-- =================================================== -->
-    <main class="relative min-h-screen flex flex-col items-center justify-center pt-16 px-container-padding overflow-hidden">
+    <main class="relative min-h-screen lg:ml-64 flex flex-col items-center justify-center pt-16 px-container-padding overflow-hidden">
         <!-- Fondo ambiental sutil -->
         <div class="absolute inset-0 z-0 pointer-events-none opacity-50">
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-container blur-[160px] rounded-full"></div>

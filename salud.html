@@ -62,7 +62,7 @@
     </script>
 
     <!-- SIDEBAR -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#111115] border-r border-white/[0.08] w-64 -translate-x-full">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
         <div class="flex items-center gap-3 mb-8 px-2">
             <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
             <div>
@@ -77,19 +77,19 @@
                 <span>Inicio</span>
             </a>
             <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
-                <span class="material-symbols-outlined">event</span>
+                <span class="material-symbols-outlined">calendar_month</span>
                 <span>Agenda personal</span>
             </a>
             <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
-                <span class="material-symbols-outlined">calendar_today</span>
+                <span class="material-symbols-outlined">alarm</span>
                 <span>Recordatorios diarios</span>
             </a>
             <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
-                <span class="material-symbols-outlined">list_alt</span>
+                <span class="material-symbols-outlined">check_box</span>
                 <span>Recordatorios varios</span>
             </a>
             <a href="finanzas.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
-                <span class="material-symbols-outlined">payments</span>
+                <span class="material-symbols-outlined">account_balance_wallet</span>
                 <span>Finanzas</span>
             </a>
             <a href="salud.html" class="flex items-center gap-3 px-4 py-3 bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/30 rounded-xl font-bold transition-all">
@@ -106,9 +106,9 @@
         </div>
     </aside>
 
-    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
 
-    <main class="min-h-screen">
+    <main class="min-h-screen lg:ml-64">
         <!-- TOP APP BAR -->
         <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
             <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
@@ -134,7 +134,7 @@
 
         <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
             <!-- 1. DIARIO DE SESIONES -->
-            <section class="glass-card rounded-xl p-8 border-l-4 border-l-[#53a759] space-y-6">
+            <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#53a759] space-y-6">
                 <div class="flex flex-wrap justify-between items-center gap-3">
                     <div class="space-y-1">
                         <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">MOVIMIENTO</p>
@@ -158,7 +158,7 @@
             </section>
 
             <!-- 2. CICLO MENSTRUAL -->
-            <section class="glass-card rounded-xl p-8 border-l-4 border-l-[#ff5f52] space-y-6">
+            <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#ff5f52] space-y-6">
                 <div class="flex flex-wrap justify-between items-center gap-3">
                     <div class="space-y-1">
                         <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">SEGUIMIENTO</p>
@@ -218,7 +218,7 @@
             </section>
 
             <!-- 3. SALUD (PENDIENTES) -->
-            <section class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] space-y-6">
+            <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#00aaff] space-y-6">
                 <div class="flex flex-wrap justify-between items-center gap-3">
                     <div class="space-y-1">
                         <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS MÉDICAS</p>
@@ -264,7 +264,7 @@
 
     <!-- MODAL REGISTRAR SESIÓN -->
     <div id="modal-sesion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-sesion')">
-        <div class="glass-card rounded-xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-5">
                 <h3 class="text-headline-md font-headline-md text-white">Registrar sesión</h3>
                 <button type="button" onclick="cerrarModal('modal-sesion')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
@@ -301,7 +301,7 @@
 
     <!-- MODAL REGISTRAR FASE CICLO -->
     <div id="modal-ciclo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-ciclo')">
-        <div class="glass-card rounded-xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-5">
                 <h3 id="cic-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar etapa del ciclo</h3>
                 <button type="button" onclick="cerrarModal('modal-ciclo')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
@@ -353,7 +353,7 @@
 
     <!-- MODAL CONFIRMAR PAPELERA -->
     <div id="modal-confirmar-papelera" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="cerrarModal('modal-confirmar-papelera')">
-        <div class="glass-card rounded-xl p-6 w-full max-w-sm space-y-4" onclick="event.stopPropagation()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4" onclick="event.stopPropagation()">
             <div class="flex items-center gap-3 text-[#ff5f52]">
                 <span class="material-symbols-outlined text-[24px]">delete</span>
                 <h3 class="text-headline-md font-headline-md text-white">Mandar a la papelera</h3>
@@ -368,7 +368,7 @@
 
     <!-- MODAL REGISTRAR PENDIENTE SALUD -->
     <div id="modal-pendiente" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-pendiente')">
-        <div class="glass-card rounded-xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-5">
                 <h3 class="text-headline-md font-headline-md text-white">Registrar pendiente</h3>
                 <button type="button" onclick="cerrarModal('modal-pendiente')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
@@ -405,7 +405,7 @@
 
     <!-- MODAL TOKEN GITHUB -->
     <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="cerrarModal('modal-token-notion')">
-        <div class="glass-card rounded-xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center">
                 <h3 class="text-headline-md font-headline-md text-white">Configurar token de GitHub</h3>
                 <button type="button" onclick="cerrarModal('modal-token-notion')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
@@ -426,7 +426,7 @@
 
     <!-- SPINNER CONFIRMACIÓN -->
     <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-        <div class="glass-card rounded-xl p-7 w-full max-w-xs text-center space-y-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
             <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
             <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
             <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>

@@ -86,7 +86,7 @@
     <!-- =================================================== -->
     <!-- SIDEBAR (oculto por defecto, se activa con el menú) -->
     <!-- =================================================== -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#111115] border-r border-white/[0.08] w-64 -translate-x-full">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
         <div class="flex items-center gap-3 mb-8 px-2">
             <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
             <div>
@@ -101,19 +101,19 @@
                 <span>Inicio</span>
             </a>
             <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-3 bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/30 rounded-xl font-bold transition-all">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event</span>
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
                 <span>Agenda personal</span>
             </a>
             <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
-                <span class="material-symbols-outlined">calendar_today</span>
+                <span class="material-symbols-outlined">alarm</span>
                 <span>Recordatorios diarios</span>
             </a>
             <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
-                <span class="material-symbols-outlined">list_alt</span>
+                <span class="material-symbols-outlined">check_box</span>
                 <span>Recordatorios varios</span>
             </a>
             <a href="finanzas.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
-                <span class="material-symbols-outlined">payments</span>
+                <span class="material-symbols-outlined">account_balance_wallet</span>
                 <span>Finanzas</span>
             </a>
             <a href="salud.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
@@ -131,7 +131,7 @@
     </aside>
 
     <!-- Overlay -->
-    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
 
     <!-- =================================================== -->
     <!-- BOTÓN FLOTANTE + MODAL: CREAR TAREA (SRS-FR-M5-507) -->
@@ -143,7 +143,7 @@
     </button>
 
     <div id="modal-crear-tarea" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalCrearTarea()">
-        <div class="glass-card rounded-xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-5">
                 <h3 id="ct-modal-titulo" class="text-headline-md font-headline-md text-white">Crear tarea</h3>
                 <button type="button" onclick="cerrarModalCrearTarea()" class="p-1.5 hover:bg-white/5 rounded-full transition-colors text-[#8e8e93]">
@@ -273,7 +273,7 @@
     <!-- MODAL CONFIRMACIÓN PAPELERA                         -->
     <!-- =================================================== -->
     <div id="modal-confirmar-papelera" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="cerrarModalPapelera()">
-        <div class="glass-card rounded-xl p-6 w-full max-w-sm space-y-4" onclick="event.stopPropagation()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4" onclick="event.stopPropagation()">
             <div class="flex items-center gap-3 text-[#ff5f52]">
                 <span class="material-symbols-outlined text-[24px]">delete</span>
                 <h3 class="text-headline-md font-headline-md text-white">Mandar a la papelera</h3>
@@ -292,7 +292,7 @@
     <!-- SPINNER DE ESPERA Y CONFIRMACIÓN NOTION             -->
     <!-- =================================================== -->
     <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-        <div class="glass-card rounded-xl p-7 w-full max-w-xs text-center space-y-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
             <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
             <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
             <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
@@ -302,7 +302,7 @@
         </div>
     </div>
 
-    <main class="min-h-screen">
+    <main class="min-h-screen lg:ml-64">
         <!-- =================================================== -->
         <!-- TOP APP BAR -->
         <!-- =================================================== -->
@@ -342,7 +342,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-grid-gutter">
 
                     <!-- Ayer -->
-                    <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
+                    <article class="glass-card rounded-2xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
                         <div class="flex justify-between items-start">
                             <div class="space-y-1">
                                 <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">AYER</p>
@@ -363,7 +363,7 @@
                     </article>
 
                     <!-- Hoy -->
-                    <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6">
+                    <article class="glass-card rounded-2xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6">
                         <div class="flex justify-between items-start">
                             <div class="space-y-1">
                                 <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">HOY</p>
@@ -384,7 +384,7 @@
                     </article>
 
                     <!-- Mañana -->
-                    <article class="glass-card rounded-xl p-8 border-l-4 border-l-[#e49102] flex flex-col gap-6">
+                    <article class="glass-card rounded-2xl p-8 border-l-4 border-l-[#e49102] flex flex-col gap-6">
                         <div class="flex justify-between items-start">
                             <div class="space-y-1">
                                 <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">MAÑANA</p>
