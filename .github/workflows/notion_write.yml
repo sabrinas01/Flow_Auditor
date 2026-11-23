@@ -47,6 +47,8 @@ jobs:
           NOTION_DB_PELICULAS: ${{ secrets.NOTION_DB_PELICULAS }}
           NOTION_DB_GESTION_EMOCIONAL: ${{ secrets.NOTION_DB_GESTION_EMOCIONAL }}
           NOTION_DB_EMOCIONES: ${{ secrets.NOTION_DB_EMOCIONES }}
+          NOTION_DB_RELACIONES: ${{ secrets.NOTION_DB_RELACIONES }}
+          NOTION_DB_FRASES: ${{ secrets.NOTION_DB_FRASES }}
           ACCION_NOTION_PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: python extract_and_audit.py
 

@@ -100,12 +100,14 @@ DB_SERIES = os.getenv("NOTION_DB_SERIES")
 DB_PELICULAS = os.getenv("NOTION_DB_PELICULAS")
 DB_GESTION_EMOCIONAL = os.getenv("NOTION_DB_GESTION_EMOCIONAL")
 DB_EMOCIONES = os.getenv("NOTION_DB_EMOCIONES")
+DB_RELACIONES = os.getenv("NOTION_DB_RELACIONES")
+DB_FRASES = os.getenv("NOTION_DB_FRASES")
 
 
 def validar_credenciales():
     try:
         # Uso de helper interno para resolución robusta de variables de entorno
-        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS, DB_GESTION_EMOCIONAL, DB_EMOCIONES
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS, DB_GESTION_EMOCIONAL, DB_EMOCIONES, DB_RELACIONES, DB_FRASES
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
         # Opcionales: su ausencia (o cualquier fallo al consultarlas) no debe abortar
@@ -124,6 +126,8 @@ def validar_credenciales():
         DB_PELICULAS = get_env_var(["NOTION_DB_PELICULAS"], required=False)
         DB_GESTION_EMOCIONAL = get_env_var(["NOTION_DB_GESTION_EMOCIONAL"], required=False)
         DB_EMOCIONES = get_env_var(["NOTION_DB_EMOCIONES"], required=False)
+        DB_RELACIONES = get_env_var(["NOTION_DB_RELACIONES"], required=False)
+        DB_FRASES = get_env_var(["NOTION_DB_FRASES"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -388,6 +392,11 @@ def auditar_consistencia_tripartita():
         sincronizar_gestion_emocional(timestamps, app_version)
     except Exception as e:
         print(f"⚠️ [GESTIÓN EMOCIONAL]: error inesperado al sincronizar ({e}), se omite.")
+
+    try:
+        sincronizar_relaciones(timestamps, app_version)
+    except Exception as e:
+        print(f"⚠️ [RELACIONES]: error inesperado al sincronizar ({e}), se omite.")
 
     verificar_consumo_ram()
 
@@ -1860,6 +1869,147 @@ def actualizar_registro_emocional(datos):
     print(f"✅ [ACTUALIZAR EMOCIONAL]: '{nombre}' ({page_id}) actualizado.")
 
 
+_REL_CATEGORIAS_FALLBACK = ["🛡️ Autorrespeto", "💛 Culpa y merecimiento", "🌿 Espacio personal", "🤝 Vulnerabilidad segura"]
+_REL_CONTEXTOS_FALLBACK = ["💼 Laboral", "❤️ Pareja & Vínculos", "🏡 Familia & Social", "⚡ Presión / Urgencia", "🪞 Conmigo misma"]
+
+
+def sincronizar_relaciones(timestamps, app_version):
+    """Inyecta afirmaciones (DB_RELACIONES) y frases (DB_FRASES) en relaciones-y-limites.html."""
+    html_path = BASE_DIR / "relaciones-y-limites.html"
+    if not html_path.exists():
+        print("ℹ️ [RELACIONES]: relaciones-y-limites.html no encontrado, se omite.")
+        return
+    if not (DB_RELACIONES or DB_FRASES):
+        print("ℹ️ [RELACIONES]: ninguna BD configurada, se omite sync.")
+        return
+
+    res_af, sch_af = _consultar_bd_salud(DB_RELACIONES, "RELACIONES AFIRMACIONES", page_size=50)
+    res_fr, _ = _consultar_bd_salud(DB_FRASES, "RELACIONES FRASES", page_size=50)
+
+    afirmaciones = []
+    for p in res_af:
+        pr = p.get("properties", {})
+        afirmaciones.append({
+            "id": p.get("id"),
+            "nombre": "".join(t.get("plain_text", "") for t in (pr.get("Nombre") or {}).get("title", [])) or "Afirmación",
+            "categoria": ((pr.get("Categoría") or {}).get("select") or {}).get("name"),
+            "contexto": ((pr.get("Contexto") or {}).get("select") or {}).get("name"),
+            "integrada": bool((pr.get("Integrada") or {}).get("checkbox")),
+            "nota": "".join(t.get("plain_text", "") for t in (pr.get("Nota") or {}).get("rich_text", [])),
+        })
+
+    frases = []
+    for p in res_fr:
+        pr = p.get("properties", {})
+        frases.append({
+            "id": p.get("id"),
+            "frase": "".join(t.get("plain_text", "") for t in (pr.get("Frase") or {}).get("title", [])) or "",
+            "autor": "".join(t.get("plain_text", "") for t in (pr.get("Autor") or {}).get("rich_text", [])),
+        })
+
+    opciones = {
+        "categorias": _opciones_de_schema(sch_af, "Categoría", "select", _REL_CATEGORIAS_FALLBACK),
+        "contextos": _opciones_de_schema(sch_af, "Contexto", "select", _REL_CONTEXTOS_FALLBACK),
+    }
+
+    with open(html_path, "r", encoding="utf-8") as file:
+        html_content = file.read()
+
+    html_content = _inyectar_timestamps_y_version(html_content, timestamps, app_version)
+
+    for nombre_const, valor in (
+        ("relacionesAfirmaciones", afirmaciones),
+        ("relacionesFrases", frases),
+    ):
+        json_val = json.dumps(valor, ensure_ascii=False).replace("</", "<\\/")
+        html_content = re.sub(
+            rf"const\s+{nombre_const}\s*=\s*\[.*?\]\s*;",
+            lambda _m, nc=nombre_const, jv=json_val: f"const {nc} = {jv};",
+            html_content,
+            flags=re.DOTALL,
+        )
+    json_opc = json.dumps(opciones, ensure_ascii=False).replace("</", "<\\/")
+    html_content = re.sub(
+        r"const\s+relacionesOpciones\s*=\s*\{.*?\}\s*;",
+        lambda _m, jv=json_opc: f"const relacionesOpciones = {jv};",
+        html_content,
+        flags=re.DOTALL,
+    )
+
+    with open(html_path, "w", encoding="utf-8") as file:
+        file.write(html_content)
+    print(f"✅ Frontend relaciones-y-limites.html sincronizado ({len(afirmaciones)} afirmaciones, {len(frases)} frases).")
+
+
+def _construir_propiedades_afirmacion(datos):
+    nombre = (datos.get("nombre") or "").strip()
+    if not nombre:
+        print("❌ [AFIRMACION]: falta nombre.")
+        sys.exit(1)
+    props = {
+        "Nombre": {"title": [{"text": {"content": nombre}}]},
+        "Integrada": {"checkbox": bool(datos.get("integrada"))},
+    }
+    if (datos.get("categoria") or "").strip():
+        props["Categoría"] = {"select": {"name": datos["categoria"].strip()}}
+    if (datos.get("contexto") or "").strip():
+        props["Contexto"] = {"select": {"name": datos["contexto"].strip()}}
+    if (datos.get("nota") or "").strip():
+        props["Nota"] = {"rich_text": [{"text": {"content": datos["nota"].strip()}}]}
+    return nombre, props
+
+
+def crear_afirmacion_relacion(datos):
+    if not DB_RELACIONES:
+        print("❌ [CREAR AFIRMACION]: NOTION_DB_RELACIONES no configurada.")
+        sys.exit(1)
+    nombre, props = _construir_propiedades_afirmacion(datos)
+    body = {"parent": {"database_id": DB_RELACIONES}, "icon": {"type": "emoji", "emoji": "🛡️"}, "properties": props}
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", body, "CREAR AFIRMACION")
+    print(f"✅ [CREAR AFIRMACION]: '{nombre}' creada ({res.get('id', '?')}).")
+
+
+def actualizar_afirmacion_relacion(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR AFIRMACION]: falta page_id.")
+        sys.exit(1)
+    nombre, props = _construir_propiedades_afirmacion(datos)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR AFIRMACION")
+    print(f"✅ [ACTUALIZAR AFIRMACION]: '{nombre}' ({page_id}) actualizada.")
+
+
+def _construir_propiedades_frase(datos):
+    frase = (datos.get("frase") or "").strip()
+    if not frase:
+        print("❌ [FRASE]: falta frase.")
+        sys.exit(1)
+    props = {"Frase": {"title": [{"text": {"content": frase}}]}}
+    autor = (datos.get("autor") or "").strip()
+    if autor:
+        props["Autor"] = {"rich_text": [{"text": {"content": autor}}]}
+    return frase, props
+
+
+def crear_frase_relacion(datos):
+    if not DB_FRASES:
+        print("❌ [CREAR FRASE]: NOTION_DB_FRASES no configurada.")
+        sys.exit(1)
+    frase, props = _construir_propiedades_frase(datos)
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", {"parent": {"database_id": DB_FRASES}, "properties": props}, "CREAR FRASE")
+    print(f"✅ [CREAR FRASE]: '{frase[:30]}' creada ({res.get('id', '?')}).")
+
+
+def actualizar_frase_relacion(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR FRASE]: falta page_id.")
+        sys.exit(1)
+    frase, props = _construir_propiedades_frase(datos)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR FRASE")
+    print(f"✅ [ACTUALIZAR FRASE]: '{frase[:30]}' ({page_id}) actualizada.")
+
+
 def ejecutar_accion_notion(payload):
     """Despacha acciones de escritura recibidas vía `ACCION_NOTION_PAYLOAD`."""
     accion = (payload or {}).get("accion")
@@ -1904,6 +2054,14 @@ def ejecutar_accion_notion(payload):
         crear_registro_emocional(datos)
     elif accion == "actualizar_registro_emocional":
         actualizar_registro_emocional(datos)
+    elif accion == "crear_afirmacion_relacion":
+        crear_afirmacion_relacion(datos)
+    elif accion == "actualizar_afirmacion_relacion":
+        actualizar_afirmacion_relacion(datos)
+    elif accion == "crear_frase_relacion":
+        crear_frase_relacion(datos)
+    elif accion == "actualizar_frase_relacion":
+        actualizar_frase_relacion(datos)
     elif accion == "archivar_pagina":
         archivar_pagina_notion(datos)
     else:

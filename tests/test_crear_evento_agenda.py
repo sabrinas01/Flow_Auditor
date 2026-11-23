@@ -460,3 +460,24 @@ def test_crear_y_actualizar_registro_emocional(monkeypatch):
             "stop": False,
         })
     assert mock_patch.call_args[1]["json"]["properties"]["Nivel de calma"] == {"number": 9.0}
+
+
+def test_crear_afirmacion_y_frase_relaciones(monkeypatch):
+    monkeypatch.setattr(extract_and_audit, "NOTION_API_KEY", "secret-token-de-prueba")
+    monkeypatch.setattr(extract_and_audit, "DB_RELACIONES", "421a38bb7a6e80e8ac8bd4543ce353b4")
+    monkeypatch.setattr(extract_and_audit, "DB_FRASES", "1dda38bb7a6e8055a328fc8bd816bd7d")
+
+    mock_post = Mock(return_value=_mock_respuesta_creada("rel-1"))
+    with patch.object(extract_and_audit.requests, "post", mock_post):
+        extract_and_audit.crear_afirmacion_relacion({
+            "nombre": "Mi tiempo vale",
+            "categoria": "🛡️ Autorrespeto",
+            "integrada": True,
+        })
+        assert mock_post.call_args[1]["json"]["properties"]["Integrada"] == {"checkbox": True}
+
+        extract_and_audit.crear_frase_relacion({
+            "frase": "Elegir tu paz no es egoísmo.",
+            "autor": "Sabry",
+        })
+        assert mock_post.call_args[1]["json"]["properties"]["Frase"] == {"title": [{"text": {"content": "Elegir tu paz no es egoísmo."}}]}
