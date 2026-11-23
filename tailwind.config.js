@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./recordatorios-diarios.html", "./inicio.html", "./recordatorios-varios.html", "./agenda-personal.html", "./finanzas.html", "./salud.html"],
+  content: ["./recordatorios-diarios.html", "./inicio.html", "./recordatorios-varios.html", "./agenda-personal.html", "./finanzas.html", "./salud.html", "./ocio.html"],
   theme: {
     extend: {
       colors: {

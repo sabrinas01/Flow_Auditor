@@ -26,7 +26,7 @@ function extraerHrefsDelSidebar(archivo) {
 
 describe('Orden fijo del menú de navegación (SRS-FR-M3-312) y link a Recordatorios Varios (SRS-FR-M3-310)', () => {
   const ORDEN_ESPERADO = [
-    'inicio.html', 'agenda-personal.html', 'recordatorios-diarios.html', 'recordatorios-varios.html', 'finanzas.html', 'salud.html',
+    'inicio.html', 'agenda-personal.html', 'recordatorios-diarios.html', 'recordatorios-varios.html', 'finanzas.html', 'salud.html', 'ocio.html',
   ];
 
   test.each([
@@ -36,7 +36,8 @@ describe('Orden fijo del menú de navegación (SRS-FR-M3-312) y link a Recordato
     'inicio.html',
     'finanzas.html',
     'salud.html',
-  ])('%s: Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios, Finanzas, Salud', (pagina) => {
+    'ocio.html',
+  ])('%s: Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios, Finanzas, Salud, Ocio', (pagina) => {
     expect(extraerHrefsDelSidebar(pagina)).toEqual(ORDEN_ESPERADO);
   });
 });
