@@ -40,6 +40,8 @@ describe('desarrollo_personal_logic', () => {
       fecha: '2026-11-24',
       frecuenciaTecnica: 'DIARIO • 5 MIN',
       puntaje: '9',
+      recursoAsociado: 'Hábitos Atómicos',
+      enlace: 'https://ejemplo.com',
       nota: 'Pausa antes de responder',
     });
     expect(res).toEqual({
@@ -53,6 +55,8 @@ describe('desarrollo_personal_logic', () => {
         fecha: '2026-11-24',
         frecuencia_tecnica: 'DIARIO • 5 MIN',
         puntaje: 9,
+        recurso_asociado: 'Hábitos Atómicos',
+        enlace: 'https://ejemplo.com',
         nota: 'Pausa antes de responder',
       },
     });

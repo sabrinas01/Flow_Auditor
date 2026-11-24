@@ -56,9 +56,10 @@
         const timestampServerStr = "24/11/2026 15:00:00";
 
         const desarrolloPersonalRegistros = [];
+        const desarrolloLibrosCatalogo = [];
         const desarrolloPersonalOpciones = {
             "pilares": ["🗣️ Comunicación", "💖 Autoestima", "🧭 Autoconocimiento"],
-            "tipos": ["💬 Conversación", "🏆 Logro / Validación", "🪞 Reflexión / Disparador", "🎯 Valor / Meta", "🏋️ Ejercicio práctico"],
+            "tipos": ["💬 Conversación", "🏆 Logro / Validación", "🪞 Reflexión / Disparador", "🎯 Valor / Meta", "🏋️ Ejercicio práctico", "🎥 Video / Masterclass", "📖 Lectura / Libro"],
             "estados": ["Sin empezar", "En curso", "Completado", "Integrado"]
         };
     </script>
@@ -193,12 +194,20 @@
                 </div>
             </section>
 
-            <!-- FILTRO POR PILAR -->
-            <div class="flex flex-wrap items-center gap-2">
-                <button type="button" onclick="filtrarPilar('todos')" id="flt-todos" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#ff5f52]/20 text-[#ff5f52] border border-[#ff5f52]/40 transition-all">Todos</button>
-                <button type="button" onclick="filtrarPilar('🗣️ Comunicación')" id="flt-com" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">🗣️ Comunicación</button>
-                <button type="button" onclick="filtrarPilar('💖 Autoestima')" id="flt-aut" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">💖 Autoestima</button>
-                <button type="button" onclick="filtrarPilar('🧭 Autoconocimiento')" id="flt-con" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">🧭 Autoconocimiento</button>
+            <!-- FILTRO POR PILAR Y TIPO MULTIMODAL -->
+            <div class="space-y-2.5">
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="filtrarPilar('todos')" id="flt-todos" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#ff5f52]/20 text-[#ff5f52] border border-[#ff5f52]/40 transition-all">Todos</button>
+                    <button type="button" onclick="filtrarPilar('🗣️ Comunicación')" id="flt-com" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">🗣️ Comunicación</button>
+                    <button type="button" onclick="filtrarPilar('💖 Autoestima')" id="flt-aut" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">💖 Autoestima</button>
+                    <button type="button" onclick="filtrarPilar('🧭 Autoconocimiento')" id="flt-con" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">🧭 Autoconocimiento</button>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 text-xs">
+                    <button type="button" onclick="filtrarTipoDP('todos')" class="dp-tipo-flt px-3 py-1 rounded-lg bg-white/[0.08] text-white font-semibold">Todos los recursos</button>
+                    <button type="button" onclick="filtrarTipoDP('Ejercicio')" class="dp-tipo-flt px-3 py-1 rounded-lg bg-[#1c1c1f] text-[#a1a1aa] hover:text-white">🏋️ Ejercicios</button>
+                    <button type="button" onclick="filtrarTipoDP('Video')" class="dp-tipo-flt px-3 py-1 rounded-lg bg-[#1c1c1f] text-[#a1a1aa] hover:text-white">🎥 Videos</button>
+                    <button type="button" onclick="filtrarTipoDP('Lectura')" class="dp-tipo-flt px-3 py-1 rounded-lg bg-[#1c1c1f] text-[#a1a1aa] hover:text-white">📖 Lecturas / Libros</button>
+                </div>
             </div>
 
             <!-- SECCIÓN 01: COMUNICACIÓN -->
@@ -310,6 +319,17 @@
                     <label for="dp-frecuencia" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Frecuencia / Técnica</label>
                     <input id="dp-frecuencia" type="text" maxlength="120" placeholder="Ej. CNV · Validación / DIARIO · 5 MIN" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
                 </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="dp-recurso" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Recurso asociado (Libro / Curso / Video)</label>
+                        <input id="dp-recurso" list="dp-libros-datalist" type="text" maxlength="200" placeholder="Elegí o escribí un libro, curso o charla..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                        <datalist id="dp-libros-datalist"></datalist>
+                    </div>
+                    <div>
+                        <label for="dp-enlace" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Enlace (URL opcional)</label>
+                        <input id="dp-enlace" type="url" placeholder="https://..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                </div>
                 <div>
                     <label for="dp-nota" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nota / Descripción</label>
                     <textarea id="dp-nota" rows="3" maxlength="1000" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></textarea>
@@ -371,6 +391,7 @@
         const GITHUB_REPO = "Flow_Auditor";
         const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
         let pilarFiltro = "todos";
+        let tipoFiltroDP = "todos";
 
         function hoyLocalISO() {
             const d = new Date();
@@ -400,7 +421,11 @@
                     r.frecuencia_tecnica ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-[#38bdf8]/15 text-[#38bdf8]">${escapeHtml(r.frecuencia_tecnica)}</span>` : "",
                     r.estado ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#ffb961]/15 text-[#ffb961]">${escapeHtml(r.estado)}</span>` : "",
                     r.puntaje !== null && r.puntaje !== undefined ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#83da85]/15 text-[#83da85]">${escapeHtml(String(r.puntaje))}</span>` : "",
+                    r.recurso_asociado ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-[#a855f7]/15 text-[#a855f7]">🔗 ${escapeHtml(r.recurso_asociado)}</span>` : "",
                 ].filter(Boolean).join("");
+                const enlaceHtml = r.enlace
+                    ? `<a href="${escapeHtml(r.enlace)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[11px] text-[#38bdf8] hover:underline mt-1"><span>Abrir enlace</span><span class="material-symbols-outlined text-[13px]">open_in_new</span></a>`
+                    : "";
                 return `
                     <div class="status-row p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="min-w-0 space-y-1.5">
@@ -409,6 +434,7 @@
                                 ${badges}
                             </div>
                             ${r.nota ? `<p class="text-[13px] text-[#a1a1aa]">${escapeHtml(r.nota)}</p>` : ""}
+                            ${enlaceHtml}
                             ${r.fecha ? `<p class="text-[11px] text-[#8e8e93]">${escapeHtml(r.fecha)}</p>` : ""}
                         </div>
                         <button type="button" onclick="abrirModalEditarDesarrollo('${escapeHtml(r.id || "")}')" class="self-start sm:self-center p-2 hover:bg-white/10 rounded-lg text-[#a1a1aa] hover:text-white flex-shrink-0" title="Editar">
@@ -427,7 +453,9 @@
             document.getElementById("dp-kpi-prog").textContent = `${res.porcentajeProgreso}%`;
             document.getElementById("dp-kpi-ej").textContent = `${res.ejerciciosActivos} ejercicio(s) en curso`;
 
-            const lista = desarrolloPersonalRegistros || [];
+            const lista = (desarrolloPersonalRegistros || []).filter((r) =>
+                tipoFiltroDP === "todos" || (r.tipo || "").toLowerCase().includes(tipoFiltroDP.toLowerCase())
+            );
             const com = lista.filter((r) => (r.pilar || "").toLowerCase().includes("comunic"));
             const aut = lista.filter((r) => (r.pilar || "").toLowerCase().includes("autoestima"));
             const con = lista.filter((r) => (r.pilar || "").toLowerCase().includes("autoconoc"));
@@ -444,6 +472,17 @@
         function filtrarPilar(pilar) {
             pilarFiltro = pilar;
             renderizarDesarrollo();
+        }
+
+        function filtrarTipoDP(tipo) {
+            tipoFiltroDP = tipo;
+            renderizarDesarrollo();
+        }
+
+        function _poblarDatalistLibros() {
+            const dl = document.getElementById("dp-libros-datalist");
+            if (!dl) return;
+            dl.innerHTML = (desarrolloLibrosCatalogo || []).map((t) => `<option value="${escapeHtml(t)}"></option>`).join("");
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -484,6 +523,7 @@
             document.getElementById("form-desarrollo").reset();
             document.getElementById("dp-page-id").value = "";
             document.getElementById("dp-modal-titulo").textContent = "Nuevo registro";
+            _poblarDatalistLibros();
             _poblarSelect("dp-pilar", desarrolloPersonalOpciones.pilares, pilarPre || desarrolloPersonalOpciones.pilares[0]);
             _poblarSelect("dp-tipo", desarrolloPersonalOpciones.tipos, desarrolloPersonalOpciones.tipos[0]);
             _poblarSelect("dp-estado", desarrolloPersonalOpciones.estados, "En curso");
@@ -506,6 +546,9 @@
             document.getElementById("dp-fecha").value = r.fecha || "";
             document.getElementById("dp-puntaje").value = r.puntaje !== null && r.puntaje !== undefined ? r.puntaje : "";
             document.getElementById("dp-frecuencia").value = r.frecuencia_tecnica || "";
+            _poblarDatalistLibros();
+            document.getElementById("dp-recurso").value = r.recurso_asociado || "";
+            document.getElementById("dp-enlace").value = r.enlace || "";
             document.getElementById("dp-nota").value = r.nota || "";
             document.getElementById("dp-btn-eliminar").classList.remove("hidden");
             document.getElementById("dp-mensaje").classList.add("hidden");
@@ -575,6 +618,8 @@
                 fecha: document.getElementById("dp-fecha").value,
                 puntaje: document.getElementById("dp-puntaje").value,
                 frecuenciaTecnica: document.getElementById("dp-frecuencia").value,
+                recursoAsociado: document.getElementById("dp-recurso").value,
+                enlace: document.getElementById("dp-enlace").value,
                 nota: document.getElementById("dp-nota").value,
             });
             if (!res.ok) {

@@ -2198,12 +2198,22 @@ def sincronizar_desarrollo_personal(timestamps, app_version):
             "fecha": ((pr.get("Fecha") or {}).get("date") or {}).get("start"),
             "frecuencia_tecnica": "".join(t.get("plain_text", "") for t in (pr.get("Frecuencia / Técnica") or {}).get("rich_text", [])),
             "puntaje": (pr.get("Puntaje / Alineación") or {}).get("number"),
+            "recurso_asociado": "".join(t.get("plain_text", "") for t in (pr.get("Recurso asociado") or {}).get("rich_text", [])),
+            "enlace": (pr.get("Enlace") or {}).get("url"),
             "nota": "".join(t.get("plain_text", "") for t in (pr.get("Nota / Descripción") or {}).get("rich_text", [])),
         })
 
+    libros_dp = []
+    if DB_LIBROS:
+        res_lib_dp, _ = _consultar_bd_salud(DB_LIBROS, "DP LIBROS", page_size=100, paginar=True)
+        for lp in res_lib_dp:
+            lt = "".join(t.get("plain_text", "") for t in ((lp.get("properties", {}).get("Title") or {}).get("title", [])))
+            if lt:
+                libros_dp.append(lt)
+
     opciones = {
         "pilares": _opciones_de_schema(sch, "Pilar", "select", ["🗣️ Comunicación", "💖 Autoestima", "🧭 Autoconocimiento"]),
-        "tipos": _opciones_de_schema(sch, "Tipo", "select", ["💬 Conversación", "🏆 Logro / Validación", "🪞 Reflexión / Disparador", "🎯 Valor / Meta", "🏋️ Ejercicio práctico"]),
+        "tipos": _opciones_de_schema(sch, "Tipo", "select", ["💬 Conversación", "🏆 Logro / Validación", "🪞 Reflexión / Disparador", "🎯 Valor / Meta", "🏋️ Ejercicio práctico", "🎥 Video / Masterclass", "📖 Lectura / Libro"]),
         "estados": _opciones_de_schema(sch, "Estado", "select", ["Sin empezar", "En curso", "Completado", "Integrado"]),
     }
 
@@ -2212,13 +2222,17 @@ def sincronizar_desarrollo_personal(timestamps, app_version):
 
     html_content = _inyectar_timestamps_y_version(html_content, timestamps, app_version)
 
-    json_reg = json.dumps(registros, ensure_ascii=False).replace("</", "<\\/")
-    html_content = re.sub(
-        r"const\s+desarrolloPersonalRegistros\s*=\s*\[.*?\]\s*;",
-        lambda _m, jv=json_reg: f"const desarrolloPersonalRegistros = {jv};",
-        html_content,
-        flags=re.DOTALL,
-    )
+    for nombre_const, valor in (
+        ("desarrolloPersonalRegistros", registros),
+        ("desarrolloLibrosCatalogo", libros_dp),
+    ):
+        json_reg = json.dumps(valor, ensure_ascii=False).replace("</", "<\\/")
+        html_content = re.sub(
+            rf"const\s+{nombre_const}\s*=\s*\[.*?\]\s*;",
+            lambda _m, nc=nombre_const, jv=json_reg: f"const {nc} = {jv};",
+            html_content,
+            flags=re.DOTALL,
+        )
     json_opc = json.dumps(opciones, ensure_ascii=False).replace("</", "<\\/")
     html_content = re.sub(
         r"const\s+desarrolloPersonalOpciones\s*=\s*\{.*?\}\s*;",
@@ -2250,6 +2264,10 @@ def _construir_propiedades_desarrollo_personal(datos):
         props["Frecuencia / Técnica"] = {"rich_text": [{"text": {"content": str(datos["frecuencia_tecnica"])}}] if datos["frecuencia_tecnica"] else []}
     if datos.get("puntaje") is not None:
         props["Puntaje / Alineación"] = {"number": float(datos["puntaje"])}
+    if datos.get("recurso_asociado") is not None:
+        props["Recurso asociado"] = {"rich_text": [{"text": {"content": str(datos["recurso_asociado"])}}] if datos["recurso_asociado"] else []}
+    if datos.get("enlace"):
+        props["Enlace"] = {"url": str(datos["enlace"])}
     if datos.get("nota") is not None:
         props["Nota / Descripción"] = {"rich_text": [{"text": {"content": str(datos["nota"])}}] if datos["nota"] else []}
     return props

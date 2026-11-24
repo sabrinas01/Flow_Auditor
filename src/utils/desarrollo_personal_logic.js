@@ -15,6 +15,8 @@ const TIPOS_DESARROLLO = [
   "🪞 Reflexión / Disparador",
   "🎯 Valor / Meta",
   "🏋️ Ejercicio práctico",
+  "🎥 Video / Masterclass",
+  "📖 Lectura / Libro",
 ];
 
 const ESTADOS_DESARROLLO = [
@@ -97,6 +99,8 @@ function construirPayloadDesarrollo(datos) {
     fecha,
     frecuencia_tecnica,
     puntaje: ptRaw,
+    recurso_asociado: (datos.recursoAsociado || "").trim() || null,
+    enlace: (datos.enlace || "").trim() || null,
     nota,
   };
   const pageId = (datos.pageId || "").trim();
