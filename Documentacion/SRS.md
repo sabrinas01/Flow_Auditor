@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.68 (Barómetro Emocional editable en Gestión emocional)  
+**Versión:** 4.69 (Limpieza de header en Recordatorios diarios)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
