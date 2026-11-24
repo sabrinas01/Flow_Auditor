@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Desarrollo personal — AsistenteSabry</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0e0e0e">
+    <link rel="icon" href="./grafica/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./grafica/icons/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #08080a;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+        .status-row {
+            background: #18181d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .status-row:hover { background: #1f1f26; border-color: rgba(255, 255, 255, 0.12); }
+        #sidebar { transition: transform 0.3s ease; }
+        .spin-animation { animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden antialiased">
+
+    <script>
+        const timestampLocalStr = "24/11/2026 12:00:00";
+        const appVersionStr = "dev";
+        const timestampNextStr = "24/11/2026 13:00:00";
+        const timestampServerStr = "24/11/2026 15:00:00";
+
+        const desarrolloPersonalRegistros = [];
+        const desarrolloPersonalOpciones = {
+            "pilares": ["🗣️ Comunicación", "💖 Autoestima", "🧭 Autoconocimiento"],
+            "tipos": ["💬 Conversación", "🏆 Logro / Validación", "🪞 Reflexión / Disparador", "🎯 Valor / Meta", "🏋️ Ejercicio práctico"],
+            "estados": ["Sin empezar", "En curso", "Completado", "Integrado"]
+        };
+    </script>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
+        <div class="flex items-center gap-3 mb-8 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">Obsidian Refined</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span>Agenda personal</span>
+            </a>
+            <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">alarm</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">check_box</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="finanzas.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                <span>Finanzas</span>
+            </a>
+            <a href="salud.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Salud</span>
+            </a>
+            <a href="ocio.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_library</span>
+                <span>Ocio</span>
+            </a>
+            <a href="gestion-emocional.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">psychology</span>
+                <span>Gestión emocional</span>
+            </a>
+            <a href="relaciones-y-limites.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">shield</span>
+                <span>Relaciones y límites</span>
+            </a>
+            <a href="desarrollo-personal.html" class="flex items-center gap-3 px-4 py-3 bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/30 rounded-xl font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+                <span>Desarrollo personal</span>
+            </a>
+        </nav>
+
+        <div class="pt-4 mt-4 border-t border-white/[0.08] flex items-center gap-3 px-2">
+            <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
+            <div class="min-w-0">
+                <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo</p>
+            </div>
+        </div>
+    </aside>
+
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <main class="min-h-screen lg:ml-64">
+        <!-- TOP APP BAR -->
+        <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">Asistente Sabry</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">DESARROLLO PERSONAL</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="https://app.notion.com/p/422a38bb7a6e8190992bd07ad1f80f30" target="_blank" rel="noopener" class="hidden sm:inline-flex items-center gap-1.5 bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-xs px-3 py-1.5 rounded-lg transition-all">
+                        <span>Ver en Notion</span>
+                        <span class="material-symbols-outlined text-[15px]">open_in_new</span>
+                    </a>
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- CABECERA -->
+            <section class="flex flex-wrap justify-between items-end gap-4">
+                <div class="space-y-1.5">
+                    <p class="text-[11px] font-label-caps text-[#ff5f52] tracking-widest">CRECIMIENTO · HÁBITOS · PROPÓSITO</p>
+                    <h1 class="font-display-lg text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Desarrollo Personal</h1>
+                    <p class="text-[13px] text-[#8e8e93]">Cultivar maestría personal, alinear hábitos con la visión de vida y expandir el potencial con disciplina amable.</p>
+                </div>
+                <button type="button" onclick="abrirModalDesarrollo()" class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                    <span class="material-symbols-outlined text-[18px]">add</span>
+                    <span>Nuevo registro</span>
+                </button>
+            </section>
+
+            <!-- 4 KPIs SUPERIORES -->
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#38bdf8]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">COMUNICACIÓN</p>
+                    <p id="dp-kpi-com" class="text-2xl font-extrabold text-white">0</p>
+                    <p class="text-[11px] text-[#8e8e93] mt-1">Conversaciones y práctica</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#f472b6]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">AUTOESTIMA</p>
+                    <p id="dp-kpi-aut" class="text-2xl font-extrabold text-white">0</p>
+                    <p class="text-[11px] text-[#8e8e93] mt-1">Logros y diálogo interno</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#a855f7]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">AUTOCONOCIMIENTO</p>
+                    <p id="dp-kpi-con" class="text-2xl font-extrabold text-white">0</p>
+                    <p class="text-[11px] text-[#8e8e93] mt-1">Valores, triggers y reflexión</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#83da85]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">PROGRESO INTEGRADO</p>
+                    <p id="dp-kpi-prog" class="text-2xl font-extrabold text-[#83da85]">0%</p>
+                    <p id="dp-kpi-ej" class="text-[11px] text-[#8e8e93] mt-1">0 ejercicios en curso</p>
+                </div>
+            </section>
+
+            <!-- FILTRO POR PILAR -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="filtrarPilar('todos')" id="flt-todos" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#ff5f52]/20 text-[#ff5f52] border border-[#ff5f52]/40 transition-all">Todos</button>
+                <button type="button" onclick="filtrarPilar('🗣️ Comunicación')" id="flt-com" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">🗣️ Comunicación</button>
+                <button type="button" onclick="filtrarPilar('💖 Autoestima')" id="flt-aut" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">💖 Autoestima</button>
+                <button type="button" onclick="filtrarPilar('🧭 Autoconocimiento')" id="flt-con" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">🧭 Autoconocimiento</button>
+            </div>
+
+            <!-- SECCIÓN 01: COMUNICACIÓN -->
+            <section id="sec-comunicacion" class="glass-card rounded-2xl p-8 border-l-4 border-l-[#38bdf8] space-y-5">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#38bdf8] tracking-widest">01 · COMUNICACIÓN ASERTIVA & VÍNCULOS</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Comunicación & Inteligencia Relacional</h2>
+                    </div>
+                    <button type="button" onclick="abrirModalDesarrollo('🗣️ Comunicación')" class="bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/40 text-[#38bdf8] font-bold text-[13px] px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all">
+                        <span class="material-symbols-outlined text-[17px]">add</span>
+                        <span>Registrar en Comunicación</span>
+                    </button>
+                </div>
+                <div id="list-comunicacion" class="space-y-3"></div>
+            </section>
+
+            <!-- SECCIÓN 02: AUTOESTIMA -->
+            <section id="sec-autoestima" class="glass-card rounded-2xl p-8 border-l-4 border-l-[#f472b6] space-y-5">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#f472b6] tracking-widest">02 · CONFIANZA, MERECIMIENTO & DIÁLOGO INTERNO</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Autoestima & Autocompasión Activa</h2>
+                    </div>
+                    <button type="button" onclick="abrirModalDesarrollo('💖 Autoestima')" class="bg-[#f472b6]/15 hover:bg-[#f472b6]/25 border border-[#f472b6]/40 text-[#f472b6] font-bold text-[13px] px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all">
+                        <span class="material-symbols-outlined text-[17px]">add</span>
+                        <span>Registrar en Autoestima</span>
+                    </button>
+                </div>
+                <div id="list-autoestima" class="space-y-3"></div>
+            </section>
+
+            <!-- SECCIÓN 03: AUTOCONOCIMIENTO -->
+            <section id="sec-autoconocimiento" class="glass-card rounded-2xl p-8 border-l-4 border-l-[#a855f7] space-y-5">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#a855f7] tracking-widest">03 · MAPA INTERIOR, VALORES & INTROSPECCIÓN</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Autoconocimiento & Brújula Interna</h2>
+                    </div>
+                    <button type="button" onclick="abrirModalDesarrollo('🧭 Autoconocimiento')" class="bg-[#a855f7]/15 hover:bg-[#a855f7]/25 border border-[#a855f7]/40 text-[#a855f7] font-bold text-[13px] px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all">
+                        <span class="material-symbols-outlined text-[17px]">add</span>
+                        <span>Registrar en Autoconocimiento</span>
+                    </button>
+                </div>
+                <div id="list-autoconocimiento" class="space-y-3"></div>
+            </section>
+        </div>
+
+        <footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">dev</span></p>
+                    </div>
+                    <div class="flex flex-wrap gap-x-8 gap-y-2">
+                        <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Sabri Studios &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL DESARROLLO PERSONAL -->
+    <div id="modal-desarrollo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-desarrollo')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-lg my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="dp-modal-titulo" class="text-headline-md font-headline-md text-white">Nuevo registro</h3>
+                <button type="button" onclick="cerrarModal('modal-desarrollo')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-desarrollo" class="space-y-4" onsubmit="return manejarSubmitDesarrollo(event)">
+                <input id="dp-page-id" type="hidden" value="" />
+                <div>
+                    <label for="dp-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre / Título *</label>
+                    <input id="dp-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="dp-pilar" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Pilar</label>
+                        <select id="dp-pilar" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                    <div>
+                        <label for="dp-tipo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Tipo</label>
+                        <select id="dp-tipo" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label for="dp-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
+                        <select id="dp-estado" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                    <div>
+                        <label for="dp-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha</label>
+                        <input id="dp-fecha" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div>
+                        <label for="dp-puntaje" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Puntaje (0-100)</label>
+                        <input id="dp-puntaje" type="number" min="0" max="100" step="0.5" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                </div>
+                <div>
+                    <label for="dp-frecuencia" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Frecuencia / Técnica</label>
+                    <input id="dp-frecuencia" type="text" maxlength="120" placeholder="Ej. CNV · Validación / DIARIO · 5 MIN" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div>
+                    <label for="dp-nota" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nota / Descripción</label>
+                    <textarea id="dp-nota" rows="3" maxlength="1000" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></textarea>
+                </div>
+                <p id="dp-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button id="dp-btn-eliminar" type="button" onclick="confirmarEliminarDesarrollo()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl" title="Mandar a la papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
+                    <button type="button" onclick="cerrarModal('modal-desarrollo')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TOKEN GITHUB -->
+    <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="cerrarModal('modal-token-notion')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center">
+                <h3 class="text-headline-md font-headline-md text-white">Configurar token de GitHub</h3>
+                <button type="button" onclick="cerrarModal('modal-token-notion')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <p class="text-[13px] text-[#e2beba] leading-relaxed">
+                Para guardar en Notion sin exponer sus claves, se usa un token de GitHub guardado únicamente en este navegador
+                (<strong>Contents: Read and write</strong> y <strong>Actions: Read-only</strong> sobre este repo).
+            </p>
+            <div>
+                <label for="dp-token-input" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Pegá el token acá</label>
+                <input id="dp-token-input" type="password" autocomplete="off" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+            </div>
+            <button type="button" onclick="guardarTokenDP()" class="w-full bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-3 rounded-xl">Guardar token</button>
+        </div>
+    </div>
+
+    <!-- SPINNER CONFIRMACIÓN -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarModal('modal-spinner-notion')" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
+    <script src="./src/utils/desarrollo_personal_logic.js"></script>
+
+    <script>
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+        let pilarFiltro = "todos";
+
+        function hoyLocalISO() {
+            const d = new Date();
+            const p = (n) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+        }
+
+        function obtenerTokenGuardado() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+
+        function _poblarSelect(id, opciones, valor) {
+            const el = document.getElementById(id);
+            el.innerHTML = (opciones || []).map((op) => `<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`).join("");
+            if (valor) el.value = valor;
+        }
+
+        function _renderListaPilar(containerId, items) {
+            const cont = document.getElementById(containerId);
+            if (!items || items.length === 0) {
+                cont.innerHTML = `<div class="status-row flex items-center justify-center py-4 px-4 text-[#8e8e93] text-[13px]">Sin registros en este pilar aún</div>`;
+                return;
+            }
+            cont.innerHTML = items.map((r) => {
+                const badges = [
+                    r.tipo ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-white/[0.06] text-[#e5e2e1]">${escapeHtml(r.tipo)}</span>` : "",
+                    r.frecuencia_tecnica ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-[#38bdf8]/15 text-[#38bdf8]">${escapeHtml(r.frecuencia_tecnica)}</span>` : "",
+                    r.estado ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#ffb961]/15 text-[#ffb961]">${escapeHtml(r.estado)}</span>` : "",
+                    r.puntaje !== null && r.puntaje !== undefined ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#83da85]/15 text-[#83da85]">${escapeHtml(String(r.puntaje))}</span>` : "",
+                ].filter(Boolean).join("");
+                return `
+                    <div class="status-row p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="min-w-0 space-y-1.5">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="text-white font-bold text-[15px]">${escapeHtml(r.nombre)}</span>
+                                ${badges}
+                            </div>
+                            ${r.nota ? `<p class="text-[13px] text-[#a1a1aa]">${escapeHtml(r.nota)}</p>` : ""}
+                            ${r.fecha ? `<p class="text-[11px] text-[#8e8e93]">${escapeHtml(r.fecha)}</p>` : ""}
+                        </div>
+                        <button type="button" onclick="abrirModalEditarDesarrollo('${escapeHtml(r.id || "")}')" class="self-start sm:self-center p-2 hover:bg-white/10 rounded-lg text-[#a1a1aa] hover:text-white flex-shrink-0" title="Editar">
+                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                        </button>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderizarDesarrollo() {
+            const res = calcularResumenDesarrollo(desarrolloPersonalRegistros);
+            document.getElementById("dp-kpi-com").textContent = String(res.porPilar.comunicacion);
+            document.getElementById("dp-kpi-aut").textContent = String(res.porPilar.autoestima);
+            document.getElementById("dp-kpi-con").textContent = String(res.porPilar.autoconocimiento);
+            document.getElementById("dp-kpi-prog").textContent = `${res.porcentajeProgreso}%`;
+            document.getElementById("dp-kpi-ej").textContent = `${res.ejerciciosActivos} ejercicio(s) en curso`;
+
+            const lista = desarrolloPersonalRegistros || [];
+            const com = lista.filter((r) => (r.pilar || "").toLowerCase().includes("comunic"));
+            const aut = lista.filter((r) => (r.pilar || "").toLowerCase().includes("autoestima"));
+            const con = lista.filter((r) => (r.pilar || "").toLowerCase().includes("autoconoc"));
+
+            _renderListaPilar("list-comunicacion", com);
+            _renderListaPilar("list-autoestima", aut);
+            _renderListaPilar("list-autoconocimiento", con);
+
+            document.getElementById("sec-comunicacion").classList.toggle("hidden", pilarFiltro !== "todos" && !pilarFiltro.includes("Comunic"));
+            document.getElementById("sec-autoestima").classList.toggle("hidden", pilarFiltro !== "todos" && !pilarFiltro.includes("Autoestima"));
+            document.getElementById("sec-autoconocimiento").classList.toggle("hidden", pilarFiltro !== "todos" && !pilarFiltro.includes("Autoconocimiento"));
+        }
+
+        function filtrarPilar(pilar) {
+            pilarFiltro = pilar;
+            renderizarDesarrollo();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initLocalStorage();
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
+            renderizarDesarrollo();
+        });
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+            sidebar.classList.toggle('-translate-x-full', isOpen);
+            overlay.classList.toggle('hidden', isOpen);
+        }
+
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            });
+        }
+
+        function abrirModal(id) {
+            document.getElementById(id).classList.remove("hidden");
+            document.getElementById(id).classList.add("flex");
+        }
+        function cerrarModal(id) {
+            document.getElementById(id).classList.add("hidden");
+            document.getElementById(id).classList.remove("flex");
+        }
+
+        function abrirModalDesarrollo(pilarPre) {
+            document.getElementById("form-desarrollo").reset();
+            document.getElementById("dp-page-id").value = "";
+            document.getElementById("dp-modal-titulo").textContent = "Nuevo registro";
+            _poblarSelect("dp-pilar", desarrolloPersonalOpciones.pilares, pilarPre || desarrolloPersonalOpciones.pilares[0]);
+            _poblarSelect("dp-tipo", desarrolloPersonalOpciones.tipos, desarrolloPersonalOpciones.tipos[0]);
+            _poblarSelect("dp-estado", desarrolloPersonalOpciones.estados, "En curso");
+            document.getElementById("dp-fecha").value = hoyLocalISO();
+            document.getElementById("dp-btn-eliminar").classList.add("hidden");
+            document.getElementById("dp-mensaje").classList.add("hidden");
+            abrirModal("modal-desarrollo");
+        }
+
+        function abrirModalEditarDesarrollo(id) {
+            const r = (desarrolloPersonalRegistros || []).find((x) => x.id === id);
+            if (!r) return;
+            document.getElementById("form-desarrollo").reset();
+            document.getElementById("dp-page-id").value = r.id;
+            document.getElementById("dp-modal-titulo").textContent = "Editar registro";
+            document.getElementById("dp-nombre").value = r.nombre || "";
+            _poblarSelect("dp-pilar", desarrolloPersonalOpciones.pilares, r.pilar || desarrolloPersonalOpciones.pilares[0]);
+            _poblarSelect("dp-tipo", desarrolloPersonalOpciones.tipos, r.tipo || desarrolloPersonalOpciones.tipos[0]);
+            _poblarSelect("dp-estado", desarrolloPersonalOpciones.estados, r.estado || "En curso");
+            document.getElementById("dp-fecha").value = r.fecha || "";
+            document.getElementById("dp-puntaje").value = r.puntaje !== null && r.puntaje !== undefined ? r.puntaje : "";
+            document.getElementById("dp-frecuencia").value = r.frecuencia_tecnica || "";
+            document.getElementById("dp-nota").value = r.nota || "";
+            document.getElementById("dp-btn-eliminar").classList.remove("hidden");
+            document.getElementById("dp-mensaje").classList.add("hidden");
+            abrirModal("modal-desarrollo");
+        }
+
+        function guardarTokenDP() {
+            const token = document.getElementById("dp-token-input").value.trim();
+            if (!token) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, token); } catch (e) {}
+            document.getElementById("dp-token-input").value = "";
+            cerrarModal("modal-token-notion");
+        }
+
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            abrirModal("modal-spinner-notion");
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+
+        async function ejecutarEscrituraConSpinner(accion, datos) {
+            const token = obtenerTokenGuardado();
+            if (!token) { abrirModal("modal-token-notion"); return; }
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, datos, token);
+                const respuesta = await fetch(url, options);
+                if (respuesta.status === 401 || respuesta.status === 404) {
+                    cerrarModal("modal-spinner-notion");
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModal("modal-token-notion");
+                    return;
+                }
+                if (respuesta.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${respuesta.status}). Probá de nuevo.`);
+                    return;
+                }
+                const confirmacion = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER, repo: GITHUB_REPO, token,
+                    workflowFile: WORKFLOW_NOTION_WRITE, dispatchedAfterMs,
+                });
+                if (confirmacion.ok) {
+                    mostrarSpinnerNotion("ok", "¡Notion actualizado!", "Recargando Desarrollo personal...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", confirmacion.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub. Revisá tu conexión.");
+            }
+        }
+
+        async function manejarSubmitDesarrollo(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("dp-page-id").value.trim();
+            const res = construirPayloadDesarrollo({
+                pageId,
+                nombre: document.getElementById("dp-nombre").value,
+                pilar: document.getElementById("dp-pilar").value,
+                tipo: document.getElementById("dp-tipo").value,
+                estado: document.getElementById("dp-estado").value,
+                fecha: document.getElementById("dp-fecha").value,
+                puntaje: document.getElementById("dp-puntaje").value,
+                frecuenciaTecnica: document.getElementById("dp-frecuencia").value,
+                nota: document.getElementById("dp-nota").value,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("dp-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
+            cerrarModal("modal-desarrollo");
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_desarrollo_personal" : "crear_desarrollo_personal", res.payload);
+            return false;
+        }
+
+        async function confirmarEliminarDesarrollo() {
+            const pageId = document.getElementById("dp-page-id").value.trim();
+            if (!pageId) return;
+            cerrarModal("modal-desarrollo");
+            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: pageId });
+        }
+    </script>
+</body>
+</html>

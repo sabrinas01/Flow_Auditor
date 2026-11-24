@@ -481,3 +481,25 @@ def test_crear_afirmacion_y_frase_relaciones(monkeypatch):
             "autor": "Sabry",
         })
         assert mock_post.call_args[1]["json"]["properties"]["Frase"] == {"title": [{"text": {"content": "Elegir tu paz no es egoísmo."}}]}
+
+
+def test_crear_desarrollo_personal(monkeypatch):
+    monkeypatch.setattr(extract_and_audit, "NOTION_API_KEY", "secret-token-de-prueba")
+    monkeypatch.setattr(extract_and_audit, "DB_DESARROLLO_PERSONAL", "422a38bb7a6e8190992bd07ad1f80f30")
+
+    mock_post = Mock(return_value=_mock_respuesta_creada("dp-1"))
+    with patch.object(extract_and_audit.requests, "post", mock_post):
+        extract_and_audit.crear_desarrollo_personal({
+            "nombre": "Escucha activa 3s",
+            "pilar": "🗣️ Comunicación",
+            "tipo": "🏋️ Ejercicio práctico",
+            "estado": "En curso",
+            "fecha": "2026-11-24",
+            "frecuencia_tecnica": "DIARIO • 5 MIN",
+            "puntaje": 9,
+            "nota": "Pausa antes de responder",
+        })
+        props = mock_post.call_args[1]["json"]["properties"]
+        assert props["Nombre"] == {"title": [{"text": {"content": "Escucha activa 3s"}}]}
+        assert props["Pilar"] == {"select": {"name": "🗣️ Comunicación"}}
+        assert props["Puntaje / Alineación"] == {"number": 9.0}

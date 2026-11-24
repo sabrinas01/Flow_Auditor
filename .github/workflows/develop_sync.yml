@@ -48,6 +48,7 @@ jobs:
           NOTION_DB_EMOCIONES: ${{ secrets.NOTION_DB_EMOCIONES }}
           NOTION_DB_RELACIONES: ${{ secrets.NOTION_DB_RELACIONES }}
           NOTION_DB_FRASES: ${{ secrets.NOTION_DB_FRASES }}
+          NOTION_DB_DESARROLLO_PERSONAL: ${{ secrets.NOTION_DB_DESARROLLO_PERSONAL }}
         run: python extract_and_audit.py
 
       - name: Publicar en gh-pages/dev/
@@ -57,7 +58,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
 
           mkdir -p /tmp/dev_site
-          cp inicio.html index.html recordatorios-diarios.html recordatorios-varios.html agenda-personal.html finanzas.html salud.html ocio.html gestion-emocional.html relaciones-y-limites.html styles.css manifest.json sw.js /tmp/dev_site/
+          cp inicio.html index.html recordatorios-diarios.html recordatorios-varios.html agenda-personal.html finanzas.html salud.html ocio.html gestion-emocional.html relaciones-y-limites.html desarrollo-personal.html styles.css manifest.json sw.js /tmp/dev_site/
           cp -r src grafica /tmp/dev_site/
 
           git fetch origin gh-pages || true

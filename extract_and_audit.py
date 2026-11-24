@@ -102,12 +102,13 @@ DB_GESTION_EMOCIONAL = os.getenv("NOTION_DB_GESTION_EMOCIONAL")
 DB_EMOCIONES = os.getenv("NOTION_DB_EMOCIONES")
 DB_RELACIONES = os.getenv("NOTION_DB_RELACIONES")
 DB_FRASES = os.getenv("NOTION_DB_FRASES")
+DB_DESARROLLO_PERSONAL = os.getenv("NOTION_DB_DESARROLLO_PERSONAL")
 
 
 def validar_credenciales():
     try:
         # Uso de helper interno para resolución robusta de variables de entorno
-        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS, DB_GESTION_EMOCIONAL, DB_EMOCIONES, DB_RELACIONES, DB_FRASES
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS, DB_GESTION_EMOCIONAL, DB_EMOCIONES, DB_RELACIONES, DB_FRASES, DB_DESARROLLO_PERSONAL
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
         # Opcionales: su ausencia (o cualquier fallo al consultarlas) no debe abortar
@@ -128,6 +129,7 @@ def validar_credenciales():
         DB_EMOCIONES = get_env_var(["NOTION_DB_EMOCIONES"], required=False)
         DB_RELACIONES = get_env_var(["NOTION_DB_RELACIONES"], required=False)
         DB_FRASES = get_env_var(["NOTION_DB_FRASES"], required=False)
+        DB_DESARROLLO_PERSONAL = get_env_var(["NOTION_DB_DESARROLLO_PERSONAL"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -397,6 +399,11 @@ def auditar_consistencia_tripartita():
         sincronizar_relaciones(timestamps, app_version)
     except Exception as e:
         print(f"⚠️ [RELACIONES]: error inesperado al sincronizar ({e}), se omite.")
+
+    try:
+        sincronizar_desarrollo_personal(timestamps, app_version)
+    except Exception as e:
+        print(f"⚠️ [DESARROLLO PERSONAL]: error inesperado al sincronizar ({e}), se omite.")
 
     verificar_consumo_ram()
 
@@ -2084,11 +2091,115 @@ def ejecutar_accion_notion(payload):
         crear_frase_relacion(datos)
     elif accion == "actualizar_frase_relacion":
         actualizar_frase_relacion(datos)
+    elif accion == "crear_desarrollo_personal":
+        crear_desarrollo_personal(datos)
+    elif accion == "actualizar_desarrollo_personal":
+        actualizar_desarrollo_personal(datos)
     elif accion == "archivar_pagina":
         archivar_pagina_notion(datos)
     else:
         print(f"❌ [ACCION NOTION]: acción desconocida '{accion}'.")
         sys.exit(1)
+
+
+def sincronizar_desarrollo_personal(timestamps, app_version):
+    """Inyecta registros de 🌱 Desarrollo Personal en desarrollo-personal.html."""
+    html_path = BASE_DIR / "desarrollo-personal.html"
+    if not html_path.exists():
+        print("ℹ️ [DESARROLLO PERSONAL]: desarrollo-personal.html no encontrado, se omite.")
+        return
+    if not DB_DESARROLLO_PERSONAL:
+        print("ℹ️ [DESARROLLO PERSONAL]: NOTION_DB_DESARROLLO_PERSONAL no configurada, se omite sync.")
+        return
+
+    res, sch = _consultar_bd_salud(DB_DESARROLLO_PERSONAL, "DESARROLLO PERSONAL", page_size=80)
+    registros = []
+    for p in res:
+        pr = p.get("properties", {})
+        registros.append({
+            "id": p.get("id"),
+            "nombre": "".join(t.get("plain_text", "") for t in (pr.get("Nombre") or {}).get("title", [])) or "Sin título",
+            "pilar": ((pr.get("Pilar") or {}).get("select") or {}).get("name"),
+            "tipo": ((pr.get("Tipo") or {}).get("select") or {}).get("name"),
+            "estado": ((pr.get("Estado") or {}).get("select") or {}).get("name"),
+            "fecha": ((pr.get("Fecha") or {}).get("date") or {}).get("start"),
+            "frecuencia_tecnica": "".join(t.get("plain_text", "") for t in (pr.get("Frecuencia / Técnica") or {}).get("rich_text", [])),
+            "puntaje": (pr.get("Puntaje / Alineación") or {}).get("number"),
+            "nota": "".join(t.get("plain_text", "") for t in (pr.get("Nota / Descripción") or {}).get("rich_text", [])),
+        })
+
+    opciones = {
+        "pilares": _opciones_de_schema(sch, "Pilar", "select", ["🗣️ Comunicación", "💖 Autoestima", "🧭 Autoconocimiento"]),
+        "tipos": _opciones_de_schema(sch, "Tipo", "select", ["💬 Conversación", "🏆 Logro / Validación", "🪞 Reflexión / Disparador", "🎯 Valor / Meta", "🏋️ Ejercicio práctico"]),
+        "estados": _opciones_de_schema(sch, "Estado", "select", ["Sin empezar", "En curso", "Completado", "Integrado"]),
+    }
+
+    with open(html_path, "r", encoding="utf-8") as file:
+        html_content = file.read()
+
+    html_content = _inyectar_timestamps_y_version(html_content, timestamps, app_version)
+
+    json_reg = json.dumps(registros, ensure_ascii=False).replace("</", "<\\/")
+    html_content = re.sub(
+        r"const\s+desarrolloPersonalRegistros\s*=\s*\[.*?\]\s*;",
+        lambda _m, jv=json_reg: f"const desarrolloPersonalRegistros = {jv};",
+        html_content,
+        flags=re.DOTALL,
+    )
+    json_opc = json.dumps(opciones, ensure_ascii=False).replace("</", "<\\/")
+    html_content = re.sub(
+        r"const\s+desarrolloPersonalOpciones\s*=\s*\{.*?\}\s*;",
+        lambda _m, jv=json_opc: f"const desarrolloPersonalOpciones = {jv};",
+        html_content,
+        flags=re.DOTALL,
+    )
+
+    with open(html_path, "w", encoding="utf-8") as file:
+        file.write(html_content)
+    print(f"✅ Frontend desarrollo-personal.html sincronizado ({len(registros)} registros).")
+
+
+def _construir_propiedades_desarrollo_personal(datos):
+    nombre = (datos.get("nombre") or "").strip()
+    if not nombre:
+        print("❌ [DESARROLLO PERSONAL]: falta el nombre.")
+        sys.exit(1)
+    props = {"Nombre": {"title": [{"text": {"content": nombre}}]}}
+    if datos.get("pilar"):
+        props["Pilar"] = {"select": {"name": datos["pilar"]}}
+    if datos.get("tipo"):
+        props["Tipo"] = {"select": {"name": datos["tipo"]}}
+    if datos.get("estado"):
+        props["Estado"] = {"select": {"name": datos["estado"]}}
+    if datos.get("fecha"):
+        props["Fecha"] = {"date": {"start": datos["fecha"]}}
+    if datos.get("frecuencia_tecnica") is not None:
+        props["Frecuencia / Técnica"] = {"rich_text": [{"text": {"content": str(datos["frecuencia_tecnica"])}}] if datos["frecuencia_tecnica"] else []}
+    if datos.get("puntaje") is not None:
+        props["Puntaje / Alineación"] = {"number": float(datos["puntaje"])}
+    if datos.get("nota") is not None:
+        props["Nota / Descripción"] = {"rich_text": [{"text": {"content": str(datos["nota"])}}] if datos["nota"] else []}
+    return props
+
+
+def crear_desarrollo_personal(datos):
+    if not DB_DESARROLLO_PERSONAL:
+        print("❌ [DESARROLLO PERSONAL]: NOTION_DB_DESARROLLO_PERSONAL no configurada.")
+        sys.exit(1)
+    props = _construir_propiedades_desarrollo_personal(datos)
+    body = {"parent": {"database_id": DB_DESARROLLO_PERSONAL}, "icon": {"type": "emoji", "emoji": "🌱"}, "properties": props}
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", body, "CREAR DESARROLLO PERSONAL")
+    print(f"✅ [CREAR DESARROLLO PERSONAL]: '{datos.get('nombre')}' creada ({res.get('id', '?')}).")
+
+
+def actualizar_desarrollo_personal(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR DESARROLLO PERSONAL]: falta page_id.")
+        sys.exit(1)
+    props = _construir_propiedades_desarrollo_personal(datos)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR DESARROLLO PERSONAL")
+    print(f"✅ [ACTUALIZAR DESARROLLO PERSONAL]: '{datos.get('nombre')}' ({page_id}) actualizada.")
 
 
 def sincronizar_agenda_personal(timestamps, app_version):
