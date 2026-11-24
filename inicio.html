@@ -243,10 +243,51 @@
                     <div class="w-1/2 bg-secondary-container"></div>
                 </div>
             </div>
+
+            <!-- WIDGET SOMÁTICO DE FASE HORMONAL -->
+            <div id="widget-ciclo-inicio" class="mt-10 mx-auto max-w-xl rounded-2xl bg-[#111115]/90 border border-white/[0.08] p-5 text-left shadow-xl backdrop-blur-md">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-label-caps text-[#ff5f52] tracking-widest">SALUD &amp; RITMO BIOLÓGICO</p>
+                        <p id="inicio-ciclo-fase" class="text-[16px] font-bold text-white">Cargando fase del ciclo...</p>
+                        <p id="inicio-ciclo-prox" class="text-[12px] text-[#ffb961]">—</p>
+                    </div>
+                    <a href="salud.html" class="px-3.5 py-2 rounded-xl bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 border border-[#ff5f52]/30 text-[#ff5f52] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                        <span>Abrir Salud</span>
+                        <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+                    </a>
+                </div>
+                <div id="inicio-ciclo-sintomas" class="flex flex-wrap gap-1.5 mt-3"></div>
+            </div>
         </div>
     </main>
 
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/salud_logic.js"></script>
     <script>
+        const inicioCiclo = [];
+
+        function renderizarWidgetCicloInicio() {
+            const d = new Date();
+            const p = (n) => String(n).padStart(2, "0");
+            const hoyIso = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+            const { faseActual, proximoInicio, proximaFase, proximaFaseEmoji } = obtenerResumenCiclo(inicioCiclo, hoyIso);
+            const info = clasificarFasePorNombre(faseActual);
+            const emoji = info && info.emoji ? `${info.emoji} ` : "";
+            const faseObj = (inicioCiclo || []).find((f) => f.nombre === faseActual);
+
+            document.getElementById("inicio-ciclo-fase").textContent = `${emoji}${faseActual}`;
+            document.getElementById("inicio-ciclo-prox").textContent = proximaFase
+                ? `Próxima: ${proximaFaseEmoji ? proximaFaseEmoji + " " : ""}${proximaFase} · ${proximoInicio || "Sin fecha"}`
+                : (proximoInicio ? `Próximo inicio: ${proximoInicio}` : "Sin proyección aún");
+
+            const contSin = document.getElementById("inicio-ciclo-sintomas");
+            const sint = (faseObj && Array.isArray(faseObj.sintomas)) ? faseObj.sintomas : [];
+            contSin.innerHTML = sint.map((s) => `<span class="px-2 py-0.5 rounded-full text-[11px] bg-white/[0.06] text-[#e5e2e1] border border-white/[0.08]">${escapeHtml(s)}</span>`).join("");
+        }
+
+        document.addEventListener("DOMContentLoaded", renderizarWidgetCicloInicio);
         function toggleMenu() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');

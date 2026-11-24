@@ -244,6 +244,19 @@
                     </div>
                 </section>
 
+                <!-- 1.1b HISTORIAL DE SÍNTOMAS Y CICLOS PASADOS -->
+                <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#a855f7] space-y-5">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <div>
+                            <p class="text-[11px] font-label-caps text-[#a855f7] tracking-widest">HISTORIAL SOMÁTICO</p>
+                            <h3 class="text-headline-md font-headline-md text-white">Historial de Síntomas y Ciclos Pasados</h3>
+                        </div>
+                        <input id="ciclo-hist-buscador" type="text" oninput="renderizarHistorialCiclo()" placeholder="Filtrar por síntoma o fase..." class="bg-[#1c1c1f] border border-[#232326] rounded-xl px-3.5 py-2 text-[13px] text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#a855f7]" />
+                    </div>
+                    <div id="ciclo-sintomas-top" class="flex flex-wrap gap-2"></div>
+                    <div id="ciclo-historial-list" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
+                </section>
+
                 <!-- 1.2 CONTROLES MÉDICOS Y SALUD PENDIENTES -->
                 <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#00aaff] space-y-6">
                     <div class="flex flex-wrap justify-between items-center gap-3">
@@ -759,6 +772,39 @@
                 : (proximoInicio || "Sin fecha calculada");
             document.getElementById("ciclo-proximo-inicio").textContent = proxLabel;
             renderizarCalendarioCiclo();
+            renderizarHistorialCiclo();
+        }
+
+        function renderizarHistorialCiclo() {
+            const lista = [...(saludCiclo || [])].sort((a, b) => (b.inicio || "").localeCompare(a.inicio || ""));
+            const freq = {};
+            lista.forEach((f) => (f.sintomas || []).forEach((s) => { freq[s] = (freq[s] || 0) + 1; }));
+            const top = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 8);
+            document.getElementById("ciclo-sintomas-top").innerHTML = top.length === 0
+                ? `<span class="text-xs text-[#8e8e93]">Sin síntomas registrados en tus ciclos todavía.</span>`
+                : top.map(([s, n]) => `<button type="button" onclick="document.getElementById('ciclo-hist-buscador').value='${escapeHtml(s)}';renderizarHistorialCiclo();" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#a855f7]/15 text-[#e5e2e1] border border-[#a855f7]/30 hover:bg-[#a855f7]/25">${escapeHtml(s)} · ${n}</button>`).join("");
+
+            const q = ((document.getElementById("ciclo-hist-buscador") || {}).value || "").trim().toLowerCase();
+            const filtrados = lista.filter((f) => !q || `${f.nombre} ${(f.sintomas || []).join(" ")}`.toLowerCase().includes(q));
+            const cont = document.getElementById("ciclo-historial-list");
+            cont.innerHTML = filtrados.length === 0
+                ? `<div class="status-row flex items-center justify-center py-4 px-4 text-[#8e8e93] text-[13px]">Sin fases coincidentes</div>`
+                : filtrados.map((f) => {
+                    const info = clasificarFasePorNombre(f.nombre);
+                    const emoji = info && info.emoji ? `${info.emoji} ` : "";
+                    const chips = (f.sintomas || []).map((s) => `<span class="px-2 py-0.5 rounded-full text-[10px] bg-white/[0.06] text-[#e5e2e1]">${escapeHtml(s)}</span>`).join("");
+                    return `
+                        <div class="status-row p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div class="min-w-0 space-y-1">
+                                <p class="text-white font-semibold text-[14px]">${emoji}${escapeHtml(f.nombre)} <span class="text-[11px] font-normal text-[#8e8e93]">${escapeHtml(f.inicio || "")}${f.fin ? " a " + escapeHtml(f.fin) : ""}</span></p>
+                                ${chips ? `<div class="flex flex-wrap gap-1">${chips}</div>` : ""}
+                            </div>
+                            <button type="button" onclick="abrirModalEditarCiclo('${escapeHtml(f.id || "")}')" class="self-start sm:self-center p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white flex-shrink-0" title="Editar fase">
+                                <span class="material-symbols-outlined text-[18px]">edit</span>
+                            </button>
+                        </div>
+                    `;
+                }).join("");
         }
 
         function renderizarPendientesSalud() {
@@ -1007,9 +1053,11 @@
             abrirModal("modal-pendiente");
         }
 
-        async function eliminarItemSalud(pageId) {
+        function eliminarItemSalud(pageId) {
             if (!pageId) return;
-            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: pageId });
+            _papeleraCicloId = pageId;
+            document.getElementById("papelera-texto").textContent = "¿Deseas mandar este registro a la papelera de Notion?";
+            abrirModal("modal-confirmar-papelera");
         }
 
         function guardarTokenSalud() {

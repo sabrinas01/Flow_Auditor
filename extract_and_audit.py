@@ -1441,6 +1441,20 @@ def sincronizar_salud(timestamps, app_version):
     with open(html_path, "w", encoding="utf-8") as file:
         file.write(html_content)
 
+    inicio_path = BASE_DIR / "inicio.html"
+    if inicio_path.exists():
+        with open(inicio_path, "r", encoding="utf-8") as f_ini:
+            ini_content = f_ini.read()
+        json_ciclo = json.dumps(fases_ciclo, ensure_ascii=False).replace("</", "<\\/")
+        ini_content = re.sub(
+            r"const\s+inicioCiclo\s*=\s*\[.*?\]\s*;",
+            lambda _m, jv=json_ciclo: f"const inicioCiclo = {jv};",
+            ini_content,
+            flags=re.DOTALL,
+        )
+        with open(inicio_path, "w", encoding="utf-8") as f_ini:
+            f_ini.write(ini_content)
+
     print("✅ Frontend salud.html sincronizado y actualizado con éxito.")
 
 
