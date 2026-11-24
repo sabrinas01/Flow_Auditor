@@ -90,11 +90,32 @@ function construirPayloadEgreso(datos) {
   return { ok: true, payload };
 }
 
+function calcularProyeccionCuotas(cuotas, mesBase, cantidadMeses = 6) {
+  const [anioIni, mesIni] = (mesBase || "2026-11").split("-").map(Number);
+  const meses = [];
+  for (let i = 0; i < cantidadMeses; i++) {
+    const d = new Date(anioIni, (mesIni - 1) + i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    meses.push({ mes: key, total: 0, cantidad: 0 });
+  }
+  const mapa = new Map(meses.map((m) => [m.mes, m]));
+  (cuotas || []).forEach((c) => {
+    const mes = (c.fecha_corte || "").slice(0, 7);
+    const bucket = mapa.get(mes);
+    if (bucket) {
+      bucket.total += Number(c.monto) || 0;
+      bucket.cantidad += 1;
+    }
+  });
+  return meses;
+}
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     calcularResumenFinanzas,
     formatearMonedaARS,
     construirPayloadIngreso,
     construirPayloadEgreso,
+    calcularProyeccionCuotas,
   };
 }

@@ -523,14 +523,56 @@
         }
 
         function toggleVistaCatalogoOcio() {
-            vistaCatalogo = vistaCatalogo === "tablero" ? "grilla" : "tablero";
+            const orden = ["tablero", "galeria", "grilla"];
+            vistaCatalogo = orden[(orden.indexOf(vistaCatalogo) + 1) % orden.length];
             const btn = document.getElementById("btn-vista-ocio");
             if (btn) {
-                btn.innerHTML = vistaCatalogo === "tablero"
-                    ? '<span class="material-symbols-outlined text-[16px]">view_kanban</span><span>Vista: Tablero</span>'
-                    : '<span class="material-symbols-outlined text-[16px]">grid_view</span><span>Vista: Grilla</span>';
+                const cfg = {
+                    tablero: '<span class="material-symbols-outlined text-[16px]">view_kanban</span><span>Vista: Tablero</span>',
+                    galeria: '<span class="material-symbols-outlined text-[16px]">photo_library</span><span>Vista: Galería</span>',
+                    grilla: '<span class="material-symbols-outlined text-[16px]">grid_view</span><span>Vista: Grilla</span>',
+                };
+                btn.innerHTML = cfg[vistaCatalogo];
+            }
+            if (typeof mostrarToast === "function") {
+                mostrarToast(`Vista cambiada a ${vistaCatalogo}`, "info");
             }
             renderizarCatalogoOcio();
+        }
+
+        function _renderCardGaleria(item) {
+            const esDone = (item.estado || "").toLowerCase().includes("completad") || (item.estado || "").toLowerCase().includes("vista");
+            const pct = parseInt(item.progreso, 10);
+            const widthPct = Number.isFinite(pct) ? Math.min(100, Math.max(0, pct)) : (esDone ? 100 : 30);
+            const iconoTab = tabActual === "libros" ? "menu_book" : tabActual === "series" ? "live_tv" : "movie";
+            return `
+                <div class="group rounded-2xl bg-[#18181d] border border-white/[0.08] hover:border-[#ff5f52]/50 overflow-hidden flex flex-col transition-all">
+                    <div class="relative aspect-[3/4] bg-gradient-to-br from-[#1f1f29] via-[#131318] to-[#0a0a0d] p-4 flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/50 text-white border border-white/10">${escapeHtml(item.estado)}</span>
+                            <span class="text-[#ffb961] text-xs font-bold bg-black/50 px-2 py-0.5 rounded-md">★ ${escapeHtml(String(item.puntuacion || 5))}</span>
+                        </div>
+                        <div class="my-auto flex flex-col items-center text-center gap-2">
+                            <span class="material-symbols-outlined text-[40px] text-[#ff5f52]/80">${iconoTab}</span>
+                            <h3 class="font-headline-md font-extrabold text-base text-white line-clamp-2">${escapeHtml(item.titulo)}</h3>
+                            <p class="text-[11px] text-[#a1a1aa] truncate max-w-full">${escapeHtml(item.secundario || "")}</p>
+                        </div>
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-[10px] text-[#a1a1aa]">
+                                <span>${escapeHtml(item.detalle || "")}</span>
+                                <span class="text-white font-bold">${widthPct}%</span>
+                            </div>
+                            <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-[#83da85] h-full rounded-full" style="width: ${widthPct}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-1 px-3 py-2 bg-[#111115] border-t border-white/[0.06]">
+                        <button type="button" onclick="abrirModalOcio('${tabActual}', '${escapeHtml(item.id)}')" class="p-1.5 rounded-lg hover:bg-white/10 text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+                        <button type="button" onclick="eliminarItemOcio('${tabActual}', '${escapeHtml(item.id)}')" class="p-1.5 rounded-lg hover:bg-[#ff5f52]/15 text-[#8e8e93] hover:text-[#ff5f52]" title="Eliminar"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+                    </div>
+                </div>
+            `;
         }
 
         function _renderCardCatalogo(item) {
@@ -574,6 +616,13 @@
                 cont.innerHTML = lista.length === 0
                     ? `<div class="col-span-full py-8 text-center text-sm text-[#8e8e93]">Sin registros para mostrar</div>`
                     : lista.map(_renderCardCatalogo).join("");
+                return;
+            }
+            if (vistaCatalogo === "galeria") {
+                cont.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4";
+                cont.innerHTML = lista.length === 0
+                    ? `<div class="col-span-full py-8 text-center text-sm text-[#8e8e93]">Sin registros para mostrar</div>`
+                    : lista.map(_renderCardGaleria).join("");
                 return;
             }
 

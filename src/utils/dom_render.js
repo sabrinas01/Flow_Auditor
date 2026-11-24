@@ -241,6 +241,32 @@ function crearManejadorDeRefresco(debounceFn, { onRecargar = () => location.relo
   };
 }
 
+function mostrarToast(mensaje, tipo = "success") {
+  if (typeof document === "undefined") return;
+  let cont = document.getElementById("asistente-toast-container");
+  if (!cont) {
+    cont = document.createElement("div");
+    cont.id = "asistente-toast-container";
+    cont.className = "fixed bottom-5 right-5 z-[70] flex flex-col gap-2 max-w-xs pointer-events-none";
+    document.body.appendChild(cont);
+  }
+  const estilos = {
+    success: "bg-[#111115]/95 border-[#53a759]/50 text-[#83da85]",
+    info: "bg-[#111115]/95 border-[#00aaff]/50 text-[#00aaff]",
+    error: "bg-[#111115]/95 border-[#ff5f52]/50 text-[#ff5f52]",
+  };
+  const iconos = { success: "check_circle", info: "info", error: "error" };
+  const toast = document.createElement("div");
+  toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl border shadow-2xl backdrop-blur-md text-[13px] font-semibold transition-all duration-300 ${estilos[tipo] || estilos.success}`;
+  toast.innerHTML = `<span class="material-symbols-outlined text-[18px]">${iconos[tipo] || "check_circle"}</span><span class="text-white">${mensaje}</span>`;
+  cont.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(8px)";
+    setTimeout(() => toast.remove(), 300);
+  }, 3200);
+}
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     renderizarFilasEstados,
@@ -251,5 +277,6 @@ if (typeof module !== "undefined" && module.exports) {
     formatHora,
     renderizarAgendaEventos,
     crearManejadorDeRefresco,
+    mostrarToast,
   };
 }

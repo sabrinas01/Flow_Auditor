@@ -1058,6 +1058,21 @@ def sincronizar_finanzas(timestamps, app_version):
     ingresos, schema_ing = _extraer_finanzas_bd(DB_INGRESOS, "INGRESOS", mes_actual, _parsear_ingreso)
     egresos, schema_egr = _extraer_finanzas_bd(DB_EGRESOS, "EGRESOS", mes_actual, _parsear_egreso)
 
+    cuotas_tc = []
+    if DB_CUOTAS_TARJETA:
+        res_cuotas, _ = _consultar_bd_salud(DB_CUOTAS_TARJETA, "CUOTAS TC", page_size=100)
+        for p in res_cuotas:
+            pr = p.get("properties", {})
+            fc = ((pr.get("Fecha de Corte TC") or {}).get("date") or {}).get("start")
+            monto_c = (pr.get("Monto  por mes en ARS") or {}).get("number")
+            if fc and monto_c is not None:
+                cuotas_tc.append({
+                    "id": p.get("id"),
+                    "nombre": "".join(t.get("plain_text", "") for t in (pr.get("Nombre de cuota") or {}).get("title", [])) or "Cuota",
+                    "fecha_corte": fc,
+                    "monto": float(monto_c),
+                })
+
     opciones = {
         "tipos_ingreso": _opciones_de_schema(schema_ing, "Tipo de Ingreso", "select", _FINANZAS_OPCIONES_FALLBACK["tipos_ingreso"]),
         "formas_pago": _opciones_de_schema(schema_egr, "Forma de pago", "multi_select", _FINANZAS_OPCIONES_FALLBACK["formas_pago"]),
@@ -1074,6 +1089,7 @@ def sincronizar_finanzas(timestamps, app_version):
     for nombre_const, valor in (
         ("finanzasIngresos", ingresos),
         ("finanzasEgresos", egresos),
+        ("finanzasCuotas", cuotas_tc),
         ("finanzasOpciones", opciones),
     ):
         json_val = json.dumps(valor, ensure_ascii=False).replace("</", "<\\/")
