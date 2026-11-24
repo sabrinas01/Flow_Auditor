@@ -1364,6 +1364,27 @@ def sincronizar_salud(timestamps, app_version):
         "estados_pendiente": _opciones_de_schema(sch_pen, "Estado", "status", _SALUD_OPCIONES_FALLBACK["estados_pendiente"]),
     }
 
+    mente_registros = []
+    if DB_GESTION_EMOCIONAL:
+        res_mente, _ = _consultar_bd_salud(
+            DB_GESTION_EMOCIONAL,
+            "SALUD MENTE",
+            sorts=[{"property": "Fecha", "direction": "descending"}],
+            page_size=20,
+        )
+        for p in res_mente:
+            pr = p.get("properties", {})
+            mente_registros.append({
+                "id": p.get("id"),
+                "nombre": "".join(t.get("plain_text", "") for t in (pr.get("Nombre") or {}).get("title", [])) or "Registro",
+                "fecha": ((pr.get("Fecha") or {}).get("date") or {}).get("start"),
+                "barometro": ((pr.get("Barómetro") or {}).get("select") or {}).get("name"),
+                "calma": (pr.get("Nivel de calma") or {}).get("number"),
+                "energia": (pr.get("Nivel de energía") or {}).get("number"),
+                "reflexion": "".join(t.get("plain_text", "") for t in (pr.get("Reflexión / Nota") or {}).get("rich_text", [])),
+                "stop": bool((pr.get("Protocolo S.T.O.P.") or {}).get("checkbox")),
+            })
+
     with open(html_path, "r", encoding="utf-8") as file:
         html_content = file.read()
 
@@ -1373,6 +1394,7 @@ def sincronizar_salud(timestamps, app_version):
         ("saludSesiones", sesiones),
         ("saludCiclo", fases_ciclo),
         ("saludPendientes", pendientes),
+        ("saludMenteRegistros", mente_registros),
         ("saludOpciones", opciones),
     ):
         json_val = json.dumps(valor, ensure_ascii=False).replace("</", "<\\/")

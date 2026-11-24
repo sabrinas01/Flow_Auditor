@@ -58,6 +58,7 @@
         const saludSesiones = [];
         const saludCiclo = [];
         const saludPendientes = [];
+        const saludMenteRegistros = [];
         const saludOpciones = {"estados_sesion": ["Hecha", "Sin empezar"], "sintomas": ["Hinchazón abdominal", "Dolor abdominal", "Cansancio físico", "Cansancio Mental"], "tipos_pendiente": ["💻 Pedir autorización", "💬 Pedir turno", "🗓️TURNO AGENDADO", "📄Fichadetratamiento", "Única vez", "💊Medicación", "Estudio"], "estados_pendiente": ["Pendiente", "Sin empezar", "En curso", "Listo"]};
     </script>
 
@@ -148,119 +149,235 @@
         </header>
 
         <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
-            <!-- 1. DIARIO DE SESIONES -->
-            <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#53a759] space-y-6">
-                <div class="flex flex-wrap justify-between items-center gap-3">
-                    <div class="space-y-1">
-                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">MOVIMIENTO</p>
-                        <h2 class="text-headline-md font-headline-md text-white">Diario de sesiones</h2>
+            <!-- CABECERA -->
+            <section class="flex flex-wrap justify-between items-end gap-4 pb-2 border-b border-white/[0.06]">
+                <div class="space-y-1.5">
+                    <p class="text-[11px] font-label-caps text-[#ff5f52] tracking-widest">BIENESTAR · SALUD INTEGRAL · SISTEMA TRIMODAL</p>
+                    <h1 class="font-display-lg text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Salud</h1>
+                    <p class="text-[13px] text-[#8e8e93]">Cuerpo, Mente y Energía conectados en tiempo real con tus bases de Notion.</p>
+                </div>
+                <div class="flex flex-wrap gap-2 text-[11px]">
+                    <a href="#sec-cuerpo" class="px-3 py-1.5 rounded-full bg-[#ff5f52]/15 text-[#ff5f52] border border-[#ff5f52]/30 font-semibold">01 · Cuerpo</a>
+                    <a href="#sec-mente" class="px-3 py-1.5 rounded-full bg-[#00aaff]/15 text-[#00aaff] border border-[#00aaff]/30 font-semibold">02 · Mente</a>
+                    <a href="#sec-energia" class="px-3 py-1.5 rounded-full bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30 font-semibold">03 · Energía</a>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SECCIÓN 01 — CUERPO
+                 ========================================== -->
+            <div id="sec-cuerpo" class="space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#ff5f52] tracking-widest">SECCIÓN 01 · CUERPO</p>
+                        <h2 class="text-xl font-bold text-white">Ciclo biológico, controles clínicos y movimiento</h2>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <a href="https://app.notion.com/p/27ca38bb7a6e80f39a12fef0dd401367?v=27ca38bb7a6e80578eca000cdc6ed0ee&source=copy_link"
+                </div>
+
+                <!-- 1.1 CICLO MENSTRUAL (INTACTO) -->
+                <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#ff5f52] space-y-6">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">SEGUIMIENTO</p>
+                            <h3 class="text-headline-md font-headline-md text-white">Ciclo menstrual</h3>
+                        </div>
+                        <a href="https://app.notion.com/p/332a38bb7a6e80d2b280ea0aba56fee6?v=332a38bb7a6e80a3b37b000c4575586b&source=copy_link"
                            target="_blank" rel="noopener"
                            class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
                             <span>Ver en Notion</span>
                             <span class="material-symbols-outlined text-[16px]">open_in_new</span>
                         </a>
-                        <button type="button" onclick="abrirModalSesion()"
-                                class="bg-[#53a759] hover:bg-[#53a759]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
-                            <span class="material-symbols-outlined text-[18px]">add</span>
-                            <span>Registrar sesión</span>
-                        </button>
                     </div>
-                </div>
-                <div id="list-sesiones" class="space-y-3"></div>
-            </section>
 
-            <!-- 2. CICLO MENSTRUAL -->
-            <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#ff5f52] space-y-6">
-                <div class="flex flex-wrap justify-between items-center gap-3">
-                    <div class="space-y-1">
-                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">SEGUIMIENTO</p>
-                        <h2 class="text-headline-md font-headline-md text-white">Ciclo menstrual</h2>
-                    </div>
-                    <a href="https://app.notion.com/p/332a38bb7a6e80d2b280ea0aba56fee6?v=332a38bb7a6e80a3b37b000c4575586b&source=copy_link"
-                       target="_blank" rel="noopener"
-                       class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
-                        <span>Ver en Notion</span>
-                        <span class="material-symbols-outlined text-[16px]">open_in_new</span>
-                    </a>
-                </div>
-
-                <!-- Fase actual y Próximo inicio -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-[#0e0e0f] p-5 rounded-xl border border-[#232326]">
-                        <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">FASE ACTUAL</p>
-                        <p id="ciclo-fase-actual" class="text-[18px] font-bold text-white">Sin registros</p>
-                    </div>
-                    <div class="bg-[#0e0e0f] p-5 rounded-xl border border-[#232326]">
-                        <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">INICIO DE PRÓXIMA FASE</p>
-                        <p id="ciclo-proximo-inicio" class="text-[18px] font-bold text-[#ffb961]">—</p>
-                    </div>
-                </div>
-
-                <!-- Botones por etapa -->
-                <div class="space-y-2">
-                    <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">REGISTRAR ETAPA</p>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                        <button type="button" onclick="abrirModalCiclo('Fase menstrual')" class="bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/40 text-[#38bdf8] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">❄️ Fase menstrual</button>
-                        <button type="button" onclick="abrirModalCiclo('Fase Folicular')" class="bg-[#f472b6]/15 hover:bg-[#f472b6]/25 border border-[#f472b6]/40 text-[#f472b6] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">🌸 Fase Folicular</button>
-                        <button type="button" onclick="abrirModalCiclo('Fase ovulatoria')" class="bg-[#facc15]/15 hover:bg-[#facc15]/25 border border-[#facc15]/40 text-[#facc15] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">☀️ Fase ovulatoria</button>
-                        <button type="button" onclick="abrirModalCiclo('Fase Lútea')" class="bg-[#fb923c]/15 hover:bg-[#fb923c]/25 border border-[#fb923c]/40 text-[#fb923c] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">🍂 Fase Lútea</button>
-                    </div>
-                </div>
-
-                <!-- Vista de calendario estilo Notion -->
-                <div class="bg-[#0e0e0f] rounded-xl border border-[#232326] p-5 space-y-4">
-                    <div class="flex justify-between items-center">
-                        <button type="button" onclick="cambiarMesCalendario(-1)" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" aria-label="Mes anterior">
-                            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
-                        </button>
-                        <h3 id="calendario-mes-titulo" class="text-[15px] font-bold text-white uppercase tracking-wider"></h3>
-                        <button type="button" onclick="cambiarMesCalendario(1)" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" aria-label="Mes siguiente">
-                            <span class="material-symbols-outlined text-[20px]">chevron_right</span>
-                        </button>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-3 text-[11px] text-[#a1a1aa] pb-1">
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#38bdf8]/15 text-[#38bdf8] border border-[#38bdf8]/30">❄️ Menstrual</span>
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f472b6]/15 text-[#f472b6] border border-[#f472b6]/30">🌸 Folicular</span>
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#facc15]/15 text-[#facc15] border border-[#facc15]/30">☀️ Ovulatoria</span>
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#fb923c]/15 text-[#fb923c] border border-[#fb923c]/30">🍂 Lútea</span>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <div class="min-w-[620px] space-y-2">
-                            <div class="grid grid-cols-7 gap-1.5 text-center text-[11px] font-label-caps text-[#8e8e93] pb-1 border-b border-[#232326]">
-                                <span>lun</span><span>mar</span><span>mié</span><span>jue</span><span>vie</span><span>sáb</span><span>dom</span>
-                            </div>
-                            <div id="calendario-grid" class="space-y-2"></div>
+                    <!-- Fase actual y Próximo inicio -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-[#0e0e0f] p-5 rounded-xl border border-[#232326]">
+                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">FASE ACTUAL</p>
+                            <p id="ciclo-fase-actual" class="text-[18px] font-bold text-white">Sin registros</p>
+                        </div>
+                        <div class="bg-[#0e0e0f] p-5 rounded-xl border border-[#232326]">
+                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">INICIO DE PRÓXIMA FASE</p>
+                            <p id="ciclo-proximo-inicio" class="text-[18px] font-bold text-[#ffb961]">—</p>
                         </div>
                     </div>
-                </div>
-            </section>
 
-            <!-- 3. SALUD (PENDIENTES) -->
-            <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#00aaff] space-y-6">
-                <div class="flex flex-wrap justify-between items-center gap-3">
-                    <div class="space-y-1">
-                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS MÉDICAS</p>
-                        <h2 class="text-headline-md font-headline-md text-white">Salud</h2>
+                    <!-- Botones por etapa -->
+                    <div class="space-y-2">
+                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">REGISTRAR ETAPA</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <button type="button" onclick="abrirModalCiclo('Fase menstrual')" class="bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/40 text-[#38bdf8] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">❄️ Fase menstrual</button>
+                            <button type="button" onclick="abrirModalCiclo('Fase Folicular')" class="bg-[#f472b6]/15 hover:bg-[#f472b6]/25 border border-[#f472b6]/40 text-[#f472b6] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">🌸 Fase Folicular</button>
+                            <button type="button" onclick="abrirModalCiclo('Fase ovulatoria')" class="bg-[#facc15]/15 hover:bg-[#facc15]/25 border border-[#facc15]/40 text-[#facc15] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">☀️ Fase ovulatoria</button>
+                            <button type="button" onclick="abrirModalCiclo('Fase Lútea')" class="bg-[#fb923c]/15 hover:bg-[#fb923c]/25 border border-[#fb923c]/40 text-[#fb923c] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">🍂 Fase Lútea</button>
+                        </div>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <a href="https://app.notion.com/p/332a38bb7a6e80099b50f227e57f7d7a?v=332a38bb7a6e80998a85000cb18b0a30&source=copy_link"
-                           target="_blank" rel="noopener"
-                           class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
-                            <span>Ver en Notion</span>
-                            <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+
+                    <!-- Vista de calendario estilo Notion -->
+                    <div class="bg-[#0e0e0f] rounded-xl border border-[#232326] p-5 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <button type="button" onclick="cambiarMesCalendario(-1)" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" aria-label="Mes anterior">
+                                <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                            </button>
+                            <h3 id="calendario-mes-titulo" class="text-[15px] font-bold text-white uppercase tracking-wider"></h3>
+                            <button type="button" onclick="cambiarMesCalendario(1)" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" aria-label="Mes siguiente">
+                                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                            </button>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3 text-[11px] text-[#a1a1aa] pb-1">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#38bdf8]/15 text-[#38bdf8] border border-[#38bdf8]/30">❄️ Menstrual</span>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f472b6]/15 text-[#f472b6] border border-[#f472b6]/30">🌸 Folicular</span>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#facc15]/15 text-[#facc15] border border-[#facc15]/30">☀️ Ovulatoria</span>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#fb923c]/15 text-[#fb923c] border border-[#fb923c]/30">🍂 Lútea</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <div class="min-w-[620px] space-y-2">
+                                <div class="grid grid-cols-7 gap-1.5 text-center text-[11px] font-label-caps text-[#8e8e93] pb-1 border-b border-[#232326]">
+                                    <span>lun</span><span>mar</span><span>mié</span><span>jue</span><span>vie</span><span>sáb</span><span>dom</span>
+                                </div>
+                                <div id="calendario-grid" class="space-y-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 1.2 CONTROLES MÉDICOS Y SALUD PENDIENTES -->
+                <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#00aaff] space-y-6">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS MÉDICAS</p>
+                            <h3 class="text-headline-md font-headline-md text-white">Controles médicos y salud pendientes</h3>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <a href="https://app.notion.com/p/332a38bb7a6e80099b50f227e57f7d7a?v=332a38bb7a6e80998a85000cb18b0a30&source=copy_link"
+                               target="_blank" rel="noopener"
+                               class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
+                                <span>Ver en Notion</span>
+                                <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                            </a>
+                            <button type="button" onclick="abrirModalPendiente()"
+                                    class="bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                                <span class="material-symbols-outlined text-[18px]">add</span>
+                                <span>Registrar pendiente</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="list-pendientes-salud" class="space-y-3"></div>
+                </section>
+
+                <!-- 1.3 DIARIO DE SESIONES & MOVIMIENTO -->
+                <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#53a759] space-y-6">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">MOVIMIENTO</p>
+                            <h3 class="text-headline-md font-headline-md text-white">Diario de sesiones & Movimiento</h3>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <a href="https://app.notion.com/p/27ca38bb7a6e80f39a12fef0dd401367?v=27ca38bb7a6e80578eca000cdc6ed0ee&source=copy_link"
+                               target="_blank" rel="noopener"
+                               class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
+                                <span>Ver en Notion</span>
+                                <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                            </a>
+                            <button type="button" onclick="abrirModalSesion()"
+                                    class="bg-[#53a759] hover:bg-[#53a759]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                                <span class="material-symbols-outlined text-[18px]">add</span>
+                                <span>Registrar sesión</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-[#0e0e0f] p-4 rounded-xl border border-[#232326]">
+                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">FRECUENCIA SEMANAL</p>
+                            <p id="ses-kpi-frecuencia" class="text-[20px] font-bold text-white">0 sesiones</p>
+                        </div>
+                        <div class="bg-[#0e0e0f] p-4 rounded-xl border border-[#232326]">
+                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">TIEMPO ACTIVO</p>
+                            <p id="ses-kpi-minutos" class="text-[20px] font-bold text-[#83da85]">0 min</p>
+                        </div>
+                        <div class="bg-[#0e0e0f] p-4 rounded-xl border border-[#232326]">
+                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">CONSISTENCIA</p>
+                            <p id="ses-kpi-consistencia" class="text-[20px] font-bold text-[#ffb961]">0%</p>
+                        </div>
+                    </div>
+                    <div id="list-sesiones" class="space-y-3"></div>
+                </section>
+            </div>
+
+            <!-- ==========================================
+                 SECCIÓN 02 — MENTE
+                 ========================================== -->
+            <div id="sec-mente" class="space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#00aaff] tracking-widest">SECCIÓN 02 · MENTE</p>
+                        <h2 class="text-xl font-bold text-white">Claridad mental, serenidad y pausas conscientes</h2>
+                    </div>
+                    <a href="gestion-emocional.html" class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-[13px] px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all">
+                        <span>Abrir Gestión emocional</span>
+                        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </a>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#00aaff] space-y-3">
+                        <div class="flex items-center justify-between">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">CHECK-IN SERENIDAD</p>
+                            <span id="mente-barometro-badge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-[#00aaff]/15 text-[#00aaff] font-semibold">—</span>
+                        </div>
+                        <p id="mente-calma-valor" class="text-3xl font-extrabold text-white">—</p>
+                        <p id="mente-calma-desc" class="text-[13px] text-[#8e8e93]">Promedio de calma en tus registros de Notion.</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#53a759] space-y-3">
+                        <div class="flex items-center justify-between">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">PAUSAS S.T.O.P.</p>
+                            <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-[#53a759]/15 text-[#83da85] font-semibold">Protocolo</span>
+                        </div>
+                        <p id="mente-stop-valor" class="text-3xl font-extrabold text-white">0 pausas</p>
+                        <p id="mente-stop-desc" class="text-[13px] text-[#8e8e93]">Veces que aplicaste S.T.O.P. en momentos clave.</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#a855f7] space-y-3 flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">ÚLTIMA REFLEXIÓN</p>
+                            <p id="mente-reflexion-texto" class="text-[14px] text-[#e5e2e1] italic leading-relaxed">Sin reflexiones registradas aún.</p>
+                        </div>
+                        <a href="gestion-emocional.html" class="text-[12px] text-[#a855f7] font-semibold inline-flex items-center gap-1 hover:underline">
+                            <span>Registrar en Gestión emocional</span>
+                            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
                         </a>
-                        <button type="button" onclick="abrirModalPendiente()"
-                                class="bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
-                            <span class="material-symbols-outlined text-[18px]">add</span>
-                            <span>Registrar pendiente</span>
-                        </button>
                     </div>
                 </div>
-                <div id="list-pendientes-salud" class="space-y-3"></div>
-            </section>
+            </div>
+
+            <!-- ==========================================
+                 SECCIÓN 03 — ENERGÍA
+                 ========================================== -->
+            <div id="sec-energia" class="space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#ffb961] tracking-widest">SECCIÓN 03 · ENERGÍA</p>
+                        <h2 class="text-xl font-bold text-white">Termómetro de vitalidad, curva circadiana y recarga</h2>
+                    </div>
+                    <span id="energia-fase-badge" class="text-[11px] px-3 py-1 rounded-full bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30 font-semibold">Sincronizado con ciclo</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#ffb961] space-y-3">
+                        <div class="flex items-center justify-between">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">BARÓMETRO DE ENERGÍA</p>
+                            <span id="energia-fuente-badge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-[#ffb961]/15 text-[#ffb961] font-semibold">—</span>
+                        </div>
+                        <p id="energia-puntaje-valor" class="text-3xl font-extrabold text-white">—</p>
+                        <p id="energia-etiqueta" class="text-[14px] font-semibold text-[#ffb961]"></p>
+                        <p id="energia-desc" class="text-[13px] text-[#8e8e93] leading-relaxed"></p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#38bdf8] space-y-4">
+                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">CURVA CIRCADIANA DEL DÍA</p>
+                        <div id="energia-curva-list" class="space-y-3"></div>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#53a759] space-y-4">
+                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">FACTORES DE RECARGA VITAL</p>
+                        <div id="energia-factores-list" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
@@ -494,6 +611,14 @@
         }
 
         function renderizarSesiones() {
+            const met = calcularMetricasSesiones(saludSesiones, hoyLocalISO());
+            const elFreq = document.getElementById("ses-kpi-frecuencia");
+            const elMin = document.getElementById("ses-kpi-minutos");
+            const elCons = document.getElementById("ses-kpi-consistencia");
+            if (elFreq) elFreq.textContent = `${met.sesionesSemana} ${met.sesionesSemana === 1 ? "sesión" : "sesiones"}`;
+            if (elMin) elMin.textContent = `${met.minutosActivos} min`;
+            if (elCons) elCons.textContent = `${met.consistenciaPct}%`;
+
             const cont = document.getElementById("list-sesiones");
             cont.innerHTML = saludSesiones.length === 0
                 ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin sesiones registradas</div>`
@@ -642,6 +767,50 @@
                 }).join("");
         }
 
+        function renderizarMenteSalud() {
+            const m = calcularResumenMenteSalud(saludMenteRegistros);
+            document.getElementById("mente-barometro-badge").textContent = m.barometroActual;
+            document.getElementById("mente-calma-valor").textContent = m.calmaPromedio !== null ? `${m.calmaPromedio} / 10` : "Sin datos";
+            document.getElementById("mente-calma-desc").textContent = m.totalRegistros > 0
+                ? `Basado en ${m.totalRegistros} registro(s) recientes en Notion.`
+                : "Registra tu estado en Gestión emocional para ver tu promedio.";
+            document.getElementById("mente-stop-valor").textContent = `${m.pausasStop} ${m.pausasStop === 1 ? "pausa" : "pausas"}`;
+            document.getElementById("mente-reflexion-texto").textContent = m.ultimaReflexion
+                ? `“${m.ultimaReflexion}”`
+                : "Sin reflexiones registradas aún en Gestión emocional.";
+        }
+
+        function renderizarEnergiaSalud() {
+            const e = calcularEnergiaDesdeCiclo(saludCiclo, saludMenteRegistros, hoyLocalISO());
+            document.getElementById("energia-fase-badge").textContent = e.faseNombre !== "Sin registros" ? e.faseNombre : "Sin ciclo activo";
+            document.getElementById("energia-fuente-badge").textContent = e.fuentePuntaje;
+            document.getElementById("energia-puntaje-valor").textContent = `${e.puntaje} / 10`;
+            document.getElementById("energia-etiqueta").textContent = e.etiqueta;
+            document.getElementById("energia-desc").textContent = e.descripcion;
+
+            document.getElementById("energia-curva-list").innerHTML = e.curva.map((c) => `
+                <div class="space-y-1.5">
+                    <div class="flex justify-between text-[12px]">
+                        <span class="text-[#a1a1aa]">${escapeHtml(c.franja)}</span>
+                        <span class="font-bold text-white">${escapeHtml(c.nivel)} ${c.pct}%</span>
+                    </div>
+                    <div class="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                        <div class="h-full rounded-full bg-gradient-to-r from-[#38bdf8] to-[#ffb961]" style="width: ${c.pct}%"></div>
+                    </div>
+                </div>
+            `).join("");
+
+            document.getElementById("energia-factores-list").innerHTML = e.factores.map((f) => `
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-[18px] text-[#83da85] mt-0.5">${escapeHtml(f.icono)}</span>
+                    <div class="min-w-0">
+                        <p class="text-[13px] font-semibold text-white">${escapeHtml(f.titulo)}</p>
+                        <p class="text-[12px] text-[#8e8e93]">${escapeHtml(f.detalle)}</p>
+                    </div>
+                </div>
+            `).join("");
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             initLocalStorage();
             document.getElementById("footer-sync-time").innerText = timestampLocalStr;
@@ -651,6 +820,8 @@
             renderizarSesiones();
             renderizarCicloResumen();
             renderizarPendientesSalud();
+            renderizarMenteSalud();
+            renderizarEnergiaSalud();
         });
 
         function toggleMenu() {

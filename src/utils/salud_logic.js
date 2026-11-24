@@ -130,6 +130,145 @@ function construirPayloadPendienteSalud(datos) {
   };
 }
 
+function calcularMetricasSesiones(sesiones, hoyIso) {
+  const lista = Array.isArray(sesiones) ? sesiones : [];
+  const base = hoyIso ? new Date(`${hoyIso}T00:00:00`) : new Date();
+  const hace7 = new Date(base);
+  hace7.setDate(base.getDate() - 6);
+  const p = (n) => String(n).padStart(2, "0");
+  const limIni = `${hace7.getFullYear()}-${p(hace7.getMonth() + 1)}-${p(hace7.getDate())}`;
+  const limFin = `${base.getFullYear()}-${p(base.getMonth() + 1)}-${p(base.getDate())}`;
+
+  const semana = lista.filter((s) => s.fecha && s.fecha >= limIni && s.fecha <= limFin);
+  const hechasSemana = semana.filter((s) => (s.estado || "").toLowerCase().includes("hech"));
+  const fuente = semana.length > 0 ? semana : lista;
+  const hechas = fuente.filter((s) => (s.estado || "").toLowerCase().includes("hech"));
+  const minutos = (semana.length > 0 ? hechasSemana : hechas).reduce((acc, s) => acc + (Number(s.duracion) || 0), 0);
+  const consistencia = fuente.length > 0 ? Math.round((hechas.length / fuente.length) * 100) : 0;
+
+  return {
+    sesionesSemana: hechasSemana.length,
+    minutosActivos: minutos,
+    consistenciaPct: consistencia,
+    totalRegistros: lista.length,
+  };
+}
+
+function calcularResumenMenteSalud(registros) {
+  const lista = Array.isArray(registros) ? registros : [];
+  if (lista.length === 0) {
+    return {
+      totalRegistros: 0,
+      calmaPromedio: null,
+      energiaPromedio: null,
+      pausasStop: 0,
+      barometroActual: "Sin registros",
+      ultimaReflexion: null,
+      ultimaFecha: null,
+    };
+  }
+  const calmas = lista.map((r) => Number(r.calma)).filter((n) => Number.isFinite(n) && n > 0);
+  const energias = lista.map((r) => Number(r.energia)).filter((n) => Number.isFinite(n) && n > 0);
+  const calmaPromedio = calmas.length > 0 ? Number((calmas.reduce((a, b) => a + b, 0) / calmas.length).toFixed(1)) : null;
+  const energiaPromedio = energias.length > 0 ? Number((energias.reduce((a, b) => a + b, 0) / energias.length).toFixed(1)) : null;
+  const pausasStop = lista.filter((r) => Boolean(r.stop)).length;
+  const conReflexion = lista.find((r) => (r.reflexion || "").trim());
+  const reciente = lista[0];
+
+  return {
+    totalRegistros: lista.length,
+    calmaPromedio,
+    energiaPromedio,
+    pausasStop,
+    barometroActual: reciente.barometro || "Sin estado",
+    ultimaReflexion: conReflexion ? conReflexion.reflexion.trim() : null,
+    ultimaFecha: reciente.fecha || null,
+  };
+}
+
+const PERFILES_ENERGIA_FASE = {
+  menstrual: {
+    puntajeBase: 5.5,
+    etiqueta: "Introspectiva y suave",
+    descripcion: "Fase de renovación física: prioriza descanso reparador y baja carga.",
+    curva: [
+      { franja: "Mañana (07:00 - 13:00)", nivel: "Moderada", pct: 60 },
+      { franja: "Tarde (13:00 - 19:00)", nivel: "Suave", pct: 45 },
+      { franja: "Noche (19:00 - 23:00)", nivel: "Descanso", pct: 25 },
+    ],
+    factores: [
+      { icono: "local_drink", titulo: "Hidratación tibia & hierro", detalle: "Infusiones calmantes y comida reconfortante" },
+      { icono: "bedtime", titulo: "Sueño prioritario", detalle: "Permitir pausas y acostarse temprano" },
+      { icono: "self_improvement", titulo: "Movimiento gentil", detalle: "Estiramientos suaves o caminata tranquila" },
+    ],
+  },
+  folicular: {
+    puntajeBase: 8.0,
+    etiqueta: "Creativa y en ascenso",
+    descripcion: "Energía en subida ideal para planificar, aprender y retomar impulso.",
+    curva: [
+      { franja: "Mañana (07:00 - 13:00)", nivel: "Alta", pct: 85 },
+      { franja: "Tarde (13:00 - 19:00)", nivel: "Sostenida", pct: 75 },
+      { franja: "Noche (19:00 - 23:00)", nivel: "Estable", pct: 50 },
+    ],
+    factores: [
+      { icono: "wb_sunny", titulo: "Luz natural matutina", detalle: "Sincroniza el ritmo circadiano al despertar" },
+      { icono: "directions_run", titulo: "Entrenamiento progresivo", detalle: "Buen momento para sumar intensidad" },
+      { icono: "restaurant", titulo: "Proteína y fibra fresca", detalle: "Sostiene la vitalidad sin picos" },
+    ],
+  },
+  ovulatoria: {
+    puntajeBase: 9.0,
+    etiqueta: "Radiante y expansiva",
+    descripcion: "Pico natural de vitalidad, claridad y disposición social.",
+    curva: [
+      { franja: "Mañana (07:00 - 13:00)", nivel: "Máxima", pct: 95 },
+      { franja: "Tarde (13:00 - 19:00)", nivel: "Alta", pct: 85 },
+      { franja: "Noche (19:00 - 23:00)", nivel: "Activa", pct: 60 },
+    ],
+    factores: [
+      { icono: "water_drop", titulo: "Hidratación constante", detalle: "Acompaña el mayor gasto energético diario" },
+      { icono: "fitness_center", titulo: "Sesión de fuerza o cardio", detalle: "Aprovecha el pico de recuperación" },
+      { icono: "phonelink_erase", titulo: "Cierre de pantallas", detalle: "Desacelerar antes de dormir pese al envión" },
+    ],
+  },
+  lutea: {
+    puntajeBase: 6.5,
+    etiqueta: "Serena y enfocada",
+    descripcion: "Ritmo estable con tendencia a la calma; cuidar límites y descanso.",
+    curva: [
+      { franja: "Mañana (07:00 - 13:00)", nivel: "Buena", pct: 75 },
+      { franja: "Tarde (13:00 - 19:00)", nivel: "Estable", pct: 60 },
+      { franja: "Noche (19:00 - 23:00)", nivel: "Desaceleración", pct: 35 },
+    ],
+    factores: [
+      { icono: "restaurant", titulo: "Alimentación antiinflamatoria", detalle: "Omega-3, hojas verdes y magnesio" },
+      { icono: "wb_sunny", titulo: "Pausa al aire libre", detalle: "15-20 min de aire y sol para sostener ánimo" },
+      { icono: "phonelink_erase", titulo: "Higiene del sueño", detalle: "Bajar estímulos desde las 22:00" },
+    ],
+  },
+};
+
+function calcularEnergiaDesdeCiclo(fases, registrosMente, hoyIso) {
+  const resumenCiclo = obtenerResumenCiclo(fases, hoyIso);
+  const infoFase = clasificarFasePorNombre(resumenCiclo.faseActual);
+  const key = infoFase ? infoFase.key : "folicular";
+  const perfil = PERFILES_ENERGIA_FASE[key];
+  const mente = calcularResumenMenteSalud(registrosMente);
+  const energiaFinal = mente.energiaPromedio !== null ? mente.energiaPromedio : perfil.puntajeBase;
+
+  return {
+    faseKey: key,
+    faseNombre: resumenCiclo.faseActual,
+    puntaje: energiaFinal,
+    fuentePuntaje: mente.energiaPromedio !== null ? "Gestión emocional" : "Proyección de ciclo",
+    etiqueta: perfil.etiqueta,
+    descripcion: perfil.descripcion,
+    curva: perfil.curva,
+    factores: perfil.factores,
+  };
+}
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     FASES_CICLO,
@@ -138,5 +277,8 @@ if (typeof module !== "undefined" && module.exports) {
     construirPayloadSesion,
     construirPayloadCiclo,
     construirPayloadPendienteSalud,
+    calcularMetricasSesiones,
+    calcularResumenMenteSalud,
+    calcularEnergiaDesdeCiclo,
   };
 }
