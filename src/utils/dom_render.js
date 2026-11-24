@@ -130,7 +130,7 @@ function renderizarRecordatoriosVarios(prefijo, items) {
   document.getElementById(`total-${prefijo}-lbl`).innerText = `${items.length} ítems`;
 
   if (!items || items.length === 0) {
-    container.innerHTML = `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin recordatorios registrados</div>`;
+    container.innerHTML = `<div class="status-row flex items-center justify-center py-4 px-4 text-[#8e8e93] text-[13px]">Sin recordatorios registrados · Buen momento para respirar tranquila 🌿</div>`;
     return;
   }
 
@@ -176,7 +176,7 @@ function renderizarAgendaEventos(prefijo, items) {
   document.getElementById(`total-${prefijo}-lbl`).innerText = `${items.length} eventos`;
 
   if (!items || items.length === 0) {
-    container.innerHTML = `<div class="status-row left-pill-blue flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin eventos registrados</div>`;
+    container.innerHTML = `<div class="status-row left-pill-blue flex items-center justify-center py-4 px-4 text-[#8e8e93] text-[13px]">Sin eventos registrados · Agenda despejada en este bloque ✨</div>`;
     return;
   }
 
@@ -305,7 +305,14 @@ function inicializarCommandPalette() {
       !term || `${m.nombre} ${m.tags}`.toLowerCase().includes(term)
     );
     const listEl = document.getElementById("cmd-palette-list");
-    listEl.innerHTML = (filtrados.length === 0
+    const accionesExtra = [
+      { id: "ocr", match: "escanear foto ocr texto frase libro afirmacion", icon: "photo_camera", color: "text-[#83da85]", label: "Escanear foto / texto (OCR → Notion)", badge: "Rápido", fn: "abrirAccesoRapidoOCR()" },
+      { id: "focus", match: "focus zen atajos teclado shortcuts", icon: "center_focus_strong", color: "text-[#00aaff]", label: "Atajos de teclado & Modo Focus / Zen", badge: "Shift+?", fn: "abrirModalAtajosFocus()" },
+      { id: "export", match: "exportar reporte pdf markdown clinico financiero", icon: "download", color: "text-[#ffb961]", label: "Centro de Exportación (PDF / Markdown)", badge: "Reporte", fn: "abrirCentroExportacion()" },
+      { id: "pin", match: "pin bloqueo seguridad candado perfil", icon: "lock", color: "text-[#a855f7]", label: "Bloqueo PIN de privacidad", badge: "PIN", fn: "abrirModalPin()" },
+    ].filter((a) => !term || a.match.includes(term));
+
+    listEl.innerHTML = (filtrados.length === 0 && accionesExtra.length === 0
       ? `<p class="text-xs text-[#8e8e93] text-center py-4">Sin coincidencias</p>`
       : filtrados.map((m) => `
           <a href="${m.url}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#e5e2e1] hover:bg-[#ff5f52]/15 hover:text-white transition-colors">
@@ -313,12 +320,13 @@ function inicializarCommandPalette() {
             <span class="text-[13px] font-semibold flex-1">${m.nombre}</span>
             <span class="material-symbols-outlined text-[16px] text-[#8e8e93]">arrow_forward</span>
           </a>
-        `).join("")) + (!term || "escanear foto ocr texto frase libro afirmacion".includes(term) ? `
-          <button type="button" onclick="document.getElementById('cmd-palette-modal').classList.add('hidden'); abrirAccesoRapidoOCR();" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#83da85] hover:bg-[#53a759]/15 transition-colors text-left">
-            <span class="material-symbols-outlined text-[18px]">photo_camera</span>
-            <span class="text-[13px] font-bold flex-1">Escanear foto / texto (OCR → Notion)</span>
-            <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#53a759]/20">Rápido</span>
-          </button>` : "");
+        `).join("")) + accionesExtra.map((a) => `
+          <button type="button" onclick="document.getElementById('cmd-palette-modal').classList.add('hidden'); ${a.fn};" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl ${a.color} hover:bg-white/[0.06] transition-colors text-left">
+            <span class="material-symbols-outlined text-[18px]">${a.icon}</span>
+            <span class="text-[13px] font-bold flex-1">${a.label}</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.08]">${a.badge}</span>
+          </button>
+        `).join("");
   };
 
   const abrir = () => {
@@ -380,6 +388,19 @@ function inicializarCommandPalette() {
     btnOcr.addEventListener("click", abrirAccesoRapidoOCR);
     document.body.appendChild(btnOcr);
   }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.altKey && e.key.toLowerCase() === "h") {
+      e.preventDefault();
+      window.location.href = "inicio.html";
+    } else if (e.altKey && /^[1-9]$/.test(e.key)) {
+      const mod = COMMAND_PALETTE_MODULOS[Number(e.key) - 1];
+      if (mod) { e.preventDefault(); window.location.href = mod.url; }
+    } else if (e.shiftKey && e.key === "?" && !["INPUT", "TEXTAREA", "SELECT"].includes((document.activeElement || {}).tagName)) {
+      e.preventDefault();
+      abrirModalAtajosFocus();
+    }
+  });
 }
 
 function abrirAccesoRapidoOCR() {
@@ -393,9 +414,298 @@ function abrirAccesoRapidoOCR() {
   document.head.appendChild(s);
 }
 
+const FOCUS_STORAGE_KEY = "asistente_sabry:focus_mode";
+const PIN_STORAGE_KEY = "asistente_sabry:pin_code";
+
+function aplicarModoFocus() {
+  if (typeof document === "undefined") return false;
+  let activo = false;
+  try { activo = localStorage.getItem(FOCUS_STORAGE_KEY) === "1"; } catch (e) {}
+  document.body.classList.toggle("focus-mode-active", activo);
+  ["btn-ocr-rapido-fab", "btn-cmd-palette-hint"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle("opacity-25", activo);
+  });
+  return activo;
+}
+
+function toggleModoFocus(forzar) {
+  let actual = false;
+  try { actual = localStorage.getItem(FOCUS_STORAGE_KEY) === "1"; } catch (e) {}
+  const nuevo = typeof forzar === "boolean" ? forzar : !actual;
+  try { localStorage.setItem(FOCUS_STORAGE_KEY, nuevo ? "1" : "0"); } catch (e) {}
+  aplicarModoFocus();
+  if (typeof mostrarToast === "function") {
+    mostrarToast(nuevo ? "Modo Focus / Zen activado" : "Modo Focus desactivado", "info");
+  }
+  return nuevo;
+}
+
+function abrirModalAtajosFocus() {
+  if (typeof document === "undefined") return;
+  let modal = document.getElementById("modal-atajos-focus");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "modal-atajos-focus";
+    modal.className = "fixed inset-0 z-[82] hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto";
+    modal.innerHTML = `
+      <div class="w-full max-w-lg rounded-2xl bg-[#111115] border border-white/[0.12] p-6 space-y-5 shadow-2xl" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-[10px] font-label-caps text-[#00aaff] tracking-widest">PRODUCTIVIDAD WINDOWS</p>
+            <h3 class="text-lg font-bold text-white">Atajos de Teclado &amp; Modo Focus</h3>
+          </div>
+          <button type="button" onclick="document.getElementById('modal-atajos-focus').classList.add('hidden')" class="p-1.5 rounded-full hover:bg-white/10 text-[#8e8e93]"><span class="material-symbols-outlined text-[20px]">close</span></button>
+        </div>
+        <div class="flex items-center justify-between p-4 rounded-xl bg-[#18181d] border border-white/[0.08]">
+          <div>
+            <p class="text-sm font-bold text-white">Modo Focus / Zen</p>
+            <p class="text-xs text-[#8e8e93]">Atenúa botones flotantes para reducir sobrecarga visual.</p>
+          </div>
+          <button id="btn-toggle-focus-modal" type="button" onclick="toggleModoFocus(); actualizarTextoFocusModal();" class="px-3.5 py-2 rounded-xl bg-[#00aaff]/20 text-[#00aaff] border border-[#00aaff]/40 text-xs font-bold">Activar</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div class="flex justify-between p-2.5 rounded-lg bg-[#08080a] border border-white/[0.06]"><span class="text-[#a1a1aa]">Buscador rápido</span><kbd class="text-white font-bold">Ctrl + K</kbd></div>
+          <div class="flex justify-between p-2.5 rounded-lg bg-[#08080a] border border-white/[0.06]"><span class="text-[#a1a1aa]">Ir a Inicio</span><kbd class="text-white font-bold">Alt + H</kbd></div>
+          <div class="flex justify-between p-2.5 rounded-lg bg-[#08080a] border border-white/[0.06]"><span class="text-[#a1a1aa]">Saltar a módulo 1–9</span><kbd class="text-white font-bold">Alt + 1..9</kbd></div>
+          <div class="flex justify-between p-2.5 rounded-lg bg-[#08080a] border border-white/[0.06]"><span class="text-[#a1a1aa]">Guardar modal activo</span><kbd class="text-white font-bold">Ctrl + Enter</kbd></div>
+          <div class="flex justify-between p-2.5 rounded-lg bg-[#08080a] border border-white/[0.06]"><span class="text-[#a1a1aa]">Cerrar modal</span><kbd class="text-white font-bold">Esc</kbd></div>
+          <div class="flex justify-between p-2.5 rounded-lg bg-[#08080a] border border-white/[0.06]"><span class="text-[#a1a1aa]">Este panel</span><kbd class="text-white font-bold">Shift + ?</kbd></div>
+        </div>
+      </div>
+    `;
+    modal.addEventListener("click", () => { modal.classList.add("hidden"); modal.classList.remove("flex"); });
+    document.body.appendChild(modal);
+  }
+  window.actualizarTextoFocusModal = () => {
+    const activo = document.body.classList.contains("focus-mode-active");
+    const b = document.getElementById("btn-toggle-focus-modal");
+    if (b) b.textContent = activo ? "Desactivar" : "Activar";
+  };
+  window.actualizarTextoFocusModal();
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+}
+
+function generarReporteSaludMarkdown(ciclo = [], sesiones = [], pendientes = []) {
+  const ultCiclo = (ciclo || []).slice(0, 6);
+  const ultSes = (sesiones || []).slice(0, 8);
+  const pend = (pendientes || []).slice(0, 10);
+  const lines = ["# Reporte Clínico y Somático — AsistenteSabry", ""];
+  lines.push("## Ciclo Menstrual (fases recientes)");
+  if (ultCiclo.length === 0) lines.push("- Sin registros.");
+  ultCiclo.forEach((f) => {
+    const sin = (f.sintomas || []).length ? ` | Síntomas: ${f.sintomas.join(", ")}` : "";
+    lines.push(`- **${f.nombre || "Fase"}**: ${f.inicio || "?"}${f.fin ? " a " + f.fin : ""}${sin}`);
+  });
+  lines.push("", "## Controles y Pendientes Médicos");
+  if (pend.length === 0) lines.push("- Sin pendientes activos.");
+  pend.forEach((p) => lines.push(`- ${p.nombre} (${p.estado || "Pendiente"}${p.fecha_limite ? " · " + p.fecha_limite : ""})`));
+  lines.push("", "## Diario de Sesiones");
+  if (ultSes.length === 0) lines.push("- Sin sesiones registradas.");
+  ultSes.forEach((s) => lines.push(`- ${s.fecha || ""} · **${s.nombre}** (${s.duracion || 0} min · ${s.estado || ""})`));
+  return lines.join("\n");
+}
+
+function generarReporteFinanzasMarkdown(mes = "", ingresos = [], egresos = [], cuotas = []) {
+  const totIng = (ingresos || []).reduce((a, b) => a + (Number(b.monto) || 0), 0);
+  const totEgr = (egresos || []).reduce((a, b) => a + (Number(b.monto) || 0), 0);
+  const totCuotas = (cuotas || []).reduce((a, b) => a + (Number(b.monto) || 0), 0);
+  const lines = [
+    `# Reporte Financiero (${mes || "Mes actual"}) — AsistenteSabry`,
+    "",
+    `- **Total Ingresos**: $ ${totIng.toFixed(2)}`,
+    `- **Total Egresos**: $ ${totEgr.toFixed(2)}`,
+    `- **Balance**: $ ${(totIng - totEgr).toFixed(2)}`,
+    `- **Cuotas TC pendientes registradas**: $ ${totCuotas.toFixed(2)} (${(cuotas || []).length} cuotas)`,
+    "",
+    "## Egresos recientes",
+  ];
+  (egresos || []).slice(0, 12).forEach((e) => lines.push(`- ${e.fecha || ""} · **${e.nombre}**: $ ${(Number(e.monto) || 0).toFixed(2)}`));
+  return lines.join("\n");
+}
+
+function abrirCentroExportacion() {
+  if (typeof document === "undefined") return;
+  let modal = document.getElementById("modal-export-center");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "modal-export-center";
+    modal.className = "fixed inset-0 z-[82] hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto";
+    modal.innerHTML = `
+      <div class="w-full max-w-xl rounded-2xl bg-[#111115] border border-white/[0.12] p-6 space-y-4 shadow-2xl" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-[10px] font-label-caps text-[#ffb961] tracking-widest">ZERO-LEAK EXPORT</p>
+            <h3 class="text-lg font-bold text-white">Centro de Exportación (PDF / Markdown)</h3>
+          </div>
+          <button type="button" onclick="document.getElementById('modal-export-center').classList.add('hidden')" class="p-1.5 rounded-full hover:bg-white/10 text-[#8e8e93]"><span class="material-symbols-outlined text-[20px]">close</span></button>
+        </div>
+        <div class="flex gap-2">
+          <button type="button" onclick="cargarPreviewExport('salud')" class="px-3 py-1.5 rounded-lg bg-[#ff5f52]/15 text-[#ff5f52] border border-[#ff5f52]/30 text-xs font-bold">Reporte Clínico / Salud</button>
+          <button type="button" onclick="cargarPreviewExport('finanzas')" class="px-3 py-1.5 rounded-lg bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30 text-xs font-bold">Reporte Financiero</button>
+        </div>
+        <textarea id="export-md-preview" rows="10" readonly class="w-full bg-[#08080a] border border-white/[0.08] rounded-xl p-3 text-xs text-[#e5e2e1] font-mono"></textarea>
+        <div class="flex gap-2.5">
+          <button type="button" onclick="copiarExportMarkdown()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-bold text-xs py-2.5 rounded-xl">Copiar Markdown</button>
+          <button type="button" onclick="window.print()" class="flex-1 bg-[#ffb961] hover:bg-[#ffb961]/90 text-[#111115] font-bold text-xs py-2.5 rounded-xl">Imprimir / Guardar PDF (Ctrl+P)</button>
+        </div>
+      </div>
+    `;
+    modal.addEventListener("click", () => { modal.classList.add("hidden"); modal.classList.remove("flex"); });
+    document.body.appendChild(modal);
+  }
+  window.cargarPreviewExport = (tipo) => {
+    const md = tipo === "finanzas"
+      ? generarReporteFinanzasMarkdown(
+          typeof finanzasMesActual !== "undefined" ? finanzasMesActual : "",
+          typeof finanzasIngresos !== "undefined" ? finanzasIngresos : [],
+          typeof finanzasEgresos !== "undefined" ? finanzasEgresos : [],
+          typeof finanzasCuotas !== "undefined" ? finanzasCuotas : []
+        )
+      : generarReporteSaludMarkdown(
+          typeof saludCiclo !== "undefined" ? saludCiclo : (typeof inicioCiclo !== "undefined" ? inicioCiclo : []),
+          typeof saludSesiones !== "undefined" ? saludSesiones : [],
+          typeof saludPendientes !== "undefined" ? saludPendientes : []
+        );
+    document.getElementById("export-md-preview").value = md;
+  };
+  window.copiarExportMarkdown = async () => {
+    try {
+      await navigator.clipboard.writeText(document.getElementById("export-md-preview").value);
+      if (typeof mostrarToast === "function") mostrarToast("Reporte copiado en Markdown", "success");
+    } catch (e) {}
+  };
+  window.cargarPreviewExport(typeof finanzasIngresos !== "undefined" ? "finanzas" : "salud");
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+}
+
+function inicializarResguardoOffline() {
+  if (typeof document === "undefined" || typeof window === "undefined") return;
+  const actualizar = () => {
+    let banner = document.getElementById("offline-resguardo-banner");
+    if (navigator.onLine === false) {
+      if (!banner) {
+        banner = document.createElement("div");
+        banner.id = "offline-resguardo-banner";
+        banner.className = "fixed top-3 left-1/2 -translate-x-1/2 z-[90] px-4 py-2 rounded-full bg-[#1c1c1f]/95 border border-[#ffb961]/50 text-[#ffb961] text-xs font-bold shadow-xl backdrop-blur-md flex items-center gap-2";
+        banner.innerHTML = `<span class="material-symbols-outlined text-[16px]">cloud_off</span><span>Modo Resguardo Offline · Mostrando última copia sincronizada</span>`;
+        document.body.appendChild(banner);
+      }
+      banner.classList.remove("hidden");
+    } else if (banner) {
+      banner.classList.add("hidden");
+    }
+  };
+  window.addEventListener("offline", actualizar);
+  window.addEventListener("online", actualizar);
+  actualizar();
+}
+
+function verificarPinLocal(ingresado, guardado) {
+  return String(ingresado || "").trim() !== "" && String(ingresado || "").trim() === String(guardado || "").trim();
+}
+
+function abrirModalPin() {
+  if (typeof document === "undefined") return;
+  let pinActual = "";
+  try { pinActual = localStorage.getItem(PIN_STORAGE_KEY) || ""; } catch (e) {}
+  let modal = document.getElementById("modal-pin-lock");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "modal-pin-lock";
+    modal.className = "fixed inset-0 z-[95] hidden items-center justify-center bg-black/90 backdrop-blur-xl p-4";
+    modal.innerHTML = `
+      <div class="w-full max-w-xs rounded-2xl bg-[#111115] border border-white/[0.12] p-6 space-y-4 text-center shadow-2xl" onclick="event.stopPropagation()">
+        <span class="material-symbols-outlined text-[36px] text-[#ff5f52]">lock</span>
+        <h3 id="pin-modal-titulo" class="text-base font-bold text-white">Bloqueo de Privacidad</h3>
+        <p id="pin-modal-desc" class="text-xs text-[#8e8e93]">Ingresá tu PIN de 4 dígitos</p>
+        <input id="pin-input" type="password" inputmode="numeric" maxlength="8" placeholder="••••" class="w-full text-center tracking-[0.5em] bg-[#1c1c1f] border border-[#232326] rounded-xl px-3 py-2.5 text-white text-lg" />
+        <p id="pin-error" class="text-xs text-[#ff5f52] hidden"></p>
+        <div class="flex gap-2">
+          <button id="pin-btn-cancelar" type="button" onclick="document.getElementById('modal-pin-lock').classList.add('hidden')" class="flex-1 bg-[#1c1c1f] text-white text-xs font-semibold py-2.5 rounded-xl">Cancelar</button>
+          <button id="pin-btn-ok" type="button" class="flex-1 bg-[#ff5f52] text-white text-xs font-bold py-2.5 rounded-xl">Confirmar</button>
+        </div>
+        <button id="pin-btn-quitar" type="button" class="hidden w-full text-[11px] text-[#8e8e93] hover:text-white underline">Quitar PIN guardado</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+  const inp = document.getElementById("pin-input");
+  const err = document.getElementById("pin-error");
+  const btnCancel = document.getElementById("pin-btn-cancelar");
+  const btnQuitar = document.getElementById("pin-btn-quitar");
+  inp.value = "";
+  err.classList.add("hidden");
+
+  if (!pinActual) {
+    document.getElementById("pin-modal-titulo").textContent = "Configurar PIN de Privacidad";
+    document.getElementById("pin-modal-desc").textContent = "Elegí un PIN de 4 dígitos para bloquear la pantalla cuando quieras.";
+    btnCancel.classList.remove("hidden");
+    btnQuitar.classList.add("hidden");
+    document.getElementById("pin-btn-ok").onclick = () => {
+      const val = inp.value.trim();
+      if (val.length < 4) { err.textContent = "Mínimo 4 dígitos."; err.classList.remove("hidden"); return; }
+      try { localStorage.setItem(PIN_STORAGE_KEY, val); } catch (e) {}
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      if (typeof mostrarToast === "function") mostrarToast("PIN configurado. Tocá 🔒 para bloquear.", "success");
+    };
+  } else {
+    document.getElementById("pin-modal-titulo").textContent = "Pantalla Bloqueada";
+    document.getElementById("pin-modal-desc").textContent = "Ingresá tu PIN para continuar.";
+    btnCancel.classList.add("hidden");
+    btnQuitar.classList.remove("hidden");
+    document.getElementById("pin-btn-ok").onclick = () => {
+      if (verificarPinLocal(inp.value, pinActual)) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      } else {
+        err.textContent = "PIN incorrecto.";
+        err.classList.remove("hidden");
+      }
+    };
+    btnQuitar.onclick = () => {
+      if (verificarPinLocal(inp.value, pinActual)) {
+        try { localStorage.removeItem(PIN_STORAGE_KEY); } catch (e) {}
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        if (typeof mostrarToast === "function") mostrarToast("PIN eliminado", "info");
+      } else {
+        err.textContent = "Ingresá el PIN actual para quitarlo.";
+        err.classList.remove("hidden");
+      }
+    };
+  }
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+  setTimeout(() => inp.focus(), 20);
+}
+
+function inicializarBloqueoPin() {
+  if (typeof document === "undefined") return;
+  const sidebar = document.getElementById("sidebar");
+  if (!sidebar || document.getElementById("btn-sidebar-pin")) return;
+  const perfil = sidebar.querySelector(".border-t");
+  if (perfil) {
+    const btn = document.createElement("button");
+    btn.id = "btn-sidebar-pin";
+    btn.type = "button";
+    btn.title = "Bloqueo PIN";
+    btn.className = "ml-auto p-1.5 rounded-lg hover:bg-white/10 text-[#8e8e93] hover:text-[#ff5f52] transition-colors";
+    btn.innerHTML = `<span class="material-symbols-outlined text-[18px]">lock</span>`;
+    btn.addEventListener("click", abrirModalPin);
+    perfil.appendChild(btn);
+  }
+}
+
 if (typeof document !== "undefined") {
   document.addEventListener("DOMContentLoaded", () => {
     inicializarCommandPalette();
+    aplicarModoFocus();
+    inicializarResguardoOffline();
+    inicializarBloqueoPin();
   });
 }
 
@@ -412,5 +722,10 @@ if (typeof module !== "undefined" && module.exports) {
     mostrarToast,
     COMMAND_PALETTE_MODULOS,
     inicializarCommandPalette,
+    aplicarModoFocus,
+    toggleModoFocus,
+    generarReporteSaludMarkdown,
+    generarReporteFinanzasMarkdown,
+    verificarPinLocal,
   };
 }

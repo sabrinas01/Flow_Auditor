@@ -336,3 +336,26 @@ describe('crearManejadorDeRefresco', () => {
     expect(onRecargar).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('Reportes Markdown y Bloqueo PIN (v4.62)', () => {
+  test('generarReporteSaludMarkdown y generarReporteFinanzasMarkdown formatean datos reales', () => {
+    const { generarReporteSaludMarkdown, generarReporteFinanzasMarkdown, verificarPinLocal } = require('../../src/utils/dom_render.js');
+    const mdSalud = generarReporteSaludMarkdown(
+      [{ nombre: '[11]-Fase Lútea', inicio: '2026-11-20', fin: '2026-11-25', sintomas: ['Cansancio físico'] }],
+      [{ nombre: 'Pilates', fecha: '2026-11-24', duracion: 45, estado: 'Hecha' }],
+      [{ nombre: 'Turno médico', estado: 'Pendiente', fecha_limite: '2026-11-30' }],
+    );
+    expect(mdSalud).toContain('[11]-Fase Lútea');
+    expect(mdSalud).toContain('Cansancio físico');
+    expect(mdSalud).toContain('Pilates');
+
+    const mdFin = generarReporteFinanzasMarkdown('2026-11', [{ monto: 1000 }], [{ nombre: 'Café', monto: 200, fecha: '2026-11-24' }], [{ monto: 100 }]);
+    expect(mdFin).toContain('1000.00');
+    expect(mdFin).toContain('800.00');
+    expect(mdFin).toContain('Café');
+
+    expect(verificarPinLocal('1234', '1234')).toBe(true);
+    expect(verificarPinLocal('0000', '1234')).toBe(false);
+    expect(verificarPinLocal('', '')).toBe(false);
+  });
+});
