@@ -481,6 +481,13 @@
                 <div>
                     <label class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Síntomas (podés elegir varios)</label>
                     <div id="cic-sintomas-list" class="max-h-40 overflow-y-auto bg-[#1c1c1f] border border-[#232326] rounded-lg p-2.5 grid grid-cols-1 sm:grid-cols-2 gap-1.5"></div>
+                    <div class="flex gap-2 mt-2">
+                        <input id="cic-nuevo-sintoma" type="text" maxlength="80" placeholder="Nuevo síntoma (ej. Dolor lumbar)..." onkeydown="if(event.key==='Enter'){event.preventDefault();agregarNuevoSintomaCiclo();}" class="flex-1 bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[13px] placeholder-[#8e8e93]" />
+                        <button type="button" onclick="agregarNuevoSintomaCiclo()" class="bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 border border-[#ff5f52]/40 text-[#ff5f52] font-bold text-[12px] px-3 py-2 rounded-lg flex items-center gap-1 transition-all flex-shrink-0">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>Agregar</span>
+                        </button>
+                    </div>
                 </div>
                 <p id="cic-mensaje" class="text-[13px] hidden"></p>
                 <div class="flex gap-3 pt-1">
@@ -889,13 +896,39 @@
 
         function _poblarCheckboxesSintomas(seleccionados) {
             const setSel = new Set(seleccionados || []);
+            const base = Array.isArray(saludOpciones.sintomas) ? [...saludOpciones.sintomas] : [];
+            setSel.forEach((s) => {
+                if (s && !base.some((x) => x.toLowerCase() === s.toLowerCase())) {
+                    base.push(s);
+                }
+            });
+            saludOpciones.sintomas = base;
             const contSintomas = document.getElementById("cic-sintomas-list");
-            contSintomas.innerHTML = (saludOpciones.sintomas || []).map((s) => `
+            contSintomas.innerHTML = base.map((s) => `
                 <label class="flex items-center gap-2 text-[13px] text-[#e5e2e1] cursor-pointer px-1.5 py-1 rounded hover:bg-white/5">
                     <input type="checkbox" name="cic-sintoma" value="${escapeHtml(s)}"${setSel.has(s) ? " checked" : ""} class="accent-[#ff5f52] rounded" />
                     <span class="truncate">${escapeHtml(s)}</span>
                 </label>
             `).join("");
+        }
+
+        function agregarNuevoSintomaCiclo() {
+            const inp = document.getElementById("cic-nuevo-sintoma");
+            const val = (inp.value || "").trim();
+            if (!val) return;
+            const marcados = [...document.querySelectorAll('input[name="cic-sintoma"]:checked')].map((el) => el.value);
+            const existente = (saludOpciones.sintomas || []).find((x) => x.toLowerCase() === val.toLowerCase());
+            if (existente) {
+                if (!marcados.includes(existente)) marcados.push(existente);
+            } else {
+                saludOpciones.sintomas = [...(saludOpciones.sintomas || []), val];
+                marcados.push(val);
+            }
+            inp.value = "";
+            _poblarCheckboxesSintomas(marcados);
+            if (typeof mostrarToast === "function") {
+                mostrarToast(`Síntoma "${existente || val}" listo para guardar en Notion`, "success");
+            }
         }
 
         function abrirModalCiclo(fase) {

@@ -290,7 +290,7 @@ function inicializarCommandPalette() {
     <div class="w-full max-w-lg rounded-2xl bg-[#111115] border border-white/[0.12] shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
       <div class="flex items-center gap-3 px-4 py-3.5 border-b border-white/[0.08]">
         <span class="material-symbols-outlined text-[20px] text-[#ff5f52]">search</span>
-        <input id="cmd-palette-input" type="text" placeholder="Ir a un módulo... (Esc para cerrar)" class="w-full bg-transparent text-white text-[14px] placeholder-[#8e8e93] focus:outline-none" />
+        <input id="cmd-palette-input" type="text" placeholder="Ir a un módulo... (Ctrl+K · Esc para cerrar)" class="w-full bg-transparent text-white text-[14px] placeholder-[#8e8e93] focus:outline-none" />
         <kbd class="text-[10px] px-2 py-0.5 rounded bg-white/[0.06] text-[#8e8e93] border border-white/[0.08]">ESC</kbd>
       </div>
       <div id="cmd-palette-list" class="max-h-72 overflow-y-auto p-2 space-y-1"></div>
@@ -331,11 +331,39 @@ function inicializarCommandPalette() {
       e.preventDefault();
       if (modal.classList.contains("hidden")) abrir();
       else { modal.classList.add("hidden"); modal.classList.remove("flex"); }
-    } else if (e.key === "Escape" && !modal.classList.contains("hidden")) {
-      modal.classList.add("hidden");
-      modal.classList.remove("flex");
+    } else if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      const formAbierto = document.querySelector(".fixed.flex form");
+      if (formAbierto && typeof formAbierto.requestSubmit === "function") {
+        e.preventDefault();
+        formAbierto.requestSubmit();
+      }
+    } else if (e.key === "Escape") {
+      if (!modal.classList.contains("hidden")) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        return;
+      }
+      const modalesAbiertos = [...document.querySelectorAll(".fixed.flex[id^='modal-']")];
+      if (modalesAbiertos.length > 0) {
+        const ultimo = modalesAbiertos[modalesAbiertos.length - 1];
+        if (ultimo.id !== "modal-spinner-notion") {
+          ultimo.classList.add("hidden");
+          ultimo.classList.remove("flex");
+        }
+      }
     }
   });
+
+  if (!document.getElementById("btn-cmd-palette-hint")) {
+    const btnHint = document.createElement("button");
+    btnHint.id = "btn-cmd-palette-hint";
+    btnHint.type = "button";
+    btnHint.title = "Abrir buscador rápido (Ctrl + K)";
+    btnHint.className = "hidden lg:inline-flex fixed bottom-5 left-5 z-30 items-center gap-2 px-3 py-1.5 rounded-full bg-[#111115]/90 border border-white/[0.1] text-[11px] text-[#8e8e93] hover:text-white hover:border-[#ff5f52]/40 backdrop-blur-md shadow-lg transition-all";
+    btnHint.innerHTML = `<span class="material-symbols-outlined text-[15px] text-[#ff5f52]">search</span><span>Ir a...</span><kbd class="px-1.5 py-0.5 rounded bg-white/[0.06] text-[10px]">Ctrl+K</kbd>`;
+    btnHint.addEventListener("click", abrir);
+    document.body.appendChild(btnHint);
+  }
 }
 
 if (typeof document !== "undefined") {

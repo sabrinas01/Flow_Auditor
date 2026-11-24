@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.57 (Command Palette global Cmd+K y CRUD completo en Salud)  
+**Versión:** 4.58 (Nuevo síntoma en Ciclo menstrual y atajos Windows)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
