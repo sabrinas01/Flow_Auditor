@@ -59,6 +59,7 @@
         const saludCiclo = [];
         const saludPendientes = [];
         const saludMenteRegistros = [];
+        const saludEnergiaRegistros = [];
         const saludOpciones = {"estados_sesion": ["Hecha", "Sin empezar"], "sintomas": ["Hinchazón abdominal", "Dolor abdominal", "Cansancio físico", "Cansancio Mental"], "tipos_pendiente": ["💻 Pedir autorización", "💬 Pedir turno", "🗓️TURNO AGENDADO", "📄Fichadetratamiento", "Única vez", "💊Medicación", "Estudio"], "estados_pendiente": ["Pendiente", "Sin empezar", "En curso", "Listo"]};
     </script>
 
@@ -377,7 +378,17 @@
                         <p class="text-[11px] font-label-caps text-[#ffb961] tracking-widest">SECCIÓN 03 · ENERGÍA</p>
                         <h2 class="text-xl font-bold text-white">Termómetro de vitalidad, curva circadiana y recarga</h2>
                     </div>
-                    <span id="energia-fase-badge" class="text-[11px] px-3 py-1 rounded-full bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30 font-semibold">Sincronizado con ciclo</span>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="energia-fase-badge" class="text-[11px] px-3 py-1 rounded-full bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30 font-semibold">Sincronizado con ciclo</span>
+                        <a href="https://app.notion.com/p/422a38bb7a6e80f2a932c0a64912b922?v=422a38bb7a6e80dfa449000c4725e083&source=copy_link" target="_blank" rel="noopener" class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-xs px-3 py-1.5 rounded-lg inline-flex items-center gap-1">
+                            <span>Ver en Notion</span>
+                            <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                        </a>
+                        <button type="button" onclick="abrirModalEnergia()" class="bg-[#ffb961] hover:bg-[#ffb961]/90 text-[#111115] font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>Registrar en Energía</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#ffb961] space-y-3">
@@ -566,6 +577,60 @@
                 <div class="flex gap-3 pt-1">
                     <button type="button" onclick="cerrarModal('modal-pendiente')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
                     <button type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ENERGÍA & RECARGA VITAL -->
+    <div id="modal-energia" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-energia')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="eng-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar en Energía</h3>
+                <button type="button" onclick="cerrarModal('modal-energia')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-energia" class="space-y-4" onsubmit="return manejarSubmitEnergia(event)">
+                <input id="eng-page-id" type="hidden" value="" />
+                <div>
+                    <label for="eng-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre *</label>
+                    <input id="eng-nombre" type="text" required maxlength="200" placeholder="Ej. Hidratación tibia / Mañana (07-13)" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="eng-tipo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Tipo</label>
+                        <select id="eng-tipo" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]">
+                            <option value="⚡ Factor de Recarga">⚡ Factor de Recarga</option>
+                            <option value="📈 Curva Circadiana">📈 Curva Circadiana</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="eng-fase" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fase</label>
+                        <select id="eng-fase" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]">
+                            <option value="Todas">Todas</option>
+                            <option value="❄️ Menstrual">❄️ Menstrual</option>
+                            <option value="🌸 Folicular">🌸 Folicular</option>
+                            <option value="☀️ Ovulatoria">☀️ Ovulatoria</option>
+                            <option value="🍂 Lútea">🍂 Lútea</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label for="eng-porcentaje" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Porcentaje (0-100, opcional para curva)</label>
+                    <input id="eng-porcentaje" type="number" min="0" max="100" step="1" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div>
+                    <label for="eng-detalle" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Detalle / Nota</label>
+                    <textarea id="eng-detalle" rows="2" maxlength="400" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></textarea>
+                </div>
+                <p id="eng-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button id="eng-btn-eliminar" type="button" onclick="confirmarEliminarEnergia()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl" title="Mandar a papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
+                    <button type="button" onclick="cerrarModal('modal-energia')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-[#ffb961] hover:bg-[#ffb961]/90 text-[#111115] font-bold text-[14px] py-3 rounded-xl">Guardar</button>
                 </div>
             </form>
         </div>
@@ -859,27 +924,61 @@
             document.getElementById("energia-etiqueta").textContent = e.etiqueta;
             document.getElementById("energia-desc").textContent = e.descripcion;
 
-            document.getElementById("energia-curva-list").innerHTML = e.curva.map((c) => `
-                <div class="space-y-1.5">
-                    <div class="flex justify-between text-[12px]">
-                        <span class="text-[#a1a1aa]">${escapeHtml(c.franja)}</span>
-                        <span class="font-bold text-white">${escapeHtml(c.nivel)} ${c.pct}%</span>
-                    </div>
-                    <div class="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-                        <div class="h-full rounded-full bg-gradient-to-r from-[#38bdf8] to-[#ffb961]" style="width: ${c.pct}%"></div>
-                    </div>
-                </div>
-            `).join("");
+            const customCurvas = (saludEnergiaRegistros || []).filter((x) => (x.tipo || "").includes("Curva"));
+            const customFactores = (saludEnergiaRegistros || []).filter((x) => !(x.tipo || "").includes("Curva"));
 
-            document.getElementById("energia-factores-list").innerHTML = e.factores.map((f) => `
-                <div class="flex items-start gap-3">
-                    <span class="material-symbols-outlined text-[18px] text-[#83da85] mt-0.5">${escapeHtml(f.icono)}</span>
-                    <div class="min-w-0">
-                        <p class="text-[13px] font-semibold text-white">${escapeHtml(f.titulo)}</p>
-                        <p class="text-[12px] text-[#8e8e93]">${escapeHtml(f.detalle)}</p>
+            document.getElementById("energia-curva-list").innerHTML = customCurvas.length > 0
+                ? customCurvas.map((c) => {
+                    const pct = Math.min(100, Math.max(0, Number(c.porcentaje) || 50));
+                    return `
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between items-center text-[12px] gap-2">
+                                <span class="text-[#a1a1aa] truncate">${escapeHtml(c.nombre)}</span>
+                                <div class="flex items-center gap-1.5 flex-shrink-0">
+                                    <span class="font-bold text-white">${pct}%</span>
+                                    <button type="button" onclick="abrirModalEditarEnergia('${escapeHtml(c.id || "")}')" class="p-0.5 hover:bg-white/10 rounded text-[#8e8e93] hover:text-white"><span class="material-symbols-outlined text-[14px]">edit</span></button>
+                                </div>
+                            </div>
+                            <div class="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                                <div class="h-full rounded-full bg-gradient-to-r from-[#38bdf8] to-[#ffb961]" style="width: ${pct}%"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join("")
+                : e.curva.map((c) => `
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-[12px]">
+                            <span class="text-[#a1a1aa]">${escapeHtml(c.franja)}</span>
+                            <span class="font-bold text-white">${escapeHtml(c.nivel)} ${c.pct}%</span>
+                        </div>
+                        <div class="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                            <div class="h-full rounded-full bg-gradient-to-r from-[#38bdf8] to-[#ffb961]" style="width: ${c.pct}%"></div>
+                        </div>
                     </div>
-                </div>
-            `).join("");
+                `).join("");
+
+            document.getElementById("energia-factores-list").innerHTML = customFactores.length > 0
+                ? customFactores.map((f) => `
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-start gap-2.5 min-w-0">
+                            <span class="material-symbols-outlined text-[18px] text-[#83da85] mt-0.5">bolt</span>
+                            <div class="min-w-0">
+                                <p class="text-[13px] font-semibold text-white truncate">${escapeHtml(f.nombre)}</p>
+                                ${f.detalle ? `<p class="text-[12px] text-[#8e8e93]">${escapeHtml(f.detalle)}</p>` : ""}
+                            </div>
+                        </div>
+                        <button type="button" onclick="abrirModalEditarEnergia('${escapeHtml(f.id || "")}')" class="p-1 hover:bg-white/10 rounded text-[#8e8e93] hover:text-white flex-shrink-0"><span class="material-symbols-outlined text-[15px]">edit</span></button>
+                    </div>
+                `).join("")
+                : e.factores.map((f) => `
+                    <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-[18px] text-[#83da85] mt-0.5">${escapeHtml(f.icono)}</span>
+                        <div class="min-w-0">
+                            <p class="text-[13px] font-semibold text-white">${escapeHtml(f.titulo)}</p>
+                            <p class="text-[12px] text-[#8e8e93]">${escapeHtml(f.detalle)}</p>
+                        </div>
+                    </div>
+                `).join("");
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -1189,6 +1288,59 @@
             cerrarModal("modal-pendiente");
             await ejecutarEscrituraConSpinner(pageId ? "actualizar_pendiente_salud" : "crear_pendiente_salud", res.payload);
             return false;
+        }
+
+        function abrirModalEnergia() {
+            document.getElementById("form-energia").reset();
+            document.getElementById("eng-page-id").value = "";
+            document.getElementById("eng-modal-titulo").textContent = "Registrar en Energía";
+            document.getElementById("eng-btn-eliminar").classList.add("hidden");
+            document.getElementById("eng-mensaje").classList.add("hidden");
+            abrirModal("modal-energia");
+        }
+
+        function abrirModalEditarEnergia(id) {
+            const x = (saludEnergiaRegistros || []).find((r) => r.id === id);
+            if (!x) return;
+            abrirModalEnergia();
+            document.getElementById("eng-page-id").value = x.id;
+            document.getElementById("eng-modal-titulo").textContent = "Editar registro de Energía";
+            document.getElementById("eng-nombre").value = x.nombre || "";
+            document.getElementById("eng-tipo").value = x.tipo || "⚡ Factor de Recarga";
+            document.getElementById("eng-fase").value = x.fase || "Todas";
+            document.getElementById("eng-porcentaje").value = x.porcentaje !== null && x.porcentaje !== undefined ? x.porcentaje : "";
+            document.getElementById("eng-detalle").value = x.detalle || "";
+            document.getElementById("eng-btn-eliminar").classList.remove("hidden");
+        }
+
+        async function manejarSubmitEnergia(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("eng-page-id").value.trim();
+            const res = construirPayloadEnergiaSalud({
+                pageId,
+                nombre: document.getElementById("eng-nombre").value,
+                tipo: document.getElementById("eng-tipo").value,
+                fase: document.getElementById("eng-fase").value,
+                porcentaje: document.getElementById("eng-porcentaje").value,
+                detalle: document.getElementById("eng-detalle").value,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("eng-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
+            cerrarModal("modal-energia");
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_energia_salud" : "crear_energia_salud", res.payload);
+            return false;
+        }
+
+        function confirmarEliminarEnergia() {
+            const pageId = document.getElementById("eng-page-id").value.trim();
+            if (!pageId) return;
+            cerrarModal("modal-energia");
+            eliminarItemSalud(pageId);
         }
     </script>
 </body>

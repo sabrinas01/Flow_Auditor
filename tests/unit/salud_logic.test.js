@@ -10,6 +10,7 @@ const {
   calcularMetricasSesiones,
   calcularResumenMenteSalud,
   calcularEnergiaDesdeCiclo,
+  construirPayloadEnergiaSalud,
 } = require('../../src/utils/salud_logic.js');
 
 describe('clasificarFasePorNombre', () => {
@@ -139,6 +140,29 @@ describe('Salud reagrupada (Sesiones, Mente y Energía)', () => {
     expect(res.curva).toHaveLength(3);
     expect(res.factores).toHaveLength(3);
   });
+
+  test('construirPayloadEnergiaSalud valida nombre y porcentaje y arma payload', () => {
+    expect(construirPayloadEnergiaSalud({ nombre: '' }).ok).toBe(false);
+    expect(construirPayloadEnergiaSalud({ nombre: 'Mañana', porcentaje: 150 }).ok).toBe(false);
+    expect(construirPayloadEnergiaSalud({
+      pageId: 'eng-1',
+      nombre: 'Hidratación tibia',
+      tipo: '⚡ Factor de Recarga',
+      fase: '❄️ Menstrual',
+      porcentaje: '80',
+      detalle: 'Infusiones calmantes',
+    })).toEqual({
+      ok: true,
+      payload: {
+        page_id: 'eng-1',
+        nombre: 'Hidratación tibia',
+        tipo: '⚡ Factor de Recarga',
+        fase: '❄️ Menstrual',
+        porcentaje: 80,
+        detalle: 'Infusiones calmantes',
+      },
+    });
+  });
 });
 
 describe('construirPayloadPendienteSalud', () => {
@@ -220,5 +244,28 @@ describe('Salud reagrupada (Sesiones, Mente y Energía)', () => {
     expect(res.fuentePuntaje).toBe('Gestión emocional');
     expect(res.curva).toHaveLength(3);
     expect(res.factores).toHaveLength(3);
+  });
+
+  test('construirPayloadEnergiaSalud valida nombre y porcentaje y arma payload', () => {
+    expect(construirPayloadEnergiaSalud({ nombre: '' }).ok).toBe(false);
+    expect(construirPayloadEnergiaSalud({ nombre: 'Mañana', porcentaje: 150 }).ok).toBe(false);
+    expect(construirPayloadEnergiaSalud({
+      pageId: 'eng-1',
+      nombre: 'Hidratación tibia',
+      tipo: '⚡ Factor de Recarga',
+      fase: '❄️ Menstrual',
+      porcentaje: '80',
+      detalle: 'Infusiones calmantes',
+    })).toEqual({
+      ok: true,
+      payload: {
+        page_id: 'eng-1',
+        nombre: 'Hidratación tibia',
+        tipo: '⚡ Factor de Recarga',
+        fase: '❄️ Menstrual',
+        porcentaje: 80,
+        detalle: 'Infusiones calmantes',
+      },
+    });
   });
 });

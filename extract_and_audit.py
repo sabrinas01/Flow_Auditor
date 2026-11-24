@@ -105,12 +105,13 @@ DB_FRASES = os.getenv("NOTION_DB_FRASES")
 DB_DESARROLLO_PERSONAL = os.getenv("NOTION_DB_DESARROLLO_PERSONAL")
 DB_HABITOS = os.getenv("NOTION_DB_HABITOS")
 DB_FORMACIONES = os.getenv("NOTION_DB_FORMACIONES")
+DB_SALUD_ENERGIA = os.getenv("NOTION_DB_SALUD_ENERGIA")
 
 
 def validar_credenciales():
     try:
         # Uso de helper interno para resolución robusta de variables de entorno
-        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS, DB_GESTION_EMOCIONAL, DB_EMOCIONES, DB_RELACIONES, DB_FRASES, DB_DESARROLLO_PERSONAL, DB_HABITOS, DB_FORMACIONES
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS, DB_GESTION_EMOCIONAL, DB_EMOCIONES, DB_RELACIONES, DB_FRASES, DB_DESARROLLO_PERSONAL, DB_HABITOS, DB_FORMACIONES, DB_SALUD_ENERGIA
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
         # Opcionales: su ausencia (o cualquier fallo al consultarlas) no debe abortar
@@ -134,6 +135,7 @@ def validar_credenciales():
         DB_DESARROLLO_PERSONAL = get_env_var(["NOTION_DB_DESARROLLO_PERSONAL"], required=False)
         DB_HABITOS = get_env_var(["NOTION_DB_HABITOS"], required=False)
         DB_FORMACIONES = get_env_var(["NOTION_DB_FORMACIONES"], required=False)
+        DB_SALUD_ENERGIA = get_env_var(["NOTION_DB_SALUD_ENERGIA"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -1439,6 +1441,20 @@ def sincronizar_salud(timestamps, app_version):
                 "stop": bool((pr.get("Protocolo S.T.O.P.") or {}).get("checkbox")),
             })
 
+    energia_registros = []
+    if DB_SALUD_ENERGIA:
+        res_eng, _ = _consultar_bd_salud(DB_SALUD_ENERGIA, "SALUD ENERGIA", page_size=50)
+        for p in res_eng:
+            pr = p.get("properties", {})
+            energia_registros.append({
+                "id": p.get("id"),
+                "nombre": "".join(t.get("plain_text", "") for t in (pr.get("Nombre") or {}).get("title", [])) or "Registro",
+                "tipo": ((pr.get("Tipo") or {}).get("select") or {}).get("name") or "⚡ Factor de Recarga",
+                "fase": ((pr.get("Fase") or {}).get("select") or {}).get("name") or "Todas",
+                "porcentaje": (pr.get("Porcentaje") or {}).get("number"),
+                "detalle": "".join(t.get("plain_text", "") for t in (pr.get("Detalle") or {}).get("rich_text", [])),
+            })
+
     with open(html_path, "r", encoding="utf-8") as file:
         html_content = file.read()
 
@@ -1449,6 +1465,7 @@ def sincronizar_salud(timestamps, app_version):
         ("saludCiclo", fases_ciclo),
         ("saludPendientes", pendientes),
         ("saludMenteRegistros", mente_registros),
+        ("saludEnergiaRegistros", energia_registros),
         ("saludOpciones", opciones),
     ):
         json_val = json.dumps(valor, ensure_ascii=False).replace("</", "<\\/")
@@ -2160,6 +2177,10 @@ def ejecutar_accion_notion(payload):
         crear_pendiente_salud(datos)
     elif accion == "actualizar_pendiente_salud":
         actualizar_pendiente_salud(datos)
+    elif accion == "crear_energia_salud":
+        crear_energia_salud(datos)
+    elif accion == "actualizar_energia_salud":
+        actualizar_energia_salud(datos)
     elif accion == "crear_libro_ocio":
         crear_libro_ocio(datos)
     elif accion == "actualizar_libro_ocio":
@@ -2519,6 +2540,42 @@ def actualizar_formacion_curso(datos):
     props = _construir_propiedades_formacion(datos)
     _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR FORMACION")
     print(f"✅ [ACTUALIZAR FORMACION]: '{datos.get('tema')}' ({page_id}) actualizada.")
+
+
+def _construir_propiedades_energia_salud(datos):
+    nombre = (datos.get("nombre") or "").strip()
+    if not nombre:
+        print("❌ [ENERGIA SALUD]: falta el nombre.")
+        sys.exit(1)
+    props = {"Nombre": {"title": [{"text": {"content": nombre}}]}}
+    if datos.get("tipo"):
+        props["Tipo"] = {"select": {"name": datos["tipo"]}}
+    if datos.get("fase"):
+        props["Fase"] = {"select": {"name": datos["fase"]}}
+    if datos.get("porcentaje") is not None:
+        props["Porcentaje"] = {"number": float(datos["porcentaje"])}
+    if datos.get("detalle") is not None:
+        props["Detalle"] = {"rich_text": [{"text": {"content": str(datos["detalle"])}}] if datos["detalle"] else []}
+    return props
+
+
+def crear_energia_salud(datos):
+    if not DB_SALUD_ENERGIA:
+        print("❌ [CREAR ENERGIA SALUD]: NOTION_DB_SALUD_ENERGIA no configurada.")
+        sys.exit(1)
+    props = _construir_propiedades_energia_salud(datos)
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", {"parent": {"database_id": DB_SALUD_ENERGIA}, "properties": props}, "CREAR ENERGIA SALUD")
+    print(f"✅ [CREAR ENERGIA SALUD]: '{datos.get('nombre')}' creada ({res.get('id', '?')}).")
+
+
+def actualizar_energia_salud(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR ENERGIA SALUD]: falta page_id.")
+        sys.exit(1)
+    props = _construir_propiedades_energia_salud(datos)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR ENERGIA SALUD")
+    print(f"✅ [ACTUALIZAR ENERGIA SALUD]: '{datos.get('nombre')}' ({page_id}) actualizada.")
 
 
 def sincronizar_agenda_personal(timestamps, app_version):

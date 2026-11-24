@@ -559,3 +559,22 @@ def test_crear_formacion_curso(monkeypatch):
         assert props["Estado"] == {"status": {"name": "En curso"}}
         assert props["Plataforma"] == {"select": {"name": "Educación IT"}}
         assert props["Tematica"] == {"multi_select": [{"name": "Product ownership"}, {"name": "Management"}]}
+
+
+def test_crear_energia_salud(monkeypatch):
+    monkeypatch.setattr(extract_and_audit, "NOTION_API_KEY", "secret-token-de-prueba")
+    monkeypatch.setattr(extract_and_audit, "DB_SALUD_ENERGIA", "422a38bb7a6e80f2a932c0a64912b922")
+
+    mock_post = Mock(return_value=_mock_respuesta_creada("eng-1"))
+    with patch.object(extract_and_audit.requests, "post", mock_post):
+        extract_and_audit.crear_energia_salud({
+            "nombre": "Hidratación tibia",
+            "tipo": "⚡ Factor de Recarga",
+            "fase": "❄️ Menstrual",
+            "porcentaje": 75,
+            "detalle": "Infusiones calmantes",
+        })
+        props = mock_post.call_args[1]["json"]["properties"]
+        assert props["Nombre"] == {"title": [{"text": {"content": "Hidratación tibia"}}]}
+        assert props["Tipo"] == {"select": {"name": "⚡ Factor de Recarga"}}
+        assert props["Porcentaje"] == {"number": 75.0}

@@ -271,6 +271,30 @@ function calcularEnergiaDesdeCiclo(fases, registrosMente, hoyIso) {
   };
 }
 
+function construirPayloadEnergiaSalud(datos) {
+  const nombre = (datos.nombre || "").trim();
+  if (!nombre) return { ok: false, error: "El nombre es obligatorio." };
+
+  const pctRaw = datos.porcentaje !== "" && datos.porcentaje !== null && datos.porcentaje !== undefined
+    ? Number(datos.porcentaje)
+    : null;
+  if (pctRaw !== null && (!Number.isFinite(pctRaw) || pctRaw < 0 || pctRaw > 100)) {
+    return { ok: false, error: "El porcentaje debe estar entre 0 y 100." };
+  }
+
+  const payload = {
+    nombre,
+    tipo: (datos.tipo || "").trim() || "⚡ Factor de Recarga",
+    fase: (datos.fase || "").trim() || "Todas",
+    porcentaje: pctRaw,
+    detalle: (datos.detalle || "").trim() || null,
+  };
+  const pageId = (datos.pageId || "").trim();
+  if (pageId) payload.page_id = pageId;
+
+  return { ok: true, payload };
+}
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     FASES_CICLO,
@@ -282,5 +306,6 @@ if (typeof module !== "undefined" && module.exports) {
     calcularMetricasSesiones,
     calcularResumenMenteSalud,
     calcularEnergiaDesdeCiclo,
+    construirPayloadEnergiaSalud,
   };
 }

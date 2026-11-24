@@ -74,6 +74,7 @@ jobs:
           NOTION_DB_DESARROLLO_PERSONAL: ${{ secrets.NOTION_DB_DESARROLLO_PERSONAL }}
           NOTION_DB_HABITOS: ${{ secrets.NOTION_DB_HABITOS }}
           NOTION_DB_FORMACIONES: ${{ secrets.NOTION_DB_FORMACIONES }}
+          NOTION_DB_SALUD_ENERGIA: ${{ secrets.NOTION_DB_SALUD_ENERGIA }}
         run: python extract_and_audit.py
 
       - name: Publish updated frontends to the gh-pages branch
