@@ -1435,14 +1435,11 @@ def sincronizar_salud(timestamps, app_version):
     print("✅ Frontend salud.html sincronizado y actualizado con éxito.")
 
 
-def crear_sesion_salud(datos):
-    if not DB_SESIONES:
-        print("❌ [CREAR SESION]: NOTION_DB_SESIONES no configurada.")
-        sys.exit(1)
+def _construir_propiedades_sesion(datos):
     nombre = (datos.get("nombre") or "").strip()
     fecha = (datos.get("fecha") or "").strip()
     if not nombre or not fecha:
-        print("❌ [CREAR SESION]: faltan nombre o fecha.")
+        print("❌ [SESION]: faltan nombre o fecha.")
         sys.exit(1)
 
     props = {
@@ -1453,9 +1450,26 @@ def crear_sesion_salud(datos):
         props["Duración (en min)"] = {"number": float(datos["duracion"])}
     if datos.get("estado"):
         props["Estado de la sesión"] = {"select": {"name": datos["estado"]}}
+    return nombre, props
 
+
+def crear_sesion_salud(datos):
+    if not DB_SESIONES:
+        print("❌ [CREAR SESION]: NOTION_DB_SESIONES no configurada.")
+        sys.exit(1)
+    nombre, props = _construir_propiedades_sesion(datos)
     res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", {"parent": {"database_id": DB_SESIONES}, "properties": props}, "CREAR SESION")
     print(f"✅ [CREAR SESION]: '{nombre}' creada ({res.get('id', '?')}).")
+
+
+def actualizar_sesion_salud(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR SESION]: falta page_id.")
+        sys.exit(1)
+    nombre, props = _construir_propiedades_sesion(datos)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR SESION")
+    print(f"✅ [ACTUALIZAR SESION]: '{nombre}' ({page_id}) actualizada.")
 
 
 def _construir_propiedades_ciclo(datos, modo_edicion=False):
@@ -1506,13 +1520,10 @@ def actualizar_fase_ciclo(datos):
     print(f"✅ [ACTUALIZAR CICLO]: '{nombre}' ({page_id}) actualizada.")
 
 
-def crear_pendiente_salud(datos):
-    if not DB_SALUD_PENDIENTES:
-        print("❌ [CREAR PENDIENTE SALUD]: NOTION_DB_SALUD_PENDIENTES no configurada.")
-        sys.exit(1)
+def _construir_propiedades_pendiente_salud(datos):
     nombre = (datos.get("nombre") or "").strip()
     if not nombre:
-        print("❌ [CREAR PENDIENTE SALUD]: falta nombre.")
+        print("❌ [PENDIENTE SALUD]: falta nombre.")
         sys.exit(1)
 
     props = {
@@ -1523,9 +1534,26 @@ def crear_pendiente_salud(datos):
         props["Tipo de tarea"] = {"select": {"name": datos["tipo"]}}
     if datos.get("fecha_limite"):
         props["Fecha límite"] = {"date": {"start": datos["fecha_limite"]}}
+    return nombre, props
 
+
+def crear_pendiente_salud(datos):
+    if not DB_SALUD_PENDIENTES:
+        print("❌ [CREAR PENDIENTE SALUD]: NOTION_DB_SALUD_PENDIENTES no configurada.")
+        sys.exit(1)
+    nombre, props = _construir_propiedades_pendiente_salud(datos)
     res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", {"parent": {"database_id": DB_SALUD_PENDIENTES}, "properties": props}, "CREAR PENDIENTE SALUD")
     print(f"✅ [CREAR PENDIENTE SALUD]: '{nombre}' creada ({res.get('id', '?')}).")
+
+
+def actualizar_pendiente_salud(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR PENDIENTE SALUD]: falta page_id.")
+        sys.exit(1)
+    nombre, props = _construir_propiedades_pendiente_salud(datos)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR PENDIENTE SALUD")
+    print(f"✅ [ACTUALIZAR PENDIENTE SALUD]: '{nombre}' ({page_id}) actualizada.")
 
 
 _OCIO_ESTADOS_FALLBACK = ["No empezado", "Leyendo", "Completado"]
@@ -2077,12 +2105,16 @@ def ejecutar_accion_notion(payload):
         actualizar_egreso(datos)
     elif accion == "crear_sesion_salud":
         crear_sesion_salud(datos)
+    elif accion == "actualizar_sesion_salud":
+        actualizar_sesion_salud(datos)
     elif accion == "crear_fase_ciclo":
         crear_fase_ciclo(datos)
     elif accion == "actualizar_fase_ciclo":
         actualizar_fase_ciclo(datos)
     elif accion == "crear_pendiente_salud":
         crear_pendiente_salud(datos)
+    elif accion == "actualizar_pendiente_salud":
+        actualizar_pendiente_salud(datos)
     elif accion == "crear_libro_ocio":
         crear_libro_ocio(datos)
     elif accion == "actualizar_libro_ocio":

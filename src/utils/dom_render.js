@@ -267,6 +267,83 @@ function mostrarToast(mensaje, tipo = "success") {
   }, 3200);
 }
 
+const COMMAND_PALETTE_MODULOS = [
+  { nombre: "Inicio", url: "inicio.html", icono: "home", tags: "home resumen" },
+  { nombre: "Agenda personal", url: "agenda-personal.html", icono: "calendar_month", tags: "eventos turnos" },
+  { nombre: "Recordatorios diarios", url: "recordatorios-diarios.html", icono: "alarm", tags: "rutina hoy ayer" },
+  { nombre: "Recordatorios varios", url: "recordatorios-varios.html", icono: "check_box", tags: "tareas pendientes" },
+  { nombre: "Finanzas", url: "finanzas.html", icono: "account_balance_wallet", tags: "ingresos egresos tarjeta cuotas" },
+  { nombre: "Salud", url: "salud.html", icono: "favorite", tags: "cuerpo ciclo mente energia sesiones" },
+  { nombre: "Ocio", url: "ocio.html", icono: "local_library", tags: "libros series peliculas" },
+  { nombre: "Gestión emocional", url: "gestion-emocional.html", icono: "psychology", tags: "emociones stop calma" },
+  { nombre: "Relaciones y límites", url: "relaciones-y-limites.html", icono: "shield", tags: "limites afirmaciones frases" },
+  { nombre: "Desarrollo personal", url: "desarrollo-personal.html", icono: "trending_up", tags: "comunicacion autoestima autoconocimiento" },
+];
+
+function inicializarCommandPalette() {
+  if (typeof document === "undefined" || document.getElementById("cmd-palette-modal")) return;
+
+  const modal = document.createElement("div");
+  modal.id = "cmd-palette-modal";
+  modal.className = "fixed inset-0 z-[80] hidden items-start justify-center bg-black/75 backdrop-blur-sm p-4 pt-20";
+  modal.innerHTML = `
+    <div class="w-full max-w-lg rounded-2xl bg-[#111115] border border-white/[0.12] shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
+      <div class="flex items-center gap-3 px-4 py-3.5 border-b border-white/[0.08]">
+        <span class="material-symbols-outlined text-[20px] text-[#ff5f52]">search</span>
+        <input id="cmd-palette-input" type="text" placeholder="Ir a un módulo... (Esc para cerrar)" class="w-full bg-transparent text-white text-[14px] placeholder-[#8e8e93] focus:outline-none" />
+        <kbd class="text-[10px] px-2 py-0.5 rounded bg-white/[0.06] text-[#8e8e93] border border-white/[0.08]">ESC</kbd>
+      </div>
+      <div id="cmd-palette-list" class="max-h-72 overflow-y-auto p-2 space-y-1"></div>
+    </div>
+  `;
+  modal.addEventListener("click", () => modal.classList.add("hidden"));
+  document.body.appendChild(modal);
+
+  const renderLista = (q = "") => {
+    const term = q.trim().toLowerCase();
+    const filtrados = COMMAND_PALETTE_MODULOS.filter((m) =>
+      !term || `${m.nombre} ${m.tags}`.toLowerCase().includes(term)
+    );
+    const listEl = document.getElementById("cmd-palette-list");
+    listEl.innerHTML = filtrados.length === 0
+      ? `<p class="text-xs text-[#8e8e93] text-center py-4">Sin coincidencias</p>`
+      : filtrados.map((m) => `
+          <a href="${m.url}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#e5e2e1] hover:bg-[#ff5f52]/15 hover:text-white transition-colors">
+            <span class="material-symbols-outlined text-[18px] text-[#ff5f52]">${m.icono}</span>
+            <span class="text-[13px] font-semibold flex-1">${m.nombre}</span>
+            <span class="material-symbols-outlined text-[16px] text-[#8e8e93]">arrow_forward</span>
+          </a>
+        `).join("");
+  };
+
+  const abrir = () => {
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    const inp = document.getElementById("cmd-palette-input");
+    inp.value = "";
+    renderLista("");
+    setTimeout(() => inp.focus(), 20);
+  };
+
+  document.getElementById("cmd-palette-input").addEventListener("input", (e) => renderLista(e.target.value));
+  document.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      if (modal.classList.contains("hidden")) abrir();
+      else { modal.classList.add("hidden"); modal.classList.remove("flex"); }
+    } else if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+  });
+}
+
+if (typeof document !== "undefined") {
+  document.addEventListener("DOMContentLoaded", () => {
+    inicializarCommandPalette();
+  });
+}
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     renderizarFilasEstados,
@@ -278,5 +355,7 @@ if (typeof module !== "undefined" && module.exports) {
     renderizarAgendaEventos,
     crearManejadorDeRefresco,
     mostrarToast,
+    COMMAND_PALETTE_MODULOS,
+    inicializarCommandPalette,
   };
 }

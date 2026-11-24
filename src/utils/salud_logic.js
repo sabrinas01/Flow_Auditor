@@ -76,15 +76,16 @@ function construirPayloadSesion(datos) {
     ? Number(datos.duracion)
     : null;
 
-  return {
-    ok: true,
-    payload: {
-      nombre,
-      fecha,
-      duracion: Number.isFinite(durRaw) && durRaw >= 0 ? durRaw : null,
-      estado: (datos.estado || "").trim() || "Hecha",
-    },
+  const payload = {
+    nombre,
+    fecha,
+    duracion: Number.isFinite(durRaw) && durRaw >= 0 ? durRaw : null,
+    estado: (datos.estado || "").trim() || "Hecha",
   };
+  const pageId = (datos.pageId || "").trim();
+  if (pageId) payload.page_id = pageId;
+
+  return { ok: true, payload };
 }
 
 function construirPayloadCiclo(datos) {
@@ -119,15 +120,16 @@ function construirPayloadPendienteSalud(datos) {
   const nombre = (datos.nombre || "").trim();
   if (!nombre) return { ok: false, error: "El nombre de la tarea es obligatorio." };
 
-  return {
-    ok: true,
-    payload: {
-      nombre,
-      tipo: (datos.tipo || "").trim() || null,
-      fecha_limite: (datos.fechaLimite || "").trim() || null,
-      estado: (datos.estado || "").trim() || "Pendiente",
-    },
+  const payload = {
+    nombre,
+    tipo: (datos.tipo || "").trim() || null,
+    fecha_limite: (datos.fechaLimite || "").trim() || null,
+    estado: (datos.estado || "").trim() || "Pendiente",
   };
+  const pageId = (datos.pageId || "").trim();
+  if (pageId) payload.page_id = pageId;
+
+  return { ok: true, payload };
 }
 
 function calcularMetricasSesiones(sesiones, hoyIso) {

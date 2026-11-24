@@ -408,12 +408,13 @@
     <div id="modal-sesion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-sesion')">
         <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-5">
-                <h3 class="text-headline-md font-headline-md text-white">Registrar sesión</h3>
+                <h3 id="ses-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar sesión</h3>
                 <button type="button" onclick="cerrarModal('modal-sesion')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
                     <span class="material-symbols-outlined text-[20px]">close</span>
                 </button>
             </div>
             <form id="form-sesion" class="space-y-4" onsubmit="return manejarSubmitSesion(event)">
+                <input id="ses-page-id" type="hidden" value="" />
                 <div>
                     <label for="ses-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre *</label>
                     <input id="ses-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
@@ -512,12 +513,13 @@
     <div id="modal-pendiente" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-pendiente')">
         <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-5">
-                <h3 class="text-headline-md font-headline-md text-white">Registrar pendiente</h3>
+                <h3 id="pen-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar pendiente</h3>
                 <button type="button" onclick="cerrarModal('modal-pendiente')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
                     <span class="material-symbols-outlined text-[20px]">close</span>
                 </button>
             </div>
             <form id="form-pendiente" class="space-y-4" onsubmit="return manejarSubmitPendiente(event)">
+                <input id="pen-page-id" type="hidden" value="" />
                 <div>
                     <label for="pen-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre de tarea *</label>
                     <input id="pen-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
@@ -631,8 +633,14 @@
                     const meta = [s.fecha, s.duracion ? `${s.duracion} min` : null, semTxt, s.estado].filter(Boolean).map(escapeHtml).join(" · ");
                     return `
                         <div class="status-row flex items-center justify-between px-4 py-3 gap-3">
-                            <span class="text-white font-semibold truncate">${escapeHtml(s.nombre)}</span>
-                            <span class="text-[12px] text-[#8e8e93] flex-shrink-0">${meta}</span>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-white font-semibold truncate">${escapeHtml(s.nombre)}</p>
+                                <p class="text-[12px] text-[#8e8e93] truncate">${meta}</p>
+                            </div>
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                <button type="button" onclick="abrirModalEditarSesion('${escapeHtml(s.id || "")}')" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                                <button type="button" onclick="eliminarItemSalud('${escapeHtml(s.id || "")}')" class="p-1.5 hover:bg-[#ff5f52]/15 rounded-lg text-[#8e8e93] hover:text-[#ff5f52]" title="Mandar a papelera"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                            </div>
                         </div>
                     `;
                 }).join("");
@@ -760,11 +768,13 @@
                         : "";
                     return `
                         <div class="status-row flex items-center justify-between px-4 py-3 gap-3">
-                            <span class="text-white font-semibold truncate">${escapeHtml(p.nombre)}</span>
+                            <span class="text-white font-semibold truncate min-w-0 flex-1">${escapeHtml(p.nombre)}</span>
                             <div class="flex items-center gap-2 flex-shrink-0">
                                 ${tipoBadge}
                                 ${retrasoHtml}
-                                <span class="text-[12px] text-[#8e8e93]">${meta}</span>
+                                <span class="text-[12px] text-[#8e8e93] hidden sm:inline">${meta}</span>
+                                <button type="button" onclick="abrirModalEditarPendiente('${escapeHtml(p.id || "")}')" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                                <button type="button" onclick="eliminarItemSalud('${escapeHtml(p.id || "")}')" class="p-1.5 hover:bg-[#ff5f52]/15 rounded-lg text-[#8e8e93] hover:text-[#ff5f52]" title="Mandar a papelera"><span class="material-symbols-outlined text-[18px]">delete</span></button>
                             </div>
                         </div>
                     `;
@@ -855,8 +865,24 @@
 
         function abrirModalSesion() {
             document.getElementById("form-sesion").reset();
+            document.getElementById("ses-page-id").value = "";
+            document.getElementById("ses-modal-titulo").textContent = "Registrar sesión";
             document.getElementById("ses-fecha").value = hoyLocalISO();
             _poblarSelect("ses-estado", saludOpciones.estados_sesion, false, "Hecha");
+            document.getElementById("ses-mensaje").classList.add("hidden");
+            abrirModal("modal-sesion");
+        }
+
+        function abrirModalEditarSesion(id) {
+            const s = (saludSesiones || []).find((x) => x.id === id);
+            if (!s) return;
+            document.getElementById("form-sesion").reset();
+            document.getElementById("ses-page-id").value = s.id;
+            document.getElementById("ses-modal-titulo").textContent = "Editar sesión";
+            document.getElementById("ses-nombre").value = s.nombre || "";
+            document.getElementById("ses-fecha").value = s.fecha || "";
+            document.getElementById("ses-duracion").value = s.duracion !== null && s.duracion !== undefined ? s.duracion : "";
+            _poblarSelect("ses-estado", saludOpciones.estados_sesion, false, s.estado || "Hecha");
             document.getElementById("ses-mensaje").classList.add("hidden");
             abrirModal("modal-sesion");
         }
@@ -926,10 +952,31 @@
 
         function abrirModalPendiente() {
             document.getElementById("form-pendiente").reset();
+            document.getElementById("pen-page-id").value = "";
+            document.getElementById("pen-modal-titulo").textContent = "Registrar pendiente";
             _poblarSelect("pen-tipo", saludOpciones.tipos_pendiente, true, "");
             _poblarSelect("pen-estado", saludOpciones.estados_pendiente, false, "Pendiente");
             document.getElementById("pen-mensaje").classList.add("hidden");
             abrirModal("modal-pendiente");
+        }
+
+        function abrirModalEditarPendiente(id) {
+            const p = (saludPendientes || []).find((x) => x.id === id);
+            if (!p) return;
+            document.getElementById("form-pendiente").reset();
+            document.getElementById("pen-page-id").value = p.id;
+            document.getElementById("pen-modal-titulo").textContent = "Editar pendiente";
+            document.getElementById("pen-nombre").value = p.nombre || "";
+            _poblarSelect("pen-tipo", saludOpciones.tipos_pendiente, true, p.tipo || "");
+            _poblarSelect("pen-estado", saludOpciones.estados_pendiente, false, p.estado || "Pendiente");
+            document.getElementById("pen-fecha").value = p.fecha_limite || "";
+            document.getElementById("pen-mensaje").classList.add("hidden");
+            abrirModal("modal-pendiente");
+        }
+
+        async function eliminarItemSalud(pageId) {
+            if (!pageId) return;
+            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: pageId });
         }
 
         function guardarTokenSalud() {
@@ -991,7 +1038,9 @@
 
         async function manejarSubmitSesion(event) {
             event.preventDefault();
+            const pageId = document.getElementById("ses-page-id").value.trim();
             const res = construirPayloadSesion({
+                pageId,
                 nombre: document.getElementById("ses-nombre").value,
                 fecha: document.getElementById("ses-fecha").value,
                 duracion: document.getElementById("ses-duracion").value,
@@ -1005,7 +1054,7 @@
             }
             if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
             cerrarModal("modal-sesion");
-            await ejecutarEscrituraConSpinner("crear_sesion_salud", res.payload);
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_sesion_salud" : "crear_sesion_salud", res.payload);
             return false;
         }
 
@@ -1037,7 +1086,9 @@
 
         async function manejarSubmitPendiente(event) {
             event.preventDefault();
+            const pageId = document.getElementById("pen-page-id").value.trim();
             const res = construirPayloadPendienteSalud({
+                pageId,
                 nombre: document.getElementById("pen-nombre").value,
                 tipo: document.getElementById("pen-tipo").value,
                 fechaLimite: document.getElementById("pen-fecha").value,
@@ -1051,7 +1102,7 @@
             }
             if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
             cerrarModal("modal-pendiente");
-            await ejecutarEscrituraConSpinner("crear_pendiente_salud", res.payload);
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_pendiente_salud" : "crear_pendiente_salud", res.payload);
             return false;
         }
     </script>
