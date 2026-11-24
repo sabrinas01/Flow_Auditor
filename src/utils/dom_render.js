@@ -90,11 +90,18 @@ function renderizarTareasDiariasConEstado(prefijo, tareas, estadosDisponibles) {
       .map((op) => `<option value="${escapeHtml(op)}"${op === t.estado ? " selected" : ""}>${escapeHtml(op)}</option>`)
       .join("");
     const selectHtml = t.id
-      ? `<select onchange="cambiarEstadoTareaDiaria('${escapeHtml(t.id)}', '${escapeHtml(t.tipo_estado || "status")}', this)"
-            aria-label="Estado de ${escapeHtml(t.nombre || "tarea")}"
-            class="bg-[#141416] border border-[#232326] rounded-lg px-2.5 py-1.5 text-[12px] text-white focus:outline-none focus:border-primary-container flex-shrink-0 max-w-[155px]">
-            ${optionsHtml}
-        </select>`
+      ? `<div class="flex items-center gap-1.5 flex-shrink-0">
+            <select onchange="cambiarEstadoTareaDiaria('${escapeHtml(t.id)}', '${escapeHtml(t.tipo_estado || "status")}', this)"
+                aria-label="Estado de ${escapeHtml(t.nombre || "tarea")}"
+                class="bg-[#141416] border border-[#232326] rounded-lg px-2.5 py-1.5 text-[12px] text-white focus:outline-none focus:border-primary-container max-w-[155px]">
+                ${optionsHtml}
+            </select>
+            <button type="button" onclick="if(typeof abrirModalEditarTareaDiaria==='function')abrirModalEditarTareaDiaria('${escapeHtml(t.id)}')"
+                class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white transition-colors"
+                title="Editar tarea" aria-label="Editar tarea">
+                <span class="material-symbols-outlined text-[16px]">edit</span>
+            </button>
+        </div>`
       : "";
     return `
         <div class="status-row flex items-center justify-between px-4 py-3 gap-3">

@@ -916,24 +916,37 @@ def actualizar_recordatorio_varios(datos):
 
 
 def actualizar_recordatorio_diario(datos):
-    """Actualiza únicamente el `Estado` de una tarea en Recordatorios Diarios
-    (`PATCH /v1/pages/{page_id}`) — Etapa 3.
+    """Actualiza el `Estado` (y opcionalmente el título) de una tarea en Recordatorios Diarios
+    (`PATCH /v1/pages/{page_id}`).
     """
     page_id = (datos.get("page_id") or "").strip()
     estado = (datos.get("estado") or "").strip()
     tipo_estado = (datos.get("tipo_estado") or "status").strip()
-    if not page_id or not estado:
-        print("❌ [ACTUALIZAR DIARIO]: faltan page_id o estado en el payload recibido.")
+    nombre = (datos.get("nombre") or "").strip()
+    if not page_id or (not estado and not nombre):
+        print("❌ [ACTUALIZAR DIARIO]: faltan page_id o campos a actualizar en el payload recibido.")
         sys.exit(1)
 
-    if tipo_estado == "select":
-        prop_estado = {"select": {"name": estado}}
-    else:
-        prop_estado = {"status": {"name": estado}}
+    props = {}
+    if estado:
+        props["Estado"] = {"select": {"name": estado}} if tipo_estado == "select" else {"status": {"name": estado}}
 
     url = f"https://api.notion.com/v1/pages/{page_id}"
-    _ejecutar_request_notion("PATCH", url, {"properties": {"Estado": prop_estado}}, "ACTUALIZAR DIARIO")
-    print(f"✅ [ACTUALIZAR DIARIO]: tarea {page_id} actualizada a '{estado}' en Notion.")
+    if nombre:
+        headers = {
+            "Authorization": f"Bearer {NOTION_API_KEY}",
+            "Notion-Version": "2022-06-28",
+        }
+        try:
+            pg = requests.get(url, headers=headers, timeout=10).json()
+            title_keys = [k for k, v in (pg.get("properties") or {}).items() if v.get("type") == "title"]
+            title_key = title_keys[0] if title_keys else "Name"
+        except Exception:
+            title_key = "Name"
+        props[title_key] = {"title": [{"text": {"content": nombre}}]}
+
+    _ejecutar_request_notion("PATCH", url, {"properties": props}, "ACTUALIZAR DIARIO")
+    print(f"✅ [ACTUALIZAR DIARIO]: tarea {page_id} actualizada en Notion.")
 
 
 _FINANZAS_OPCIONES_FALLBACK = {

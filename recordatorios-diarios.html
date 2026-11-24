@@ -402,6 +402,37 @@
         </footer>
     </main>
 
+    <!-- MODAL EDITAR TAREA DIARIA -->
+    <div id="modal-editar-diario" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="cerrarModalEditarDiario()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between">
+                <h3 class="text-headline-md font-headline-md text-white">Editar tarea diaria</h3>
+                <button type="button" onclick="cerrarModalEditarDiario()" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-editar-diario" class="space-y-4" onsubmit="return manejarSubmitEditarDiario(event)">
+                <input id="rd-edit-id" type="hidden" value="" />
+                <input id="rd-edit-tipo-estado" type="hidden" value="status" />
+                <div>
+                    <label for="rd-edit-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre de la tarea *</label>
+                    <input id="rd-edit-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div>
+                    <label for="rd-edit-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
+                    <select id="rd-edit-estado" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                </div>
+                <div class="flex gap-2.5 pt-1">
+                    <button type="button" onclick="confirmarEliminarDiario()" class="bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl" title="Mandar a papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
+                    <button type="button" onclick="cerrarModalEditarDiario()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[13px] py-2.5 rounded-xl">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[13px] py-2.5 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- =================================================== -->
     <!-- MODAL TOKEN GITHUB (solo si aún no está guardado)   -->
     <!-- =================================================== -->
@@ -742,6 +773,84 @@
             } catch (e) {
                 mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub. Revisá tu conexión e intentá de nuevo.");
             }
+        }
+
+        function abrirModalEditarTareaDiaria(pageId) {
+            const lista = [...(tareasDiariasHoy || []), ...(tareasDiariasAyer || [])];
+            const t = lista.find((x) => x.id === pageId);
+            if (!t) return;
+            document.getElementById("rd-edit-id").value = t.id;
+            document.getElementById("rd-edit-tipo-estado").value = t.tipo_estado || "status";
+            document.getElementById("rd-edit-nombre").value = t.nombre || "";
+            const estOps = Array.isArray(recordatoriosDiariosEstados) && recordatoriosDiariosEstados.length
+                ? recordatoriosDiariosEstados
+                : ["Sin empezar", "En ejecución", "Hecha"];
+            const sel = document.getElementById("rd-edit-estado");
+            sel.innerHTML = estOps.map((op) => `<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`).join("");
+            if (t.estado) sel.value = t.estado;
+            const modal = document.getElementById("modal-editar-diario");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function cerrarModalEditarDiario() {
+            const modal = document.getElementById("modal-editar-diario");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        }
+
+        async function _enviarAccionDiarios(accion, payload, msgOk) {
+            const token = obtenerTokenGuardado();
+            if (!token) { abrirModalTokenDiarios(); return; }
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, payload, token);
+                const r = await fetch(url, options);
+                if (r.status === 401 || r.status === 404) {
+                    cerrarSpinnerNotion();
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModalTokenDiarios();
+                    return;
+                }
+                if (r.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${r.status}).`);
+                    return;
+                }
+                const conf = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER, repo: GITHUB_REPO, token,
+                    workflowFile: WORKFLOW_NOTION_WRITE, dispatchedAfterMs,
+                });
+                if (conf.ok) {
+                    mostrarSpinnerNotion("ok", msgOk, "Recargando recordatorios...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", conf.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub.");
+            }
+        }
+
+        async function manejarSubmitEditarDiario(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("rd-edit-id").value.trim();
+            const nombre = document.getElementById("rd-edit-nombre").value.trim();
+            const estado = document.getElementById("rd-edit-estado").value.trim();
+            const tipoEstado = document.getElementById("rd-edit-tipo-estado").value.trim();
+            if (!pageId || !nombre) return false;
+            cerrarModalEditarDiario();
+            await _enviarAccionDiarios("actualizar_recordatorio_diario", { page_id: pageId, nombre, estado, tipo_estado: tipoEstado }, "¡Tarea actualizada!");
+            return false;
+        }
+
+        async function confirmarEliminarDiario() {
+            const pageId = document.getElementById("rd-edit-id").value.trim();
+            const nombre = document.getElementById("rd-edit-nombre").value.trim() || "esta tarea";
+            if (!pageId) return;
+            if (!confirm(`¿Mandar "${nombre}" a la papelera de Notion?`)) return;
+            cerrarModalEditarDiario();
+            await _enviarAccionDiarios("archivar_pagina", { page_id: pageId }, "¡Tarea archivada!");
         }
     </script>
 </body>
