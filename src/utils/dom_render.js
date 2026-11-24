@@ -308,6 +308,7 @@ function inicializarCommandPalette() {
     const accionesExtra = [
       { id: "ocr", match: "escanear foto ocr texto frase libro afirmacion", icon: "photo_camera", color: "text-[#83da85]", label: "Escanear foto / texto (OCR → Notion)", badge: "Rápido", fn: "abrirAccesoRapidoOCR()" },
       { id: "focus", match: "focus zen atajos teclado shortcuts", icon: "center_focus_strong", color: "text-[#00aaff]", label: "Atajos de teclado & Modo Focus / Zen", badge: "Shift+?", fn: "abrirModalAtajosFocus()" },
+      { id: "notif", match: "notificaciones somaticas feed avisos drawer campana", icon: "notifications", color: "text-[#ff5f52]", label: "Centro de Notificaciones Somáticas", badge: "Ctrl+Shift+N", fn: "abrirDrawerNotificaciones()" },
       { id: "export", match: "exportar reporte pdf markdown clinico financiero", icon: "download", color: "text-[#ffb961]", label: "Centro de Exportación (PDF / Markdown)", badge: "Reporte", fn: "abrirCentroExportacion()" },
       { id: "pin", match: "pin bloqueo seguridad candado perfil", icon: "lock", color: "text-[#a855f7]", label: "Bloqueo PIN de privacidad", badge: "PIN", fn: "abrirModalPin()" },
     ].filter((a) => !term || a.match.includes(term));
@@ -399,6 +400,9 @@ function inicializarCommandPalette() {
     } else if (e.shiftKey && e.key === "?" && !["INPUT", "TEXTAREA", "SELECT"].includes((document.activeElement || {}).tagName)) {
       e.preventDefault();
       abrirModalAtajosFocus();
+    } else if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === "n") {
+      e.preventDefault();
+      abrirDrawerNotificaciones();
     }
   });
 }
@@ -683,6 +687,118 @@ function abrirModalPin() {
   setTimeout(() => inp.focus(), 20);
 }
 
+function construirNotificacionesContextuales(ctx = {}) {
+  const items = [];
+  const ciclo = Array.isArray(ctx.ciclo) ? ctx.ciclo : [];
+  if (ciclo.length > 0 && ciclo[0].nombre) {
+    items.push({
+      categoria: "biologica",
+      titulo: `Ritmo Biológico: ${ciclo[0].nombre}`,
+      detalle: ciclo[0].proximo_inicio ? `Próxima etapa estimada: ${ciclo[0].proximo_inicio}` : "Seguimiento activo en Salud.",
+      color: "text-[#ff5f52]",
+      icono: "favorite",
+    });
+  }
+  const pendientes = Array.isArray(ctx.pendientesSalud) ? ctx.pendientesSalud : [];
+  const conRetraso = pendientes.filter((p) => p.con_retraso);
+  if (conRetraso.length > 0) {
+    items.push({
+      categoria: "biologica",
+      titulo: `${conRetraso.length} control(es) médico(s) con retraso`,
+      detalle: conRetraso.slice(0, 2).map((p) => p.nombre).join(", "),
+      color: "text-[#ffb961]",
+      icono: "medical_services",
+    });
+  }
+  if (ctx.timestampLocalStr) {
+    items.push({
+      categoria: "notion",
+      titulo: "Sincronización Notion Hub al día",
+      detalle: `Última: ${ctx.timestampLocalStr}${ctx.timestampNextStr ? " · Próx: " + ctx.timestampNextStr : ""}`,
+      color: "text-[#83da85]",
+      icono: "cloud_done",
+    });
+  }
+  if (ctx.online === false) {
+    items.push({
+      categoria: "notion",
+      titulo: "Modo Resguardo Offline activo",
+      detalle: "Mostrando última copia local sincronizada.",
+      color: "text-[#ffb961]",
+      icono: "cloud_off",
+    });
+  }
+  const cuotas = Array.isArray(ctx.cuotas) ? ctx.cuotas : [];
+  if (cuotas.length > 0) {
+    items.push({
+      categoria: "finanzas",
+      titulo: `${cuotas.length} cuota(s) TC en seguimiento`,
+      detalle: "Revisá la proyección a 6 meses en Finanzas.",
+      color: "text-[#00aaff]",
+      icono: "credit_card",
+    });
+  }
+  return items;
+}
+
+function abrirDrawerNotificaciones() {
+  if (typeof document === "undefined") return;
+  let drawer = document.getElementById("drawer-notificaciones");
+  if (!drawer) {
+    drawer = document.createElement("div");
+    drawer.id = "drawer-notificaciones";
+    drawer.className = "fixed inset-0 z-[84] hidden justify-end bg-black/65 backdrop-blur-sm";
+    drawer.innerHTML = `
+      <aside class="w-full max-w-sm h-full bg-[#111115] border-l border-white/[0.1] p-6 flex flex-col gap-4 shadow-2xl overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-[10px] font-label-caps text-[#ff5f52] tracking-widest">FEED SOMÁTICO &amp; NOTION</p>
+            <h3 class="text-lg font-bold text-white">Notificaciones</h3>
+          </div>
+          <button type="button" onclick="document.getElementById('drawer-notificaciones').classList.add('hidden')" class="p-1.5 rounded-full hover:bg-white/10 text-[#8e8e93]"><span class="material-symbols-outlined text-[20px]">close</span></button>
+        </div>
+        <div class="flex flex-wrap gap-1.5 text-xs">
+          <button type="button" onclick="renderNotifDrawer('todas')" class="px-2.5 py-1 rounded-lg bg-[#ff5f52]/20 text-[#ff5f52] font-bold">Todas</button>
+          <button type="button" onclick="renderNotifDrawer('biologica')" class="px-2.5 py-1 rounded-lg bg-[#1c1c1f] text-[#a1a1aa] hover:text-white">Biológicas</button>
+          <button type="button" onclick="renderNotifDrawer('notion')" class="px-2.5 py-1 rounded-lg bg-[#1c1c1f] text-[#a1a1aa] hover:text-white">Notion</button>
+        </div>
+        <div id="drawer-notif-list" class="space-y-2.5 flex-1"></div>
+        <div class="pt-3 border-t border-white/[0.08] flex items-center justify-between text-xs">
+          <span class="text-[#a1a1aa]">Foco Profundo Somático</span>
+          <button type="button" onclick="toggleModoFocus()" class="px-3 py-1.5 rounded-lg bg-[#00aaff]/15 text-[#00aaff] font-bold">Alternar Focus</button>
+        </div>
+      </aside>
+    `;
+    drawer.addEventListener("click", () => { drawer.classList.add("hidden"); drawer.classList.remove("flex"); });
+    document.body.appendChild(drawer);
+  }
+  window.renderNotifDrawer = (cat = "todas") => {
+    const items = construirNotificacionesContextuales({
+      ciclo: typeof saludCiclo !== "undefined" ? saludCiclo : (typeof inicioCiclo !== "undefined" ? inicioCiclo : []),
+      pendientesSalud: typeof saludPendientes !== "undefined" ? saludPendientes : [],
+      timestampLocalStr: typeof timestampLocalStr !== "undefined" ? timestampLocalStr : "",
+      timestampNextStr: typeof timestampNextStr !== "undefined" ? timestampNextStr : "",
+      cuotas: typeof finanzasCuotas !== "undefined" ? finanzasCuotas : [],
+      online: typeof navigator !== "undefined" ? navigator.onLine : true,
+    }).filter((x) => cat === "todas" || x.categoria === cat);
+    const list = document.getElementById("drawer-notif-list");
+    list.innerHTML = items.length === 0
+      ? `<p class="text-xs text-[#8e8e93] text-center py-6">Sin avisos en esta categoría 🌿</p>`
+      : items.map((n) => `
+          <div class="p-3.5 rounded-xl bg-[#18181d] border border-white/[0.06] flex items-start gap-3">
+            <span class="material-symbols-outlined text-[18px] ${n.color} mt-0.5">${n.icono}</span>
+            <div class="min-w-0">
+              <p class="text-xs font-bold text-white">${n.titulo}</p>
+              <p class="text-[11px] text-[#8e8e93] mt-0.5">${n.detalle}</p>
+            </div>
+          </div>
+        `).join("");
+  };
+  window.renderNotifDrawer("todas");
+  drawer.classList.remove("hidden");
+  drawer.classList.add("flex");
+}
+
 function inicializarBloqueoPin() {
   if (typeof document === "undefined") return;
   const sidebar = document.getElementById("sidebar");
@@ -727,5 +843,6 @@ if (typeof module !== "undefined" && module.exports) {
     generarReporteSaludMarkdown,
     generarReporteFinanzasMarkdown,
     verificarPinLocal,
+    construirNotificacionesContextuales,
   };
 }

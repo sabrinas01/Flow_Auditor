@@ -358,4 +358,17 @@ describe('Reportes Markdown y Bloqueo PIN (v4.62)', () => {
     expect(verificarPinLocal('0000', '1234')).toBe(false);
     expect(verificarPinLocal('', '')).toBe(false);
   });
+
+  test('construirNotificacionesContextuales arma avisos reales de ciclo, Notion y offline', () => {
+    const { construirNotificacionesContextuales } = require('../../src/utils/dom_render.js');
+    const items = construirNotificacionesContextuales({
+      ciclo: [{ nombre: '[11]-Fase Lútea', proximo_inicio: '2026-11-28' }],
+      pendientesSalud: [{ nombre: 'Laboratorio', con_retraso: true }],
+      timestampLocalStr: '24/11/2026 17:00:00',
+      online: false,
+    });
+    expect(items.some((x) => x.categoria === 'biologica' && x.titulo.includes('Fase Lútea'))).toBe(true);
+    expect(items.some((x) => x.categoria === 'biologica' && x.titulo.includes('retraso'))).toBe(true);
+    expect(items.some((x) => x.categoria === 'notion' && x.titulo.includes('Offline'))).toBe(true);
+  });
 });

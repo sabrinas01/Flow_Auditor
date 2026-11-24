@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.63 (Desarrollo personal — CRUD multimodal de Recursos & Prácticas)  
+**Versión:** 4.64 (Centro / Drawer de Notificaciones Somáticas)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
