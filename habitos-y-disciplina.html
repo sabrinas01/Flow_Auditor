@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Hábitos y disciplina — AsistenteSabry</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0e0e0e">
+    <link rel="icon" href="./grafica/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./grafica/icons/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #08080a;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+        .status-row {
+            background: #18181d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .status-row:hover { background: #1f1f26; border-color: rgba(255, 255, 255, 0.12); }
+        #sidebar { transition: transform 0.3s ease; }
+        .spin-animation { animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden antialiased">
+
+    <script>
+        const timestampLocalStr = "24/11/2026 17:50:00";
+        const appVersionStr = "dev";
+        const timestampNextStr = "24/11/2026 18:50:00";
+        const timestampServerStr = "24/11/2026 20:50:00";
+
+        const habitosRegistros = [];
+        const habitosOpciones = {
+            "modulos": ["🔥 Hábito", "🎓 Formación / Curso"],
+            "estados": ["Activo", "Por empezar", "En progreso", "En pausa", "Completado"],
+            "categorias": ["🌅 Mañana", "🌙 Noche", "🧠 Mente & Foco", "💪 Cuerpo & Salud", "💼 Carrera & Tech"]
+        };
+    </script>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
+        <div class="flex items-center gap-3 mb-8 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">Obsidian Refined</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span>Agenda personal</span>
+            </a>
+            <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">alarm</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">check_box</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="finanzas.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                <span>Finanzas</span>
+            </a>
+            <a href="salud.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Salud</span>
+            </a>
+            <a href="ocio.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_library</span>
+                <span>Ocio</span>
+            </a>
+            <a href="gestion-emocional.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">psychology</span>
+                <span>Gestión emocional</span>
+            </a>
+            <a href="relaciones-y-limites.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">shield</span>
+                <span>Relaciones y límites</span>
+            </a>
+            <a href="desarrollo-personal.html" class="flex items-center gap-3 px-4 py-3 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">trending_up</span>
+                <span>Desarrollo personal</span>
+            </a>
+            <a href="habitos-y-disciplina.html" class="flex items-center gap-3 px-4 py-3 bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/30 rounded-xl font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                <span>Hábitos y disciplina</span>
+            </a>
+        </nav>
+
+        <div class="pt-4 mt-4 border-t border-white/[0.08] flex items-center gap-3 px-2">
+            <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
+            <div class="min-w-0">
+                <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo</p>
+            </div>
+        </div>
+    </aside>
+
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <main class="min-h-screen lg:ml-64">
+        <!-- TOP APP BAR -->
+        <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">Asistente Sabry</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">HÁBITOS Y DISCIPLINA</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="https://app.notion.com/p/422a38bb7a6e805bb6feccf2829c847d?v=422a38bb7a6e804fa319000c0f326027&source=copy_link" target="_blank" rel="noopener" class="hidden sm:inline-flex items-center gap-1.5 bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-xs px-3 py-1.5 rounded-lg transition-all">
+                        <span>Ver en Notion</span>
+                        <span class="material-symbols-outlined text-[15px]">open_in_new</span>
+                    </a>
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- CABECERA -->
+            <section class="flex flex-wrap justify-between items-end gap-4">
+                <div class="space-y-1.5">
+                    <p class="text-[11px] font-label-caps text-[#ff5f52] tracking-widest">CONSTANCIA AMABLE · APRENDIZAJE CONTINUO</p>
+                    <h1 class="font-display-lg text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Hábitos y Disciplina</h1>
+                    <p class="text-[13px] text-[#8e8e93]">Disciplina compasiva, micro-hábitos sostenibles y tablero de formaciones.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="abrirModalHabito('🔥 Hábito')" class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">add</span>
+                        <span>Nuevo Hábito</span>
+                    </button>
+                    <button type="button" onclick="abrirModalHabito('🎓 Formación / Curso')" class="bg-[#00aaff]/15 hover:bg-[#00aaff]/25 border border-[#00aaff]/40 text-[#00aaff] font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">school</span>
+                        <span>Nueva Formación</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 4 KPIs -->
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#ff5f52]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">HÁBITOS ACTIVOS</p>
+                    <p id="hab-kpi-activos" class="text-2xl font-extrabold text-white">0</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#ffb961]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">RACHA MÁXIMA</p>
+                    <p id="hab-kpi-racha" class="text-2xl font-extrabold text-[#ffb961]">0 días</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#00aaff]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">FORMACIONES EN CURSO</p>
+                    <p id="hab-kpi-curso" class="text-2xl font-extrabold text-[#00aaff]">0</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#83da85]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">COMPLETADAS</p>
+                    <p id="hab-kpi-comp" class="text-2xl font-extrabold text-[#83da85]">0</p>
+                </div>
+            </section>
+
+            <!-- SUBMÓDULO 1: HÁBITOS Y DISCIPLINA -->
+            <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#ff5f52] space-y-5">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#ff5f52] tracking-widest">01 · DISCIPLINA COMPASIVA</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Hábitos Diarios &amp; Rachas</h2>
+                    </div>
+                    <span id="hab-count-lbl" class="text-xs px-3 py-1 rounded-full bg-[#ff5f52]/10 text-[#ff5f52] font-semibold">0 hábitos</span>
+                </div>
+                <div id="list-habitos" class="space-y-3"></div>
+            </section>
+
+            <!-- SUBMÓDULO 2: APRENDIZAJE CONTINUO (KANBAN FORMACIONES) -->
+            <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#00aaff] space-y-5">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#00aaff] tracking-widest">02 · APRENDIZAJE CONTINUO</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Tablero de Formaciones y Cursos</h2>
+                    </div>
+                    <span id="form-count-lbl" class="text-xs px-3 py-1 rounded-full bg-[#00aaff]/10 text-[#00aaff] font-semibold">0 formaciones</span>
+                </div>
+                <div id="kanban-formaciones" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+            </section>
+        </div>
+
+        <footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">dev</span></p>
+                    </div>
+                    <div class="flex flex-wrap gap-x-8 gap-y-2">
+                        <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Sabri Studios &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL HÁBITO / FORMACIÓN -->
+    <div id="modal-habito" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-habito')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-lg my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="hab-modal-titulo" class="text-headline-md font-headline-md text-white">Nuevo registro</h3>
+                <button type="button" onclick="cerrarModal('modal-habito')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-habito" class="space-y-4" onsubmit="return manejarSubmitHabito(event)">
+                <input id="hab-page-id" type="hidden" value="" />
+                <div>
+                    <label for="hab-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre *</label>
+                    <input id="hab-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="hab-modulo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Módulo</label>
+                        <select id="hab-modulo" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                    <div>
+                        <label for="hab-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
+                        <select id="hab-estado" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label for="hab-categoria" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Categoría</label>
+                        <select id="hab-categoria" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                    <div>
+                        <label for="hab-racha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Racha / %</label>
+                        <input id="hab-racha" type="number" min="0" step="1" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div>
+                        <label for="hab-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Última fecha</label>
+                        <input id="hab-fecha" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                </div>
+                <div>
+                    <label for="hab-frecuencia" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Frecuencia / Meta</label>
+                    <input id="hab-frecuencia" type="text" maxlength="120" placeholder="Ej. Diario · 5 min / 12 módulos" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div>
+                    <label for="hab-nota" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Micro-hábito / Nota</label>
+                    <textarea id="hab-nota" rows="2" maxlength="800" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></textarea>
+                </div>
+                <p id="hab-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button id="hab-btn-eliminar" type="button" onclick="confirmarEliminarHabito()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl" title="Mandar a papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
+                    <button type="button" onclick="cerrarModal('modal-habito')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TOKEN GITHUB -->
+    <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="cerrarModal('modal-token-notion')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center">
+                <h3 class="text-headline-md font-headline-md text-white">Configurar token de GitHub</h3>
+                <button type="button" onclick="cerrarModal('modal-token-notion')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]"><span class="material-symbols-outlined text-[20px]">close</span></button>
+            </div>
+            <input id="hab-token-input" type="password" autocomplete="off" placeholder="Pegá tu token..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+            <button type="button" onclick="guardarTokenHabitos()" class="w-full bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-3 rounded-xl">Guardar token</button>
+        </div>
+    </div>
+
+    <!-- SPINNER CONFIRMACIÓN -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarModal('modal-spinner-notion')" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
+    <script src="./src/utils/habitos_logic.js"></script>
+
+    <script>
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        function hoyLocalISO() {
+            const d = new Date();
+            const p = (n) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+        }
+
+        function obtenerTokenGuardado() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+
+        function _poblarSelect(id, ops, val) {
+            const el = document.getElementById(id);
+            el.innerHTML = (ops || []).map((o) => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join("");
+            if (val) el.value = val;
+        }
+
+        function renderizarHabitosYDisciplina() {
+            const res = calcularResumenHabitos(habitosRegistros);
+            document.getElementById("hab-kpi-activos").textContent = String(res.habitosActivos);
+            document.getElementById("hab-kpi-racha").textContent = `${res.rachaMaxima} días`;
+            document.getElementById("hab-kpi-curso").textContent = String(res.formacionesEnCurso);
+            document.getElementById("hab-kpi-comp").textContent = String(res.formacionesCompletadas);
+
+            const habitos = (habitosRegistros || []).filter((x) => (x.modulo || "").includes("Hábito"));
+            const formaciones = (habitosRegistros || []).filter((x) => (x.modulo || "").includes("Formación"));
+            document.getElementById("hab-count-lbl").textContent = `${habitos.length} hábitos`;
+            document.getElementById("form-count-lbl").textContent = `${formaciones.length} formaciones`;
+
+            const contHab = document.getElementById("list-habitos");
+            contHab.innerHTML = habitos.length === 0
+                ? `<div class="status-row flex items-center justify-center py-4 px-4 text-[#8e8e93] text-[13px]">Sin hábitos registrados aún</div>`
+                : habitos.map((h) => `
+                    <div class="status-row p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="min-w-0 space-y-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="text-white font-bold text-[15px]">${escapeHtml(h.nombre)}</span>
+                                ${h.categoria ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-white/[0.06] text-[#e5e2e1]">${escapeHtml(h.categoria)}</span>` : ""}
+                                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#ffb961]/15 text-[#ffb961]">🔥 ${Number(h.racha_progreso) || 0} días</span>
+                                ${h.estado ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-[#83da85]/15 text-[#83da85]">${escapeHtml(h.estado)}</span>` : ""}
+                            </div>
+                            ${h.frecuencia_meta || h.nota ? `<p class="text-[12px] text-[#a1a1aa]">${[h.frecuencia_meta, h.nota].filter(Boolean).map(escapeHtml).join(" · ")}</p>` : ""}
+                        </div>
+                        <button type="button" onclick="abrirModalEditarHabito('${escapeHtml(h.id || "")}')" class="p-2 hover:bg-white/10 rounded-lg text-[#a1a1aa] hover:text-white self-start sm:self-center" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                    </div>
+                `).join("");
+
+            const contForm = document.getElementById("kanban-formaciones");
+            contForm.innerHTML = ESTADOS_FORMACION.map((est) => {
+                const cols = formaciones.filter((f) => (f.estado || "").toLowerCase() === est.toLowerCase());
+                return `
+                    <div class="rounded-2xl bg-[#08080a] border border-white/[0.08] p-3.5 space-y-3 min-h-[180px]">
+                        <div class="flex items-center justify-between px-1">
+                            <span class="text-xs font-bold text-white uppercase tracking-wider">${escapeHtml(est)}</span>
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-white/[0.06] text-[#8e8e93]">${cols.length}</span>
+                        </div>
+                        <div class="space-y-2.5">
+                            ${cols.length === 0
+                                ? `<p class="text-xs text-[#8e8e93] py-6 text-center">Sin formaciones</p>`
+                                : cols.map((f) => `
+                                    <div class="p-3 rounded-xl bg-[#18181d] border border-white/[0.06] space-y-1.5">
+                                        <div class="flex items-start justify-between gap-2">
+                                            <p class="text-[13px] font-bold text-white leading-snug">${escapeHtml(f.nombre)}</p>
+                                            <button type="button" onclick="abrirModalEditarHabito('${escapeHtml(f.id || "")}')" class="p-1 hover:bg-white/10 rounded text-[#8e8e93] hover:text-white flex-shrink-0"><span class="material-symbols-outlined text-[15px]">edit</span></button>
+                                        </div>
+                                        ${f.frecuencia_meta ? `<p class="text-[11px] text-[#a1a1aa]">${escapeHtml(f.frecuencia_meta)}</p>` : ""}
+                                        <div class="w-full bg-white/[0.08] h-1.5 rounded-full overflow-hidden">
+                                            <div class="bg-[#00aaff] h-full rounded-full" style="width: ${Math.min(100, Math.max(0, Number(f.racha_progreso) || 0))}%;"></div>
+                                        </div>
+                                    </div>
+                                `).join("")}
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initLocalStorage();
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
+            renderizarHabitosYDisciplina();
+        });
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+            sidebar.classList.toggle('-translate-x-full', isOpen);
+            overlay.classList.toggle('hidden', isOpen);
+        }
+
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => { navigator.serviceWorker.register("./sw.js").catch(() => {}); });
+        }
+
+        function abrirModal(id) { document.getElementById(id).classList.remove("hidden"); document.getElementById(id).classList.add("flex"); }
+        function cerrarModal(id) { document.getElementById(id).classList.add("hidden"); document.getElementById(id).classList.remove("flex"); }
+
+        function abrirModalHabito(modPre) {
+            document.getElementById("form-habito").reset();
+            document.getElementById("hab-page-id").value = "";
+            document.getElementById("hab-modal-titulo").textContent = modPre && modPre.includes("Formación") ? "Nueva formación" : "Nuevo hábito";
+            _poblarSelect("hab-modulo", habitosOpciones.modulos, modPre || habitosOpciones.modulos[0]);
+            _poblarSelect("hab-estado", habitosOpciones.estados, modPre && modPre.includes("Formación") ? "Por empezar" : "Activo");
+            _poblarSelect("hab-categoria", habitosOpciones.categorias, habitosOpciones.categorias[0]);
+            document.getElementById("hab-fecha").value = hoyLocalISO();
+            document.getElementById("hab-btn-eliminar").classList.add("hidden");
+            document.getElementById("hab-mensaje").classList.add("hidden");
+            abrirModal("modal-habito");
+        }
+
+        function abrirModalEditarHabito(id) {
+            const h = (habitosRegistros || []).find((x) => x.id === id);
+            if (!h) return;
+            document.getElementById("form-habito").reset();
+            document.getElementById("hab-page-id").value = h.id;
+            document.getElementById("hab-modal-titulo").textContent = "Editar registro";
+            document.getElementById("hab-nombre").value = h.nombre || "";
+            _poblarSelect("hab-modulo", habitosOpciones.modulos, h.modulo || habitosOpciones.modulos[0]);
+            _poblarSelect("hab-estado", habitosOpciones.estados, h.estado || "Activo");
+            _poblarSelect("hab-categoria", habitosOpciones.categorias, h.categoria || habitosOpciones.categorias[0]);
+            document.getElementById("hab-racha").value = h.racha_progreso !== null && h.racha_progreso !== undefined ? h.racha_progreso : "";
+            document.getElementById("hab-fecha").value = h.ultima_fecha || "";
+            document.getElementById("hab-frecuencia").value = h.frecuencia_meta || "";
+            document.getElementById("hab-nota").value = h.nota || "";
+            document.getElementById("hab-btn-eliminar").classList.remove("hidden");
+            document.getElementById("hab-mensaje").classList.add("hidden");
+            abrirModal("modal-habito");
+        }
+
+        function guardarTokenHabitos() {
+            const token = document.getElementById("hab-token-input").value.trim();
+            if (!token) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, token); } catch (e) {}
+            document.getElementById("hab-token-input").value = "";
+            cerrarModal("modal-token-notion");
+        }
+
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            abrirModal("modal-spinner-notion");
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+
+        async function ejecutarEscrituraConSpinner(accion, datos) {
+            const token = obtenerTokenGuardado();
+            if (!token) { abrirModal("modal-token-notion"); return; }
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, datos, token);
+                const r = await fetch(url, options);
+                if (r.status === 401 || r.status === 404) {
+                    cerrarModal("modal-spinner-notion");
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModal("modal-token-notion");
+                    return;
+                }
+                if (r.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${r.status}).`);
+                    return;
+                }
+                const conf = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER, repo: GITHUB_REPO, token,
+                    workflowFile: WORKFLOW_NOTION_WRITE, dispatchedAfterMs,
+                });
+                if (conf.ok) {
+                    mostrarSpinnerNotion("ok", "¡Notion actualizado!", "Recargando Hábitos...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", conf.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub.");
+            }
+        }
+
+        async function manejarSubmitHabito(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("hab-page-id").value.trim();
+            const res = construirPayloadHabito({
+                pageId,
+                nombre: document.getElementById("hab-nombre").value,
+                modulo: document.getElementById("hab-modulo").value,
+                estado: document.getElementById("hab-estado").value,
+                categoria: document.getElementById("hab-categoria").value,
+                rachaProgreso: document.getElementById("hab-racha").value,
+                ultimaFecha: document.getElementById("hab-fecha").value,
+                frecuenciaMeta: document.getElementById("hab-frecuencia").value,
+                nota: document.getElementById("hab-nota").value,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("hab-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
+            cerrarModal("modal-habito");
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_habito_disciplina" : "crear_habito_disciplina", res.payload);
+            return false;
+        }
+
+        async function confirmarEliminarHabito() {
+            const pageId = document.getElementById("hab-page-id").value.trim();
+            if (!pageId) return;
+            if (!confirm("¿Deseas mandar este registro a la papelera de Notion?")) return;
+            cerrarModal("modal-habito");
+            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: pageId });
+        }
+    </script>
+</body>
+</html>

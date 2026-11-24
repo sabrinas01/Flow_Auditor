@@ -103,12 +103,13 @@ DB_EMOCIONES = os.getenv("NOTION_DB_EMOCIONES")
 DB_RELACIONES = os.getenv("NOTION_DB_RELACIONES")
 DB_FRASES = os.getenv("NOTION_DB_FRASES")
 DB_DESARROLLO_PERSONAL = os.getenv("NOTION_DB_DESARROLLO_PERSONAL")
+DB_HABITOS = os.getenv("NOTION_DB_HABITOS")
 
 
 def validar_credenciales():
     try:
         # Uso de helper interno para resolución robusta de variables de entorno
-        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS, DB_GESTION_EMOCIONAL, DB_EMOCIONES, DB_RELACIONES, DB_FRASES, DB_DESARROLLO_PERSONAL
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS, DB_GESTION_EMOCIONAL, DB_EMOCIONES, DB_RELACIONES, DB_FRASES, DB_DESARROLLO_PERSONAL, DB_HABITOS
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
         # Opcionales: su ausencia (o cualquier fallo al consultarlas) no debe abortar
@@ -130,6 +131,7 @@ def validar_credenciales():
         DB_RELACIONES = get_env_var(["NOTION_DB_RELACIONES"], required=False)
         DB_FRASES = get_env_var(["NOTION_DB_FRASES"], required=False)
         DB_DESARROLLO_PERSONAL = get_env_var(["NOTION_DB_DESARROLLO_PERSONAL"], required=False)
+        DB_HABITOS = get_env_var(["NOTION_DB_HABITOS"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -404,6 +406,11 @@ def auditar_consistencia_tripartita():
         sincronizar_desarrollo_personal(timestamps, app_version)
     except Exception as e:
         print(f"⚠️ [DESARROLLO PERSONAL]: error inesperado al sincronizar ({e}), se omite.")
+
+    try:
+        sincronizar_habitos_disciplina(timestamps, app_version)
+    except Exception as e:
+        print(f"⚠️ [HÁBITOS Y DISCIPLINA]: error inesperado al sincronizar ({e}), se omite.")
 
     verificar_consumo_ram()
 
@@ -2181,6 +2188,10 @@ def ejecutar_accion_notion(payload):
         actualizar_desarrollo_personal(datos)
     elif accion == "guardar_cita_libro_ocio":
         guardar_cita_libro_ocio(datos)
+    elif accion == "crear_habito_disciplina":
+        crear_habito_disciplina(datos)
+    elif accion == "actualizar_habito_disciplina":
+        actualizar_habito_disciplina(datos)
     elif accion == "archivar_pagina":
         archivar_pagina_notion(datos)
     else:
@@ -2336,6 +2347,106 @@ def guardar_cita_libro_ocio(datos):
     }
     res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", body, "CITA LIBRO OCR")
     print(f"✅ [CITA LIBRO OCR]: '{titulo}' guardado ({res.get('id', '?')}).")
+
+
+def sincronizar_habitos_disciplina(timestamps, app_version):
+    """Inyecta registros de 🔥 Hábitos y Disciplina en habitos-y-disciplina.html."""
+    html_path = BASE_DIR / "habitos-y-disciplina.html"
+    if not html_path.exists():
+        print("ℹ️ [HÁBITOS]: habitos-y-disciplina.html no encontrado, se omite.")
+        return
+    if not DB_HABITOS:
+        print("ℹ️ [HÁBITOS]: NOTION_DB_HABITOS no configurada, se omite sync.")
+        return
+
+    res, sch = _consultar_bd_salud(DB_HABITOS, "HABITOS Y DISCIPLINA", page_size=100, paginar=True)
+    registros = []
+    for p in res:
+        pr = p.get("properties", {})
+        registros.append({
+            "id": p.get("id"),
+            "nombre": "".join(t.get("plain_text", "") for t in (pr.get("Nombre") or {}).get("title", [])) or "Sin nombre",
+            "modulo": ((pr.get("Módulo") or {}).get("select") or {}).get("name"),
+            "estado": ((pr.get("Estado") or {}).get("select") or {}).get("name"),
+            "categoria": ((pr.get("Categoría") or {}).get("select") or {}).get("name"),
+            "frecuencia_meta": "".join(t.get("plain_text", "") for t in (pr.get("Frecuencia / Meta") or {}).get("rich_text", [])),
+            "racha_progreso": (pr.get("Racha / Progreso") or {}).get("number"),
+            "ultima_fecha": ((pr.get("Última fecha") or {}).get("date") or {}).get("start"),
+            "nota": "".join(t.get("plain_text", "") for t in (pr.get("Nota / Micro-hábito") or {}).get("rich_text", [])),
+        })
+
+    opciones = {
+        "modulos": _opciones_de_schema(sch, "Módulo", "select", ["🔥 Hábito", "🎓 Formación / Curso"]),
+        "estados": _opciones_de_schema(sch, "Estado", "select", ["Activo", "Por empezar", "En progreso", "En pausa", "Completado"]),
+        "categorias": _opciones_de_schema(sch, "Categoría", "select", ["🌅 Mañana", "🌙 Noche", "🧠 Mente & Foco", "💪 Cuerpo & Salud", "💼 Carrera & Tech"]),
+    }
+
+    with open(html_path, "r", encoding="utf-8") as file:
+        html_content = file.read()
+
+    html_content = _inyectar_timestamps_y_version(html_content, timestamps, app_version)
+
+    json_reg = json.dumps(registros, ensure_ascii=False).replace("</", "<\\/")
+    html_content = re.sub(
+        r"const\s+habitosRegistros\s*=\s*\[.*?\]\s*;",
+        lambda _m, jv=json_reg: f"const habitosRegistros = {jv};",
+        html_content,
+        flags=re.DOTALL,
+    )
+    json_opc = json.dumps(opciones, ensure_ascii=False).replace("</", "<\\/")
+    html_content = re.sub(
+        r"const\s+habitosOpciones\s*=\s*\{.*?\}\s*;",
+        lambda _m, jv=json_opc: f"const habitosOpciones = {jv};",
+        html_content,
+        flags=re.DOTALL,
+    )
+
+    with open(html_path, "w", encoding="utf-8") as file:
+        file.write(html_content)
+    print(f"✅ Frontend habitos-y-disciplina.html sincronizado ({len(registros)} registros).")
+
+
+def _construir_propiedades_habito(datos):
+    nombre = (datos.get("nombre") or "").strip()
+    if not nombre:
+        print("❌ [HABITOS]: falta el nombre.")
+        sys.exit(1)
+    props = {"Nombre": {"title": [{"text": {"content": nombre}}]}}
+    if datos.get("modulo"):
+        props["Módulo"] = {"select": {"name": datos["modulo"]}}
+    if datos.get("estado"):
+        props["Estado"] = {"select": {"name": datos["estado"]}}
+    if datos.get("categoria"):
+        props["Categoría"] = {"select": {"name": datos["categoria"]}}
+    if datos.get("frecuencia_meta") is not None:
+        props["Frecuencia / Técnica" if False else "Frecuencia / Meta"] = {"rich_text": [{"text": {"content": str(datos["frecuencia_meta"])}}] if datos["frecuencia_meta"] else []}
+    if datos.get("racha_progreso") is not None:
+        props["Racha / Progreso"] = {"number": float(datos["racha_progreso"])}
+    if datos.get("ultima_fecha"):
+        props["Última fecha"] = {"date": {"start": datos["ultima_fecha"]}}
+    if datos.get("nota") is not None:
+        props["Nota / Micro-hábito"] = {"rich_text": [{"text": {"content": str(datos["nota"])}}] if datos["nota"] else []}
+    return props
+
+
+def crear_habito_disciplina(datos):
+    if not DB_HABITOS:
+        print("❌ [CREAR HABITO]: NOTION_DB_HABITOS no configurada.")
+        sys.exit(1)
+    props = _construir_propiedades_habito(datos)
+    body = {"parent": {"database_id": DB_HABITOS}, "icon": {"type": "emoji", "emoji": "🔥"}, "properties": props}
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", body, "CREAR HABITO")
+    print(f"✅ [CREAR HABITO]: '{datos.get('nombre')}' creado ({res.get('id', '?')}).")
+
+
+def actualizar_habito_disciplina(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR HABITO]: falta page_id.")
+        sys.exit(1)
+    props = _construir_propiedades_habito(datos)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR HABITO")
+    print(f"✅ [ACTUALIZAR HABITO]: '{datos.get('nombre')}' ({page_id}) actualizado.")
 
 
 def sincronizar_agenda_personal(timestamps, app_version):

@@ -285,6 +285,7 @@ const COMMAND_PALETTE_MODULOS = [
   { nombre: "Gestión emocional", url: "gestion-emocional.html", icono: "psychology", tags: "emociones stop calma" },
   { nombre: "Relaciones y límites", url: "relaciones-y-limites.html", icono: "shield", tags: "limites afirmaciones frases" },
   { nombre: "Desarrollo personal", url: "desarrollo-personal.html", icono: "trending_up", tags: "comunicacion autoestima autoconocimiento" },
+  { nombre: "Hábitos y disciplina", url: "habitos-y-disciplina.html", icono: "local_fire_department", tags: "habitos disciplina formaciones cursos racha" },
 ];
 
 function inicializarCommandPalette() {

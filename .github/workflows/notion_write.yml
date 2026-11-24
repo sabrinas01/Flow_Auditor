@@ -50,6 +50,7 @@ jobs:
           NOTION_DB_RELACIONES: ${{ secrets.NOTION_DB_RELACIONES }}
           NOTION_DB_FRASES: ${{ secrets.NOTION_DB_FRASES }}
           NOTION_DB_DESARROLLO_PERSONAL: ${{ secrets.NOTION_DB_DESARROLLO_PERSONAL }}
+          NOTION_DB_HABITOS: ${{ secrets.NOTION_DB_HABITOS }}
           ACCION_NOTION_PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: python extract_and_audit.py
 
@@ -63,7 +64,7 @@ jobs:
           git fetch origin gh-pages || true
           if [ "$TARGET_ENV" = "develop" ]; then
             mkdir -p /tmp/dev_site
-            cp inicio.html index.html recordatorios-diarios.html recordatorios-varios.html agenda-personal.html finanzas.html salud.html ocio.html gestion-emocional.html relaciones-y-limites.html desarrollo-personal.html styles.css manifest.json sw.js /tmp/dev_site/
+            cp inicio.html index.html recordatorios-diarios.html recordatorios-varios.html agenda-personal.html finanzas.html salud.html ocio.html gestion-emocional.html relaciones-y-limites.html desarrollo-personal.html habitos-y-disciplina.html styles.css manifest.json sw.js /tmp/dev_site/
             cp -r src grafica /tmp/dev_site/
             git checkout -f -B gh-pages origin/gh-pages
             rm -rf dev
@@ -73,7 +74,7 @@ jobs:
           else
             git checkout -B gh-pages
             git checkout origin/gh-pages -- dev 2>/dev/null || true
-            git add inicio.html index.html recordatorios-diarios.html recordatorios-varios.html agenda-personal.html finanzas.html salud.html ocio.html gestion-emocional.html relaciones-y-limites.html desarrollo-personal.html
+            git add inicio.html index.html recordatorios-diarios.html recordatorios-varios.html agenda-personal.html finanzas.html salud.html ocio.html gestion-emocional.html relaciones-y-limites.html desarrollo-personal.html habitos-y-disciplina.html
           fi
 
           if ! git diff --staged --quiet; then

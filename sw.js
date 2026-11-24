@@ -2,7 +2,7 @@
 // "app shell" para que el dashboard siga siendo usable (con el último dato
 // sincronizado) si el celular pierde conexión. Ver Documentacion/SRS.md
 // SRS-FR-M3-311 para el detalle de la estrategia de caché.
-const CACHE_NAME = "asistentesabry-shell-v21";
+const CACHE_NAME = "asistentesabry-shell-v22";
 
 const APP_SHELL = [
     "./",
@@ -16,6 +16,7 @@ const APP_SHELL = [
     "./gestion-emocional.html",
     "./relaciones-y-limites.html",
     "./desarrollo-personal.html",
+    "./habitos-y-disciplina.html",
     "./styles.css",
     "./manifest.json",
     "./grafica/logo 1-1 NF.png",

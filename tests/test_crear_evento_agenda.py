@@ -519,3 +519,21 @@ def test_guardar_cita_libro_ocio(monkeypatch):
         body = mock_post.call_args[1]["json"]
         assert body["properties"]["Title"] == {"title": [{"text": {"content": "Hábitos Atómicos"}}]}
         assert body["children"][0]["quote"]["rich_text"][0]["text"]["content"].startswith("Los hábitos")
+
+
+def test_crear_habito_disciplina(monkeypatch):
+    monkeypatch.setattr(extract_and_audit, "NOTION_API_KEY", "secret-token-de-prueba")
+    monkeypatch.setattr(extract_and_audit, "DB_HABITOS", "422a38bb7a6e805bb6feccf2829c847d")
+
+    mock_post = Mock(return_value=_mock_respuesta_creada("hab-1"))
+    with patch.object(extract_and_audit.requests, "post", mock_post):
+        extract_and_audit.crear_habito_disciplina({
+            "nombre": "Leer 10 páginas",
+            "modulo": "🔥 Hábito",
+            "estado": "Activo",
+            "racha_progreso": 7,
+        })
+        props = mock_post.call_args[1]["json"]["properties"]
+        assert props["Nombre"] == {"title": [{"text": {"content": "Leer 10 páginas"}}]}
+        assert props["Módulo"] == {"select": {"name": "🔥 Hábito"}}
+        assert props["Racha / Progreso"] == {"number": 7.0}

@@ -26,7 +26,7 @@ function extraerHrefsDelSidebar(archivo) {
 
 describe('Orden fijo del menú de navegación (SRS-FR-M3-312) y link a Recordatorios Varios (SRS-FR-M3-310)', () => {
   const ORDEN_ESPERADO = [
-    'inicio.html', 'agenda-personal.html', 'recordatorios-diarios.html', 'recordatorios-varios.html', 'finanzas.html', 'salud.html', 'ocio.html', 'gestion-emocional.html', 'relaciones-y-limites.html', 'desarrollo-personal.html',
+    'inicio.html', 'agenda-personal.html', 'recordatorios-diarios.html', 'recordatorios-varios.html', 'finanzas.html', 'salud.html', 'ocio.html', 'gestion-emocional.html', 'relaciones-y-limites.html', 'desarrollo-personal.html', 'habitos-y-disciplina.html',
   ];
 
   test.each([
@@ -40,7 +40,8 @@ describe('Orden fijo del menú de navegación (SRS-FR-M3-312) y link a Recordato
     'gestion-emocional.html',
     'relaciones-y-limites.html',
     'desarrollo-personal.html',
-  ])('%s: Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios, Finanzas, Salud, Ocio, Gestión emocional, Relaciones y límites, Desarrollo personal', (pagina) => {
+    'habitos-y-disciplina.html',
+  ])('%s: Inicio, Agenda personal, Recordatorios diarios, Recordatorios varios, Finanzas, Salud, Ocio, Gestión emocional, Relaciones y límites, Desarrollo personal, Hábitos y disciplina', (pagina) => {
     expect(extraerHrefsDelSidebar(pagina)).toEqual(ORDEN_ESPERADO);
   });
 });
