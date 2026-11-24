@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.70 (CRUD manual en Salud Energía & Recarga Vital conectado a Notion)  
+**Versión:** 4.71 (Acceso directo Contras AI Studio en sidebar y Relaciones/Rollups en Notion)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
