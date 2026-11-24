@@ -537,3 +537,25 @@ def test_crear_habito_disciplina(monkeypatch):
         assert props["Nombre"] == {"title": [{"text": {"content": "Leer 10 páginas"}}]}
         assert props["Módulo"] == {"select": {"name": "🔥 Hábito"}}
         assert props["Racha / Progreso"] == {"number": 7.0}
+
+
+def test_crear_formacion_curso(monkeypatch):
+    monkeypatch.setattr(extract_and_audit, "NOTION_API_KEY", "secret-token-de-prueba")
+    monkeypatch.setattr(extract_and_audit, "DB_FORMACIONES", "1e8a38bb7a6e80c295e8e8d1e55b54b7")
+
+    mock_post = Mock(return_value=_mock_respuesta_creada("cur-1"))
+    with patch.object(extract_and_audit.requests, "post", mock_post):
+        extract_and_audit.crear_formacion_curso({
+            "tema": "Product Ownership",
+            "estado": "En curso",
+            "plataforma": "Educación IT",
+            "tematica": ["Product ownership", "Management"],
+            "inicio": "2026-11-01",
+            "fin": "2026-11-30",
+            "seccion_onenote": "PO Nivel 1",
+        })
+        props = mock_post.call_args[1]["json"]["properties"]
+        assert props["Tema"] == {"title": [{"text": {"content": "Product Ownership"}}]}
+        assert props["Estado"] == {"status": {"name": "En curso"}}
+        assert props["Plataforma"] == {"select": {"name": "Educación IT"}}
+        assert props["Tematica"] == {"multi_select": [{"name": "Product ownership"}, {"name": "Management"}]}

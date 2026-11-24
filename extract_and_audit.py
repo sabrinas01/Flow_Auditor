@@ -104,12 +104,13 @@ DB_RELACIONES = os.getenv("NOTION_DB_RELACIONES")
 DB_FRASES = os.getenv("NOTION_DB_FRASES")
 DB_DESARROLLO_PERSONAL = os.getenv("NOTION_DB_DESARROLLO_PERSONAL")
 DB_HABITOS = os.getenv("NOTION_DB_HABITOS")
+DB_FORMACIONES = os.getenv("NOTION_DB_FORMACIONES")
 
 
 def validar_credenciales():
     try:
         # Uso de helper interno para resolución robusta de variables de entorno
-        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS, DB_GESTION_EMOCIONAL, DB_EMOCIONES, DB_RELACIONES, DB_FRASES, DB_DESARROLLO_PERSONAL, DB_HABITOS
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS, DB_GESTION_EMOCIONAL, DB_EMOCIONES, DB_RELACIONES, DB_FRASES, DB_DESARROLLO_PERSONAL, DB_HABITOS, DB_FORMACIONES
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
         # Opcionales: su ausencia (o cualquier fallo al consultarlas) no debe abortar
@@ -132,6 +133,7 @@ def validar_credenciales():
         DB_FRASES = get_env_var(["NOTION_DB_FRASES"], required=False)
         DB_DESARROLLO_PERSONAL = get_env_var(["NOTION_DB_DESARROLLO_PERSONAL"], required=False)
         DB_HABITOS = get_env_var(["NOTION_DB_HABITOS"], required=False)
+        DB_FORMACIONES = get_env_var(["NOTION_DB_FORMACIONES"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -2192,6 +2194,10 @@ def ejecutar_accion_notion(payload):
         crear_habito_disciplina(datos)
     elif accion == "actualizar_habito_disciplina":
         actualizar_habito_disciplina(datos)
+    elif accion == "crear_formacion_curso":
+        crear_formacion_curso(datos)
+    elif accion == "actualizar_formacion_curso":
+        actualizar_formacion_curso(datos)
     elif accion == "archivar_pagina":
         archivar_pagina_notion(datos)
     else:
@@ -2350,13 +2356,13 @@ def guardar_cita_libro_ocio(datos):
 
 
 def sincronizar_habitos_disciplina(timestamps, app_version):
-    """Inyecta registros de 🔥 Hábitos y Disciplina en habitos-y-disciplina.html."""
+    """Inyecta registros de 🔥 Hábitos y Disciplina y 🎓 Mis cursos en habitos-y-disciplina.html."""
     html_path = BASE_DIR / "habitos-y-disciplina.html"
     if not html_path.exists():
         print("ℹ️ [HÁBITOS]: habitos-y-disciplina.html no encontrado, se omite.")
         return
-    if not DB_HABITOS:
-        print("ℹ️ [HÁBITOS]: NOTION_DB_HABITOS no configurada, se omite sync.")
+    if not (DB_HABITOS or DB_FORMACIONES):
+        print("ℹ️ [HÁBITOS]: NOTION_DB_HABITOS/NOTION_DB_FORMACIONES no configuradas, se omite sync.")
         return
 
     res, sch = _consultar_bd_salud(DB_HABITOS, "HABITOS Y DISCIPLINA", page_size=100, paginar=True)
@@ -2375,10 +2381,29 @@ def sincronizar_habitos_disciplina(timestamps, app_version):
             "nota": "".join(t.get("plain_text", "") for t in (pr.get("Nota / Micro-hábito") or {}).get("rich_text", [])),
         })
 
+    res_form, sch_form = _consultar_bd_salud(DB_FORMACIONES, "FORMACIONES MIS CURSOS", page_size=100, paginar=True)
+    formaciones = []
+    for p in res_form:
+        pr = p.get("properties", {})
+        dur = (pr.get("Duración") or {}).get("date") or {}
+        formaciones.append({
+            "id": p.get("id"),
+            "tema": "".join(t.get("plain_text", "") for t in (pr.get("Tema") or {}).get("title", [])) or "Sin tema",
+            "estado": ((pr.get("Estado") or {}).get("status") or {}).get("name") or "Sin empezar",
+            "plataforma": ((pr.get("Plataforma") or {}).get("select") or {}).get("name"),
+            "tematica": [o.get("name") for o in (pr.get("Tematica") or {}).get("multi_select", []) if o.get("name")],
+            "inicio": dur.get("start"),
+            "fin": dur.get("end"),
+            "seccion_onenote": "".join(t.get("plain_text", "") for t in (pr.get("Sección OneNote") or {}).get("rich_text", [])),
+        })
+
     opciones = {
         "modulos": _opciones_de_schema(sch, "Módulo", "select", ["🔥 Hábito", "🎓 Formación / Curso"]),
         "estados": _opciones_de_schema(sch, "Estado", "select", ["Activo", "Por empezar", "En progreso", "En pausa", "Completado"]),
         "categorias": _opciones_de_schema(sch, "Categoría", "select", ["🌅 Mañana", "🌙 Noche", "🧠 Mente & Foco", "💪 Cuerpo & Salud", "💼 Carrera & Tech"]),
+        "estados_formacion": _opciones_de_schema(sch_form, "Estado", "status", ["Sin empezar", "En curso", "En pausa", "Terminado"]),
+        "plataformas_formacion": _opciones_de_schema(sch_form, "Plataforma", "select", ["Youtube", "Educación IT", "Kinetic Trainning Hub", "Identidad Argentina", "Oscar Méndez", "Ed team", "Instituto S.T", "CoderHouse", "Digital House", "Santander Open Academy", "Grabaciones de Zoom"]),
+        "tematicas_formacion": _opciones_de_schema(sch_form, "Tematica", "multi_select", ["Autoconocimiento", "Análisis funcional", "Gestión del tiempo", "Inglés", "BPMN", "Product ownership", "Cybersecurity", "API", "Management", "Desarrollo web", "Empresa"]),
     }
 
     with open(html_path, "r", encoding="utf-8") as file:
@@ -2386,13 +2411,17 @@ def sincronizar_habitos_disciplina(timestamps, app_version):
 
     html_content = _inyectar_timestamps_y_version(html_content, timestamps, app_version)
 
-    json_reg = json.dumps(registros, ensure_ascii=False).replace("</", "<\\/")
-    html_content = re.sub(
-        r"const\s+habitosRegistros\s*=\s*\[.*?\]\s*;",
-        lambda _m, jv=json_reg: f"const habitosRegistros = {jv};",
-        html_content,
-        flags=re.DOTALL,
-    )
+    for nombre_const, valor in (
+        ("habitosRegistros", registros),
+        ("formacionesRegistros", formaciones),
+    ):
+        json_reg = json.dumps(valor, ensure_ascii=False).replace("</", "<\\/")
+        html_content = re.sub(
+            rf"const\s+{nombre_const}\s*=\s*\[.*?\]\s*;",
+            lambda _m, nc=nombre_const, jv=json_reg: f"const {nc} = {jv};",
+            html_content,
+            flags=re.DOTALL,
+        )
     json_opc = json.dumps(opciones, ensure_ascii=False).replace("</", "<\\/")
     html_content = re.sub(
         r"const\s+habitosOpciones\s*=\s*\{.*?\}\s*;",
@@ -2403,7 +2432,7 @@ def sincronizar_habitos_disciplina(timestamps, app_version):
 
     with open(html_path, "w", encoding="utf-8") as file:
         file.write(html_content)
-    print(f"✅ Frontend habitos-y-disciplina.html sincronizado ({len(registros)} registros).")
+    print(f"✅ Frontend habitos-y-disciplina.html sincronizado ({len(registros)} hábitos, {len(formaciones)} formaciones).")
 
 
 def _construir_propiedades_habito(datos):
@@ -2447,6 +2476,49 @@ def actualizar_habito_disciplina(datos):
     props = _construir_propiedades_habito(datos)
     _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR HABITO")
     print(f"✅ [ACTUALIZAR HABITO]: '{datos.get('nombre')}' ({page_id}) actualizado.")
+
+
+def _construir_propiedades_formacion(datos):
+    tema = (datos.get("tema") or "").strip()
+    if not tema:
+        print("❌ [FORMACION]: falta el tema.")
+        sys.exit(1)
+    props = {
+        "Tema": {"title": [{"text": {"content": tema}}]},
+        "Estado": {"status": {"name": datos.get("estado") or "Sin empezar"}},
+    }
+    if datos.get("plataforma"):
+        props["Plataforma"] = {"select": {"name": datos["plataforma"]}}
+    if datos.get("tematica") is not None:
+        props["Tematica"] = {"multi_select": [{"name": t} for t in (datos.get("tematica") or []) if t]}
+    if datos.get("inicio"):
+        dur = {"start": datos["inicio"]}
+        if datos.get("fin"):
+            dur["end"] = datos["fin"]
+        props["Duración"] = {"date": dur}
+    if datos.get("seccion_onenote") is not None:
+        props["Sección OneNote"] = {"rich_text": [{"text": {"content": str(datos["seccion_onenote"])}}] if datos["seccion_onenote"] else []}
+    return props
+
+
+def crear_formacion_curso(datos):
+    if not DB_FORMACIONES:
+        print("❌ [CREAR FORMACION]: NOTION_DB_FORMACIONES no configurada.")
+        sys.exit(1)
+    props = _construir_propiedades_formacion(datos)
+    body = {"parent": {"database_id": DB_FORMACIONES}, "icon": {"type": "emoji", "emoji": "🎓"}, "properties": props}
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", body, "CREAR FORMACION")
+    print(f"✅ [CREAR FORMACION]: '{datos.get('tema')}' creada ({res.get('id', '?')}).")
+
+
+def actualizar_formacion_curso(datos):
+    page_id = (datos.get("page_id") or "").strip()
+    if not page_id:
+        print("❌ [ACTUALIZAR FORMACION]: falta page_id.")
+        sys.exit(1)
+    props = _construir_propiedades_formacion(datos)
+    _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR FORMACION")
+    print(f"✅ [ACTUALIZAR FORMACION]: '{datos.get('tema')}' ({page_id}) actualizada.")
 
 
 def sincronizar_agenda_personal(timestamps, app_version):

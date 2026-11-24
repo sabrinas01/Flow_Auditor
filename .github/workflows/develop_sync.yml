@@ -50,6 +50,7 @@ jobs:
           NOTION_DB_FRASES: ${{ secrets.NOTION_DB_FRASES }}
           NOTION_DB_DESARROLLO_PERSONAL: ${{ secrets.NOTION_DB_DESARROLLO_PERSONAL }}
           NOTION_DB_HABITOS: ${{ secrets.NOTION_DB_HABITOS }}
+          NOTION_DB_FORMACIONES: ${{ secrets.NOTION_DB_FORMACIONES }}
         run: python extract_and_audit.py
 
       - name: Publicar en gh-pages/dev/
