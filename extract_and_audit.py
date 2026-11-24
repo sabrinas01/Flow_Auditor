@@ -1295,7 +1295,7 @@ _SALUD_OPCIONES_FALLBACK = {
 }
 
 
-def _consultar_bd_salud(database_id, etiqueta, sorts=None, page_size=30):
+def _consultar_bd_salud(database_id, etiqueta, sorts=None, page_size=30, paginar=False):
     if not database_id:
         print(f"ℹ️ [{etiqueta}]: variable no configurada, se omite.")
         return [], {}
@@ -1304,13 +1304,22 @@ def _consultar_bd_salud(database_id, etiqueta, sorts=None, page_size=30):
         "Notion-Version": "2022-06-28",
         "Content-Type": "application/json",
     }
-    body = {"page_size": page_size}
-    if sorts:
-        body["sorts"] = sorts
+    results = []
+    cursor = None
     try:
-        r = requests.post(f"https://api.notion.com/v1/databases/{database_id}/query", json=body, headers=headers, timeout=15)
-        r.raise_for_status()
-        results = r.json().get("results", [])
+        while True:
+            body = {"page_size": page_size}
+            if sorts:
+                body["sorts"] = sorts
+            if cursor:
+                body["start_cursor"] = cursor
+            r = requests.post(f"https://api.notion.com/v1/databases/{database_id}/query", json=body, headers=headers, timeout=15)
+            r.raise_for_status()
+            data = r.json()
+            results.extend(data.get("results", []))
+            if not paginar or not data.get("has_more"):
+                break
+            cursor = data.get("next_cursor")
     except Exception as e:
         print(f"⚠️ [{etiqueta}]: error al consultar Notion ({e}), se omite.")
         return [], {}
@@ -1613,9 +1622,9 @@ def sincronizar_ocio(timestamps, app_version):
         print("ℹ️ [OCIO]: ninguna BD de Ocio configurada, se omite sync.")
         return
 
-    res_lib, sch_lib = _consultar_bd_salud(DB_LIBROS, "OCIO LIBROS", page_size=50)
-    res_ser, sch_ser = _consultar_bd_salud(DB_SERIES, "OCIO SERIES", page_size=50)
-    res_pel, sch_pel = _consultar_bd_salud(DB_PELICULAS, "OCIO PELICULAS", page_size=50)
+    res_lib, sch_lib = _consultar_bd_salud(DB_LIBROS, "OCIO LIBROS", page_size=100, paginar=True)
+    res_ser, sch_ser = _consultar_bd_salud(DB_SERIES, "OCIO SERIES", page_size=100, paginar=True)
+    res_pel, sch_pel = _consultar_bd_salud(DB_PELICULAS, "OCIO PELICULAS", page_size=100, paginar=True)
 
     libros = []
     for p in res_lib:
@@ -2143,6 +2152,8 @@ def ejecutar_accion_notion(payload):
         crear_desarrollo_personal(datos)
     elif accion == "actualizar_desarrollo_personal":
         actualizar_desarrollo_personal(datos)
+    elif accion == "guardar_cita_libro_ocio":
+        guardar_cita_libro_ocio(datos)
     elif accion == "archivar_pagina":
         archivar_pagina_notion(datos)
     else:
@@ -2248,6 +2259,38 @@ def actualizar_desarrollo_personal(datos):
     props = _construir_propiedades_desarrollo_personal(datos)
     _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR DESARROLLO PERSONAL")
     print(f"✅ [ACTUALIZAR DESARROLLO PERSONAL]: '{datos.get('nombre')}' ({page_id}) actualizada.")
+
+
+def guardar_cita_libro_ocio(datos):
+    if not DB_LIBROS:
+        print("❌ [CITA LIBRO OCR]: NOTION_DB_LIBROS no configurada.")
+        sys.exit(1)
+    titulo = (datos.get("titulo") or "").strip() or "Cita escaneada"
+    texto = (datos.get("texto") or "").strip()
+    if not texto:
+        print("❌ [CITA LIBRO OCR]: falta texto.")
+        sys.exit(1)
+    props = {
+        "Title": {"title": [{"text": {"content": titulo}}]},
+        "Estado": {"status": {"name": "Leyendo"}},
+    }
+    autor = (datos.get("autor") or "").strip()
+    if autor:
+        props["Autor"] = {"rich_text": [{"text": {"content": autor}}]}
+    body = {
+        "parent": {"database_id": DB_LIBROS},
+        "icon": {"type": "emoji", "emoji": "📖"},
+        "properties": props,
+        "children": [
+            {
+                "object": "block",
+                "type": "quote",
+                "quote": {"rich_text": [{"type": "text", "text": {"content": texto[:1900]}}]},
+            }
+        ],
+    }
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", body, "CITA LIBRO OCR")
+    print(f"✅ [CITA LIBRO OCR]: '{titulo}' guardado ({res.get('id', '?')}).")
 
 
 def sincronizar_agenda_personal(timestamps, app_version):

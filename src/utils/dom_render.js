@@ -305,7 +305,7 @@ function inicializarCommandPalette() {
       !term || `${m.nombre} ${m.tags}`.toLowerCase().includes(term)
     );
     const listEl = document.getElementById("cmd-palette-list");
-    listEl.innerHTML = filtrados.length === 0
+    listEl.innerHTML = (filtrados.length === 0
       ? `<p class="text-xs text-[#8e8e93] text-center py-4">Sin coincidencias</p>`
       : filtrados.map((m) => `
           <a href="${m.url}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#e5e2e1] hover:bg-[#ff5f52]/15 hover:text-white transition-colors">
@@ -313,7 +313,12 @@ function inicializarCommandPalette() {
             <span class="text-[13px] font-semibold flex-1">${m.nombre}</span>
             <span class="material-symbols-outlined text-[16px] text-[#8e8e93]">arrow_forward</span>
           </a>
-        `).join("");
+        `).join("")) + (!term || "escanear foto ocr texto frase libro afirmacion".includes(term) ? `
+          <button type="button" onclick="document.getElementById('cmd-palette-modal').classList.add('hidden'); abrirAccesoRapidoOCR();" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#83da85] hover:bg-[#53a759]/15 transition-colors text-left">
+            <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+            <span class="text-[13px] font-bold flex-1">Escanear foto / texto (OCR → Notion)</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#53a759]/20">Rápido</span>
+          </button>` : "");
   };
 
   const abrir = () => {
@@ -364,6 +369,28 @@ function inicializarCommandPalette() {
     btnHint.addEventListener("click", abrir);
     document.body.appendChild(btnHint);
   }
+
+  if (!document.getElementById("btn-ocr-rapido-fab")) {
+    const btnOcr = document.createElement("button");
+    btnOcr.id = "btn-ocr-rapido-fab";
+    btnOcr.type = "button";
+    btnOcr.title = "Escanear foto o texto para Notion";
+    btnOcr.className = "fixed bottom-5 right-5 z-30 inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-[#111115]/95 border border-[#53a759]/40 text-xs font-bold text-[#83da85] hover:bg-[#53a759]/20 backdrop-blur-md shadow-xl transition-all";
+    btnOcr.innerHTML = `<span class="material-symbols-outlined text-[18px]">photo_camera</span><span>Escanear</span>`;
+    btnOcr.addEventListener("click", abrirAccesoRapidoOCR);
+    document.body.appendChild(btnOcr);
+  }
+}
+
+function abrirAccesoRapidoOCR() {
+  if (typeof abrirEscanerOCR === "function") {
+    abrirEscanerOCR();
+    return;
+  }
+  const s = document.createElement("script");
+  s.src = "./src/utils/ocr_scanner.js";
+  s.onload = () => { if (typeof abrirEscanerOCR === "function") abrirEscanerOCR(); };
+  document.head.appendChild(s);
 }
 
 if (typeof document !== "undefined") {
