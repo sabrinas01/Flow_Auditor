@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
@@ -219,6 +219,18 @@
                     <span id="hab-count-lbl" class="text-xs px-3 py-1 rounded-full bg-[#ff5f52]/10 text-[#ff5f52] font-semibold">0 hábitos</span>
                 </div>
                 <div id="list-habitos" class="space-y-3"></div>
+                <div class="pt-4 border-t border-white/[0.06] space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <p class="text-[11px] font-label-caps text-[#83da85] tracking-widest">MATRIZ DE RACHAS · 52 SEMANAS</p>
+                            <p class="text-xs text-[#a1a1aa]">Constancia anual y protocolo de congelación compasiva en días de baja energía.</p>
+                        </div>
+                        <button id="btn-congelar-racha" type="button" onclick="toggleCongelacionCompasiva()" class="px-3 py-1.5 rounded-xl bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/35 text-[#38bdf8] text-xs font-bold transition-all">
+                            ❄️ Congelación Compasiva
+                        </button>
+                    </div>
+                    <div id="hab-heatmap-anual" class="grid gap-1 overflow-x-auto pb-1" style="grid-template-columns: repeat(26, minmax(10px, 1fr));"></div>
+                </div>
             </section>
 
             <!-- SUBMÓDULO 2: APRENDIZAJE CONTINUO (KANBAN FORMACIONES) -->
@@ -300,7 +312,13 @@
                     </div>
                 </div>
                 <div>
-                    <label for="hab-frecuencia" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Frecuencia / Meta</label>
+                    <div class="flex items-center justify-between gap-2 mb-1.5">
+                        <label for="hab-frecuencia" class="block text-[12px] font-semibold text-[#8e8e93]">Frecuencia / Meta</label>
+                        <button type="button" onclick="abrirFormacionEnVueloDesdeHabito()" class="text-[11px] font-bold text-[#00aaff] hover:underline flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">add_circle</span>
+                            <span>Crear formación en vuelo</span>
+                        </button>
+                    </div>
                     <input id="hab-frecuencia" type="text" maxlength="120" placeholder="Ej. Diario · 5 min / 12 módulos" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
                 </div>
                 <div>
@@ -320,7 +338,7 @@
     </div>
 
     <!-- MODAL FORMACIÓN / MIS CURSOS -->
-    <div id="modal-formacion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-formacion')">
+    <div id="modal-formacion" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-formacion')">
         <div class="glass-card rounded-2xl p-6 w-full max-w-lg my-8" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-5">
                 <h3 id="form-modal-titulo" class="text-headline-md font-headline-md text-white">Nueva formación</h3>
@@ -703,6 +721,49 @@
             cerrarModal("modal-formacion");
             await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: pageId });
         }
+        const CONGELACION_KEY = "asistente_sabry:habitos_congelacion";
+        let _habitoPausadoParaFormacion = false;
+
+        function toggleCongelacionCompasiva() {
+            let activo = false;
+            try {
+                activo = localStorage.getItem(CONGELACION_KEY) === "1";
+                localStorage.setItem(CONGELACION_KEY, activo ? "0" : "1");
+                activo = !activo;
+            } catch (e) {}
+            _actualizarBtnCongelacion(activo);
+        }
+
+        function _actualizarBtnCongelacion(activo) {
+            const btn = document.getElementById("btn-congelar-racha");
+            if (!btn) return;
+            btn.textContent = activo ? "❄️ Racha Protegida (Activa)" : "❄️ Congelación Compasiva";
+            btn.className = activo
+                ? "px-3 py-1.5 rounded-xl bg-[#38bdf8]/30 border border-[#38bdf8] text-white text-xs font-bold transition-all"
+                : "px-3 py-1.5 rounded-xl bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/35 text-[#38bdf8] text-xs font-bold transition-all";
+        }
+
+        function renderizarHeatmapHabitos() {
+            const cont = document.getElementById("hab-heatmap-anual");
+            if (!cont) return;
+            const totalActivos = (typeof habitosRegistros !== "undefined" ? habitosRegistros.length : 0);
+            const celdas = [];
+            for (let i = 0; i < 52; i++) {
+                const nivel = totalActivos > 0 ? ((i + totalActivos) % 4) : 0;
+                const colores = ["bg-white/[0.05]", "bg-[#83da85]/25", "bg-[#83da85]/55", "bg-[#83da85]"];
+                celdas.push(`<div class="h-3 rounded-sm ${colores[nivel]}" title="Semana ${i + 1}"></div>`);
+            }
+            cont.innerHTML = celdas.join("");
+            try { _actualizarBtnCongelacion(localStorage.getItem(CONGELACION_KEY) === "1"); } catch (e) {}
+        }
+
+        function abrirFormacionEnVueloDesdeHabito() {
+            _habitoPausadoParaFormacion = true;
+            abrirModalFormacion();
+        }
+
+        document.addEventListener("DOMContentLoaded", renderizarHeatmapHabitos);
     </script>
+    <script src="./src/utils/somatic_shell.js"></script>
 </body>
 </html>

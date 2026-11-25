@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
@@ -266,7 +266,12 @@
                             <p class="text-[11px] font-label-caps text-[#a855f7] tracking-widest">HISTORIAL SOMÁTICO</p>
                             <h3 class="text-headline-md font-headline-md text-white">Historial de Síntomas y Ciclos Pasados</h3>
                         </div>
-                        <input id="ciclo-hist-buscador" type="text" oninput="renderizarHistorialCiclo()" placeholder="Filtrar por síntoma o fase..." class="bg-[#1c1c1f] border border-[#232326] rounded-xl px-3.5 py-2 text-[13px] text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#a855f7]" />
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button id="btn-vista-hist-ciclo" type="button" onclick="toggleVistaHistorialCiclo()" class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#a855f7]/35 text-[#e9d5ff] text-xs font-bold px-3 py-2 rounded-xl transition-all">
+                                Vista: Línea de Tiempo
+                            </button>
+                            <input id="ciclo-hist-buscador" type="text" oninput="renderizarHistorialCiclo()" placeholder="Filtrar por síntoma o fase..." class="bg-[#1c1c1f] border border-[#232326] rounded-xl px-3.5 py-2 text-[13px] text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#a855f7]" />
+                        </div>
                     </div>
                     <div id="ciclo-sintomas-top" class="flex flex-wrap gap-2"></div>
                     <div id="ciclo-historial-list" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
@@ -1352,6 +1357,33 @@
             cerrarModal("modal-energia");
             eliminarItemSalud(pageId);
         }
+
+        let _vistaHistComparativa = false;
+        function toggleVistaHistorialCiclo() {
+            _vistaHistComparativa = !_vistaHistComparativa;
+            const btn = document.getElementById("btn-vista-hist-ciclo");
+            if (btn) btn.textContent = _vistaHistComparativa ? "Vista: Comparativa por Fases" : "Vista: Línea de Tiempo";
+            const list = document.getElementById("ciclo-historial-list");
+            if (_vistaHistComparativa && list && Array.isArray(saludCiclo)) {
+                const grupos = {};
+                saludCiclo.forEach((f) => {
+                    const k = f.nombre || "Sin fase";
+                    if (!grupos[k]) grupos[k] = [];
+                    (f.sintomas || []).forEach((s) => grupos[k].push(s));
+                });
+                const entries = Object.entries(grupos);
+                list.innerHTML = entries.length === 0
+                    ? `<p class="text-[13px] text-[#8e8e93] text-center py-4">Sin datos suficientes para comparar fases.</p>`
+                    : entries.map(([fase, sints]) => `
+                        <div class="status-row p-3.5 space-y-1.5">
+                            <p class="text-[13px] font-bold text-white">${escapeHtml(fase)}</p>
+                            <p class="text-[12px] text-[#a1a1aa]">${sints.length > 0 ? escapeHtml([...new Set(sints)].join(" · ")) : "Sin síntomas registrados"}</p>
+                        </div>`).join("");
+                return;
+            }
+            if (typeof renderizarHistorialCiclo === "function") renderizarHistorialCiclo();
+        }
     </script>
+    <script src="./src/utils/somatic_shell.js"></script>
 </body>
 </html>

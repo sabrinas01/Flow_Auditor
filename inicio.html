@@ -19,102 +19,14 @@
         try {
             sessionStorage.setItem('nfa_landed', '1');
         } catch (e) {
-            // sessionStorage puede no estar disponible (ej. abierto directo como
-            // archivo local en algunos navegadores); index.html maneja ese caso.
+            // sessionStorage puede no estar disponible
         }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        // Paleta "Obsidian Refined" (Material 3 tokens, vía Stitch) - misma que index.html
-                        "on-surface-variant": "#e2beba",
-                        "inverse-surface": "#e5e2e1",
-                        "on-error": "#690005",
-                        "surface-container-lowest": "#0e0e0e",
-                        "on-primary-fixed-variant": "#910a0e",
-                        "secondary-container": "#e49102",
-                        "tertiary-container": "#53a759",
-                        "surface-container-low": "#1c1b1b",
-                        "on-surface": "#e5e2e1",
-                        "on-primary": "#690004",
-                        "surface-tint": "#ffb4aa",
-                        "outline-variant": "#5a413d",
-                        "on-secondary": "#472a00",
-                        "primary-container": "#ff5f52",
-                        "surface": "#131313",
-                        "error-container": "#93000a",
-                        "on-primary-fixed": "#410002",
-                        "secondary-fixed": "#ffddb9",
-                        "primary-fixed": "#ffdad5",
-                        "on-background": "#e5e2e1",
-                        "on-tertiary": "#00390e",
-                        "surface-container-highest": "#353534",
-                        "secondary-fixed-dim": "#ffb961",
-                        "background": "#131313",
-                        "on-tertiary-fixed": "#002105",
-                        "on-tertiary-container": "#00360d",
-                        "on-error-container": "#ffdad6",
-                        "tertiary": "#83da85",
-                        "inverse-primary": "#b32822",
-                        "primary-fixed-dim": "#ffb4aa",
-                        "tertiary-fixed": "#9ff79f",
-                        "outline": "#a98985",
-                        "surface-dim": "#131313",
-                        "on-tertiary-fixed-variant": "#005318",
-                        "inverse-on-surface": "#313030",
-                        "primary": "#ffb4aa",
-                        "error": "#ffb4ab",
-                        "on-secondary-fixed-variant": "#663e00",
-                        "secondary": "#ffb961",
-                        "on-secondary-container": "#533200",
-                        "surface-container-high": "#2a2a2a",
-                        "surface-variant": "#353534",
-                        "surface-container": "#201f1f",
-                        "surface-bright": "#393939",
-                        "on-primary-container": "#640004",
-                        "tertiary-fixed-dim": "#83da85",
-                        "on-secondary-fixed": "#2b1700"
-                    },
-                    borderRadius: {
-                        DEFAULT: "0.25rem",
-                        lg: "0.5rem",
-                        xl: "1rem",
-                        full: "9999px"
-                    },
-                    spacing: {
-                        "section-margin": "2.5rem",
-                        "stack-gap": "1.25rem",
-                        "item-gap": "0.75rem",
-                        "container-padding": "1.5rem",
-                        "grid-gutter": "1.5rem"
-                    },
-                    fontFamily: {
-                        "label-caps": ["Inter", "sans-serif"],
-                        "body-sm": ["Inter", "sans-serif"],
-                        "display-lg": ["Manrope", "sans-serif"],
-                        "body-md": ["Inter", "sans-serif"],
-                        "headline-md": ["Manrope", "sans-serif"],
-                        "metric-xl": ["Inter", "sans-serif"]
-                    },
-                    fontSize: {
-                        "label-caps": ["11px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "700" }],
-                        "body-sm": ["13px", { lineHeight: "18px", fontWeight: "500" }],
-                        "display-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "800" }],
-                        "body-md": ["14px", { lineHeight: "20px", fontWeight: "500" }],
-                        "headline-md": ["24px", { lineHeight: "32px", fontWeight: "800" }],
-                        "metric-xl": ["26px", { lineHeight: "34px", fontWeight: "700" }]
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
     <style>
         body {
             background-color: #08080a;
@@ -125,16 +37,22 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-        #sidebar {
-            transition: transform 0.3s ease;
+        .glass-card {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+        #sidebar { transition: transform 0.3s ease; }
+        .spin-animation { animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body class="font-body-md text-body-md antialiased">
+<body class="font-body-md text-body-md overflow-x-hidden antialiased">
 
-    <!-- =================================================== -->
-    <!-- SIDEBAR (oculto por defecto, se activa con el menú) -->
-    <!-- =================================================== -->
+    <!-- SIDEBAR -->
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
         <div class="flex items-center gap-3 mb-8 px-2">
             <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
@@ -190,12 +108,14 @@
                 <span>Hábitos y disciplina</span>
             </a>
         </nav>
+
         <div class="pt-3 mt-3 border-t border-white/[0.08]">
             <a href="https://contras.ai.studio/" target="_blank" rel="noopener" class="flex items-center gap-3 px-4 py-2.5 text-[#ffb961] hover:bg-[#ffb961]/10 rounded-xl transition-all text-[13px] font-semibold">
                 <span class="material-symbols-outlined text-[18px]">open_in_new</span>
                 <span>Contras AI Studio</span>
             </a>
         </div>
+
         <div class="pt-4 mt-4 border-t border-white/[0.08] flex items-center gap-3 px-2">
             <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
             <div class="min-w-0">
@@ -205,119 +125,328 @@
         </div>
     </aside>
 
-    <!-- Overlay -->
     <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
 
-    <!-- =================================================== -->
-    <!-- TOP APP BAR -->
-    <!-- =================================================== -->
-    <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] flex justify-between items-center px-container-padding w-full lg:w-[calc(100%-16rem)] lg:left-64 h-16 fixed top-0 z-30">
-        <div class="flex items-center gap-4">
-            <button onclick="toggleMenu()" class="lg:hidden p-2 text-primary hover:text-primary-fixed-dim transition-colors active:scale-95">
-                <span class="material-symbols-outlined">menu</span>
-            </button>
-            <span class="font-display-lg text-[20px] text-primary-fixed tracking-tight">Home</span>
-        </div>
-    </header>
-
-    <!-- =================================================== -->
     <!-- MAIN CONTENT -->
-    <!-- =================================================== -->
-    <main class="relative min-h-screen lg:ml-64 flex flex-col items-center justify-center pt-16 px-container-padding overflow-hidden">
-        <!-- Fondo ambiental sutil -->
-        <div class="absolute inset-0 z-0 pointer-events-none opacity-50">
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-container blur-[160px] rounded-full"></div>
-            <div class="absolute top-1/4 right-0 w-[400px] h-[400px] bg-secondary-container blur-[120px] rounded-full opacity-50"></div>
-        </div>
-
-        <!-- Hero de bienvenida -->
-        <div class="relative z-10 text-center max-w-4xl">
-            <div class="mb-8 flex justify-center">
-                <div class="p-1 rounded-2xl bg-gradient-to-tr from-primary-container to-secondary-container">
-                    <img src="./grafica/logo 1-1 NF.png" alt="AsistenteSabry" class="w-32 h-32 rounded-xl object-cover">
-                </div>
-            </div>
-
-            <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#ff5f52]/10 border border-[#ff5f52]/30 text-[#ff5f52] text-[11px] font-bold tracking-widest uppercase mb-6">Espacio Personal</span>
-            <h1 class="font-display-lg text-6xl md:text-8xl tracking-tighter text-on-surface mb-4">
-                Bienvenida <span class="text-primary-container">Sabry</span>
-            </h1>
-            <p class="font-headline-md text-headline-md text-on-surface-variant mb-12">
-                ¿Cómo estás hoy?
-            </p>
-
-            <div class="flex flex-col items-center gap-4 opacity-60">
-                <span class="font-label-caps text-label-caps tracking-widest text-outline uppercase">DASHBOARD PERSONAL</span>
-                <div class="flex gap-1 h-1 w-32 bg-surface-container-highest rounded-full overflow-hidden">
-                    <div class="w-1/3 bg-primary-container"></div>
-                    <div class="w-1/2 bg-secondary-container"></div>
-                </div>
-            </div>
-
-            <!-- WIDGET SOMÁTICO DE FASE HORMONAL -->
-            <div id="widget-ciclo-inicio" class="mt-10 mx-auto max-w-xl rounded-2xl bg-[#111115]/90 border border-white/[0.08] p-5 text-left shadow-xl backdrop-blur-md">
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div class="space-y-1">
-                        <p class="text-[10px] font-label-caps text-[#ff5f52] tracking-widest">SALUD &amp; RITMO BIOLÓGICO</p>
-                        <p id="inicio-ciclo-fase" class="text-[16px] font-bold text-white">Cargando fase del ciclo...</p>
-                        <p id="inicio-ciclo-prox" class="text-[12px] text-[#ffb961]">—</p>
+    <main class="min-h-screen lg:ml-64 flex flex-col">
+        <!-- TOP APP BAR -->
+        <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-30">
+            <div class="flex justify-between items-center w-full px-container-padding py-4 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-white/5 rounded-full transition-colors active:scale-95 text-[#ffb4aa]" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
                     </div>
-                    <div class="flex flex-wrap gap-2">
-                        <a href="salud.html#sec-cuerpo" class="px-3.5 py-2 rounded-xl bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 border border-[#ff5f52]/30 text-[#ff5f52] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
-                            <span>Abrir Salud</span>
+                    <div>
+                        <span class="text-[16px] sm:text-[18px] font-headline-md font-extrabold text-white tracking-wider uppercase leading-none">ASISTENTESABRY</span>
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mt-0.5">CENTRO DE CONTROL DIARIO</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <button type="button" onclick="window.SomaticShell && window.SomaticShell.abrirSpotlight()" class="hidden sm:inline-flex items-center gap-1.5 bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] text-[#a1a1aa] hover:text-white text-xs font-semibold px-3 py-1.5 rounded-full transition-all" title="Buscar módulos o acciones (Ctrl + K)">
+                        <span class="material-symbols-outlined text-[14px]">search</span>
+                        <span>Ctrl + K</span>
+                    </button>
+                    <span id="inicio-pill-hoy" class="inline-flex items-center gap-1.5 bg-[#1c1c1f] border border-white/[0.08] text-[#e5e2e1] text-xs font-semibold px-3 py-1.5 rounded-full">
+                        <span class="material-symbols-outlined text-[14px] text-[#ffb961]">calendar_today</span>
+                        <span>Hoy</span>
+                    </span>
+                    <button type="button" onclick="sincronizarInicio()" class="p-2 bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] rounded-full transition-colors active:scale-95 text-[#e5e2e1]" title="Sincronizar">
+                        <span id="inicio-sync-icon" class="material-symbols-outlined text-[18px]">sync</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 max-w-[1200px] w-full mx-auto p-container-padding space-y-8">
+            <!-- HERO / SALUDO -->
+            <section class="pt-2 space-y-3">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff5f52]/10 border border-[#ff5f52]/30 text-[#ff5f52] text-[11px] font-bold tracking-widest uppercase">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#ff5f52]"></span>
+                    <span>Espacio Personal</span>
+                </div>
+                <h1 class="font-display-lg text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+                    Bienvenida <span class="text-[#ff5f52]">Sabry</span>
+                </h1>
+                <p class="text-[14px] text-[#a1a1aa] max-w-2xl leading-relaxed">
+                    Tu centro de control diario. Revisá tus pendientes, monitoreá tus hábitos de bienestar y mantené tus registros al día.
+                </p>
+            </section>
+
+            <!-- WIDGET SOMÁTICO: SALUD & RITMO BIOLÓGICO -->
+            <section id="widget-ciclo-inicio" class="glass-card rounded-2xl p-6 sm:p-7 border-l-4 border-l-[#ff5f52] space-y-6">
+                <div class="flex flex-wrap items-start justify-between gap-4">
+                    <div class="space-y-2">
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <span class="inline-flex items-center gap-1.5 text-[11px] font-label-caps text-[#ff5f52] tracking-widest">
+                                <span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                                <span>SALUD &amp; RITMO BIOLÓGICO</span>
+                            </span>
+                            <span id="inicio-ciclo-fase" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30">
+                                Cargando fase del ciclo...
+                            </span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-headline-md font-extrabold text-white tracking-tight">
+                            Bienestar &amp; Ritmo Biológico / Fase Hormonal Activa
+                        </h2>
+                    </div>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#83da85]/10 border border-[#83da85]/30 text-[#83da85] text-[11px] font-semibold">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#83da85]"></span>
+                        <span>Sincronizado con Notion BD: Salud_Ciclo_Sabry</span>
+                    </span>
+                </div>
+
+                <!-- 3 SUB-TARJETAS MÉTRICAS EN FILA -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="rounded-xl bg-[#18181d] border border-white/[0.06] p-4 space-y-2.5">
+                        <div class="flex items-center justify-between text-[12px]">
+                            <span class="text-[#a1a1aa] font-medium">Nivel de Energía</span>
+                            <span id="inicio-energia-val" class="font-extrabold text-white">—</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-[#232326] rounded-full overflow-hidden">
+                            <div id="inicio-energia-bar" class="h-full bg-gradient-to-r from-[#ff5f52] to-[#ffb961] rounded-full transition-all" style="width: 62%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-xl bg-[#18181d] border border-white/[0.06] p-4 space-y-2.5">
+                        <div class="flex items-center justify-between text-[12px]">
+                            <span class="text-[#a1a1aa] font-medium">Sensibilidad Emocional</span>
+                            <span id="inicio-sensibilidad-val" class="font-extrabold text-[#ffb961]">—</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-[#232326] rounded-full overflow-hidden">
+                            <div id="inicio-sensibilidad-bar" class="h-full bg-[#ffb961] rounded-full transition-all" style="width: 55%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-xl bg-[#18181d] border border-white/[0.06] p-4 space-y-2.5">
+                        <div class="flex items-center justify-between text-[12px]">
+                            <span class="text-[#a1a1aa] font-medium">Próximo Ciclo</span>
+                            <span id="inicio-ciclo-prox" class="font-extrabold text-[#83da85]">—</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-[#232326] rounded-full overflow-hidden">
+                            <div id="inicio-prox-bar" class="h-full bg-[#83da85] rounded-full transition-all" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PIE DEL WIDGET: PREDICCIÓN Y ACCESOS CRUZADOS -->
+                <div class="pt-4 border-t border-white/[0.08] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div class="space-y-2">
+                        <p class="text-[11px] font-label-caps text-[#ffb961] tracking-widest uppercase">Predicción de Energía &amp; Síntomas</p>
+                        <p id="inicio-ciclo-prediccion" class="text-[13px] text-[#e5e2e1] leading-relaxed">
+                            Priorizá pausas regenerativas, hidratación constante y movimiento suave sin sobreexigencia.
+                        </p>
+                        <div id="inicio-ciclo-sintomas" class="flex flex-wrap gap-1.5"></div>
+                    </div>
+                    <div class="flex flex-wrap gap-2.5 flex-shrink-0">
+                        <a href="gestion-emocional.html" class="px-4 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.1] text-[#83da85] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                            <span>🌿 Caja S.T.O.P.</span>
                             <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
                         </a>
-                        <a href="gestion-emocional.html" class="px-3.5 py-2 rounded-xl bg-[#83da85]/15 hover:bg-[#83da85]/25 border border-[#83da85]/30 text-[#83da85] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
-                            <span>🌿 Pausa S.T.O.P.</span>
+                        <a href="salud.html#sec-cuerpo" class="px-4 py-2.5 rounded-xl bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                            <span>Registrar Síntoma / Ajustar Fase</span>
+                            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
                         </a>
                     </div>
                 </div>
-                <div id="inicio-ciclo-sintomas" class="flex flex-wrap gap-1.5 mt-3"></div>
-            </div>
+            </section>
+
+            <!-- ACCESOS DIRECTOS (GRILLA 3 COLUMNAS) -->
+            <section class="space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h2 class="text-lg font-headline-md font-extrabold text-white flex items-center gap-2">
+                        <span>⚡ Accesos directos</span>
+                    </h2>
+                    <span class="text-[12px] text-[#8e8e93]">3 accesos clave configurados</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <!-- TARJETA 1: FINANZAS DIARIAS -->
+                    <article class="glass-card rounded-2xl p-6 flex flex-col justify-between gap-5 border-t-4 border-t-[#ffb961]">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="inline-flex items-center gap-2 text-[12px] font-bold text-[#ffb961] uppercase tracking-wider">
+                                    <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+                                    <span>Finanzas diarias</span>
+                                </span>
+                                <a href="finanzas.html" class="p-1 text-[#8e8e93] hover:text-white rounded-lg" title="Abrir Finanzas">
+                                    <span class="material-symbols-outlined text-[18px]">more_vert</span>
+                                </a>
+                            </div>
+                            <h3 class="text-[17px] font-bold text-white leading-snug">¿Registraste los gastos de hoy?</h3>
+                            <p class="text-[13px] text-[#a1a1aa] leading-relaxed">Llevá el control de tus compras y consumos para mantener tu balance y metas financieras en orden.</p>
+                        </div>
+                        <div class="pt-3 border-t border-white/[0.06] flex items-center justify-between gap-2">
+                            <span class="text-[11px] text-[#8e8e93]">Control diario</span>
+                            <a href="finanzas.html" class="px-3.5 py-2 rounded-xl bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white text-xs font-bold inline-flex items-center gap-1 transition-all">
+                                <span>Ir a Finanzas</span>
+                                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- TARJETA 2: SALUD & HÁBITOS -->
+                    <article class="glass-card rounded-2xl p-6 flex flex-col justify-between gap-5 border-t-4 border-t-[#38bdf8]">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="inline-flex items-center gap-2 text-[12px] font-bold text-[#38bdf8] uppercase tracking-wider">
+                                    <span class="material-symbols-outlined text-[18px]">directions_walk</span>
+                                    <span>Salud &amp; Hábitos</span>
+                                </span>
+                                <a href="salud.html" class="p-1 text-[#8e8e93] hover:text-white rounded-lg" title="Abrir Salud">
+                                    <span class="material-symbols-outlined text-[18px]">more_vert</span>
+                                </a>
+                            </div>
+                            <h3 class="text-[17px] font-bold text-white leading-snug">¿Moviste tu cuerpo hoy o volviste caminando a casa?</h3>
+                            <p class="text-[13px] text-[#a1a1aa] leading-relaxed">Registrá tu caminata, pausa activa o entrenamiento de la jornada para cuidar tu energía y salud.</p>
+                        </div>
+                        <div class="pt-3 border-t border-white/[0.06] flex items-center justify-between gap-2">
+                            <span class="text-[11px] text-[#8e8e93]">Meta diaria de pasos</span>
+                            <a href="salud.html" class="px-3.5 py-2 rounded-xl bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white text-xs font-bold inline-flex items-center gap-1 transition-all">
+                                <span>Ir a Movimiento</span>
+                                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- TARJETA 3: PAUSA CONSCIENTE -->
+                    <article class="glass-card rounded-2xl p-6 flex flex-col justify-between gap-5 border-t-4 border-t-[#83da85]">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="inline-flex items-center gap-2 text-[12px] font-bold text-[#83da85] uppercase tracking-wider">
+                                    <span class="material-symbols-outlined text-[18px]">psychology</span>
+                                    <span>Pausa Consciente</span>
+                                </span>
+                                <a href="gestion-emocional.html" class="p-1 text-[#8e8e93] hover:text-white rounded-lg" title="Abrir Gestión Emocional">
+                                    <span class="material-symbols-outlined text-[18px]">more_vert</span>
+                                </a>
+                            </div>
+                            <h3 class="text-[17px] font-bold text-white leading-snug">¿Sentís sobrecarga o tensión somática?</h3>
+                            <p class="text-[13px] text-[#a1a1aa] leading-relaxed">Hacé una pausa consciente guiada de 2 minutos con el Protocolo S.T.O.P. o regulá tu respiración.</p>
+                        </div>
+                        <div class="pt-3 border-t border-white/[0.06] flex items-center justify-between gap-2">
+                            <span class="text-[11px] text-[#8e8e93]">Protocolo S.T.O.P.</span>
+                            <a href="gestion-emocional.html" class="px-3.5 py-2 rounded-xl bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white text-xs font-bold inline-flex items-center gap-1 transition-all">
+                                <span>Ir a Gestión Emocional</span>
+                                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                            </a>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- BANNER INFERIOR DE ESTADO -->
+            <section class="glass-card rounded-2xl px-6 py-4 flex flex-wrap items-center justify-between gap-4 border border-[#83da85]/20">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-[#83da85] text-[24px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    <div>
+                        <p class="text-[14px] font-bold text-white">Todo en orden con tu Sabri Studios</p>
+                        <p class="text-[12px] text-[#8e8e93]">Sincronización en tiempo real habilitada con Obsidian Metric System</p>
+                    </div>
+                </div>
+                <span class="px-3.5 py-1.5 rounded-full bg-[#83da85]/15 border border-[#83da85]/30 text-[#83da85] text-xs font-bold">
+                    Estado: Óptimo
+                </span>
+            </section>
         </div>
+
+        <!-- FOOTER INSTITUCIONAL UNIFICADO -->
+        <footer class="w-full py-8 mt-8 border-t border-[#232326] bg-[#0e0e0e]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center px-container-padding max-w-[1200px] mx-auto gap-4">
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] text-[#8e8e93]">
+                    <span class="w-2 h-2 rounded-full bg-[#83da85] shadow-[0_0_8px_#83da85]"></span>
+                    <span>Sincro ART: <strong id="inicio-sync-time" class="text-white">--/--/-- --:--:--</strong></span>
+                    <span class="hidden sm:inline">•</span>
+                    <span>Próxima actualización: <strong id="inicio-next-time" class="text-[#ffb961]">--/--/-- --:--:--</strong></span>
+                </div>
+                <p class="text-[11px] font-label-caps text-[#8e8e93]">Sabri Studios &copy; 2026</p>
+            </div>
+        </footer>
     </main>
 
     <script src="./src/utils/dashboard_logic.js"></script>
     <script src="./src/utils/dom_render.js"></script>
     <script src="./src/utils/salud_logic.js"></script>
+    <script src="./src/utils/somatic_shell.js"></script>
     <script>
         const inicioCiclo = [];
+
+        const PERFIL_FASE_INICIO = {
+            menstrual: { energia: "40%", energiaPct: 40, sensibilidad: "Alta", sensPct: 75, tip: "Energía introspectiva. Priorizá descanso, hidratación tibia y tareas livianas sin sobreexigencia." },
+            folicular: { energia: "82%", energiaPct: 82, sensibilidad: "Equilibrada", sensPct: 35, tip: "Ventana de claridad y empuje creativo. Ideal para planificar y avanzar en proyectos clave." },
+            ovulatoria: { energia: "92%", energiaPct: 92, sensibilidad: "Abierta", sensPct: 30, tip: "Pico de energía social y comunicación. Aprovechá para conversaciones importantes." },
+            lutea: { energia: "62%", energiaPct: 62, sensibilidad: "Moderada", sensPct: 60, tip: "Energía moderada a baja esperada. Priorizá pausas regenerativas, hidratación constante y caminatas suaves." },
+        };
+
+        function _formatearFechaART(date) {
+            const p = (n) => String(n).padStart(2, "0");
+            return `${p(date.getDate())}/${p(date.getMonth() + 1)}/${date.getFullYear()} ${p(date.getHours())}:${p(date.getMinutes())}:${p(date.getSeconds())}`;
+        }
 
         function renderizarWidgetCicloInicio() {
             const d = new Date();
             const p = (n) => String(n).padStart(2, "0");
             const hoyIso = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+
+            const pillHoy = document.getElementById("inicio-pill-hoy");
+            if (pillHoy) {
+                const spanTxt = pillHoy.querySelector("span:last-child");
+                if (spanTxt) spanTxt.textContent = `Hoy · ${p(d.getDate())}/${p(d.getMonth() + 1)}`;
+            }
+
             const { faseActual, proximoInicio, proximaFase, proximaFaseEmoji } = obtenerResumenCiclo(inicioCiclo, hoyIso);
             const info = clasificarFasePorNombre(faseActual);
             const emoji = info && info.emoji ? `${info.emoji} ` : "";
             const faseObj = (inicioCiclo || []).find((f) => f.nombre === faseActual);
 
+            const nombreLower = (faseActual || "").toLowerCase();
+            let clave = "lutea";
+            if (nombreLower.includes("menstru")) clave = "menstrual";
+            else if (nombreLower.includes("folicul")) clave = "folicular";
+            else if (nombreLower.includes("ovul")) clave = "ovulatoria";
+            const perfil = PERFIL_FASE_INICIO[clave];
+
             document.getElementById("inicio-ciclo-fase").textContent = `${emoji}${faseActual}`;
+            document.getElementById("inicio-energia-val").textContent = perfil.energia;
+            document.getElementById("inicio-energia-bar").style.width = `${perfil.energiaPct}%`;
+            document.getElementById("inicio-sensibilidad-val").textContent = perfil.sensibilidad;
+            document.getElementById("inicio-sensibilidad-bar").style.width = `${perfil.sensPct}%`;
             document.getElementById("inicio-ciclo-prox").textContent = proximaFase
-                ? `Próxima: ${proximaFaseEmoji ? proximaFaseEmoji + " " : ""}${proximaFase} · ${proximoInicio || "Sin fecha"}`
-                : (proximoInicio ? `Próximo inicio: ${proximoInicio}` : "Sin proyección aún");
+                ? `${proximaFaseEmoji ? proximaFaseEmoji + " " : ""}${proximaFase} · ${proximoInicio || "Pronto"}`
+                : (proximoInicio || "Sin proyección aún");
+            document.getElementById("inicio-ciclo-prediccion").textContent = perfil.tip;
 
             const contSin = document.getElementById("inicio-ciclo-sintomas");
             const sint = (faseObj && Array.isArray(faseObj.sintomas)) ? faseObj.sintomas : [];
-            contSin.innerHTML = sint.map((s) => `<span class="px-2 py-0.5 rounded-full text-[11px] bg-white/[0.06] text-[#e5e2e1] border border-white/[0.08]">${escapeHtml(s)}</span>`).join("");
+            contSin.innerHTML = sint.map((s) => `<span class="px-2.5 py-0.5 rounded-full text-[11px] bg-white/[0.06] text-[#e5e2e1] border border-white/[0.08]">${escapeHtml(s)}</span>`).join("");
+
+            const syncEl = document.getElementById("inicio-sync-time");
+            const nextEl = document.getElementById("inicio-next-time");
+            if (syncEl) syncEl.textContent = _formatearFechaART(d);
+            if (nextEl) nextEl.textContent = _formatearFechaART(new Date(d.getTime() + 3600000));
+        }
+
+        function sincronizarInicio() {
+            const ic = document.getElementById("inicio-sync-icon");
+            if (ic) {
+                ic.classList.add("spin-animation");
+                setTimeout(() => ic.classList.remove("spin-animation"), 900);
+            }
+            renderizarWidgetCicloInicio();
         }
 
         document.addEventListener("DOMContentLoaded", renderizarWidgetCicloInicio);
+
         function toggleMenu() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');
             const isOpen = sidebar.classList.contains('-translate-x-full') === false;
-
-            if (isOpen) {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            } else {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-            }
+            sidebar.classList.toggle('-translate-x-full', isOpen);
+            overlay.classList.toggle('hidden', isOpen);
         }
 
-        // Registro del Service Worker (PWA) — no bloquea el render inicial.
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", () => {
                 navigator.serviceWorker.register("./sw.js").catch(() => {});
