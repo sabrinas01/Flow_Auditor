@@ -426,8 +426,15 @@
                     <input id="rd-edit-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
                 </div>
                 <div>
-                    <label for="rd-edit-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
+                    <div class="flex items-center justify-between gap-2 mb-1.5">
+                        <label for="rd-edit-estado" class="block text-[12px] font-semibold text-[#8e8e93]">Estado</label>
+                        <button type="button" onclick="descomponerTareaMicroPasos()" class="text-[11px] font-bold text-[#ffb961] hover:underline">✨ Descomponer en micro-pasos</button>
+                    </div>
                     <select id="rd-edit-estado" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                </div>
+                <div id="rd-micropasos-wrap" class="hidden p-3.5 rounded-xl bg-[#08080a] border border-[#ffb961]/30 space-y-2">
+                    <p class="text-[10px] font-label-caps text-[#ffb961] tracking-widest">MICRO-PASOS COMPASIVOS (SIN FRICCIÓN)</p>
+                    <div id="rd-micropasos-list" class="space-y-1.5 text-xs"></div>
                 </div>
                 <div class="flex gap-2.5 pt-1">
                     <button type="button" onclick="confirmarEliminarDiario()" class="bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl" title="Mandar a papelera">
@@ -859,6 +866,45 @@
             cerrarModalEditarDiario();
             await _enviarAccionDiarios("archivar_pagina", { page_id: pageId }, "¡Tarea archivada!");
         }
+
+        const RD_MICROPASOS_KEY = "asistente_sabry:rd_micropasos_v1";
+
+        function descomponerTareaMicroPasos() {
+            const pageId = document.getElementById("rd-edit-id").value.trim() || "tmp";
+            const nombre = document.getElementById("rd-edit-nombre").value.trim() || "la tarea";
+            const wrap = document.getElementById("rd-micropasos-wrap");
+            const list = document.getElementById("rd-micropasos-list");
+            if (!wrap || !list) return;
+
+            let store = {};
+            try { store = JSON.parse(localStorage.getItem(RD_MICROPASOS_KEY) || "{}"); } catch (e) {}
+            if (!Array.isArray(store[pageId]) || store[pageId].length === 0) {
+                store[pageId] = [
+                    { txt: "Preparar el entorno (2 min)", done: false },
+                    { txt: `Hacer solo el primer paso mínimo de "${nombre}"`, done: false },
+                    { txt: "Cerrar y validar el avance sin exigencia", done: false },
+                ];
+                try { localStorage.setItem(RD_MICROPASOS_KEY, JSON.stringify(store)); } catch (e) {}
+            }
+            list.innerHTML = store[pageId].map((p, idx) => `
+                <label class="flex items-start gap-2 text-[#e5e2e1] cursor-pointer">
+                    <input type="checkbox" ${p.done ? "checked" : ""} onchange="toggleMicroPasoRD('${escapeHtml(pageId)}', ${idx}, this.checked)" class="mt-0.5 accent-[#ffb961]" />
+                    <span class="${p.done ? "line-through text-[#8e8e93]" : ""}">${escapeHtml(p.txt)}</span>
+                </label>`).join("");
+            wrap.classList.remove("hidden");
+        }
+
+        function toggleMicroPasoRD(pageId, idx, checked) {
+            try {
+                const store = JSON.parse(localStorage.getItem(RD_MICROPASOS_KEY) || "{}");
+                if (Array.isArray(store[pageId]) && store[pageId][idx]) {
+                    store[pageId][idx].done = Boolean(checked);
+                    localStorage.setItem(RD_MICROPASOS_KEY, JSON.stringify(store));
+                }
+            } catch (e) {}
+            descomponerTareaMicroPasos();
+        }
     </script>
+    <script src="./src/utils/somatic_shell.js"></script>
 </body>
 </html>

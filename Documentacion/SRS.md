@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.84 (Edición y eliminación de climas del Barómetro en Gestión emocional)  
+**Versión:** 4.85 (Descomponer en micro-pasos en Recordatorios diarios)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
@@ -12,6 +12,7 @@
 
 | Versión | Fecha | Autor | Descripción del Cambio / Hito Técnico |
 | :--- | :--- | :--- | :--- |
+| **v4.85** | Noviembre 2026 | Sabrina Sanso | **Micro-pasos compasivos en Recordatorios diarios (`recordatorios-diarios.html`):**<br>- Botón `✨ Descomponer en micro-pasos` dentro del modal de edición de tarea diaria (`#modal-editar-diario`) con checklist de 3 micro-pasos persistido por tarea en `localStorage` (`asistente_sabry:rd_micropasos_v1`). |
 | **v4.84** | Noviembre 2026 | Sabrina Sanso | **Gestión de climas del Barómetro (`gestion-emocional.html`):**<br>- Modo `Gestionar opciones` para editar o eliminar climas del Barómetro Emocional con persistencia en `localStorage` (`asistente_sabry:barometro_opciones_v1`). |
 | **v4.83** | Noviembre 2026 | Sabrina Sanso | **Guardrail Undo Toast 5s y Medicamento en vuelo en Salud (`salud.html`):**<br>- Submodal Capa 2 (`#modal-salud-med-vuelo`) para registrar un medicamento o suplemento en vuelo y vincularlo al registro de síntomas.<br>- Undo Toast de 5 segundos (`#salud-undo-toast`, atajo `Ctrl + Z`) antes de confirmar el archivado en Notion. |
 | **v4.82** | Noviembre 2026 | Sabrina Sanso | **Creación de autor en vuelo en Ocio (`ocio.html`):**<br>- Submodal Capa 2 (`#modal-ocio-autor-vuelo`) accesible desde `+ Nuevo autor` en el modal de Libro sin perder el borrador de la obra.<br>- Autocompletado con `<datalist id="ocio-autores-datalist">` sincronizado con `ocioLibros` y `localStorage` (`asistente_sabry:ocio_autores_v1`). |
