@@ -252,9 +252,15 @@
                         <p class="text-[11px] font-label-caps text-[#83da85] tracking-widest">PAUSA CONSCIENTE</p>
                         <h2 class="text-headline-md font-headline-md text-white">Protocolo S.T.O.P.</h2>
                     </div>
-                    <button type="button" onclick="abrirModalEmocion('', true)" class="px-4 py-2 rounded-xl bg-[#83da85]/15 hover:bg-[#83da85]/25 border border-[#83da85]/30 text-[#83da85] font-bold text-xs">
-                        ✓ Registrar aplicando S.T.O.P.
-                    </button>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button id="btn-stop-timer" type="button" onclick="iniciarTemporizadorSTOP()" class="px-3.5 py-2 rounded-xl bg-[#18181d] hover:bg-[#232329] border border-[#83da85]/40 text-[#83da85] font-bold text-xs inline-flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[15px]">timer</span>
+                            <span id="stop-timer-lbl">Pausa 03:00</span>
+                        </button>
+                        <button type="button" onclick="abrirModalEmocion('', true)" class="px-4 py-2 rounded-xl bg-[#83da85]/15 hover:bg-[#83da85]/25 border border-[#83da85]/30 text-[#83da85] font-bold text-xs">
+                            ✓ Registrar aplicando S.T.O.P.
+                        </button>
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     <div class="p-4 rounded-xl bg-[#08080a] border border-white/[0.06]">
@@ -760,6 +766,32 @@
                         </button>
                     </div>`).join("");
             }
+        }
+
+        let _stopTimerInterval = null;
+        let _stopSegundosRestantes = 180;
+        function iniciarTemporizadorSTOP() {
+            const lbl = document.getElementById("stop-timer-lbl");
+            if (_stopTimerInterval) {
+                clearInterval(_stopTimerInterval);
+                _stopTimerInterval = null;
+                _stopSegundosRestantes = 180;
+                if (lbl) lbl.textContent = "Pausa 03:00";
+                return;
+            }
+            _stopSegundosRestantes = 180;
+            const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+            if (lbl) lbl.textContent = fmt(_stopSegundosRestantes);
+            _stopTimerInterval = setInterval(() => {
+                _stopSegundosRestantes -= 1;
+                if (_stopSegundosRestantes <= 0) {
+                    clearInterval(_stopTimerInterval);
+                    _stopTimerInterval = null;
+                    if (lbl) lbl.textContent = "✓ Pausa completa";
+                    return;
+                }
+                if (lbl) lbl.textContent = fmt(_stopSegundosRestantes);
+            }, 1000);
         }
 
         document.addEventListener("DOMContentLoaded", () => {

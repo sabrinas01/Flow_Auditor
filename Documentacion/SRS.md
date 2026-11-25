@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.77 (Agenda apilada Hoy→Mañana→Ayer y 4 KPIs en Recordatorios varios)  
+**Versión:** 4.78 (Hitos de alivio TC en Finanzas, Regulación Somática en Salud, Timer 3m S.T.O.P. y Preview 140c en Relaciones)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
@@ -12,6 +12,7 @@
 
 | Versión | Fecha | Autor | Descripción del Cambio / Hito Técnico |
 | :--- | :--- | :--- | :--- |
+| **v4.78** | Noviembre 2026 | Sabrina Sanso | **Alineación Stitch de Finanzas, Salud, Gestión emocional y Relaciones:**<br>- `finanzas.html`: 3 hitos de alivio bajo `Proyección de Cuotas TC`.<br>- `salud.html`: acceso `Regulación Somática → Gestión Emocional` en `01 Cuerpo` y `Abrir Caja de Herramientas Somáticas` en `02 Mente`.<br>- `gestion-emocional.html`: temporizador `Pausa 03:00` en Protocolo S.T.O.P.<br>- `relaciones-y-limites.html`: límite de 140 caracteres, contador y preview en vivo en el modal de afirmaciones. |
 | **v4.77** | Noviembre 2026 | Sabrina Sanso | **Alineación Stitch de Agenda y Recordatorios varios:**<br>- `agenda-personal.html`: tarjetas apiladas en orden `Eventos de hoy → Eventos de mañana → Eventos de ayer` con botón `+ Crear tarea` en la cabecera de Eventos.<br>- `recordatorios-varios.html`: grilla superior ampliada a 4 KPIs (`TOTAL ACTIVOS`, `HOY & URGENTE`, `PRÓXIMOS DÍAS`, `HISTORIAL / BACKLOG`). |
 | **v4.76** | Noviembre 2026 | Sabrina Sanso | **Alineación de Sidebar con Stitch en los 11 módulos:**<br>- Reemplazo de `Obsidian Refined` por la versión (`v4.76`) en cabecera y pie (`Sistema activo • v4.76`), y compactación de padding vertical (`py-2` / `mb-5`) para que los 11 módulos, `Contras AI Studio` y el perfil quepan sin recorte en pantallas estándar. |
 | **v4.75** | Noviembre 2026 | Sabrina Sanso | **Sincronización integral con Google Stitch (`AsistenteSabry`):**<br>- **Inicio (`inicio.html`)**: nuevo layout completo con TopBar (`Hoy` + `Sincronizar`), Widget Somático expandido (`Nivel de Energía`, `Sensibilidad Emocional`, `Próximo Ciclo`, predicción y accesos cruzados), grilla de 3 `Accesos directos`, banner `Estado: Óptimo` y footer ART unificado.<br>- **Somatic Shell transversal (`src/utils/somatic_shell.js`)** en los 11 módulos: Command Palette (`Ctrl + K`), Drawer de Notificaciones Somáticas (`Ctrl + Shift + N`) con estado vacío *Zero Inbox Somático* (Mini Pausa 60s), Modal de Preferencias Somáticas (`Cero Culpa`, `Blindaje Nocturno`, `Protección Lútea`), Atajos & Modo Focus (`Ctrl + /`), Resguardo Offline y Exportación Markdown/PDF.<br>- **Módulos**: Caja de Herramientas Conscientes en `gestion-emocional.html`, Heatmap anual 52 semanas + Congelación Compasiva + creación de formación en vuelo en `habitos-y-disciplina.html`, y comparativa por fases en `salud.html`. |

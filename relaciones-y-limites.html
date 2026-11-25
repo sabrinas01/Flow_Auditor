@@ -281,8 +281,12 @@
             <form onsubmit="manejarSubmitAfirmacion(event)" class="space-y-3">
                 <input type="hidden" id="af-page-id" value="">
                 <div>
-                    <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Afirmación *</label>
-                    <input id="af-nombre" type="text" required placeholder="Ej: Decir no con respeto también es cuidarme" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93]">Afirmación *</label>
+                        <span id="af-char-count" class="text-[11px] text-[#8e8e93]">0 / 140</span>
+                    </div>
+                    <input id="af-nombre" type="text" required maxlength="140" oninput="actualizarPreviewAfirmacion()" placeholder="Ej: Decir no con respeto también es cuidarme" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+                    <p id="af-preview" class="mt-2 p-2.5 rounded-xl bg-[#18181d] border border-white/[0.06] text-xs text-[#e2beba] italic hidden"></p>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -573,6 +577,18 @@
             const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
             renderizarRelaciones();
         });
+
+        function actualizarPreviewAfirmacion() {
+            const inp = document.getElementById("af-nombre");
+            const cnt = document.getElementById("af-char-count");
+            const prev = document.getElementById("af-preview");
+            const val = inp ? inp.value : "";
+            if (cnt) cnt.textContent = `${val.length} / 140`;
+            if (prev) {
+                prev.textContent = val.trim() ? `“${val.trim()}”` : "";
+                prev.classList.toggle("hidden", !val.trim());
+            }
+        }
 
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", () => {
