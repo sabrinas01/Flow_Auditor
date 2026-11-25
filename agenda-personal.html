@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
@@ -158,15 +158,6 @@
 
     <!-- Overlay -->
     <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
-
-    <!-- =================================================== -->
-    <!-- BOTÓN FLOTANTE + MODAL: CREAR TAREA (SRS-FR-M5-507) -->
-    <!-- =================================================== -->
-    <button id="btn-crear-tarea" type="button" onclick="abrirModalCrearTarea()"
-        class="fixed bottom-20 right-5 z-30 bg-primary-container hover:bg-primary-container/90 text-on-primary-container rounded-full w-14 h-14 flex items-center justify-center shadow-xl shadow-[#ff5f52]/30 transition-all transform active:scale-95"
-        title="Crear tarea">
-        <span class="material-symbols-outlined text-[26px]">add</span>
-    </button>
 
     <div id="modal-crear-tarea" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalCrearTarea()">
         <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
@@ -366,7 +357,7 @@
                     <h2 class="text-label-caps font-label-caps text-primary tracking-widest px-1">EVENTOS</h2>
                     <div class="flex items-center gap-2.5">
                         <span id="agenda-hoy-resumen" class="text-[11px] font-semibold bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/20 px-2.5 py-1 rounded-full">0 hoy</span>
-                        <button type="button" onclick="abrirModalCrearTarea()" class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all active:scale-95">
+                        <button id="btn-crear-tarea" type="button" onclick="abrirModalCrearTarea()" class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all active:scale-95">
                             <span class="material-symbols-outlined text-[16px]">add</span>
                             <span>Crear tarea</span>
                         </button>
