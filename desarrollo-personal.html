@@ -174,10 +174,16 @@
                     <h1 class="font-display-lg text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Desarrollo Personal</h1>
                     <p class="text-[13px] text-[#8e8e93]">Cultivar maestría personal, alinear hábitos con la visión de vida y expandir el potencial con disciplina amable.</p>
                 </div>
-                <button type="button" onclick="abrirModalDesarrollo()" class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
-                    <span class="material-symbols-outlined text-[18px]">add</span>
-                    <span>Nuevo registro</span>
-                </button>
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <button id="btn-papelera-dp" type="button" onclick="abrirPapeleraDP()" class="hidden bg-[#1c1c1f] hover:bg-[#232326] border border-[#ffb961]/30 text-[#ffb961] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
+                        <span class="material-symbols-outlined text-[17px]">restore_from_trash</span>
+                        <span>Papelera Segura (<span id="papelera-dp-count">0</span>)</span>
+                    </button>
+                    <button type="button" onclick="abrirModalDesarrollo()" class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">add</span>
+                        <span>Nuevo registro</span>
+                    </button>
+                </div>
             </section>
 
             <!-- 4 KPIs SUPERIORES -->
@@ -362,7 +368,7 @@
                 </div>
                 <p id="dp-mensaje" class="text-[13px] hidden"></p>
                 <div class="flex gap-3 pt-1">
-                    <button id="dp-btn-eliminar" type="button" onclick="confirmarEliminarDesarrollo()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl" title="Mandar a la papelera">
+                    <button id="dp-btn-eliminar" type="button" onclick="abrirGuardrailEliminacion()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl" title="Opciones de archivo o eliminación segura">
                         <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
                     </button>
                     <button type="button" onclick="cerrarModalDesarrollo(true)" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
@@ -418,6 +424,87 @@
         </div>
     </div>
 
+    <!-- MODAL GUARDRAIL COMPASIVO (CONFIRMACIÓN DESTRUCTIVA) -->
+    <div id="modal-guardrail-desarrollo" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto" onclick="cerrarGuardrailEliminacion()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-lg my-8 border border-[#ffb961]/35 shadow-[0_24px_64px_rgba(0,0,0,0.75)] space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30">GUARDRAIL COMPASIVO • SOFT-DELETE 30 DÍAS</span>
+                <span class="text-[11px] text-[#8e8e93]">Sabry te cuida • Cero Pérdida</span>
+            </div>
+            <div class="flex justify-between items-start gap-3">
+                <div>
+                    <h3 class="text-headline-md font-headline-md text-white">¿Cómo querés proceder?</h3>
+                    <p id="gr-target-nombre" class="text-[13px] text-[#e5e2e1] font-semibold mt-1"></p>
+                </div>
+                <button type="button" onclick="cerrarGuardrailEliminacion()" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]" title="Volver (Esc)">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+
+            <div id="gr-impacto" class="rounded-xl p-3.5 bg-[#18181d] border border-white/[0.08] text-[12px] text-[#a1a1aa] space-y-1"></div>
+
+            <div class="space-y-2.5">
+                <label class="block rounded-xl p-3.5 border cursor-pointer transition-all bg-[#83da85]/5 border-[#83da85]/40" id="gr-opt-papelera">
+                    <div class="flex items-start gap-3">
+                        <input type="radio" name="gr-modo" value="papelera" checked onchange="actualizarSeleccionGuardrail()" class="mt-1 accent-[#83da85]" />
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-[13px] font-bold text-white">Mover a la Papelera Segura (30 días)</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#83da85]/20 text-[#83da85]">Recomendada</span>
+                            </div>
+                            <p class="text-[12px] text-[#a1a1aa] mt-0.5">Guarda un snapshot de rollback local por 30 días y archiva el registro en Notion.</p>
+                        </div>
+                    </div>
+                </label>
+
+                <label class="block rounded-xl p-3.5 border cursor-pointer transition-all bg-[#18181d] border-white/[0.08]" id="gr-opt-desvincular">
+                    <div class="flex items-start gap-3">
+                        <input type="radio" name="gr-modo" value="desvincular" onchange="actualizarSeleccionGuardrail()" class="mt-1 accent-[#38bdf8]" />
+                        <div class="min-w-0">
+                            <span class="text-[13px] font-bold text-white">Desvincular recurso solamente</span>
+                            <p id="gr-desvincular-desc" class="text-[12px] text-[#a1a1aa] mt-0.5">Quita la relación con el recurso asociado y conserva la práctica intacta.</p>
+                        </div>
+                    </div>
+                </label>
+
+                <label class="block rounded-xl p-3.5 border cursor-pointer transition-all bg-[#18181d] border-white/[0.08]" id="gr-opt-permanente">
+                    <div class="flex items-start gap-3">
+                        <input type="radio" name="gr-modo" value="permanente" onchange="actualizarSeleccionGuardrail()" class="mt-1 accent-[#ff5f52]" />
+                        <div class="min-w-0">
+                            <span class="text-[13px] font-bold text-[#ff5f52]">Eliminación directa sin snapshot local</span>
+                            <p class="text-[12px] text-[#a1a1aa] mt-0.5">Archiva en Notion sin guardar copia de recuperación en la Papelera Segura.</p>
+                            <label id="gr-confirm-check-wrap" class="hidden mt-2 flex items-center gap-2 text-[11px] text-[#e2beba]">
+                                <input id="gr-confirm-check" type="checkbox" onchange="actualizarSeleccionGuardrail()" class="accent-[#ff5f52]" />
+                                <span>Confirmo que no necesito copia local de rollback</span>
+                            </label>
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2.5 pt-1">
+                <button type="button" onclick="cerrarGuardrailEliminacion()" class="sm:w-auto px-4 py-2.5 bg-[#1c1c1f] hover:bg-[#232326] text-[#e5e2e1] font-semibold text-[13px] rounded-xl">← Volver (Esc)</button>
+                <button id="gr-btn-ejecutar" type="button" onclick="ejecutarAccionGuardrail()" class="flex-1 bg-[#83da85] hover:bg-[#83da85]/90 text-[#08080a] font-bold text-[13px] px-4 py-2.5 rounded-xl">Archivar en Papelera Segura (Ctrl + ↵)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PAPELERA SEGURA (30 DÍAS) -->
+    <div id="modal-papelera-dp" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-papelera-dp')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-lg my-8 space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center">
+                <div>
+                    <span class="text-[10px] font-bold tracking-widest text-[#ffb961] uppercase">PERÍODO DE GRACIA • 30 DÍAS</span>
+                    <h3 class="text-headline-md font-headline-md text-white">Papelera Segura</h3>
+                </div>
+                <button type="button" onclick="cerrarModal('modal-papelera-dp')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <div id="papelera-dp-lista" class="space-y-2.5 max-h-80 overflow-y-auto"></div>
+        </div>
+    </div>
+
     <!-- MODAL TOKEN GITHUB -->
     <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="cerrarModal('modal-token-notion')">
         <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
@@ -463,6 +550,7 @@
         const GITHUB_REPO = "Flow_Auditor";
         const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
         const DP_DRAFT_KEY = "asistente_sabry:dp_draft";
+        const DP_PAPELERA_KEY = "asistente_sabry:dp_papelera";
         let pilarFiltro = "todos";
         let tipoFiltroDP = "todos";
         let catalogoRecursosLocal = [...(desarrolloLibrosCatalogo || [])];
@@ -565,7 +653,11 @@
         }
 
         function _actualizarScrollBody() {
-            const hayModal = _modalEstaAbierto("modal-desarrollo") || _modalEstaAbierto("modal-recurso-vuelo") || _modalEstaAbierto("modal-token-notion");
+            const hayModal = _modalEstaAbierto("modal-desarrollo")
+                || _modalEstaAbierto("modal-recurso-vuelo")
+                || _modalEstaAbierto("modal-guardrail-desarrollo")
+                || _modalEstaAbierto("modal-papelera-dp")
+                || _modalEstaAbierto("modal-token-notion");
             document.body.classList.toggle("overflow-hidden", hayModal);
         }
 
@@ -611,6 +703,7 @@
             document.getElementById("footer-version").innerText = appVersionStr;
             const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
             renderizarDesarrollo();
+            _actualizarBotonPapeleraDP();
         });
 
         function toggleMenu() {
@@ -757,15 +850,24 @@
 
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape") {
-                if (_modalEstaAbierto("modal-recurso-vuelo")) {
+                if (_modalEstaAbierto("modal-guardrail-desarrollo")) {
+                    e.preventDefault();
+                    cerrarGuardrailEliminacion();
+                } else if (_modalEstaAbierto("modal-recurso-vuelo")) {
                     e.preventDefault();
                     cerrarSubmodalRecursoVuelo();
+                } else if (_modalEstaAbierto("modal-papelera-dp")) {
+                    e.preventDefault();
+                    cerrarModal("modal-papelera-dp");
                 } else if (_modalEstaAbierto("modal-desarrollo")) {
                     e.preventDefault();
                     cerrarModalDesarrollo(false);
                 }
             } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-                if (_modalEstaAbierto("modal-recurso-vuelo")) {
+                if (_modalEstaAbierto("modal-guardrail-desarrollo")) {
+                    e.preventDefault();
+                    ejecutarAccionGuardrail();
+                } else if (_modalEstaAbierto("modal-recurso-vuelo")) {
                     e.preventDefault();
                     document.getElementById("form-recurso-vuelo").requestSubmit();
                 } else if (_modalEstaAbierto("modal-desarrollo")) {
@@ -878,11 +980,194 @@
             return false;
         }
 
-        async function confirmarEliminarDesarrollo() {
+        function _leerPapeleraDP() {
+            try {
+                const raw = localStorage.getItem(DP_PAPELERA_KEY);
+                const vigentes = filtrarSnapshotsVigentes(raw ? JSON.parse(raw) : []);
+                localStorage.setItem(DP_PAPELERA_KEY, JSON.stringify(vigentes));
+                return vigentes;
+            } catch (e) { return []; }
+        }
+
+        function _guardarPapeleraDP(lista) {
+            try { localStorage.setItem(DP_PAPELERA_KEY, JSON.stringify(lista)); } catch (e) {}
+            _actualizarBotonPapeleraDP();
+        }
+
+        function _actualizarBotonPapeleraDP() {
+            const lista = _leerPapeleraDP();
+            const btn = document.getElementById("btn-papelera-dp");
+            const cnt = document.getElementById("papelera-dp-count");
+            if (cnt) cnt.textContent = String(lista.length);
+            if (btn) btn.classList.toggle("hidden", lista.length === 0);
+        }
+
+        let _registroGuardrailActual = null;
+
+        function abrirGuardrailEliminacion() {
             const pageId = document.getElementById("dp-page-id").value.trim();
-            if (!pageId) return;
+            const reg = (desarrolloPersonalRegistros || []).find((x) => x.id === pageId) || {
+                id: pageId,
+                nombre: document.getElementById("dp-nombre").value.trim() || "Registro sin título",
+                pilar: document.getElementById("dp-pilar").value,
+                tipo: document.getElementById("dp-tipo").value,
+                estado: document.getElementById("dp-estado").value,
+                fecha: document.getElementById("dp-fecha").value,
+                frecuencia_tecnica: document.getElementById("dp-frecuencia").value,
+                puntaje: document.getElementById("dp-puntaje").value || null,
+                recurso_asociado: document.getElementById("dp-recurso").value.trim() || null,
+                enlace: document.getElementById("dp-enlace").value.trim() || null,
+                nota: document.getElementById("dp-nota").value.trim() || null,
+            };
+            _registroGuardrailActual = reg;
+            document.getElementById("gr-target-nombre").textContent = `${reg.nombre} (${reg.pilar || "Desarrollo personal"})`;
+
+            const impacto = analizarImpactoEliminacionDesarrollo(reg, desarrolloPersonalRegistros);
+            const boxImpacto = document.getElementById("gr-impacto");
+            if (impacto.tieneRecurso) {
+                const nRel = impacto.vinculosRelacionados.length;
+                boxImpacto.innerHTML = `<p class="text-[#ffb961] font-semibold">🔗 Recurso vinculado: ${escapeHtml(impacto.recurso)}</p>`
+                    + `<p>${nRel > 0 ? `Compartido con otras ${nRel} práctica(s) activa(s) en este tablero.` : "Este recurso solo está vinculado a esta práctica actualmente."}</p>`;
+            } else {
+                boxImpacto.innerHTML = `<p class="text-[#83da85] font-semibold">✓ Sin dependencias cruzadas detectadas</p><p>Podés archivarlo con tranquilidad en la Papelera Segura por 30 días.</p>`;
+            }
+
+            const optDesv = document.getElementById("gr-opt-desvincular");
+            const radioDesv = optDesv.querySelector('input[type="radio"]');
+            radioDesv.disabled = !impacto.tieneRecurso;
+            optDesv.classList.toggle("opacity-45", !impacto.tieneRecurso);
+            optDesv.classList.toggle("pointer-events-none", !impacto.tieneRecurso);
+            document.getElementById("gr-desvincular-desc").textContent = impacto.tieneRecurso
+                ? `Quita "${impacto.recurso}" de esta práctica y la conserva intacta.`
+                : "No hay recurso asociado para desvincular en este registro.";
+
+            document.querySelector('input[name="gr-modo"][value="papelera"]').checked = true;
+            document.getElementById("gr-confirm-check").checked = false;
+            actualizarSeleccionGuardrail();
+            _setCapa1Pausada(true);
+            abrirModal("modal-guardrail-desarrollo");
+        }
+
+        function cerrarGuardrailEliminacion() {
+            cerrarModal("modal-guardrail-desarrollo");
+            _setCapa1Pausada(false);
+        }
+
+        function actualizarSeleccionGuardrail() {
+            const modo = (document.querySelector('input[name="gr-modo"]:checked') || {}).value || "papelera";
+            const checkWrap = document.getElementById("gr-confirm-check-wrap");
+            const btn = document.getElementById("gr-btn-ejecutar");
+            checkWrap.classList.toggle("hidden", modo !== "permanente");
+
+            if (modo === "papelera") {
+                btn.textContent = "Archivar en Papelera Segura (Ctrl + ↵)";
+                btn.className = "flex-1 bg-[#83da85] hover:bg-[#83da85]/90 text-[#08080a] font-bold text-[13px] px-4 py-2.5 rounded-xl";
+                btn.disabled = false;
+            } else if (modo === "desvincular") {
+                btn.textContent = "Desvincular recurso solamente (Ctrl + ↵)";
+                btn.className = "flex-1 bg-[#38bdf8] hover:bg-[#38bdf8]/90 text-[#08080a] font-bold text-[13px] px-4 py-2.5 rounded-xl";
+                btn.disabled = false;
+            } else {
+                const confirmado = document.getElementById("gr-confirm-check").checked;
+                btn.textContent = "Eliminar sin snapshot local";
+                btn.className = `flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl ${confirmado ? "" : "opacity-45 cursor-not-allowed"}`;
+                btn.disabled = !confirmado;
+            }
+        }
+
+        async function ejecutarAccionGuardrail() {
+            const reg = _registroGuardrailActual;
+            if (!reg || !reg.id) return;
+            const modo = (document.querySelector('input[name="gr-modo"]:checked') || {}).value || "papelera";
+            if (modo === "permanente" && !document.getElementById("gr-confirm-check").checked) return;
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return; }
+
+            cerrarModal("modal-guardrail-desarrollo");
+            _setCapa1Pausada(false);
             cerrarModal("modal-desarrollo");
-            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: pageId });
+
+            if (modo === "desvincular") {
+                const res = construirPayloadDesarrollo({
+                    pageId: reg.id,
+                    nombre: reg.nombre,
+                    pilar: reg.pilar,
+                    tipo: reg.tipo,
+                    estado: reg.estado,
+                    fecha: reg.fecha,
+                    puntaje: reg.puntaje,
+                    frecuenciaTecnica: reg.frecuencia_tecnica,
+                    recursoAsociado: "",
+                    enlace: reg.enlace,
+                    nota: reg.nota,
+                });
+                if (res.ok) await ejecutarEscrituraConSpinner("actualizar_desarrollo_personal", res.payload);
+                return;
+            }
+
+            if (modo === "papelera") {
+                const snap = crearSnapshotRollback(reg, 30);
+                if (snap) {
+                    const actual = _leerPapeleraDP();
+                    actual.unshift(snap);
+                    _guardarPapeleraDP(actual);
+                }
+            }
+            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: reg.id });
+        }
+
+        function abrirPapeleraDP() {
+            const lista = _leerPapeleraDP();
+            const cont = document.getElementById("papelera-dp-lista");
+            if (lista.length === 0) {
+                cont.innerHTML = `<p class="text-[13px] text-[#8e8e93] py-4 text-center">La Papelera Segura está vacía.</p>`;
+            } else {
+                cont.innerHTML = lista.map((s, idx) => `
+                    <div class="status-row p-3.5 flex items-center justify-between gap-3">
+                        <div class="min-w-0">
+                            <p class="text-[14px] font-bold text-white truncate">${escapeHtml(s.nombre)}</p>
+                            <p class="text-[11px] text-[#8e8e93]">${escapeHtml(s.pilar)} · Expira: ${escapeHtml((s.expiraEnISO || "").slice(0, 10))}</p>
+                        </div>
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                            <button type="button" onclick="restaurarDesdePapeleraDP(${idx})" class="px-2.5 py-1.5 rounded-lg bg-[#83da85]/15 hover:bg-[#83da85]/25 text-[#83da85] text-[12px] font-bold">Restaurar</button>
+                            <button type="button" onclick="descartarSnapshotDP(${idx})" class="p-1.5 rounded-lg hover:bg-white/10 text-[#8e8e93]" title="Descartar copia">
+                                <span class="material-symbols-outlined text-[16px]">close</span>
+                            </button>
+                        </div>
+                    </div>
+                `).join("");
+            }
+            abrirModal("modal-papelera-dp");
+        }
+
+        async function restaurarDesdePapeleraDP(idx) {
+            const lista = _leerPapeleraDP();
+            const snap = lista[idx];
+            if (!snap) return;
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return; }
+            const res = construirPayloadDesarrollo({
+                nombre: snap.nombre,
+                pilar: snap.pilar,
+                tipo: snap.tipo,
+                estado: snap.estado,
+                fecha: snap.fecha,
+                frecuenciaTecnica: snap.frecuencia_tecnica,
+                puntaje: snap.puntaje,
+                recursoAsociado: snap.recurso_asociado,
+                enlace: snap.enlace,
+                nota: snap.nota,
+            });
+            if (!res.ok) return;
+            lista.splice(idx, 1);
+            _guardarPapeleraDP(lista);
+            cerrarModal("modal-papelera-dp");
+            await ejecutarEscrituraConSpinner("crear_desarrollo_personal", res.payload);
+        }
+
+        function descartarSnapshotDP(idx) {
+            const lista = _leerPapeleraDP();
+            lista.splice(idx, 1);
+            _guardarPapeleraDP(lista);
+            abrirPapeleraDP();
         }
     </script>
 </body>

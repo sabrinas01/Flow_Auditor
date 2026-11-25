@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.73 (Modales encadenados y creación de recurso en vuelo en Desarrollo personal)  
+**Versión:** 4.74 (Guardrail compasivo y Papelera Segura de 30 días en Desarrollo personal)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
@@ -12,6 +12,7 @@
 
 | Versión | Fecha | Autor | Descripción del Cambio / Hito Técnico |
 | :--- | :--- | :--- | :--- |
+| **v4.74** | Noviembre 2026 | Sabrina Sanso | **Guardrail compasivo & Papelera Segura 30 días (`desarrollo-personal.html`):**<br>- Confirmación graduada (`#modal-guardrail-desarrollo`) con análisis de impacto relacional (`analizarImpactoEliminacionDesarrollo()`).<br>- 3 opciones: *Mover a la Papelera Segura (30 días)* (guarda snapshot local `crearSnapshotRollback()` y archiva en Notion), *Desvincular recurso solamente* y *Eliminación directa sin snapshot* con check de seguridad.<br>- Modal `#modal-papelera-dp` para restaurar registros archivados dentro de la ventana de 30 días (`filtrarSnapshotsVigentes()`). |
 | **v4.73** | Noviembre 2026 | Sabrina Sanso | **Modales encadenados en Desarrollo personal (`desarrollo-personal.html`):**<br>- Patrón *Zero Context Loss* con preservación automática de borrador en `localStorage` (`asistente_sabry:dp_draft`) mientras se crea un recurso asociado en vuelo.<br>- Submodal Capa 2 (`#modal-recurso-vuelo`) con selector de formato en píldoras (`FORMATOS_RECURSO_VUELO`), validación (`construirRecursoEnVuelo()`), actualización automática del catálogo (`agregarRecursoACatalogo()`) y atajos `Esc` / `Ctrl + ↵`. |
 | **v1.0** | Junio 2026 | Sabrina Sanso | MVP local inicial: script monolítico en primer plano con bucle `while True` bloqueante (`time.sleep`). |
 | **v2.0** | Junio 2026 | Sabrina Sanso | Migración CI/CD Serverless en contenedores virtuales GitHub Actions y normalización binaria de BOM Windows. |

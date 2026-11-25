@@ -7,6 +7,9 @@ const {
   construirPayloadDesarrollo,
   construirRecursoEnVuelo,
   agregarRecursoACatalogo,
+  analizarImpactoEliminacionDesarrollo,
+  crearSnapshotRollback,
+  filtrarSnapshotsVigentes,
 } = require('../../src/utils/desarrollo_personal_logic.js');
 
 describe('desarrollo_personal_logic', () => {
@@ -95,5 +98,27 @@ describe('desarrollo_personal_logic', () => {
     expect(conDup).toEqual(['Hábitos Atómicos']);
     const conNuevo = agregarRecursoACatalogo(inicial, 'El Cuerpo Lleva la Cuenta');
     expect(conNuevo).toEqual(['El Cuerpo Lleva la Cuenta', 'Hábitos Atómicos']);
+  });
+
+  test('analizarImpactoEliminacionDesarrollo detecta prácticas vinculadas al mismo recurso', () => {
+    const reg = { id: 'dp-1', nombre: 'Respiración', recurso_asociado: 'Nervio Vago Ep. 42' };
+    const todos = [
+      reg,
+      { id: 'dp-2', nombre: 'Anclaje', recurso_asociado: 'nervio vago ep. 42' },
+      { id: 'dp-3', nombre: 'Journaling', recurso_asociado: 'Otro libro' },
+    ];
+    const impacto = analizarImpactoEliminacionDesarrollo(reg, todos);
+    expect(impacto.tieneRecurso).toBe(true);
+    expect(impacto.recurso).toBe('Nervio Vago Ep. 42');
+    expect(impacto.vinculosRelacionados).toHaveLength(1);
+    expect(impacto.vinculosRelacionados[0].id).toBe('dp-2');
+  });
+
+  test('crearSnapshotRollback y filtrarSnapshotsVigentes respetan el período de gracia de 30 días', () => {
+    const ahora = Date.UTC(2026, 10, 24, 12, 0, 0);
+    const snap = crearSnapshotRollback({ id: 'dp-1', nombre: 'Práctica X', pilar: '🧭 Autoconocimiento' }, 30, ahora);
+    expect(snap.nombre).toBe('Práctica X');
+    expect(filtrarSnapshotsVigentes([snap], ahora + 1000)).toHaveLength(1);
+    expect(filtrarSnapshotsVigentes([snap], ahora + 31 * 86400000)).toHaveLength(0);
   });
 });

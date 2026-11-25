@@ -73,6 +73,49 @@ function agregarRecursoACatalogo(catalogo, etiqueta) {
   return lista;
 }
 
+function analizarImpactoEliminacionDesarrollo(registro, todosLosRegistros) {
+  if (!registro) return { tieneRecurso: false, recurso: null, vinculosRelacionados: [] };
+  const recurso = (registro.recurso_asociado || "").trim() || null;
+  const lista = Array.isArray(todosLosRegistros) ? todosLosRegistros : [];
+  const vinculosRelacionados = recurso
+    ? lista.filter((r) => r && r.id !== registro.id && (r.recurso_asociado || "").trim().toLowerCase() === recurso.toLowerCase())
+    : [];
+  return {
+    tieneRecurso: Boolean(recurso),
+    recurso,
+    vinculosRelacionados,
+  };
+}
+
+function crearSnapshotRollback(registro, diasGracia = 30, ahoraMs = Date.now()) {
+  if (!registro || !registro.nombre) return null;
+  const msGracia = Math.max(1, Number(diasGracia) || 30) * 86400000;
+  return {
+    id: registro.id || null,
+    nombre: registro.nombre,
+    pilar: registro.pilar || PILARES_DESARROLLO[0],
+    tipo: registro.tipo || TIPOS_DESARROLLO[0],
+    estado: registro.estado || "En curso",
+    fecha: registro.fecha || null,
+    frecuencia_tecnica: registro.frecuencia_tecnica || null,
+    puntaje: registro.puntaje ?? null,
+    recurso_asociado: registro.recurso_asociado || null,
+    enlace: registro.enlace || null,
+    nota: registro.nota || null,
+    eliminadoEnISO: new Date(ahoraMs).toISOString(),
+    expiraEnISO: new Date(ahoraMs + msGracia).toISOString(),
+  };
+}
+
+function filtrarSnapshotsVigentes(snapshots, ahoraMs = Date.now()) {
+  if (!Array.isArray(snapshots)) return [];
+  return snapshots.filter((s) => {
+    if (!s || !s.expiraEnISO) return false;
+    const expMs = Date.parse(s.expiraEnISO);
+    return !Number.isNaN(expMs) && expMs > ahoraMs;
+  });
+}
+
 function _clasificarPilarKey(pilar) {
   const p = (pilar || "").toLowerCase();
   if (p.includes("comunic")) return "comunicacion";
@@ -166,5 +209,8 @@ if (typeof module !== "undefined" && module.exports) {
     construirPayloadDesarrollo,
     construirRecursoEnVuelo,
     agregarRecursoACatalogo,
+    analizarImpactoEliminacionDesarrollo,
+    crearSnapshotRollback,
+    filtrarSnapshotsVigentes,
   };
 }
