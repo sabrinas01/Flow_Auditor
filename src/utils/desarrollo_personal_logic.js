@@ -26,6 +26,53 @@ const ESTADOS_DESARROLLO = [
   "Integrado",
 ];
 
+const FORMATOS_RECURSO_VUELO = [
+  "🎧 Podcast / Audio",
+  "📖 Libro",
+  "🎥 Video / Taller",
+  "📄 Paper Científico",
+  "🔗 Artículo / Web",
+];
+
+function construirRecursoEnVuelo(datos) {
+  const titulo = (datos && datos.titulo ? String(datos.titulo) : "").trim();
+  if (!titulo) {
+    return { ok: false, error: "El título del recurso es obligatorio." };
+  }
+  const formato = (datos.formato || "").trim() || FORMATOS_RECURSO_VUELO[0];
+  const autor = (datos.autor || "").trim() || null;
+  const url = (datos.url || "").trim() || null;
+  if (url && !/^https?:\/\/\S+/i.test(url)) {
+    return { ok: false, error: "La URL debe comenzar con http:// o https://." };
+  }
+  const tags = (datos.tags || "")
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+  const etiquetaCatalogo = autor ? `${titulo} (${autor})` : titulo;
+  return {
+    ok: true,
+    recurso: {
+      titulo,
+      formato,
+      autor,
+      url,
+      tags,
+      etiquetaCatalogo,
+    },
+  };
+}
+
+function agregarRecursoACatalogo(catalogo, etiqueta) {
+  const lista = Array.isArray(catalogo) ? [...catalogo] : [];
+  const val = (etiqueta || "").trim();
+  if (!val) return lista;
+  const existe = lista.some((item) => String(item).trim().toLowerCase() === val.toLowerCase());
+  if (!existe) lista.unshift(val);
+  return lista;
+}
+
 function _clasificarPilarKey(pilar) {
   const p = (pilar || "").toLowerCase();
   if (p.includes("comunic")) return "comunicacion";
@@ -114,7 +161,10 @@ if (typeof module !== "undefined" && module.exports) {
     PILARES_DESARROLLO,
     TIPOS_DESARROLLO,
     ESTADOS_DESARROLLO,
+    FORMATOS_RECURSO_VUELO,
     calcularResumenDesarrollo,
     construirPayloadDesarrollo,
+    construirRecursoEnVuelo,
+    agregarRecursoACatalogo,
   };
 }

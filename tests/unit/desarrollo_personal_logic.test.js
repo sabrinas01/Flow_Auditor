@@ -2,8 +2,11 @@ const {
   PILARES_DESARROLLO,
   TIPOS_DESARROLLO,
   ESTADOS_DESARROLLO,
+  FORMATOS_RECURSO_VUELO,
   calcularResumenDesarrollo,
   construirPayloadDesarrollo,
+  construirRecursoEnVuelo,
+  agregarRecursoACatalogo,
 } = require('../../src/utils/desarrollo_personal_logic.js');
 
 describe('desarrollo_personal_logic', () => {
@@ -60,5 +63,37 @@ describe('desarrollo_personal_logic', () => {
         nota: 'Pausa antes de responder',
       },
     });
+  });
+
+  test('construirRecursoEnVuelo valida título, URL y formatea etiqueta del catálogo', () => {
+    expect(construirRecursoEnVuelo({ titulo: '   ' }).ok).toBe(false);
+    expect(construirRecursoEnVuelo({ titulo: 'Ep. 42', url: 'ftp://invalida' }).ok).toBe(false);
+
+    const ok = construirRecursoEnVuelo({
+      titulo: 'Neurobiología del Nervio Vago Ep. 42',
+      formato: FORMATOS_RECURSO_VUELO[0],
+      autor: 'Dr. Stephen Porges',
+      url: 'https://podcast.ejemplo.com/ep42',
+      tags: 'nervio vago, somática, regulación',
+    });
+    expect(ok).toEqual({
+      ok: true,
+      recurso: {
+        titulo: 'Neurobiología del Nervio Vago Ep. 42',
+        formato: '🎧 Podcast / Audio',
+        autor: 'Dr. Stephen Porges',
+        url: 'https://podcast.ejemplo.com/ep42',
+        tags: ['nervio vago', 'somática', 'regulación'],
+        etiquetaCatalogo: 'Neurobiología del Nervio Vago Ep. 42 (Dr. Stephen Porges)',
+      },
+    });
+  });
+
+  test('agregarRecursoACatalogo evita duplicados sin distinguir mayúsculas', () => {
+    const inicial = ['Hábitos Atómicos'];
+    const conDup = agregarRecursoACatalogo(inicial, 'hábitos atómicos');
+    expect(conDup).toEqual(['Hábitos Atómicos']);
+    const conNuevo = agregarRecursoACatalogo(inicial, 'El Cuerpo Lleva la Cuenta');
+    expect(conNuevo).toEqual(['El Cuerpo Lleva la Cuenta', 'Hábitos Atómicos']);
   });
 });

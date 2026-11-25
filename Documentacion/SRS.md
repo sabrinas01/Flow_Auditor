@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.72 (Red de accesos cruzados entre Inicio, Salud y Gestión emocional)  
+**Versión:** 4.73 (Modales encadenados y creación de recurso en vuelo en Desarrollo personal)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
@@ -12,6 +12,7 @@
 
 | Versión | Fecha | Autor | Descripción del Cambio / Hito Técnico |
 | :--- | :--- | :--- | :--- |
+| **v4.73** | Noviembre 2026 | Sabrina Sanso | **Modales encadenados en Desarrollo personal (`desarrollo-personal.html`):**<br>- Patrón *Zero Context Loss* con preservación automática de borrador en `localStorage` (`asistente_sabry:dp_draft`) mientras se crea un recurso asociado en vuelo.<br>- Submodal Capa 2 (`#modal-recurso-vuelo`) con selector de formato en píldoras (`FORMATOS_RECURSO_VUELO`), validación (`construirRecursoEnVuelo()`), actualización automática del catálogo (`agregarRecursoACatalogo()`) y atajos `Esc` / `Ctrl + ↵`. |
 | **v1.0** | Junio 2026 | Sabrina Sanso | MVP local inicial: script monolítico en primer plano con bucle `while True` bloqueante (`time.sleep`). |
 | **v2.0** | Junio 2026 | Sabrina Sanso | Migración CI/CD Serverless en contenedores virtuales GitHub Actions y normalización binaria de BOM Windows. |
 | **v3.3** | Julio 2026 | Sabrina Sanso | **Baseline Oficial Sincronizada con PRD v3.3:**<br>- Modificación de frecuencia de sincronización invariable a 1 hora (60 minutos).<br>- Delegación estricta del cómputo matemático de métricas y tasas al cliente JavaScript en tiempo real.<br>- Incorporación de la jerarquía de 6 estados ordenada desde "Sin empezar" hasta "Fallida / Vencida".<br>- Adición del Módulo Semanal de Bienestar y Alerta Emocional con persistencia local en caché (`localStorage`).<br>- Reconfiguración del footer de diagnóstico técnico relativo y posicionamiento del campo de versión del release abajo a la izquierda. |

@@ -286,16 +286,25 @@
         </footer>
     </main>
 
-    <!-- MODAL DESARROLLO PERSONAL -->
-    <div id="modal-desarrollo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-desarrollo')">
-        <div class="glass-card rounded-2xl p-6 w-full max-w-lg my-8" onclick="event.stopPropagation()">
+    <!-- MODAL DESARROLLO PERSONAL (CAPA 1) -->
+    <div id="modal-desarrollo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalDesarrollo()">
+        <div id="dp-modal-card" class="glass-card rounded-2xl p-6 w-full max-w-lg my-8 transition-all duration-200" onclick="event.stopPropagation()">
+            <div id="dp-pause-banner" class="hidden mb-4 px-3 py-2 rounded-xl bg-[#ffb961]/10 border border-[#ffb961]/30 flex items-center justify-between gap-2 text-[11px] font-semibold text-[#ffb961]">
+                <span class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[15px]">pause_circle</span>
+                    <span>PROCESO EN PAUSA • Borrador preservado • CONTEXT LOCK: NIVEL 1</span>
+                </span>
+            </div>
             <div class="flex justify-between items-center mb-5">
-                <h3 id="dp-modal-titulo" class="text-headline-md font-headline-md text-white">Nuevo registro</h3>
-                <button type="button" onclick="cerrarModal('modal-desarrollo')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <h3 id="dp-modal-titulo" class="text-headline-md font-headline-md text-white">Nuevo registro</h3>
+                    <span id="dp-draft-badge" class="hidden px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30">✓ Borrador restaurado</span>
+                </div>
+                <button type="button" onclick="cerrarModalDesarrollo(true)" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]" title="Cerrar (Esc)">
                     <span class="material-symbols-outlined text-[20px]">close</span>
                 </button>
             </div>
-            <form id="form-desarrollo" class="space-y-4" onsubmit="return manejarSubmitDesarrollo(event)">
+            <form id="form-desarrollo" class="space-y-4" oninput="guardarBorradorDesarrollo()" onsubmit="return manejarSubmitDesarrollo(event)">
                 <input id="dp-page-id" type="hidden" value="" />
                 <div>
                     <label for="dp-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre / Título *</label>
@@ -331,9 +340,16 @@
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label for="dp-recurso" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Recurso asociado (Libro / Curso / Video)</label>
+                        <div class="flex items-center justify-between gap-2 mb-1.5">
+                            <label for="dp-recurso" class="block text-[12px] font-semibold text-[#8e8e93]">Recurso asociado</label>
+                            <button type="button" onclick="abrirSubmodalRecursoVuelo()" class="text-[11px] font-bold text-[#a855f7] hover:text-[#c084fc] flex items-center gap-1 transition-colors" title="Crear recurso sin perder este borrador">
+                                <span class="material-symbols-outlined text-[14px]">add_circle</span>
+                                <span>Crear en vuelo</span>
+                            </button>
+                        </div>
                         <input id="dp-recurso" list="dp-libros-datalist" type="text" maxlength="200" placeholder="Elegí o escribí un libro, curso o charla..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
                         <datalist id="dp-libros-datalist"></datalist>
+                        <p id="dp-recurso-toast" class="hidden mt-1 text-[11px] text-[#83da85] font-semibold">✓ Recurso vinculado a la práctica</p>
                     </div>
                     <div>
                         <label for="dp-enlace" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Enlace (URL opcional)</label>
@@ -349,8 +365,54 @@
                     <button id="dp-btn-eliminar" type="button" onclick="confirmarEliminarDesarrollo()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl" title="Mandar a la papelera">
                         <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
                     </button>
-                    <button type="button" onclick="cerrarModal('modal-desarrollo')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                    <button type="button" onclick="cerrarModalDesarrollo(true)" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
                     <button type="submit" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SUBMODAL CREACIÓN DE RECURSO EN VUELO (CAPA 2) -->
+    <div id="modal-recurso-vuelo" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/75 backdrop-blur-md p-4 overflow-y-auto" onclick="cerrarSubmodalRecursoVuelo()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8 border border-[#a855f7]/40 shadow-[0_20px_60px_rgba(0,0,0,0.65)]" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider bg-[#a855f7]/15 text-[#c084fc] border border-[#a855f7]/30">CAPA 2 ACTIVA • CREACIÓN EN VUELO</span>
+                <span class="text-[11px] text-[#8e8e93]">Sabry te cuida • Cero Frustración</span>
+            </div>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-headline-md font-headline-md text-white">Nuevo Recurso en Vuelo</h3>
+                <button type="button" onclick="cerrarSubmodalRecursoVuelo()" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]" title="Volver a la práctica (Esc)">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-recurso-vuelo" class="space-y-3.5" onsubmit="return manejarSubmitRecursoVuelo(event)">
+                <div>
+                    <label for="rv-titulo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Título del recurso *</label>
+                    <input id="rv-titulo" type="text" required maxlength="180" placeholder="Ej. Neurobiología del Nervio Vago Ep. 42" class="w-full bg-[#1c1c1f] border border-[#232326] focus:border-[#a855f7] rounded-lg px-3 py-2.5 text-white text-[14px] outline-none" />
+                </div>
+                <div>
+                    <span class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Formato</span>
+                    <div id="rv-formato-pills" class="flex flex-wrap gap-1.5"></div>
+                    <input id="rv-formato" type="hidden" value="🎧 Podcast / Audio" />
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="rv-autor" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Autor / Especialista</label>
+                        <input id="rv-autor" type="text" maxlength="120" placeholder="Ej. Dr. Stephen Porges" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div>
+                        <label for="rv-url" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">URL / Enlace</label>
+                        <input id="rv-url" type="url" placeholder="https://..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                </div>
+                <div>
+                    <label for="rv-tags" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Etiquetas (separadas por coma)</label>
+                    <input id="rv-tags" type="text" maxlength="160" placeholder="nervio vago, regulación, somática" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <p id="rv-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
+                    <button type="button" onclick="cerrarSubmodalRecursoVuelo()" class="sm:w-auto px-4 py-2.5 bg-[#1c1c1f] hover:bg-[#232326] text-[#e5e2e1] font-semibold text-[13px] rounded-xl">← Volver (Esc)</button>
+                    <button type="submit" class="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white font-bold text-[13px] px-4 py-2.5 rounded-xl">Guardar y Vincular (Ctrl + ↵)</button>
                 </div>
             </form>
         </div>
@@ -400,8 +462,10 @@
         const GITHUB_OWNER = "sabrinas01";
         const GITHUB_REPO = "Flow_Auditor";
         const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+        const DP_DRAFT_KEY = "asistente_sabry:dp_draft";
         let pilarFiltro = "todos";
         let tipoFiltroDP = "todos";
+        let catalogoRecursosLocal = [...(desarrolloLibrosCatalogo || [])];
 
         function hoyLocalISO() {
             const d = new Date();
@@ -492,7 +556,52 @@
         function _poblarDatalistLibros() {
             const dl = document.getElementById("dp-libros-datalist");
             if (!dl) return;
-            dl.innerHTML = (desarrolloLibrosCatalogo || []).map((t) => `<option value="${escapeHtml(t)}"></option>`).join("");
+            dl.innerHTML = catalogoRecursosLocal.map((t) => `<option value="${escapeHtml(t)}"></option>`).join("");
+        }
+
+        function _modalEstaAbierto(id) {
+            const el = document.getElementById(id);
+            return Boolean(el && !el.classList.contains("hidden"));
+        }
+
+        function _actualizarScrollBody() {
+            const hayModal = _modalEstaAbierto("modal-desarrollo") || _modalEstaAbierto("modal-recurso-vuelo") || _modalEstaAbierto("modal-token-notion");
+            document.body.classList.toggle("overflow-hidden", hayModal);
+        }
+
+        function guardarBorradorDesarrollo() {
+            const pageId = document.getElementById("dp-page-id").value.trim();
+            if (pageId) return; // Solo preservamos borrador para registros nuevos en curso
+            const borrador = {
+                nombre: document.getElementById("dp-nombre").value,
+                pilar: document.getElementById("dp-pilar").value,
+                tipo: document.getElementById("dp-tipo").value,
+                estado: document.getElementById("dp-estado").value,
+                fecha: document.getElementById("dp-fecha").value,
+                puntaje: document.getElementById("dp-puntaje").value,
+                frecuencia: document.getElementById("dp-frecuencia").value,
+                recurso: document.getElementById("dp-recurso").value,
+                enlace: document.getElementById("dp-enlace").value,
+                nota: document.getElementById("dp-nota").value,
+            };
+            const tieneContenido = Boolean(
+                borrador.nombre.trim() || borrador.frecuencia.trim() || borrador.recurso.trim() || borrador.enlace.trim() || borrador.nota.trim()
+            );
+            try {
+                if (tieneContenido) localStorage.setItem(DP_DRAFT_KEY, JSON.stringify(borrador));
+                else localStorage.removeItem(DP_DRAFT_KEY);
+            } catch (e) {}
+        }
+
+        function limpiarBorradorDesarrollo() {
+            try { localStorage.removeItem(DP_DRAFT_KEY); } catch (e) {}
+        }
+
+        function _leerBorradorDesarrollo() {
+            try {
+                const raw = localStorage.getItem(DP_DRAFT_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) { return null; }
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -523,10 +632,29 @@
         function abrirModal(id) {
             document.getElementById(id).classList.remove("hidden");
             document.getElementById(id).classList.add("flex");
+            _actualizarScrollBody();
         }
         function cerrarModal(id) {
             document.getElementById(id).classList.add("hidden");
             document.getElementById(id).classList.remove("flex");
+            _actualizarScrollBody();
+        }
+
+        function _setCapa1Pausada(pausada) {
+            const card = document.getElementById("dp-modal-card");
+            const banner = document.getElementById("dp-pause-banner");
+            if (card) {
+                card.classList.toggle("opacity-60", pausada);
+                card.classList.toggle("pointer-events-none", pausada);
+            }
+            if (banner) banner.classList.toggle("hidden", !pausada);
+        }
+
+        function cerrarModalDesarrollo(descartarBorrador = false) {
+            if (_modalEstaAbierto("modal-recurso-vuelo")) return;
+            if (descartarBorrador) limpiarBorradorDesarrollo();
+            _setCapa1Pausada(false);
+            cerrarModal("modal-desarrollo");
         }
 
         function abrirModalDesarrollo(pilarPre) {
@@ -540,8 +668,112 @@
             document.getElementById("dp-fecha").value = hoyLocalISO();
             document.getElementById("dp-btn-eliminar").classList.add("hidden");
             document.getElementById("dp-mensaje").classList.add("hidden");
+            document.getElementById("dp-recurso-toast").classList.add("hidden");
+
+            const borrador = _leerBorradorDesarrollo();
+            const badgeBorrador = document.getElementById("dp-draft-badge");
+            if (borrador) {
+                document.getElementById("dp-nombre").value = borrador.nombre || "";
+                if (borrador.pilar && !pilarPre) document.getElementById("dp-pilar").value = borrador.pilar;
+                if (borrador.tipo) document.getElementById("dp-tipo").value = borrador.tipo;
+                if (borrador.estado) document.getElementById("dp-estado").value = borrador.estado;
+                if (borrador.fecha) document.getElementById("dp-fecha").value = borrador.fecha;
+                document.getElementById("dp-puntaje").value = borrador.puntaje || "";
+                document.getElementById("dp-frecuencia").value = borrador.frecuencia || "";
+                document.getElementById("dp-recurso").value = borrador.recurso || "";
+                document.getElementById("dp-enlace").value = borrador.enlace || "";
+                document.getElementById("dp-nota").value = borrador.nota || "";
+                if (badgeBorrador) badgeBorrador.classList.remove("hidden");
+            } else if (badgeBorrador) {
+                badgeBorrador.classList.add("hidden");
+            }
+            _setCapa1Pausada(false);
             abrirModal("modal-desarrollo");
         }
+
+        function _renderPillsFormatoRecurso(activo) {
+            const cont = document.getElementById("rv-formato-pills");
+            if (!cont) return;
+            cont.innerHTML = FORMATOS_RECURSO_VUELO.map((fmt) => {
+                const seleccionado = fmt === activo;
+                const cls = seleccionado
+                    ? "bg-[#a855f7]/25 text-[#e9d5ff] border-[#a855f7] font-bold"
+                    : "bg-[#1c1c1f] text-[#a1a1aa] border-[#232326] hover:text-white";
+                return `<button type="button" onclick="seleccionarFormatoRecursoVuelo('${escapeHtml(fmt)}')" class="px-2.5 py-1.5 rounded-lg text-[11px] border transition-all ${cls}">${escapeHtml(fmt)}</button>`;
+            }).join("");
+        }
+
+        function seleccionarFormatoRecursoVuelo(fmt) {
+            document.getElementById("rv-formato").value = fmt;
+            _renderPillsFormatoRecurso(fmt);
+        }
+
+        function abrirSubmodalRecursoVuelo() {
+            guardarBorradorDesarrollo();
+            _setCapa1Pausada(true);
+            document.getElementById("form-recurso-vuelo").reset();
+            const fmtInicial = FORMATOS_RECURSO_VUELO[0];
+            document.getElementById("rv-formato").value = fmtInicial;
+            _renderPillsFormatoRecurso(fmtInicial);
+            document.getElementById("rv-mensaje").classList.add("hidden");
+            abrirModal("modal-recurso-vuelo");
+            setTimeout(() => document.getElementById("rv-titulo").focus(), 40);
+        }
+
+        function cerrarSubmodalRecursoVuelo() {
+            cerrarModal("modal-recurso-vuelo");
+            _setCapa1Pausada(false);
+            const inputRecurso = document.getElementById("dp-recurso");
+            if (inputRecurso) inputRecurso.focus();
+        }
+
+        function manejarSubmitRecursoVuelo(event) {
+            event.preventDefault();
+            const res = construirRecursoEnVuelo({
+                titulo: document.getElementById("rv-titulo").value,
+                formato: document.getElementById("rv-formato").value,
+                autor: document.getElementById("rv-autor").value,
+                url: document.getElementById("rv-url").value,
+                tags: document.getElementById("rv-tags").value,
+            });
+            const msg = document.getElementById("rv-mensaje");
+            if (!res.ok) {
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            catalogoRecursosLocal = agregarRecursoACatalogo(catalogoRecursosLocal, res.recurso.etiquetaCatalogo);
+            _poblarDatalistLibros();
+            document.getElementById("dp-recurso").value = res.recurso.etiquetaCatalogo;
+            if (res.recurso.url && !document.getElementById("dp-enlace").value.trim()) {
+                document.getElementById("dp-enlace").value = res.recurso.url;
+            }
+            guardarBorradorDesarrollo();
+            cerrarSubmodalRecursoVuelo();
+            const toast = document.getElementById("dp-recurso-toast");
+            if (toast) toast.classList.remove("hidden");
+            return false;
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                if (_modalEstaAbierto("modal-recurso-vuelo")) {
+                    e.preventDefault();
+                    cerrarSubmodalRecursoVuelo();
+                } else if (_modalEstaAbierto("modal-desarrollo")) {
+                    e.preventDefault();
+                    cerrarModalDesarrollo(false);
+                }
+            } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+                if (_modalEstaAbierto("modal-recurso-vuelo")) {
+                    e.preventDefault();
+                    document.getElementById("form-recurso-vuelo").requestSubmit();
+                } else if (_modalEstaAbierto("modal-desarrollo")) {
+                    e.preventDefault();
+                    document.getElementById("form-desarrollo").requestSubmit();
+                }
+            }
+        });
 
         function abrirModalEditarDesarrollo(id) {
             const r = (desarrolloPersonalRegistros || []).find((x) => x.id === id);
@@ -639,6 +871,8 @@
                 return false;
             }
             if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
+            limpiarBorradorDesarrollo();
+            _setCapa1Pausada(false);
             cerrarModal("modal-desarrollo");
             await ejecutarEscrituraConSpinner(pageId ? "actualizar_desarrollo_personal" : "crear_desarrollo_personal", res.payload);
             return false;
