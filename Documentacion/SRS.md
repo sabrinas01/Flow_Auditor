@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.82 (Creación de autor en vuelo en Ocio)  
+**Versión:** 4.83 (Medicamento en vuelo y Undo Toast 5s Ctrl+Z en Salud)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
@@ -12,6 +12,7 @@
 
 | Versión | Fecha | Autor | Descripción del Cambio / Hito Técnico |
 | :--- | :--- | :--- | :--- |
+| **v4.83** | Noviembre 2026 | Sabrina Sanso | **Guardrail Undo Toast 5s y Medicamento en vuelo en Salud (`salud.html`):**<br>- Submodal Capa 2 (`#modal-salud-med-vuelo`) para registrar un medicamento o suplemento en vuelo y vincularlo al registro de síntomas.<br>- Undo Toast de 5 segundos (`#salud-undo-toast`, atajo `Ctrl + Z`) antes de confirmar el archivado en Notion. |
 | **v4.82** | Noviembre 2026 | Sabrina Sanso | **Creación de autor en vuelo en Ocio (`ocio.html`):**<br>- Submodal Capa 2 (`#modal-ocio-autor-vuelo`) accesible desde `+ Nuevo autor` en el modal de Libro sin perder el borrador de la obra.<br>- Autocompletado con `<datalist id="ocio-autores-datalist">` sincronizado con `ocioLibros` y `localStorage` (`asistente_sabry:ocio_autores_v1`). |
 | **v4.81** | Noviembre 2026 | Sabrina Sanso | **Mejoras Finanzas (`finanzas.html`):**<br>- Selector de mes (`#fin-selector-mes`) en la cabecera del resumen mensual para recalcular la proyección de cuotas TC.<br>- Submodal Capa 2 (`#modal-fin-opcion-vuelo`) para crear tarjetas o categorías en vuelo dentro del modal de egreso sin perder el borrador del gasto. |
 | **v4.80** | Noviembre 2026 | Sabrina Sanso | **Desarrollo personal CRUD Multimodal (`desarrollo-personal.html`, Stitch `node-id=f4183c802c434b0bbe2a35e052920c05`):**<br>- Hero con badges (`Metas Trimestrales Activas`, `Sincronizado con Notion`) y CTAs `+ Registrar Aprendizaje` / `+ Nueva Meta / Proyecto`.<br>- Fila de 5 KPIs (`Comunicación`, `Autoestima`, `Valores`, `Práctica Consciente`, `Recursos Vinculados`).<br>- Bloque `Gestión Multimodal de Crecimiento & Recursos Aplicados` con filtros por tipo (`Todos`, `Ejercicios Prácticos`, `Videos & Masterclasses`, `Lecturas & Ensayos`) y pilar.<br>- Secciones 01 (mini-KPIs + checklist Regla 3 Segundos), 02 (`Pacto de Diálogo Interno`), 03 (`Prompt del Día`) y banner de sincronización Notion. |

@@ -525,7 +525,13 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Síntomas (podés elegir varios)</label>
+                    <div class="flex items-center justify-between gap-2 mb-1.5">
+                        <label class="block text-[12px] font-semibold text-[#8e8e93]">Síntomas y medicación (podés elegir varios)</label>
+                        <button type="button" onclick="abrirSubmodalMedSalud()" class="text-[11px] font-bold text-[#83da85] hover:underline flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">medication</span>
+                            <span>+ Medicamento en vuelo</span>
+                        </button>
+                    </div>
                     <div id="cic-sintomas-list" class="max-h-40 overflow-y-auto bg-[#1c1c1f] border border-[#232326] rounded-lg p-2.5 grid grid-cols-1 sm:grid-cols-2 gap-1.5"></div>
                     <div class="flex gap-2 mt-2">
                         <input id="cic-nuevo-sintoma" type="text" maxlength="80" placeholder="Nuevo síntoma (ej. Dolor lumbar)..." onkeydown="if(event.key==='Enter'){event.preventDefault();agregarNuevoSintomaCiclo();}" class="flex-1 bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[13px] placeholder-[#8e8e93]" />
@@ -545,6 +551,34 @@
                 </div>
             </form>
         </div>
+    </div>
+
+    <!-- SUBMODAL CREACIÓN EN VUELO: MEDICAMENTO / SUPLEMENTO (CAPA 2) -->
+    <div id="modal-salud-med-vuelo" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarSubmodalMedSalud()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4 border border-[#83da85]/40 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30">CAPA 2 • MEDICAMENTO EN VUELO</span>
+                <button type="button" onclick="cerrarSubmodalMedSalud()" class="p-1 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+            <h3 class="text-base font-bold text-white">Registrar Medicamento / Suplemento</h3>
+            <form onsubmit="return guardarSubmodalMedSalud(event)" class="space-y-3">
+                <input id="sal-med-nombre" type="text" required maxlength="80" placeholder="Nombre (ej. Magnesio / Ibuprofeno)" class="w-full bg-[#1c1c1f] border border-[#232326] focus:border-[#83da85] rounded-lg px-3 py-2.5 text-white text-sm outline-none" />
+                <input id="sal-med-dosis" type="text" maxlength="60" placeholder="Dosis / Horario (ej. 400mg noche)" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-xs outline-none" />
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="cerrarSubmodalMedSalud()" class="flex-1 py-2.5 rounded-xl bg-[#18181d] text-white text-xs font-semibold">Volver</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-[#83da85] text-[#08080a] text-xs font-bold">Agregar y vincular</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- UNDO TOAST 5 SEGUNDOS (CTRL + Z) -->
+    <div id="salud-undo-toast" class="hidden fixed bottom-5 left-5 z-[65] px-4 py-3 rounded-2xl bg-[#18181d] border border-[#ffb961]/45 shadow-2xl flex items-center gap-3">
+        <span class="material-symbols-outlined text-[#ffb961] text-[20px]">restore_from_trash</span>
+        <span id="salud-undo-texto" class="text-xs font-semibold text-white">Archivando registro en 5s…</span>
+        <button type="button" onclick="deshacerArchivadoSalud()" class="px-3 py-1 rounded-lg bg-[#ffb961] text-[#08080a] text-xs font-bold">Deshacer (Ctrl+Z)</button>
     </div>
 
     <!-- MODAL CONFIRMAR PAPELERA -->
@@ -1141,14 +1175,87 @@
             abrirModal("modal-confirmar-papelera");
         }
 
+        let _undoSaludTimer = null;
+        let _undoSaludPendienteId = null;
+
         async function ejecutarEnvioPapelera() {
             if (!_papeleraCicloId) return;
             const id = _papeleraCicloId;
             _papeleraCicloId = null;
             cerrarModal("modal-confirmar-papelera");
             cerrarModal("modal-ciclo");
-            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: id });
+
+            if (_undoSaludTimer) clearTimeout(_undoSaludTimer);
+            _undoSaludPendienteId = id;
+            const toast = document.getElementById("salud-undo-toast");
+            const txt = document.getElementById("salud-undo-texto");
+            let seg = 5;
+            if (txt) txt.textContent = `Archivando en ${seg}s…`;
+            if (toast) toast.classList.remove("hidden");
+
+            const tick = () => {
+                seg -= 1;
+                if (!_undoSaludPendienteId) return;
+                if (seg <= 0) {
+                    const targetId = _undoSaludPendienteId;
+                    _undoSaludPendienteId = null;
+                    if (toast) toast.classList.add("hidden");
+                    ejecutarEscrituraConSpinner("archivar_pagina", { page_id: targetId });
+                    return;
+                }
+                if (txt) txt.textContent = `Archivando en ${seg}s…`;
+                _undoSaludTimer = setTimeout(tick, 1000);
+            };
+            _undoSaludTimer = setTimeout(tick, 1000);
         }
+
+        function deshacerArchivadoSalud() {
+            if (_undoSaludTimer) { clearTimeout(_undoSaludTimer); _undoSaludTimer = null; }
+            _undoSaludPendienteId = null;
+            const toast = document.getElementById("salud-undo-toast");
+            if (toast) toast.classList.add("hidden");
+        }
+
+        function abrirSubmodalMedSalud() {
+            document.getElementById("sal-med-nombre").value = "";
+            document.getElementById("sal-med-dosis").value = "";
+            abrirModal("modal-salud-med-vuelo");
+            setTimeout(() => document.getElementById("sal-med-nombre").focus(), 30);
+        }
+
+        function cerrarSubmodalMedSalud() {
+            cerrarModal("modal-salud-med-vuelo");
+        }
+
+        function guardarSubmodalMedSalud(event) {
+            event.preventDefault();
+            const nombre = document.getElementById("sal-med-nombre").value.trim();
+            const dosis = document.getElementById("sal-med-dosis").value.trim();
+            if (!nombre) return false;
+            const etiqueta = dosis ? `💊 ${nombre} (${dosis})` : `💊 ${nombre}`;
+            if (!saludOpciones.sintomas.includes(etiqueta)) {
+                saludOpciones.sintomas.unshift(etiqueta);
+            }
+            try {
+                const meds = JSON.parse(localStorage.getItem("asistente_sabry:salud_meds_v1") || "[]");
+                if (Array.isArray(meds) && !meds.includes(etiqueta)) {
+                    meds.unshift(etiqueta);
+                    localStorage.setItem("asistente_sabry:salud_meds_v1", JSON.stringify(meds));
+                }
+            } catch (e) {}
+            const actuales = [...document.querySelectorAll('input[name="cic-sintoma"]:checked')].map((el) => el.value);
+            actuales.push(etiqueta);
+            _poblarCheckboxesSintomas(actuales);
+            cerrarSubmodalMedSalud();
+            return false;
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z" && _undoSaludPendienteId) {
+                e.preventDefault();
+                deshacerArchivadoSalud();
+            }
+        });
 
         function abrirModalPendiente() {
             document.getElementById("form-pendiente").reset();
