@@ -362,37 +362,22 @@
             <!-- EVENTOS: HOY / MAÑANA -->
             <!-- =================================================== -->
             <section class="space-y-4">
-                <div class="flex items-center justify-between">
+                <div class="flex flex-wrap items-center justify-between gap-3">
                     <h2 class="text-label-caps font-label-caps text-primary tracking-widest px-1">EVENTOS</h2>
-                    <span id="agenda-hoy-resumen" class="text-[11px] font-semibold bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/20 px-2.5 py-0.5 rounded-full">0 hoy</span>
+                    <div class="flex items-center gap-2.5">
+                        <span id="agenda-hoy-resumen" class="text-[11px] font-semibold bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/20 px-2.5 py-1 rounded-full">0 hoy</span>
+                        <button type="button" onclick="abrirModalCrearTarea()" class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>Crear tarea</span>
+                        </button>
+                    </div>
                 </div>
                 <!-- Mensaje motivacional estático debajo del título EVENTOS (pedido explícito de Sabrina, HU Notion Épica 2 #8; movido en v4.30) -->
                 <div class="bg-[#111115] rounded-2xl p-5 border border-[#53a759]/30 flex items-start gap-4">
                     <span class="material-symbols-outlined text-[#53a759] text-xl">directions_walk</span>
                     <p class="text-[13px] text-[#e2beba] italic leading-relaxed">Linda, si es posible agenda el tiempo de transporte y preparación y si vuelves caminando para que cuente como actividad física 😉</p>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-grid-gutter">
-
-                    <!-- Ayer -->
-                    <article class="glass-card rounded-2xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
-                        <div class="flex justify-between items-start">
-                            <div class="space-y-1">
-                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">AYER</p>
-                                <h2 class="text-headline-md font-headline-md text-white">Eventos de ayer</h2>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span id="total-eventos-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 eventos</span>
-                                <button type="button" onclick="toggleBloque('eventos-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-eventos-ayer">
-                                    <span id="chevron-eventos-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="content-eventos-ayer">
-                            <div id="list-eventos-ayer" class="space-y-3">
-                                <!-- Se inyectan las filas dinámicamente -->
-                            </div>
-                        </div>
-                    </article>
+                <div class="grid grid-cols-1 gap-grid-gutter">
 
                     <!-- Hoy -->
                     <article class="glass-card rounded-2xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6">
@@ -431,6 +416,27 @@
                         </div>
                         <div id="content-eventos-manana">
                             <div id="list-eventos-manana" class="space-y-3">
+                                <!-- Se inyectan las filas dinámicamente -->
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Ayer -->
+                    <article class="glass-card rounded-2xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
+                        <div class="flex justify-between items-start">
+                            <div class="space-y-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">AYER</p>
+                                <h2 class="text-headline-md font-headline-md text-white">Eventos de ayer</h2>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="total-eventos-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 eventos</span>
+                                <button type="button" onclick="toggleBloque('eventos-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-eventos-ayer">
+                                    <span id="chevron-eventos-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="content-eventos-ayer">
+                            <div id="list-eventos-ayer" class="space-y-3">
                                 <!-- Se inyectan las filas dinámicamente -->
                             </div>
                         </div>

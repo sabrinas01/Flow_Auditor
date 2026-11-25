@@ -193,10 +193,14 @@
         </header>
 
         <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
-            <!-- Mini-resumen Stitch -->
-            <section class="grid grid-cols-3 gap-3">
+            <!-- Mini-resumen Stitch (4 KPIs) -->
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="glass-card rounded-2xl p-4 border-l-4 border-l-[#83da85]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93]">TOTAL ACTIVOS</p>
+                    <p id="varios-resumen-total" class="text-[22px] font-bold text-[#83da85] mt-1">0</p>
+                </div>
                 <div class="glass-card rounded-2xl p-4 border-l-4 border-l-[#ff5f52]">
-                    <p class="text-[10px] font-label-caps text-[#8e8e93]">HOY</p>
+                    <p class="text-[10px] font-label-caps text-[#8e8e93]">HOY &amp; URGENTE</p>
                     <p id="varios-resumen-hoy" class="text-[22px] font-bold text-white mt-1">0</p>
                 </div>
                 <div class="glass-card rounded-2xl p-4 border-l-4 border-l-[#e49102]">
@@ -204,7 +208,7 @@
                     <p id="varios-resumen-manana" class="text-[22px] font-bold text-white mt-1">0</p>
                 </div>
                 <div class="glass-card rounded-2xl p-4 border-l-4 border-l-[#00aaff]">
-                    <p class="text-[10px] font-label-caps text-[#8e8e93]">AYER / SIN FECHA</p>
+                    <p class="text-[10px] font-label-caps text-[#8e8e93]">HISTORIAL / BACKLOG</p>
                     <p id="varios-resumen-resto" class="text-[22px] font-bold text-white mt-1">0</p>
                 </div>
             </section>
@@ -446,9 +450,13 @@
             renderizarRecordatoriosVarios("varios-hoy", recordatoriosVariosHoy);
             renderizarRecordatoriosVarios("varios-manana", recordatoriosVariosManana);
             renderizarRecordatoriosVarios("varios-sin-fecha", recordatoriosVariosSinFecha);
-            document.getElementById("varios-resumen-hoy").textContent = String(recordatoriosVariosHoy.length);
-            document.getElementById("varios-resumen-manana").textContent = String(recordatoriosVariosManana.length);
-            document.getElementById("varios-resumen-resto").textContent = String(recordatoriosVariosAyer.length + recordatoriosVariosSinFecha.length);
+            const hoyCnt = recordatoriosVariosHoy.length;
+            const manCnt = recordatoriosVariosManana.length;
+            const resCnt = recordatoriosVariosAyer.length + recordatoriosVariosSinFecha.length;
+            document.getElementById("varios-resumen-total").textContent = String(hoyCnt + manCnt + resCnt);
+            document.getElementById("varios-resumen-hoy").textContent = String(hoyCnt);
+            document.getElementById("varios-resumen-manana").textContent = String(manCnt);
+            document.getElementById("varios-resumen-resto").textContent = String(resCnt);
         });
 
         // renderizarRecordatoriosVarios vive en src/utils/dom_render.js desde
