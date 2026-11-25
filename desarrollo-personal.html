@@ -141,17 +141,13 @@
     <main class="min-h-screen lg:ml-64">
         <!-- TOP APP BAR -->
         <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
-            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+            <div class="flex justify-between items-center w-full px-container-padding py-4 max-w-[1200px] mx-auto">
                 <div class="flex items-center gap-3">
-                    <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                    <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-white/5 rounded-full transition-colors active:scale-95 text-[#ffb4aa]" title="Menú">
                         <span class="material-symbols-outlined text-[20px]">menu</span>
                     </button>
-                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
-                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
-                    </div>
                     <div>
-                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">Asistente Sabry</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
-                        <p class="text-[10px] font-label-caps text-primary tracking-widest">DESARROLLO PERSONAL</p>
+                        <span class="text-[12px] font-label-caps font-bold text-[#a1a1aa] tracking-widest uppercase">ASISTENTESABRY • <span id="header-version" class="text-[#ff5f52]">dev</span></span>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -159,7 +155,7 @@
                         <span>Ver en Notion</span>
                         <span class="material-symbols-outlined text-[15px]">open_in_new</span>
                     </a>
-                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                    <button id="btn-refresh" class="p-2 hover:bg-white/5 rounded-full transition-colors active:scale-95 text-[#a1a1aa] hover:text-white" title="Actualizar" onclick="recargarDashboard()">
                         <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
                     </button>
                 </div>
@@ -167,108 +163,246 @@
         </header>
 
         <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
-            <!-- CABECERA -->
-            <section class="flex flex-wrap justify-between items-end gap-4">
-                <div class="space-y-1.5">
-                    <p class="text-[11px] font-label-caps text-[#ff5f52] tracking-widest">CRECIMIENTO · HÁBITOS · PROPÓSITO</p>
-                    <h1 class="font-display-lg text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Desarrollo Personal</h1>
-                    <p class="text-[13px] text-[#8e8e93]">Cultivar maestría personal, alinear hábitos con la visión de vida y expandir el potencial con disciplina amable.</p>
+            <!-- HERO DEL MÓDULO -->
+            <section class="flex flex-wrap justify-between items-end gap-5">
+                <div class="space-y-2.5 max-w-2xl">
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <p class="text-[11px] font-label-caps text-[#ff5f52] tracking-widest">CRECIMIENTO • HÁBITOS • PROPÓSITO</p>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#83da85]/15 border border-[#83da85]/30 text-[#83da85] text-[10px] font-bold">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#83da85]"></span>
+                            <span>Metas Trimestrales Activas</span>
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#18181d] border border-white/[0.08] text-[#e5e2e1] text-[10px] font-semibold">
+                            <span class="material-symbols-outlined text-[13px] text-[#ffb961]">cloud_done</span>
+                            <span>Sincronizado con Notion • Base de Crecimiento</span>
+                        </span>
+                    </div>
+                    <h1 class="font-display-lg text-3xl sm:text-4xl font-extrabold text-white tracking-tight uppercase">DESARROLLO PERSONAL</h1>
+                    <p class="text-[13px] text-[#a1a1aa] leading-relaxed"><strong class="text-white">Objetivo:</strong> Cultivar maestría personal, alinear hábitos con la visión de vida y expandir el potencial con disciplina amable.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2.5">
-                    <button id="btn-papelera-dp" type="button" onclick="abrirPapeleraDP()" class="hidden bg-[#1c1c1f] hover:bg-[#232326] border border-[#ffb961]/30 text-[#ffb961] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
+                    <button id="btn-papelera-dp" type="button" onclick="abrirPapeleraDP()" class="hidden bg-[#1c1c1f] hover:bg-[#232326] border border-[#ffb961]/30 text-[#ffb961] font-semibold text-[12px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
                         <span class="material-symbols-outlined text-[17px]">restore_from_trash</span>
                         <span>Papelera Segura (<span id="papelera-dp-count">0</span>)</span>
                     </button>
-                    <button type="button" onclick="abrirModalDesarrollo()" class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
-                        <span class="material-symbols-outlined text-[18px]">add</span>
-                        <span>Nuevo registro</span>
+                    <button type="button" onclick="abrirModalDesarrollo()" class="bg-[#18181d] hover:bg-[#232326] border border-white/[0.1] text-white font-bold text-[12px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[17px]">edit_note</span>
+                        <span>+ Registrar Aprendizaje</span>
+                    </button>
+                    <button type="button" onclick="abrirModalDesarrollo('🧭 Autoconocimiento', '🎯 Valor / Meta')" class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[12px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[17px]">add_task</span>
+                        <span>+ Nueva Meta / Proyecto</span>
                     </button>
                 </div>
             </section>
 
-            <!-- 4 KPIs SUPERIORES -->
-            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#38bdf8]">
-                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">COMUNICACIÓN</p>
-                    <p id="dp-kpi-com" class="text-2xl font-extrabold text-white">0</p>
-                    <p class="text-[11px] text-[#8e8e93] mt-1">Conversaciones y práctica</p>
+            <!-- FILA DE 5 KPIs PRINCIPALES -->
+            <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#ffb961] space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest">COMUNICACIÓN ASERTIVA</p>
+                        <span class="material-symbols-outlined text-[18px] text-[#ffb961]">record_voice_over</span>
+                    </div>
+                    <p class="text-2xl font-extrabold text-white"><span id="dp-kpi-com">0</span> <span class="text-xs font-semibold text-[#83da85]">reg.</span></p>
+                    <p class="text-[11px] text-[#8e8e93]">Escucha activa y acuerdos</p>
                 </div>
-                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#f472b6]">
-                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">AUTOESTIMA</p>
-                    <p id="dp-kpi-aut" class="text-2xl font-extrabold text-white">0</p>
-                    <p class="text-[11px] text-[#8e8e93] mt-1">Logros y diálogo interno</p>
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#ff5f52] space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest">BARÓMETRO AUTOESTIMA</p>
+                        <span class="material-symbols-outlined text-[18px] text-[#ff5f52]">favorite</span>
+                    </div>
+                    <p class="text-2xl font-extrabold text-[#ff5f52]"><span id="dp-kpi-aut">0</span> <span class="text-xs font-semibold text-[#8e8e93]">reg.</span></p>
+                    <p class="text-[11px] text-[#8e8e93]">Diálogo interno y merecimiento</p>
                 </div>
-                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#a855f7]">
-                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">AUTOCONOCIMIENTO</p>
-                    <p id="dp-kpi-con" class="text-2xl font-extrabold text-white">0</p>
-                    <p class="text-[11px] text-[#8e8e93] mt-1">Valores, triggers y reflexión</p>
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#83da85] space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest">ALINEACIÓN VALORES</p>
+                        <span class="material-symbols-outlined text-[18px] text-[#83da85]">balance</span>
+                    </div>
+                    <p class="text-2xl font-extrabold text-white"><span id="dp-kpi-con">0</span> <span class="text-xs font-semibold text-[#83da85]">reg.</span></p>
+                    <p class="text-[11px] text-[#8e8e93]">Coherencia consciente</p>
                 </div>
-                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#83da85]">
-                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">PROGRESO INTEGRADO</p>
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#ffb961] space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest">PRÁCTICA CONSCIENTE</p>
+                        <span class="material-symbols-outlined text-[18px] text-[#ffb961]">self_improvement</span>
+                    </div>
                     <p id="dp-kpi-prog" class="text-2xl font-extrabold text-[#83da85]">0%</p>
-                    <p id="dp-kpi-ej" class="text-[11px] text-[#8e8e93] mt-1">0 ejercicios en curso</p>
+                    <p id="dp-kpi-ej" class="text-[11px] text-[#8e8e93]">0 ejercicios en curso</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#ff5f52] space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest">RECURSOS VINCULADOS</p>
+                        <span class="material-symbols-outlined text-[18px] text-[#ff5f52]">auto_stories</span>
+                    </div>
+                    <p class="text-2xl font-extrabold text-white"><span id="dp-kpi-rec">0</span> <span class="text-xs font-semibold text-[#83da85]">catálogo</span></p>
+                    <p class="text-[11px] text-[#8e8e93]">Libros, videos y talleres</p>
                 </div>
             </section>
 
-            <!-- FILTRO POR PILAR Y TIPO MULTIMODAL -->
-            <div class="space-y-2.5">
-                <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" onclick="filtrarPilar('todos')" id="flt-todos" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#ff5f52]/20 text-[#ff5f52] border border-[#ff5f52]/40 transition-all">Todos</button>
-                    <button type="button" onclick="filtrarPilar('🗣️ Comunicación')" id="flt-com" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">🗣️ Comunicación</button>
-                    <button type="button" onclick="filtrarPilar('💖 Autoestima')" id="flt-aut" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">💖 Autoestima</button>
-                    <button type="button" onclick="filtrarPilar('🧭 Autoconocimiento')" id="flt-con" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">🧭 Autoconocimiento</button>
+            <!-- BLOQUE PRINCIPAL: CRUD MULTIMODAL · BIBLIOTECA ACTIVA -->
+            <section class="glass-card rounded-2xl p-6 sm:p-8 border border-white/[0.08] space-y-5">
+                <div class="flex flex-wrap justify-between items-start gap-4">
+                    <div class="space-y-1">
+                        <p class="text-[11px] font-label-caps text-[#ffb961] tracking-widest">CRUD MULTIMODAL • BIBLIOTECA ACTIVA DE DESARROLLO</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Gestión Multimodal de Crecimiento &amp; Recursos Aplicados</h2>
+                        <p class="text-[12px] text-[#8e8e93]">Articulación directa entre teoría formativa y aplicación práctica con sincronización bidireccional en Notion.</p>
+                    </div>
+                    <button type="button" onclick="abrirModalDesarrollo(null, '📖 Lectura / Libro')" class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-xs px-4 py-2.5 rounded-xl inline-flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[17px]">add</span>
+                        <span>Nuevo Recurso / Actividad</span>
+                    </button>
                 </div>
-                <div class="flex flex-wrap items-center gap-2 text-xs">
-                    <button type="button" onclick="filtrarTipoDP('todos')" class="dp-tipo-flt px-3 py-1 rounded-lg bg-white/[0.08] text-white font-semibold">Todos los recursos</button>
-                    <button type="button" onclick="filtrarTipoDP('Ejercicio')" class="dp-tipo-flt px-3 py-1 rounded-lg bg-[#1c1c1f] text-[#a1a1aa] hover:text-white">🏋️ Ejercicios</button>
-                    <button type="button" onclick="filtrarTipoDP('Video')" class="dp-tipo-flt px-3 py-1 rounded-lg bg-[#1c1c1f] text-[#a1a1aa] hover:text-white">🎥 Videos</button>
-                    <button type="button" onclick="filtrarTipoDP('Lectura')" class="dp-tipo-flt px-3 py-1 rounded-lg bg-[#1c1c1f] text-[#a1a1aa] hover:text-white">📖 Lecturas / Libros</button>
-                </div>
-            </div>
 
-            <!-- SECCIÓN 01: COMUNICACIÓN -->
-            <section id="sec-comunicacion" class="glass-card rounded-2xl p-8 border-l-4 border-l-[#38bdf8] space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                        <button type="button" onclick="filtrarTipoDP('todos')" data-tipo="todos" class="dp-tipo-flt px-3.5 py-1.5 rounded-full bg-[#ff5f52] text-white font-bold transition-all">Todos (<span id="cnt-tipo-todos">0</span>)</button>
+                        <button type="button" onclick="filtrarTipoDP('Ejercicio')" data-tipo="Ejercicio" class="dp-tipo-flt px-3.5 py-1.5 rounded-full bg-[#1c1c1f] text-[#a1a1aa] hover:text-white font-semibold transition-all">🏃 Ejercicios Prácticos (<span id="cnt-tipo-ej">0</span>)</button>
+                        <button type="button" onclick="filtrarTipoDP('Video')" data-tipo="Video" class="dp-tipo-flt px-3.5 py-1.5 rounded-full bg-[#1c1c1f] text-[#a1a1aa] hover:text-white font-semibold transition-all">📺 Videos &amp; Masterclasses (<span id="cnt-tipo-vid">0</span>)</button>
+                        <button type="button" onclick="filtrarTipoDP('Lectura')" data-tipo="Lectura" class="dp-tipo-flt px-3.5 py-1.5 rounded-full bg-[#1c1c1f] text-[#a1a1aa] hover:text-white font-semibold transition-all">📖 Lecturas &amp; Ensayos (<span id="cnt-tipo-lec">0</span>)</button>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <button type="button" onclick="filtrarPilar('todos')" id="flt-todos" class="px-3 py-1 rounded-full text-[11px] font-bold bg-[#ff5f52]/20 text-[#ff5f52] border border-[#ff5f52]/40 transition-all">Todos</button>
+                        <button type="button" onclick="filtrarPilar('🗣️ Comunicación')" id="flt-com" class="px-3 py-1 rounded-full text-[11px] font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">🗣️ Comunicación</button>
+                        <button type="button" onclick="filtrarPilar('💖 Autoestima')" id="flt-aut" class="px-3 py-1 rounded-full text-[11px] font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">💖 Autoestima</button>
+                        <button type="button" onclick="filtrarPilar('🧭 Autoconocimiento')" id="flt-con" class="px-3 py-1 rounded-full text-[11px] font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">🧭 Autoconocimiento</button>
+                    </div>
+                </div>
+
+                <div id="list-biblioteca-multimodal" class="space-y-3"></div>
+            </section>
+
+            <!-- SECCIÓN 01: COMUNICACIÓN ASERTIVA & VÍNCULOS -->
+            <section id="sec-comunicacion" class="glass-card rounded-2xl p-8 border-l-4 border-l-[#38bdf8] space-y-6">
                 <div class="flex flex-wrap justify-between items-center gap-3">
                     <div>
-                        <p class="text-[11px] font-label-caps text-[#38bdf8] tracking-widest">01 · COMUNICACIÓN ASERTIVA & VÍNCULOS</p>
-                        <h2 class="text-headline-md font-headline-md text-white">Comunicación & Inteligencia Relacional</h2>
+                        <p class="text-[11px] font-label-caps text-[#38bdf8] tracking-widest">SECCIÓN 01 • COMUNICACIÓN ASERTIVA &amp; VÍNCULOS</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Comunicación &amp; Inteligencia Relacional</h2>
                     </div>
-                    <button type="button" onclick="abrirModalDesarrollo('🗣️ Comunicación')" class="bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/40 text-[#38bdf8] font-bold text-[13px] px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all">
-                        <span class="material-symbols-outlined text-[17px]">add</span>
-                        <span>Registrar en Comunicación</span>
-                    </button>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="abrirModalDesarrollo('🗣️ Comunicación', '💬 Conversación')" class="bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/40 text-[#38bdf8] font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px]">add_comment</span>
+                            <span>+ Registrar Conversación</span>
+                        </button>
+                        <button type="button" onclick="abrirModalDesarrollo('🗣️ Comunicación', '🏋️ Ejercicio práctico')" class="bg-[#18181d] hover:bg-[#232326] border border-white/[0.08] text-white font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>+ Nuevo Ejercicio</span>
+                        </button>
+                    </div>
                 </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="p-4 rounded-xl bg-[#18181d] border border-white/[0.06] flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] font-label-caps text-[#8e8e93]">NIVEL DE ESCUCHA ACTIVA</p>
+                            <p class="text-lg font-extrabold text-white mt-0.5">Pausa 3s</p>
+                            <p class="text-[11px] text-[#8e8e93]">Pausa antes de responder</p>
+                        </div>
+                        <span class="material-symbols-outlined text-[#38bdf8] text-[22px]">hearing</span>
+                    </div>
+                    <div class="p-4 rounded-xl bg-[#18181d] border border-white/[0.06] flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] font-label-caps text-[#8e8e93]">CLARIDAD EN PEDIDOS</p>
+                            <p class="text-lg font-extrabold text-white mt-0.5">CNV Aplicada</p>
+                            <p class="text-[11px] text-[#8e8e93]">Sin ambigüedades</p>
+                        </div>
+                        <span class="material-symbols-outlined text-[#83da85] text-[22px]">forum</span>
+                    </div>
+                    <div class="p-4 rounded-xl bg-[#18181d] border border-white/[0.06] flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] font-label-caps text-[#8e8e93]">PRÁCTICA SEMANAL</p>
+                            <p class="text-lg font-extrabold text-[#ffb961] mt-0.5">Regla 3 Segundos</p>
+                            <p class="text-[11px] text-[#8e8e93]">Escucha sin interrupción</p>
+                        </div>
+                        <span class="material-symbols-outlined text-[#ffb961] text-[22px]">handshake</span>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[#08080a] border border-white/[0.06] space-y-2.5">
+                    <p class="text-[11px] font-label-caps text-[#83da85] tracking-widest">PRÁCTICA SEMANAL · ESCUCHA ACTIVA (REGLA DE LOS 3 SEGUNDOS)</p>
+                    <div id="dp-checklist-3s" class="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-xs"></div>
+                </div>
+
                 <div id="list-comunicacion" class="space-y-3"></div>
             </section>
 
-            <!-- SECCIÓN 02: AUTOESTIMA -->
-            <section id="sec-autoestima" class="glass-card rounded-2xl p-8 border-l-4 border-l-[#f472b6] space-y-5">
+            <!-- SECCIÓN 02: AUTOESTIMA & AUTOCOMPASIÓN ACTIVA -->
+            <section id="sec-autoestima" class="glass-card rounded-2xl p-8 border-l-4 border-l-[#f472b6] space-y-6">
                 <div class="flex flex-wrap justify-between items-center gap-3">
                     <div>
-                        <p class="text-[11px] font-label-caps text-[#f472b6] tracking-widest">02 · CONFIANZA, MERECIMIENTO & DIÁLOGO INTERNO</p>
-                        <h2 class="text-headline-md font-headline-md text-white">Autoestima & Autocompasión Activa</h2>
+                        <p class="text-[11px] font-label-caps text-[#f472b6] tracking-widest">SECCIÓN 02 • CONFIANZA, MERECIMIENTO &amp; DIÁLOGO INTERNO</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Autoestima &amp; Autocompasión Activa</h2>
                     </div>
-                    <button type="button" onclick="abrirModalDesarrollo('💖 Autoestima')" class="bg-[#f472b6]/15 hover:bg-[#f472b6]/25 border border-[#f472b6]/40 text-[#f472b6] font-bold text-[13px] px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all">
-                        <span class="material-symbols-outlined text-[17px]">add</span>
-                        <span>Registrar en Autoestima</span>
-                    </button>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="abrirModalDesarrollo('💖 Autoestima', '🏆 Logro / Validación')" class="bg-[#f472b6]/15 hover:bg-[#f472b6]/25 border border-[#f472b6]/40 text-[#f472b6] font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px]">verified</span>
+                            <span>+ Añadir Logro / Validación</span>
+                        </button>
+                        <button type="button" onclick="abrirModalDesarrollo('💖 Autoestima', '🏋️ Ejercicio práctico')" class="bg-[#18181d] hover:bg-[#232326] border border-white/[0.08] text-white font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>+ Nuevo Ejercicio</span>
+                        </button>
+                    </div>
                 </div>
+
+                <div class="p-5 rounded-xl bg-[#18181d] border border-[#f472b6]/25 space-y-2">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <span class="text-[10px] font-label-caps text-[#f472b6] tracking-widest">PACTO DE DIÁLOGO INTERNO · SABRY INNER COMPASS</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#83da85]/15 text-[#83da85]">Alta Seguridad</span>
+                    </div>
+                    <p class="text-[14px] text-white italic">“Merezco respeto, paz y expansión por quien soy, no únicamente por mi productividad o complacencia ajena.”</p>
+                    <p class="text-[12px] text-[#a1a1aa]">Límite al crítico: Pausa ante la exigencia ciega · Acuerdo: Celebrar esfuerzos, no sólo desenlaces.</p>
+                </div>
+
                 <div id="list-autoestima" class="space-y-3"></div>
             </section>
 
-            <!-- SECCIÓN 03: AUTOCONOCIMIENTO -->
-            <section id="sec-autoconocimiento" class="glass-card rounded-2xl p-8 border-l-4 border-l-[#a855f7] space-y-5">
+            <!-- SECCIÓN 03: AUTOCONOCIMIENTO & BRÚJULA INTERNA -->
+            <section id="sec-autoconocimiento" class="glass-card rounded-2xl p-8 border-l-4 border-l-[#a855f7] space-y-6">
                 <div class="flex flex-wrap justify-between items-center gap-3">
                     <div>
-                        <p class="text-[11px] font-label-caps text-[#a855f7] tracking-widest">03 · MAPA INTERIOR, VALORES & INTROSPECCIÓN</p>
-                        <h2 class="text-headline-md font-headline-md text-white">Autoconocimiento & Brújula Interna</h2>
+                        <p class="text-[11px] font-label-caps text-[#a855f7] tracking-widest">SECCIÓN 03 • MAPA INTERIOR, VALORES &amp; INTROSPECCIÓN</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Autoconocimiento &amp; Brújula Interna</h2>
                     </div>
-                    <button type="button" onclick="abrirModalDesarrollo('🧭 Autoconocimiento')" class="bg-[#a855f7]/15 hover:bg-[#a855f7]/25 border border-[#a855f7]/40 text-[#a855f7] font-bold text-[13px] px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all">
-                        <span class="material-symbols-outlined text-[17px]">add</span>
-                        <span>Registrar en Autoconocimiento</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="abrirModalDesarrollo('🧭 Autoconocimiento', '🪞 Reflexión / Disparador')" class="bg-[#a855f7]/15 hover:bg-[#a855f7]/25 border border-[#a855f7]/40 text-[#a855f7] font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px]">add_circle</span>
+                            <span>+ Nueva Reflexión Introspectiva</span>
+                        </button>
+                        <button type="button" onclick="abrirModalDesarrollo('🧭 Autoconocimiento', '🏋️ Ejercicio práctico')" class="bg-[#18181d] hover:bg-[#232326] border border-white/[0.08] text-white font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>+ Nuevo Ejercicio</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-xl bg-[#18181d] border border-[#a855f7]/25 space-y-1.5">
+                    <p class="text-[10px] font-label-caps text-[#a855f7] tracking-widest">CUESTIONAMIENTO GUIADO • PROMPT DEL DÍA</p>
+                    <p class="text-[14px] font-semibold text-white">“¿Qué energía o situación me drenó hoy y qué necesidad mía no fue escuchada?”</p>
+                </div>
+
+                <div id="list-autoconocimiento" class="space-y-3"></div>
+            </section>
+
+            <!-- BANNER SINCRONIZACIÓN NOTION -->
+            <section class="glass-card rounded-2xl p-6 flex flex-wrap items-center justify-between gap-4 border border-white/[0.08]">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-[#83da85] text-[24px]">database</span>
+                    <div>
+                        <p class="text-[14px] font-bold text-white">Base de Datos de Desarrollo Personal Sincronizada</p>
+                        <p class="text-[12px] text-[#8e8e93]">Conexión activa con Notion Workspace • <span id="dp-total-vinculados">0</span> registros vinculados</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="recargarDashboard()" class="px-3.5 py-2 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] text-white text-xs font-semibold inline-flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[15px]">sync</span>
+                        <span>Forzar Sincronización</span>
+                    </button>
+                    <button type="button" onclick="abrirModalDesarrollo()" class="px-3.5 py-2 rounded-xl bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white text-xs font-bold inline-flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[15px]">add</span>
+                        <span>+ Nuevo Registro</span>
                     </button>
                 </div>
-                <div id="list-autoconocimiento" class="space-y-3"></div>
             </section>
         </div>
 
@@ -608,19 +742,44 @@
         }
 
         function renderizarDesarrollo() {
-            const res = calcularResumenDesarrollo(desarrolloPersonalRegistros);
+            const todos = desarrolloPersonalRegistros || [];
+            const res = calcularResumenDesarrollo(todos);
             document.getElementById("dp-kpi-com").textContent = String(res.porPilar.comunicacion);
             document.getElementById("dp-kpi-aut").textContent = String(res.porPilar.autoestima);
             document.getElementById("dp-kpi-con").textContent = String(res.porPilar.autoconocimiento);
             document.getElementById("dp-kpi-prog").textContent = `${res.porcentajeProgreso}%`;
             document.getElementById("dp-kpi-ej").textContent = `${res.ejerciciosActivos} ejercicio(s) en curso`;
+            const recEl = document.getElementById("dp-kpi-rec");
+            if (recEl) recEl.textContent = String(catalogoRecursosLocal.length);
+            const totVincEl = document.getElementById("dp-total-vinculados");
+            if (totVincEl) totVincEl.textContent = String(todos.length);
 
-            const lista = (desarrolloPersonalRegistros || []).filter((r) =>
-                tipoFiltroDP === "todos" || (r.tipo || "").toLowerCase().includes(tipoFiltroDP.toLowerCase())
-            );
-            const com = lista.filter((r) => (r.pilar || "").toLowerCase().includes("comunic"));
-            const aut = lista.filter((r) => (r.pilar || "").toLowerCase().includes("autoestima"));
-            const con = lista.filter((r) => (r.pilar || "").toLowerCase().includes("autoconoc"));
+            const cntEj = todos.filter((r) => (r.tipo || "").toLowerCase().includes("ejercicio")).length;
+            const cntVid = todos.filter((r) => (r.tipo || "").toLowerCase().includes("video")).length;
+            const cntLec = todos.filter((r) => (r.tipo || "").toLowerCase().includes("lectura")).length;
+            const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
+            setTxt("cnt-tipo-todos", todos.length);
+            setTxt("cnt-tipo-ej", cntEj);
+            setTxt("cnt-tipo-vid", cntVid);
+            setTxt("cnt-tipo-lec", cntLec);
+
+            document.querySelectorAll(".dp-tipo-flt").forEach((btn) => {
+                const act = btn.dataset.tipo === tipoFiltroDP;
+                btn.className = act
+                    ? "dp-tipo-flt px-3.5 py-1.5 rounded-full bg-[#ff5f52] text-white font-bold transition-all"
+                    : "dp-tipo-flt px-3.5 py-1.5 rounded-full bg-[#1c1c1f] text-[#a1a1aa] hover:text-white font-semibold transition-all";
+            });
+
+            const lista = todos.filter((r) => {
+                const matchTipo = tipoFiltroDP === "todos" || (r.tipo || "").toLowerCase().includes(tipoFiltroDP.toLowerCase());
+                const matchPilar = pilarFiltro === "todos" || (r.pilar || "").toLowerCase().includes(pilarFiltro.replace(/^[^\s]+\s*/, "").toLowerCase().slice(0, 6));
+                return matchTipo && matchPilar;
+            });
+            _renderListaPilar("list-biblioteca-multimodal", lista);
+
+            const com = todos.filter((r) => (r.pilar || "").toLowerCase().includes("comunic"));
+            const aut = todos.filter((r) => (r.pilar || "").toLowerCase().includes("autoestima"));
+            const con = todos.filter((r) => (r.pilar || "").toLowerCase().includes("autoconoc"));
 
             _renderListaPilar("list-comunicacion", com);
             _renderListaPilar("list-autoestima", aut);
@@ -629,6 +788,31 @@
             document.getElementById("sec-comunicacion").classList.toggle("hidden", pilarFiltro !== "todos" && !pilarFiltro.includes("Comunic"));
             document.getElementById("sec-autoestima").classList.toggle("hidden", pilarFiltro !== "todos" && !pilarFiltro.includes("Autoestima"));
             document.getElementById("sec-autoconocimiento").classList.toggle("hidden", pilarFiltro !== "todos" && !pilarFiltro.includes("Autoconocimiento"));
+            _renderChecklist3s();
+        }
+
+        function _renderChecklist3s() {
+            const cont = document.getElementById("dp-checklist-3s");
+            if (!cont) return;
+            const pasos = [
+                "Pausar 3 segundos tras el punto de la otra persona.",
+                "Parafrasear antes de exponer mi punto de vista.",
+                "Detectar si respondo para ganar o para comprender.",
+            ];
+            let estado = [false, false, false];
+            try { estado = JSON.parse(localStorage.getItem("asistente_sabry:dp_escucha_3s") || "[false,false,false]"); } catch (e) {}
+            cont.innerHTML = pasos.map((txt, idx) => `
+                <label class="flex items-start gap-2.5 p-2.5 rounded-lg bg-[#18181d] border border-white/[0.05] cursor-pointer">
+                    <input type="checkbox" ${estado[idx] ? "checked" : ""} onchange="togglePaso3s(${idx}, this.checked)" class="mt-0.5 accent-[#83da85]" />
+                    <span class="text-[#e5e2e1] leading-snug">${escapeHtml(txt)}</span>
+                </label>`).join("");
+        }
+
+        function togglePaso3s(idx, checked) {
+            let estado = [false, false, false];
+            try { estado = JSON.parse(localStorage.getItem("asistente_sabry:dp_escucha_3s") || "[false,false,false]"); } catch (e) {}
+            estado[idx] = Boolean(checked);
+            try { localStorage.setItem("asistente_sabry:dp_escucha_3s", JSON.stringify(estado)); } catch (e) {}
         }
 
         function filtrarPilar(pilar) {
@@ -750,13 +934,13 @@
             cerrarModal("modal-desarrollo");
         }
 
-        function abrirModalDesarrollo(pilarPre) {
+        function abrirModalDesarrollo(pilarPre, tipoPre) {
             document.getElementById("form-desarrollo").reset();
             document.getElementById("dp-page-id").value = "";
             document.getElementById("dp-modal-titulo").textContent = "Nuevo registro";
             _poblarDatalistLibros();
             _poblarSelect("dp-pilar", desarrolloPersonalOpciones.pilares, pilarPre || desarrolloPersonalOpciones.pilares[0]);
-            _poblarSelect("dp-tipo", desarrolloPersonalOpciones.tipos, desarrolloPersonalOpciones.tipos[0]);
+            _poblarSelect("dp-tipo", desarrolloPersonalOpciones.tipos, tipoPre || desarrolloPersonalOpciones.tipos[0]);
             _poblarSelect("dp-estado", desarrolloPersonalOpciones.estados, "En curso");
             document.getElementById("dp-fecha").value = hoyLocalISO();
             document.getElementById("dp-btn-eliminar").classList.add("hidden");
