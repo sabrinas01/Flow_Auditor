@@ -149,10 +149,6 @@
                         <span class="material-symbols-outlined text-[14px]">search</span>
                         <span>Ctrl + K</span>
                     </button>
-                    <span id="inicio-pill-hoy" class="inline-flex items-center gap-1.5 bg-[#1c1c1f] border border-white/[0.08] text-[#e5e2e1] text-xs font-semibold px-3 py-1.5 rounded-full">
-                        <span class="material-symbols-outlined text-[14px] text-[#ffb961]">calendar_today</span>
-                        <span>Hoy</span>
-                    </span>
                     <button type="button" onclick="sincronizarInicio()" class="p-2 bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] rounded-full transition-colors active:scale-95 text-[#e5e2e1]" title="Sincronizar">
                         <span id="inicio-sync-icon" class="material-symbols-outlined text-[18px]">sync</span>
                     </button>
@@ -388,12 +384,7 @@
         function renderizarWidgetCicloInicio() {
             const d = new Date();
             const p = (n) => String(n).padStart(2, "0");
-            const hoyIso = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-
-            const pillHoy = document.getElementById("inicio-pill-hoy");
-            if (pillHoy) {
-                const spanTxt = pillHoy.querySelector("span:last-child");
-                if (spanTxt) spanTxt.textContent = `Hoy · ${p(d.getDate())}/${p(d.getMonth() + 1)}`;
+            const hoyIso = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;/${p(d.getMonth() + 1)}`;
             }
 
             const { faseActual, proximoInicio, proximaFase, proximaFaseEmoji } = obtenerResumenCiclo(inicioCiclo, hoyIso);

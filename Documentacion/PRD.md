@@ -5,7 +5,7 @@
 * **Marca Asociada:** Sabri Studios
 * **Rol de Gobierno:** IT Functional Analyst (Sabrina) & Mentor Técnico de IA
 * **Estado:** Listo para Desarrollo (Base Lineal Validada)
-* **Versión:** 4.78
+* **Versión:** 4.79
 * **Zona Horaria de Referencia:** GMT -3 (San Juan, Argentina)
 
 ## 🎯 2. Visión General y Contexto
