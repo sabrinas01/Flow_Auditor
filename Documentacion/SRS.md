@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.80 (Desarrollo Personal CRUD Multimodal de Recursos & Prácticas — Stitch)  
+**Versión:** 4.81 (Selector de mes y creación de tarjeta/categoría en vuelo en Finanzas)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
@@ -12,6 +12,7 @@
 
 | Versión | Fecha | Autor | Descripción del Cambio / Hito Técnico |
 | :--- | :--- | :--- | :--- |
+| **v4.81** | Noviembre 2026 | Sabrina Sanso | **Mejoras Finanzas (`finanzas.html`):**<br>- Selector de mes (`#fin-selector-mes`) en la cabecera del resumen mensual para recalcular la proyección de cuotas TC.<br>- Submodal Capa 2 (`#modal-fin-opcion-vuelo`) para crear tarjetas o categorías en vuelo dentro del modal de egreso sin perder el borrador del gasto. |
 | **v4.80** | Noviembre 2026 | Sabrina Sanso | **Desarrollo personal CRUD Multimodal (`desarrollo-personal.html`, Stitch `node-id=f4183c802c434b0bbe2a35e052920c05`):**<br>- Hero con badges (`Metas Trimestrales Activas`, `Sincronizado con Notion`) y CTAs `+ Registrar Aprendizaje` / `+ Nueva Meta / Proyecto`.<br>- Fila de 5 KPIs (`Comunicación`, `Autoestima`, `Valores`, `Práctica Consciente`, `Recursos Vinculados`).<br>- Bloque `Gestión Multimodal de Crecimiento & Recursos Aplicados` con filtros por tipo (`Todos`, `Ejercicios Prácticos`, `Videos & Masterclasses`, `Lecturas & Ensayos`) y pilar.<br>- Secciones 01 (mini-KPIs + checklist Regla 3 Segundos), 02 (`Pacto de Diálogo Interno`), 03 (`Prompt del Día`) y banner de sincronización Notion. |
 | **v4.79** | Noviembre 2026 | Sabrina Sanso | **Limpieza TopBar en todas las pantallas:**<br>- Eliminación del pill estático `Hoy` (ícono calendario) del encabezado superior en `inicio.html`, `agenda-personal.html`, `recordatorios-varios.html`, `finanzas.html`, `ocio.html`, `gestion-emocional.html` y `relaciones-y-limites.html`. |
 | **v4.78** | Noviembre 2026 | Sabrina Sanso | **Alineación Stitch de Finanzas, Salud, Gestión emocional y Relaciones:**<br>- `finanzas.html`: 3 hitos de alivio bajo `Proyección de Cuotas TC`.<br>- `salud.html`: acceso `Regulación Somática → Gestión Emocional` en `01 Cuerpo` y `Abrir Caja de Herramientas Somáticas` en `02 Mente`.<br>- `gestion-emocional.html`: temporizador `Pausa 03:00` en Protocolo S.T.O.P.<br>- `relaciones-y-limites.html`: límite de 140 caracteres, contador y preview en vivo en el modal de afirmaciones. |
