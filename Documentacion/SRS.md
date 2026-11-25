@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.75 (Rediseño integral Inicio, Somatic Shell transversal, Caja Consciente y mejoras de módulos)  
+**Versión:** 4.76 (Alineación visual y de versión del sidebar con Stitch)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
@@ -12,6 +12,7 @@
 
 | Versión | Fecha | Autor | Descripción del Cambio / Hito Técnico |
 | :--- | :--- | :--- | :--- |
+| **v4.76** | Noviembre 2026 | Sabrina Sanso | **Alineación de Sidebar con Stitch en los 11 módulos:**<br>- Reemplazo de `Obsidian Refined` por la versión (`v4.76`) en cabecera y pie (`Sistema activo • v4.76`), y compactación de padding vertical (`py-2` / `mb-5`) para que los 11 módulos, `Contras AI Studio` y el perfil quepan sin recorte en pantallas estándar. |
 | **v4.75** | Noviembre 2026 | Sabrina Sanso | **Sincronización integral con Google Stitch (`AsistenteSabry`):**<br>- **Inicio (`inicio.html`)**: nuevo layout completo con TopBar (`Hoy` + `Sincronizar`), Widget Somático expandido (`Nivel de Energía`, `Sensibilidad Emocional`, `Próximo Ciclo`, predicción y accesos cruzados), grilla de 3 `Accesos directos`, banner `Estado: Óptimo` y footer ART unificado.<br>- **Somatic Shell transversal (`src/utils/somatic_shell.js`)** en los 11 módulos: Command Palette (`Ctrl + K`), Drawer de Notificaciones Somáticas (`Ctrl + Shift + N`) con estado vacío *Zero Inbox Somático* (Mini Pausa 60s), Modal de Preferencias Somáticas (`Cero Culpa`, `Blindaje Nocturno`, `Protección Lútea`), Atajos & Modo Focus (`Ctrl + /`), Resguardo Offline y Exportación Markdown/PDF.<br>- **Módulos**: Caja de Herramientas Conscientes en `gestion-emocional.html`, Heatmap anual 52 semanas + Congelación Compasiva + creación de formación en vuelo en `habitos-y-disciplina.html`, y comparativa por fases en `salud.html`. |
 | **v4.74** | Noviembre 2026 | Sabrina Sanso | **Guardrail compasivo & Papelera Segura 30 días (`desarrollo-personal.html`):**<br>- Confirmación graduada (`#modal-guardrail-desarrollo`) con análisis de impacto relacional (`analizarImpactoEliminacionDesarrollo()`).<br>- 3 opciones: *Mover a la Papelera Segura (30 días)* (guarda snapshot local `crearSnapshotRollback()` y archiva en Notion), *Desvincular recurso solamente* y *Eliminación directa sin snapshot* con check de seguridad.<br>- Modal `#modal-papelera-dp` para restaurar registros archivados dentro de la ventana de 30 días (`filtrarSnapshotsVigentes()`). |
 | **v4.73** | Noviembre 2026 | Sabrina Sanso | **Modales encadenados en Desarrollo personal (`desarrollo-personal.html`):**<br>- Patrón *Zero Context Loss* con preservación automática de borrador en `localStorage` (`asistente_sabry:dp_draft`) mientras se crea un recurso asociado en vuelo.<br>- Submodal Capa 2 (`#modal-recurso-vuelo`) con selector de formato en píldoras (`FORMATOS_RECURSO_VUELO`), validación (`construirRecursoEnVuelo()`), actualización automática del catálogo (`agregarRecursoACatalogo()`) y atajos `Esc` / `Ctrl + ↵`. |
