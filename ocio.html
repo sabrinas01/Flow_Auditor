@@ -352,8 +352,12 @@
                 </div>
                 <div id="wrap-campos-libro" class="grid grid-cols-2 gap-3">
                     <div>
-                        <label id="labelSecondary" class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Autor</label>
-                        <input id="inputSecondary" type="text" placeholder="Ej: James Clear" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50">
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                            <label id="labelSecondary" class="block text-[11px] font-label-caps text-[#8e8e93]">Autor</label>
+                            <button type="button" onclick="abrirSubmodalAutorOcio()" class="text-[11px] font-bold text-[#ffb961] hover:underline">+ Nuevo autor</button>
+                        </div>
+                        <input id="inputSecondary" list="ocio-autores-datalist" type="text" placeholder="Ej: James Clear" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50">
+                        <datalist id="ocio-autores-datalist"></datalist>
                     </div>
                     <div>
                         <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Categoría</label>
@@ -384,6 +388,27 @@
                 <div class="pt-2 flex justify-end gap-2.5">
                     <button type="button" onclick="cerrarModalOcio()" class="px-4 py-2.5 rounded-xl bg-[#18181d] hover:bg-[#232329] text-xs font-bold text-[#8e8e93]">Cancelar</button>
                     <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#ff5f52] hover:bg-[#ff4838] text-white font-bold text-xs">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SUBMODAL CREACIÓN EN VUELO: AUTOR (CAPA 2) -->
+    <div id="modal-ocio-autor-vuelo" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarSubmodalAutorOcio()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4 border border-[#ffb961]/40 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30">CAPA 2 • AUTOR EN VUELO</span>
+                <button type="button" onclick="cerrarSubmodalAutorOcio()" class="p-1 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+            <h3 class="text-base font-bold text-white">Nuevo Autor / Creador</h3>
+            <form onsubmit="return guardarSubmodalAutorOcio(event)" class="space-y-3">
+                <input id="ocio-av-nombre" type="text" required maxlength="120" placeholder="Nombre del autor (ej. Brené Brown)" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white outline-none focus:border-[#ffb961]" />
+                <input id="ocio-av-nota" type="text" maxlength="120" placeholder="Nota o estilo opcional" class="w-full px-3.5 py-2 rounded-xl bg-[#08080a] border border-white/[0.08] text-xs text-white outline-none" />
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="cerrarSubmodalAutorOcio()" class="flex-1 py-2.5 rounded-xl bg-[#18181d] text-white text-xs font-semibold">Volver</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-[#ffb961] text-[#08080a] text-xs font-bold">Guardar y vincular</button>
                 </div>
             </form>
         </div>
@@ -927,6 +952,52 @@
                 navigator.serviceWorker.register("./sw.js").catch(() => {});
             });
         }
+        const OCIO_AUTORES_KEY = "asistente_sabry:ocio_autores_v1";
+
+        function _poblarDatalistAutoresOcio() {
+            const dl = document.getElementById("ocio-autores-datalist");
+            if (!dl) return;
+            const set = new Set();
+            (typeof ocioLibros !== "undefined" ? ocioLibros : []).forEach((l) => { if (l && l.autor) set.add(l.autor.trim()); });
+            try {
+                const extras = JSON.parse(localStorage.getItem(OCIO_AUTORES_KEY) || "[]");
+                if (Array.isArray(extras)) extras.forEach((a) => { if (a) set.add(String(a).trim()); });
+            } catch (e) {}
+            dl.innerHTML = [...set].filter(Boolean).map((a) => `<option value="${escapeHtml(a)}"></option>`).join("");
+        }
+
+        function abrirSubmodalAutorOcio() {
+            document.getElementById("ocio-av-nombre").value = "";
+            document.getElementById("ocio-av-nota").value = "";
+            const m = document.getElementById("modal-ocio-autor-vuelo");
+            m.classList.remove("hidden"); m.classList.add("flex");
+            setTimeout(() => document.getElementById("ocio-av-nombre").focus(), 30);
+        }
+
+        function cerrarSubmodalAutorOcio() {
+            const m = document.getElementById("modal-ocio-autor-vuelo");
+            m.classList.add("hidden"); m.classList.remove("flex");
+        }
+
+        function guardarSubmodalAutorOcio(event) {
+            event.preventDefault();
+            const nombre = document.getElementById("ocio-av-nombre").value.trim();
+            if (!nombre) return false;
+            try {
+                const extras = JSON.parse(localStorage.getItem(OCIO_AUTORES_KEY) || "[]");
+                const lista = Array.isArray(extras) ? extras : [];
+                if (!lista.some((a) => String(a).toLowerCase() === nombre.toLowerCase())) {
+                    lista.unshift(nombre);
+                    localStorage.setItem(OCIO_AUTORES_KEY, JSON.stringify(lista));
+                }
+            } catch (e) {}
+            _poblarDatalistAutoresOcio();
+            document.getElementById("inputSecondary").value = nombre;
+            cerrarSubmodalAutorOcio();
+            return false;
+        }
+
+        document.addEventListener("DOMContentLoaded", _poblarDatalistAutoresOcio);
     </script>
     <script src="./src/utils/somatic_shell.js"></script>
 </body>
