@@ -137,7 +137,10 @@ function renderizarRecordatoriosVarios(prefijo, items) {
   document.getElementById(`total-${prefijo}-lbl`).innerText = `${items.length} ítems`;
 
   if (!items || items.length === 0) {
-    container.innerHTML = `<div class="status-row flex items-center justify-center py-4 px-4 text-[#8e8e93] text-[13px]">Sin recordatorios registrados · Buen momento para respirar tranquila 🌿</div>`;
+    container.innerHTML = `<div class="status-row flex flex-col items-center justify-center text-center py-5 px-4 gap-1.5">
+        <span class="text-[#8e8e93] text-[13px] font-medium">Sin recordatorios registrados · Bandeja limpia y en calma 🌿</span>
+        <span class="text-[#6b7280] text-[11px]">Buen momento para respirar tranquila sin sobrecarga visual.</span>
+    </div>`;
     return;
   }
 
@@ -183,7 +186,13 @@ function renderizarAgendaEventos(prefijo, items) {
   document.getElementById(`total-${prefijo}-lbl`).innerText = `${items.length} eventos`;
 
   if (!items || items.length === 0) {
-    container.innerHTML = `<div class="status-row left-pill-blue flex items-center justify-center py-4 px-4 text-[#8e8e93] text-[13px]">Sin eventos registrados · Agenda despejada en este bloque ✨</div>`;
+    const subtituloVacio = prefijo === "eventos-manana"
+      ? "Tu energía somática queda libre para descanso, introspección o creación sin presiones."
+      : "No hay compromisos en este bloque. Podés programar uno cuando lo necesites.";
+    container.innerHTML = `<div class="status-row left-pill-blue flex flex-col items-center justify-center text-center py-5 px-4 gap-1.5">
+        <span class="text-[#e5e2e1] text-[13px] font-semibold">Sin eventos registrados · Agenda despejada en este bloque ✨</span>
+        <span class="text-[#8e8e93] text-[11px] max-w-md">${subtituloVacio}</span>
+    </div>`;
     return;
   }
 
@@ -196,6 +205,11 @@ function renderizarAgendaEventos(prefijo, items) {
     const tieneId = Boolean(item.id);
     const accionesHtml = tieneId
       ? `<div class="flex items-center gap-1 flex-shrink-0">
+            <button type="button" onclick="if (typeof abrirModalDetalleEvento === 'function') abrirModalDetalleEvento('${escapeHtml(prefijo)}', ${idx})"
+                class="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-[#8e8e93] hover:text-white"
+                title="Ver detalle del evento" aria-label="Ver detalle del evento">
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
+            </button>
             <button type="button" onclick="abrirModalEditarEvento('${escapeHtml(prefijo)}', ${idx})"
                 class="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-[#8e8e93] hover:text-white"
                 title="Editar tarea" aria-label="Editar tarea">
@@ -214,8 +228,8 @@ function renderizarAgendaEventos(prefijo, items) {
                 <span class="text-white font-bold text-[13px]">${escapeHtml(formatHora(item.inicio))}</span>
                 <span class="text-[#8e8e93] text-[11px]">${escapeHtml(formatHora(item.fin))}</span>
             </div>
-            <div class="flex flex-col gap-1 min-w-0 flex-1">
-                <span class="text-white font-semibold truncate">${escapeHtml(item.nombre || "Sin nombre")}</span>
+            <div onclick="if (typeof abrirModalDetalleEvento === 'function') abrirModalDetalleEvento('${escapeHtml(prefijo)}', ${idx})" class="flex flex-col gap-1 min-w-0 flex-1 cursor-pointer group">
+                <span class="text-white font-semibold truncate group-hover:text-[#ffb4aa] transition-colors">${escapeHtml(item.nombre || "Sin nombre")}</span>
                 ${meta ? `<span class="text-[#8e8e93] text-[12px] truncate">${meta}</span>` : ""}
             </div>
             ${accionesHtml}

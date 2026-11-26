@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
@@ -169,6 +169,37 @@
                 <p class="text-[14px] text-[#a1a1aa] max-w-2xl leading-relaxed">
                     Tu centro de control diario. Revisá tus pendientes, monitoreá tus hábitos de bienestar y mantené tus registros al día.
                 </p>
+            </section>
+
+            <!-- FOCO & INTENCIÓN DIARIA (STITCH) -->
+            <section id="widget-foco-inicio" class="glass-card rounded-2xl p-6 sm:p-7 border-l-4 border-l-[#ffb961] space-y-5">
+                <div class="flex flex-wrap items-start justify-between gap-4">
+                    <div class="space-y-1.5 min-w-0 flex-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="inline-flex items-center gap-1.5 text-[11px] font-label-caps text-[#ffb961] tracking-widest uppercase">
+                                <span class="material-symbols-outlined text-[15px]">anchor</span>
+                                <span>Foco &amp; Intención Diaria</span>
+                            </span>
+                            <span id="inicio-foco-disp-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30">Moderada / Estable</span>
+                            <span id="inicio-foco-mode-badge" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#38bdf8]/15 text-[#38bdf8] border border-[#38bdf8]/30">Modo Focus Somático</span>
+                        </div>
+                        <p id="inicio-foco-intencion" class="text-[16px] sm:text-[18px] font-bold text-white leading-snug">
+                            "Elegir la calma por sobre la prisa. Atender lo crucial sin sobrecargas."
+                        </p>
+                    </div>
+                    <button id="btn-editar-foco" type="button" onclick="abrirModalFocoDiario()" class="px-4 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.1] text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all flex-shrink-0">
+                        <span class="material-symbols-outlined text-[16px] text-[#ffb961]">tune</span>
+                        <span>Definir Foco</span>
+                    </button>
+                </div>
+
+                <div class="space-y-2.5">
+                    <div class="flex items-center justify-between text-[11px] font-label-caps text-[#8e8e93] uppercase tracking-widest">
+                        <span>Prioridades No Negociables (Regla de 3)</span>
+                        <span id="inicio-foco-prio-count" class="text-[#ffb961] font-bold">0 de 3 completadas</span>
+                    </div>
+                    <div id="inicio-foco-prioridades" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+                </div>
             </section>
 
             <!-- WIDGET SOMÁTICO: SALUD & RITMO BIOLÓGICO -->
@@ -362,6 +393,127 @@
         </footer>
     </main>
 
+    <!-- =================================================== -->
+    <!-- MODAL EDICIÓN DE FOCO DIARIO (STITCH)               -->
+    <!-- =================================================== -->
+    <div id="modal-foco-diario" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarModalFocoDiario()">
+        <div class="glass-card rounded-2xl p-6 sm:p-7 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/[0.12] space-y-5" onclick="event.stopPropagation()">
+            <div class="flex items-start justify-between gap-4">
+                <div class="space-y-1">
+                    <p class="text-[10px] font-label-caps text-[#ffb961] tracking-widest uppercase">INICIO • INTENCIÓN &amp; PROTECCIÓN SOMÁTICA</p>
+                    <h3 class="text-xl sm:text-2xl font-headline-md font-extrabold text-white">Definir Foco &amp; Intención Diaria</h3>
+                    <p class="text-[13px] text-[#a1a1aa]">Alineá tu energía con las prioridades reales de hoy. Recordá que no todo lo urgente es vital.</p>
+                </div>
+                <button type="button" onclick="cerrarModalFocoDiario()" class="px-2.5 py-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white text-xs font-bold inline-flex items-center gap-1 transition-colors" title="Cerrar modal (Esc)">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                    <span>ESC</span>
+                </button>
+            </div>
+
+            <!-- Intención Principal -->
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <label for="foco-input-intencion" class="text-[11px] font-label-caps text-[#e2beba] uppercase tracking-widest flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[15px] text-[#ffb961]">anchor</span>
+                        <span>Intención Principal del Día (Ancla Cognitiva)</span>
+                    </label>
+                    <span id="foco-char-count" class="text-[11px] text-[#8e8e93] font-mono">0/120</span>
+                </div>
+                <textarea id="foco-input-intencion" rows="2" maxlength="120" oninput="actualizarContadorFoco()" placeholder="Escribí tu intención para hoy..." class="w-full bg-[#18181d] border border-white/[0.1] rounded-xl px-4 py-3 text-[14px] text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#ffb961]"></textarea>
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-[10px] font-label-caps text-[#8e8e93] uppercase mr-1">Presets:</span>
+                    <button type="button" onclick="aplicarPresetFoco('Elegir la calma por sobre la prisa. Atender lo crucial sin sobrecargas.')" class="px-2.5 py-1 rounded-full bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] text-[11px] text-[#e5e2e1]">Calma &amp; Presencia</button>
+                    <button type="button" onclick="aplicarPresetFoco('Ejecución enfocada en bloques breves, cerrando pendientes clave sin dispersión.')" class="px-2.5 py-1 rounded-full bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] text-[11px] text-[#e5e2e1]">Ejecución Enfocada</button>
+                    <button type="button" onclick="aplicarPresetFoco('Baja fricción y modo lútea: ritmo amable, pausas reales y cero autoexigencia.')" class="px-2.5 py-1 rounded-full bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] text-[11px] text-[#e5e2e1]">Baja Fricción (Modo Lútea)</button>
+                    <button type="button" onclick="aplicarPresetFoco('Sostener límites claros hoy: decir no a lo accesorio para cuidar mi energía.')" class="px-2.5 py-1 rounded-full bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] text-[11px] text-[#e5e2e1]">Límites Claros</button>
+                </div>
+            </div>
+
+            <!-- 3 Prioridades No Negociables -->
+            <div class="space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-label-caps text-[#e2beba] uppercase tracking-widest flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[15px] text-[#83da85]">check_circle</span>
+                        <span>Las 3 Prioridades No Negociables</span>
+                    </span>
+                    <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-white/[0.06] text-[#a1a1aa] font-semibold">Regla de 3 // Reducción de Ruido</span>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2">
+                        <span class="text-[11px] font-mono text-[#8e8e93] w-5">01</span>
+                        <input id="foco-p0-check" type="checkbox" class="rounded border-white/20 bg-[#131313] text-[#83da85]" />
+                        <input id="foco-p0-text" type="text" maxlength="80" placeholder="Prioridad 1..." class="flex-1 bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
+                        <input id="foco-p0-tag" type="text" maxlength="24" placeholder="Etiqueta" class="w-28 bg-[#232326] rounded-lg px-2 py-1 text-[11px] text-[#ffb961] placeholder-[#8e8e93] focus:outline-none" />
+                    </div>
+                    <div class="flex items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2">
+                        <span class="text-[11px] font-mono text-[#8e8e93] w-5">02</span>
+                        <input id="foco-p1-check" type="checkbox" class="rounded border-white/20 bg-[#131313] text-[#83da85]" />
+                        <input id="foco-p1-text" type="text" maxlength="80" placeholder="Prioridad 2..." class="flex-1 bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
+                        <input id="foco-p1-tag" type="text" maxlength="24" placeholder="Etiqueta" class="w-28 bg-[#232326] rounded-lg px-2 py-1 text-[11px] text-[#83da85] placeholder-[#8e8e93] focus:outline-none" />
+                    </div>
+                    <div class="flex items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2">
+                        <span class="text-[11px] font-mono text-[#8e8e93] w-5">03</span>
+                        <input id="foco-p2-check" type="checkbox" class="rounded border-white/20 bg-[#131313] text-[#83da85]" />
+                        <input id="foco-p2-text" type="text" maxlength="80" placeholder="Prioridad 3..." class="flex-1 bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
+                        <input id="foco-p2-tag" type="text" maxlength="24" placeholder="Etiqueta" class="w-28 bg-[#232326] rounded-lg px-2 py-1 text-[11px] text-[#38bdf8] placeholder-[#8e8e93] focus:outline-none" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disponibilidad Somática -->
+            <div class="space-y-2.5">
+                <span class="text-[11px] font-label-caps text-[#e2beba] uppercase tracking-widest flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[15px] text-[#ff5f52]">ecg_heart</span>
+                    <span>Disponibilidad Somática Estimada</span>
+                </span>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" id="foco-disp-grid">
+                    <button type="button" data-disp="Alta Capacidad" onclick="seleccionarDisponibilidadFoco('Alta Capacidad')" class="foco-disp-btn text-left rounded-xl p-3 bg-[#18181d] border border-white/[0.08] hover:border-white/25 transition-all">
+                        <p class="text-[13px] font-bold text-white">Alta Capacidad</p>
+                        <p class="text-[11px] text-[#8e8e93] mt-0.5">Folicular / Ovulatoria • Ideal sprints</p>
+                    </button>
+                    <button type="button" data-disp="Moderada / Estable" onclick="seleccionarDisponibilidadFoco('Moderada / Estable')" class="foco-disp-btn text-left rounded-xl p-3 bg-[#18181d] border border-white/[0.08] hover:border-white/25 transition-all">
+                        <p class="text-[13px] font-bold text-white">Moderada / Estable</p>
+                        <p class="text-[11px] text-[#8e8e93] mt-0.5">Lútea Temprana • Orden y cierres</p>
+                    </button>
+                    <button type="button" data-disp="Baja / Resguardo" onclick="seleccionarDisponibilidadFoco('Baja / Resguardo')" class="foco-disp-btn text-left rounded-xl p-3 bg-[#18181d] border border-white/[0.08] hover:border-white/25 transition-all">
+                        <p class="text-[13px] font-bold text-white">Baja / Resguardo</p>
+                        <p class="text-[11px] text-[#8e8e93] mt-0.5">Menstrual • Mantenimiento y descanso</p>
+                    </button>
+                </div>
+                <div class="rounded-xl bg-[#53a759]/10 border border-[#53a759]/30 p-3 flex items-start gap-2.5">
+                    <span class="material-symbols-outlined text-[#83da85] text-[18px] mt-0.5">spa</span>
+                    <p id="foco-recomendacion-somatica" class="text-[12px] text-[#e5e2e1] leading-relaxed">
+                        Priorizá pausas entre bloques y protegé tu sistema nervioso de la sobrecarga.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Modo Focus Somático Toggle -->
+            <label class="flex items-start gap-3 p-3.5 rounded-xl bg-[#18181d] border border-white/[0.08] cursor-pointer">
+                <input id="foco-modo-somatico" type="checkbox" class="mt-0.5 rounded border-white/20 bg-[#131313] text-[#38bdf8]" />
+                <div class="space-y-0.5">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[13px] font-bold text-white">Activar Modo Focus Somático</span>
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#38bdf8]/15 text-[#38bdf8]">Recomendado</span>
+                    </div>
+                    <p class="text-[11px] text-[#8e8e93]">Reduce el ruido visual en Inicio para evitar sobreestimulación.</p>
+                </div>
+            </label>
+
+            <!-- Footer Modal -->
+            <div class="pt-3 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3">
+                <span class="text-[11px] text-[#8e8e93]">Guardado local · Atajo: Ctrl + Enter para guardar</span>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="restablecerFocoDiario()" class="px-3.5 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] text-[#a1a1aa] hover:text-white text-xs font-bold transition-all">Restablecer Foco</button>
+                    <button type="button" onclick="guardarFocoDiario()" class="px-4 py-2.5 rounded-xl bg-[#ffb961] hover:bg-[#ffb961]/90 text-[#2b1700] text-xs font-extrabold inline-flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[16px]">check</span>
+                        <span>Guardar Foco de Hoy</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="./src/utils/dashboard_logic.js"></script>
     <script src="./src/utils/dom_render.js"></script>
     <script src="./src/utils/salud_logic.js"></script>
@@ -384,8 +536,7 @@
         function renderizarWidgetCicloInicio() {
             const d = new Date();
             const p = (n) => String(n).padStart(2, "0");
-            const hoyIso = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;/${p(d.getMonth() + 1)}`;
-            }
+            const hoyIso = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 
             const { faseActual, proximoInicio, proximaFase, proximaFaseEmoji } = obtenerResumenCiclo(inicioCiclo, hoyIso);
             const info = clasificarFasePorNombre(faseActual);
@@ -428,7 +579,158 @@
             renderizarWidgetCicloInicio();
         }
 
-        document.addEventListener("DOMContentLoaded", renderizarWidgetCicloInicio);
+        document.addEventListener("DOMContentLoaded", () => {
+            renderizarWidgetCicloInicio();
+            renderizarFocoInicio();
+        });
+
+        // =================================================== //
+        // FOCO & INTENCIÓN DIARIA (STITCH)                    //
+        // =================================================== //
+        const FOCO_STORAGE_KEY = "asistente_sabry:foco_diario_v1";
+        const FOCO_DEFAULT = {
+            intencion: "Elegir la calma por sobre la prisa. Atender lo crucial sin sobrecargas.",
+            disponibilidad: "Moderada / Estable",
+            modoFocus: true,
+            prioridades: [
+                { texto: "Revisar pendientes clave en Notion", tag: "FOCO", hecho: false },
+                { texto: "Caminata somática & pausa de respiración", tag: "BIENESTAR", hecho: false },
+                { texto: "Control diario de gastos y cuotas", tag: "FINANZAS", hecho: false },
+            ],
+        };
+        const RECOMENDACIONES_FOCO = {
+            "Alta Capacidad": "Ventana óptima para sprints creativos, decisiones estratégicas y bloques de foco profundo.",
+            "Moderada / Estable": "Tu capacidad de análisis minucioso es óptima; reducí reuniones consecutivas a menos de 45 min para cuidar tu sistema nervioso.",
+            "Baja / Resguardo": "Modo mantenimiento y resguardo: priorizá tareas livianas, hidratación tibia y pausas frecuentes sin culpa.",
+        };
+        let _dispSeleccionada = FOCO_DEFAULT.disponibilidad;
+
+        function _leerFocoDiario() {
+            try {
+                const raw = localStorage.getItem(FOCO_STORAGE_KEY);
+                if (!raw) return JSON.parse(JSON.stringify(FOCO_DEFAULT));
+                const parsed = JSON.parse(raw);
+                return {
+                    ...FOCO_DEFAULT,
+                    ...parsed,
+                    prioridades: Array.isArray(parsed.prioridades) && parsed.prioridades.length === 3
+                        ? parsed.prioridades
+                        : JSON.parse(JSON.stringify(FOCO_DEFAULT.prioridades)),
+                };
+            } catch (e) {
+                return JSON.parse(JSON.stringify(FOCO_DEFAULT));
+            }
+        }
+
+        function _guardarFocoStorage(data) {
+            try { localStorage.setItem(FOCO_STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+        }
+
+        function renderizarFocoInicio() {
+            const data = _leerFocoDiario();
+            document.getElementById("inicio-foco-intencion").textContent = `"${data.intencion || FOCO_DEFAULT.intencion}"`;
+            document.getElementById("inicio-foco-disp-badge").textContent = data.disponibilidad || "Moderada / Estable";
+            document.getElementById("inicio-foco-mode-badge").classList.toggle("hidden", !data.modoFocus);
+
+            const hechas = data.prioridades.filter((p) => p.hecho).length;
+            document.getElementById("inicio-foco-prio-count").textContent = `${hechas} de 3 completadas`;
+
+            const cont = document.getElementById("inicio-foco-prioridades");
+            cont.innerHTML = data.prioridades.map((p, idx) => `
+                <label class="flex items-start gap-2.5 p-3 rounded-xl bg-[#18181d] border border-white/[0.06] cursor-pointer hover:border-white/20 transition-colors">
+                    <input type="checkbox" ${p.hecho ? "checked" : ""} onchange="togglePrioridadFocoInicio(${idx})" class="mt-0.5 rounded border-white/20 bg-[#131313] text-[#83da85]" />
+                    <div class="min-w-0 flex-1 space-y-1">
+                        <p class="text-[13px] font-semibold ${p.hecho ? "line-through text-[#8e8e93]" : "text-white"} truncate">${escapeHtml(p.texto || `Prioridad ${idx + 1}`)}</p>
+                        ${p.tag ? `<span class="inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-white/[0.06] text-[#ffb961]">${escapeHtml(p.tag)}</span>` : ""}
+                    </div>
+                </label>
+            `).join("");
+        }
+
+        function togglePrioridadFocoInicio(idx) {
+            const data = _leerFocoDiario();
+            if (!data.prioridades[idx]) return;
+            data.prioridades[idx].hecho = !data.prioridades[idx].hecho;
+            _guardarFocoStorage(data);
+            renderizarFocoInicio();
+        }
+
+        function actualizarContadorFoco() {
+            const len = (document.getElementById("foco-input-intencion").value || "").length;
+            document.getElementById("foco-char-count").textContent = `${len}/120`;
+        }
+
+        function aplicarPresetFoco(texto) {
+            document.getElementById("foco-input-intencion").value = texto;
+            actualizarContadorFoco();
+        }
+
+        function seleccionarDisponibilidadFoco(nombre) {
+            _dispSeleccionada = nombre;
+            document.querySelectorAll(".foco-disp-btn").forEach((btn) => {
+                const activo = btn.dataset.disp === nombre;
+                btn.classList.toggle("border-[#83da85]", activo);
+                btn.classList.toggle("bg-[#83da85]/10", activo);
+                btn.classList.toggle("border-white/[0.08]", !activo);
+            });
+            document.getElementById("foco-recomendacion-somatica").textContent = RECOMENDACIONES_FOCO[nombre] || RECOMENDACIONES_FOCO["Moderada / Estable"];
+        }
+
+        function abrirModalFocoDiario() {
+            const data = _leerFocoDiario();
+            document.getElementById("foco-input-intencion").value = data.intencion || "";
+            actualizarContadorFoco();
+            [0, 1, 2].forEach((i) => {
+                const p = data.prioridades[i] || { texto: "", tag: "", hecho: false };
+                document.getElementById(`foco-p${i}-check`).checked = Boolean(p.hecho);
+                document.getElementById(`foco-p${i}-text`).value = p.texto || "";
+                document.getElementById(`foco-p${i}-tag`).value = p.tag || "";
+            });
+            document.getElementById("foco-modo-somatico").checked = Boolean(data.modoFocus);
+            seleccionarDisponibilidadFoco(data.disponibilidad || "Moderada / Estable");
+
+            const modal = document.getElementById("modal-foco-diario");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function cerrarModalFocoDiario() {
+            const modal = document.getElementById("modal-foco-diario");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        }
+
+        function guardarFocoDiario() {
+            const data = {
+                intencion: (document.getElementById("foco-input-intencion").value || "").trim() || FOCO_DEFAULT.intencion,
+                disponibilidad: _dispSeleccionada,
+                modoFocus: document.getElementById("foco-modo-somatico").checked,
+                prioridades: [0, 1, 2].map((i) => ({
+                    hecho: document.getElementById(`foco-p${i}-check`).checked,
+                    texto: (document.getElementById(`foco-p${i}-text`).value || "").trim() || FOCO_DEFAULT.prioridades[i].texto,
+                    tag: (document.getElementById(`foco-p${i}-tag`).value || "").trim().toUpperCase(),
+                })),
+            };
+            _guardarFocoStorage(data);
+            cerrarModalFocoDiario();
+            renderizarFocoInicio();
+        }
+
+        function restablecerFocoDiario() {
+            _guardarFocoStorage(FOCO_DEFAULT);
+            abrirModalFocoDiario();
+            renderizarFocoInicio();
+        }
+
+        document.addEventListener("keydown", (e) => {
+            const modal = document.getElementById("modal-foco-diario");
+            if (!modal || modal.classList.contains("hidden")) return;
+            if (e.key === "Escape") cerrarModalFocoDiario();
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+                e.preventDefault();
+                guardarFocoDiario();
+            }
+        });
 
         function toggleMenu() {
             const sidebar = document.getElementById('sidebar');

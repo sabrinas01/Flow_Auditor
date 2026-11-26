@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
@@ -301,6 +301,105 @@
             <div class="flex gap-3 pt-1">
                 <button type="button" onclick="cerrarModalPapelera()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cancelar</button>
                 <button type="button" onclick="ejecutarEnvioPapelera()" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-2.5 rounded-xl transition-all active:scale-95">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- MODAL DETALLE DE EVENTO SELECCIONADO (STITCH v4.86) -->
+    <!-- =================================================== -->
+    <div id="modal-detalle-evento" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarModalDetalleEvento()">
+        <div class="glass-card rounded-2xl p-6 sm:p-7 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/[0.12] space-y-5" onclick="event.stopPropagation()">
+            <!-- Header Chips & Acciones rápidas -->
+            <div class="flex items-start justify-between gap-4">
+                <div class="space-y-2 min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="det-ev-tipo" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-[#ff5f52]/15 text-[#ffb4aa] border border-[#ff5f52]/30">EVENTO</span>
+                        <span id="det-ev-estado" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30">SIN EMPEZAR</span>
+                    </div>
+                    <h3 id="det-ev-nombre" class="text-xl sm:text-2xl font-headline-md font-extrabold text-white leading-snug">Evento</h3>
+                    <p id="det-ev-horario" class="text-[13px] text-[#a1a1aa] flex flex-wrap items-center gap-2"></p>
+                </div>
+                <div class="flex items-center gap-1 flex-shrink-0">
+                    <button type="button" onclick="editarDesdeDetalle()" class="p-2 hover:bg-white/10 rounded-lg text-[#a1a1aa] hover:text-white transition-colors" title="Editar detalles">
+                        <span class="material-symbols-outlined text-[19px]">edit</span>
+                    </button>
+                    <button type="button" onclick="duplicarDesdeDetalle()" class="p-2 hover:bg-white/10 rounded-lg text-[#a1a1aa] hover:text-white transition-colors" title="Duplicar bloque">
+                        <span class="material-symbols-outlined text-[19px]">content_copy</span>
+                    </button>
+                    <button type="button" onclick="cerrarModalDetalleEvento()" class="p-2 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white transition-colors" title="Cerrar modal (Esc)">
+                        <span class="material-symbols-outlined text-[20px]">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contexto Notion & Energía Somática -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="rounded-xl bg-[#18181d] border border-white/[0.06] p-3.5 space-y-1.5">
+                    <div class="flex items-center gap-1.5 text-[11px] font-label-caps text-[#8e8e93] uppercase">
+                        <span class="material-symbols-outlined text-[15px] text-[#38bdf8]">dataset</span>
+                        <span>Notion &amp; Ubicación</span>
+                    </div>
+                    <p id="det-ev-lugar" class="text-[13px] text-white font-medium truncate">Agenda Sabry</p>
+                    <a id="det-ev-notion-link" href="https://app.notion.com/p/Agenda-Sabry-163a38bb7a6e8301b08d81592cd8c2f2" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[12px] font-bold text-[#ffb4aa] hover:text-white transition-colors">
+                        <span>Abrir espacio</span>
+                        <span class="material-symbols-outlined text-[14px]">north_east</span>
+                    </a>
+                </div>
+                <div class="rounded-xl bg-[#18181d] border border-white/[0.06] p-3.5 space-y-1.5">
+                    <div class="flex items-center gap-1.5 text-[11px] font-label-caps text-[#8e8e93] uppercase">
+                        <span class="material-symbols-outlined text-[15px] text-[#ffb961]">neurology</span>
+                        <span>Energía Requerida</span>
+                    </div>
+                    <p id="det-ev-energia" class="text-[13px] text-white font-semibold">Energía Media-Alta</p>
+                    <p class="text-[11px] text-[#83da85] flex items-start gap-1">
+                        <span class="material-symbols-outlined text-[13px] mt-0.5">self_improvement</span>
+                        <span>Pausa sugerida de 10 min al finalizar para hidratación y estiramiento.</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Checklist Operativo del Bloque -->
+            <div class="rounded-xl bg-[#141418] border border-white/[0.08] p-4 space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-[11px] font-label-caps text-[#e2beba] uppercase tracking-widest flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px] text-[#83da85]">checklist</span>
+                        <span>Objetivos &amp; Entregables del Foco</span>
+                    </span>
+                    <span id="det-ev-checklist-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#83da85]/15 text-[#83da85]">0 / 0 completados</span>
+                </div>
+                <div id="det-ev-checklist-items" class="space-y-2"></div>
+                <div class="flex gap-2 pt-1">
+                    <input id="det-ev-checklist-input" type="text" maxlength="100" placeholder="Agregar objetivo o paso concreto..." onkeydown="if (event.key === 'Enter') { event.preventDefault(); agregarItemChecklistDetalle(); }" class="flex-1 bg-[#1c1c1f] border border-white/[0.1] rounded-lg px-3 py-2 text-[13px] text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#ff5f52]" />
+                    <button type="button" onclick="agregarItemChecklistDetalle()" class="px-3 py-2 rounded-lg bg-[#232326] hover:bg-[#2d2d32] text-white text-xs font-bold transition-colors">+ Agregar</button>
+                </div>
+            </div>
+
+            <!-- Notas & Preparación -->
+            <div class="rounded-xl bg-[#18181d] border border-white/[0.06] p-3.5 space-y-1.5">
+                <div class="flex items-center gap-1.5 text-[11px] font-label-caps text-[#8e8e93] uppercase">
+                    <span class="material-symbols-outlined text-[15px] text-[#e2beba]">sticky_note_2</span>
+                    <span>Notas &amp; Preparación Mental</span>
+                </div>
+                <p id="det-ev-notas" class="text-[13px] text-[#e2beba] leading-relaxed">Sin notas adicionales. Priorizá presencia y foco sostenible.</p>
+            </div>
+
+            <!-- Footer Acciones -->
+            <div class="pt-3 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-2.5">
+                <button type="button" onclick="eliminarDesdeDetalle()" class="px-3.5 py-2.5 rounded-xl bg-[#ff5f52]/10 hover:bg-[#ff5f52]/20 border border-[#ff5f52]/30 text-[#ff5f52] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                    <span class="material-symbols-outlined text-[16px]">event_busy</span>
+                    <span>Eliminar evento</span>
+                </button>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button id="det-ev-btn-posponer" type="button" onclick="posponerEvento30Min()" class="px-3.5 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.1] text-[#ffb961] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                        <span class="material-symbols-outlined text-[16px]">more_time</span>
+                        <span>Posponer 30 min</span>
+                    </button>
+                    <button type="button" onclick="completarEventoDesdeDetalle()" class="px-4 py-2.5 rounded-xl bg-[#83da85] hover:bg-[#83da85]/90 text-[#00390e] text-xs font-extrabold inline-flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[16px]">check</span>
+                        <span>Marcar como Completado</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -789,6 +888,223 @@
             await ejecutarEscrituraConSpinner(accion, resultado.payload);
             return false;
         }
+
+        // =================================================== //
+        // DETALLE DE EVENTO SELECCIONADO (STITCH v4.86)       //
+        // =================================================== //
+        const AGENDA_CHECKLIST_KEY = "asistente_sabry:agenda_checklist_v1";
+        let _detalleEventoTarget = null;
+
+        function _leerChecklistsAgenda() {
+            try { return JSON.parse(localStorage.getItem(AGENDA_CHECKLIST_KEY) || "{}") || {}; } catch (e) { return {}; }
+        }
+
+        function _guardarChecklistsAgenda(mapa) {
+            try { localStorage.setItem(AGENDA_CHECKLIST_KEY, JSON.stringify(mapa)); } catch (e) {}
+        }
+
+        function _calcularDuracionMin(inicioIso, finIso) {
+            if (!inicioIso || !finIso) return null;
+            const t1 = Date.parse(inicioIso);
+            const t2 = Date.parse(finIso);
+            if (!Number.isFinite(t1) || !Number.isFinite(t2) || t2 <= t1) return null;
+            return Math.round((t2 - t1) / 60000);
+        }
+
+        function _renderChecklistDetalle(eventKey) {
+            const mapa = _leerChecklistsAgenda();
+            const items = Array.isArray(mapa[eventKey]) ? mapa[eventKey] : [];
+            const hechos = items.filter((i) => i.hecho).length;
+            document.getElementById("det-ev-checklist-badge").textContent = `${hechos} / ${items.length} completados`;
+            const cont = document.getElementById("det-ev-checklist-items");
+            if (items.length === 0) {
+                cont.innerHTML = `<p class="text-[12px] text-[#8e8e93] italic">Sin entregables cargados aún. Agregá micro-objetivos para este bloque.</p>`;
+                return;
+            }
+            cont.innerHTML = items.map((it, idx) => `
+                <div class="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-[#1c1c1f] border border-white/[0.06]">
+                    <label class="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer">
+                        <input type="checkbox" ${it.hecho ? "checked" : ""} onchange="toggleItemChecklistDetalle(${idx})" class="rounded border-white/20 bg-[#131313] text-[#83da85] focus:ring-[#83da85]" />
+                        <span class="text-[13px] ${it.hecho ? "line-through text-[#8e8e93]" : "text-white"} truncate">${escapeHtml(it.texto || "")}</span>
+                    </label>
+                    <button type="button" onclick="eliminarItemChecklistDetalle(${idx})" class="text-[#8e8e93] hover:text-[#ff5f52] p-1 rounded" title="Quitar">
+                        <span class="material-symbols-outlined text-[15px]">close</span>
+                    </button>
+                </div>
+            `).join("");
+        }
+
+        function abrirModalDetalleEvento(prefijo, idx) {
+            const item = _obtenerEventoPorPrefijo(prefijo, idx);
+            if (!item) return;
+            _detalleEventoTarget = { prefijo, idx, item, key: item.id || item.nombre || `${prefijo}:${idx}` };
+
+            document.getElementById("det-ev-tipo").textContent = (item.tipo || "EVENTO").toUpperCase();
+            document.getElementById("det-ev-estado").textContent = (item.estado || "SIN EMPEZAR").toUpperCase();
+            document.getElementById("det-ev-nombre").textContent = item.nombre || "Sin nombre";
+
+            const hIni = formatHora(item.inicio);
+            const hFin = formatHora(item.fin);
+            const dur = _calcularDuracionMin(item.inicio, item.fin);
+            const fechaBase = extraerFechaYHora(item.inicio).fecha || "Fecha por definir";
+            document.getElementById("det-ev-horario").innerHTML = `
+                <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">schedule</span> ${escapeHtml(hIni)} – ${escapeHtml(hFin)}${dur ? ` (${dur} min)` : ""}</span>
+                <span>•</span>
+                <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">calendar_today</span> ${escapeHtml(fechaBase)}</span>
+            `;
+
+            document.getElementById("det-ev-lugar").textContent = item.lugar || "Agenda Sabry • Notion";
+            const notionLink = document.getElementById("det-ev-notion-link");
+            notionLink.href = item.url || "https://app.notion.com/p/Agenda-Sabry-163a38bb7a6e8301b08d81592cd8c2f2";
+
+            const prio = (item.prioridad || "").toLowerCase();
+            const energiaTxt = prio.includes("alta") ? "Energía Alta (Foco Profundo)"
+                : prio.includes("baja") ? "Energía Baja / Liviana"
+                : "Energía Media-Alta";
+            document.getElementById("det-ev-energia").textContent = energiaTxt;
+            document.getElementById("det-ev-notas").textContent = item.descripcion || "Sin notas adicionales. Priorizá presencia y foco sostenible.";
+
+            const btnPosponer = document.getElementById("det-ev-btn-posponer");
+            btnPosponer.classList.toggle("hidden", !item.inicio || !item.inicio.includes("T"));
+
+            _renderChecklistDetalle(_detalleEventoTarget.key);
+            const modal = document.getElementById("modal-detalle-evento");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function cerrarModalDetalleEvento() {
+            const modal = document.getElementById("modal-detalle-evento");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+            _detalleEventoTarget = null;
+        }
+
+        function agregarItemChecklistDetalle() {
+            if (!_detalleEventoTarget) return;
+            const inp = document.getElementById("det-ev-checklist-input");
+            const texto = (inp.value || "").trim();
+            if (!texto) return;
+            const mapa = _leerChecklistsAgenda();
+            const lista = Array.isArray(mapa[_detalleEventoTarget.key]) ? mapa[_detalleEventoTarget.key] : [];
+            lista.push({ texto, hecho: false });
+            mapa[_detalleEventoTarget.key] = lista;
+            _guardarChecklistsAgenda(mapa);
+            inp.value = "";
+            _renderChecklistDetalle(_detalleEventoTarget.key);
+        }
+
+        function toggleItemChecklistDetalle(idx) {
+            if (!_detalleEventoTarget) return;
+            const mapa = _leerChecklistsAgenda();
+            const lista = Array.isArray(mapa[_detalleEventoTarget.key]) ? mapa[_detalleEventoTarget.key] : [];
+            if (!lista[idx]) return;
+            lista[idx].hecho = !lista[idx].hecho;
+            mapa[_detalleEventoTarget.key] = lista;
+            _guardarChecklistsAgenda(mapa);
+            _renderChecklistDetalle(_detalleEventoTarget.key);
+        }
+
+        function eliminarItemChecklistDetalle(idx) {
+            if (!_detalleEventoTarget) return;
+            const mapa = _leerChecklistsAgenda();
+            const lista = Array.isArray(mapa[_detalleEventoTarget.key]) ? mapa[_detalleEventoTarget.key] : [];
+            lista.splice(idx, 1);
+            mapa[_detalleEventoTarget.key] = lista;
+            _guardarChecklistsAgenda(mapa);
+            _renderChecklistDetalle(_detalleEventoTarget.key);
+        }
+
+        function editarDesdeDetalle() {
+            if (!_detalleEventoTarget) return;
+            const { prefijo, idx } = _detalleEventoTarget;
+            cerrarModalDetalleEvento();
+            abrirModalEditarEvento(prefijo, idx);
+        }
+
+        function duplicarDesdeDetalle() {
+            if (!_detalleEventoTarget) return;
+            const { item } = _detalleEventoTarget;
+            const inicio = extraerFechaYHora(item.inicio);
+            const fin = extraerFechaYHora(item.fin);
+            cerrarModalDetalleEvento();
+            abrirModalCrearTarea();
+            document.getElementById("ct-nombre").value = `${item.nombre || ""} (copia)`.trim();
+            document.getElementById("ct-fecha").value = inicio.fecha || "";
+            document.getElementById("ct-hora-inicio").value = inicio.hora || "";
+            document.getElementById("ct-hora-fin").value = fin.hora || "";
+            document.getElementById("ct-estado").value = "Sin empezar";
+            document.getElementById("ct-tipo").value = item.tipo || "";
+            document.getElementById("ct-prioridad").value = item.prioridad || "";
+            document.getElementById("ct-descripcion").value = item.descripcion || "";
+        }
+
+        function eliminarDesdeDetalle() {
+            if (!_detalleEventoTarget) return;
+            const { prefijo, idx } = _detalleEventoTarget;
+            cerrarModalDetalleEvento();
+            confirmarEliminarEvento(prefijo, idx);
+        }
+
+        function _sumarMinutosHora(horaStr, deltaMin) {
+            if (!horaStr || !/^\d{2}:\d{2}$/.test(horaStr)) return "";
+            const [hh, mm] = horaStr.split(":").map(Number);
+            const total = Math.min(23 * 60 + 59, hh * 60 + mm + deltaMin);
+            const nh = String(Math.floor(total / 60)).padStart(2, "0");
+            const nm = String(total % 60).padStart(2, "0");
+            return `${nh}:${nm}`;
+        }
+
+        async function posponerEvento30Min() {
+            if (!_detalleEventoTarget) return;
+            const { item } = _detalleEventoTarget;
+            const inicio = extraerFechaYHora(item.inicio);
+            const fin = extraerFechaYHora(item.fin);
+            const nuevaIni = _sumarMinutosHora(inicio.hora, 30);
+            const nuevaFin = fin.hora ? _sumarMinutosHora(fin.hora, 30) : "";
+            const res = construirPayloadEvento({
+                pageId: item.id,
+                nombre: item.nombre || "",
+                fecha: inicio.fecha,
+                horaInicio: nuevaIni,
+                horaFin: nuevaFin,
+                estado: item.estado || "Sin empezar",
+                tipoTarea: item.tipo || "",
+                prioridad: item.prioridad || "",
+                descripcion: item.descripcion || "",
+            });
+            if (!res.ok) return;
+            cerrarModalDetalleEvento();
+            await ejecutarEscrituraConSpinner("actualizar_evento", res.payload);
+        }
+
+        async function completarEventoDesdeDetalle() {
+            if (!_detalleEventoTarget) return;
+            const { item } = _detalleEventoTarget;
+            const inicio = extraerFechaYHora(item.inicio);
+            const fin = extraerFechaYHora(item.fin);
+            const res = construirPayloadEvento({
+                pageId: item.id,
+                nombre: item.nombre || "",
+                fecha: inicio.fecha,
+                horaInicio: inicio.hora,
+                horaFin: fin.hora,
+                estado: "Hecha",
+                tipoTarea: item.tipo || "",
+                prioridad: item.prioridad || "",
+                descripcion: item.descripcion || "",
+            });
+            if (!res.ok) return;
+            cerrarModalDetalleEvento();
+            await ejecutarEscrituraConSpinner("actualizar_evento", res.payload);
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                const det = document.getElementById("modal-detalle-evento");
+                if (det && !det.classList.contains("hidden")) cerrarModalDetalleEvento();
+            }
+        });
     </script>
     <script src="./src/utils/somatic_shell.js"></script>
 </body>
