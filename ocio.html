@@ -119,7 +119,7 @@
             <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
             <div class="min-w-0">
                 <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
-                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.87</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo</p>
             </div>
         </div>
     </aside>
@@ -154,13 +154,8 @@
             <!-- CABECERA OCIO + BOTONES ABM -->
             <section class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-white/[0.08]">
                 <div class="space-y-2.5">
-                    <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-[#ff5f52]"></span>
-                        <span class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">BIENESTAR · TIEMPO LIBRE · MULTIMEDIA</span>
-                    </div>
-                    <h1 class="text-3xl sm:text-4xl font-extrabold font-headline-md tracking-tight text-white flex items-center gap-3">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold font-headline-md tracking-tight text-white">
                         OCIO
-                        <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-white/[0.06] text-[#ffb4aa] tracking-normal">MODO RELAX</span>
                     </h1>
                     <p class="text-[13px] text-[#a1a1aa] max-w-2xl leading-relaxed">
                         Espacio unificado de entretenimiento y desconexión: gestioná tus lecturas, series en seguimiento, películas e ideas para el fin de semana.
@@ -169,7 +164,6 @@
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#111115] border border-white/[0.08] text-xs text-white">📚 Libros</span>
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#111115] border border-white/[0.08] text-xs text-white">📺 Series</span>
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#111115] border border-white/[0.08] text-xs text-white">🎬 Películas</span>
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#83da85]/10 border border-[#83da85]/25 text-xs text-[#83da85]">Guardado local activo</span>
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-2.5">
@@ -185,10 +179,6 @@
                         <span class="material-symbols-outlined text-[17px] text-[#83da85]">movie</span>
                         <span>+ Agregar película</span>
                     </button>
-                    <a href="https://app.notion.com/p/17ba38bb7a6e80fbabd1e13ae0a85b69?v=17ba38bb7a6e81219b5e000c466a2a83&source=copy_link" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#111115] hover:bg-[#1c1c21] border border-white/[0.08] text-[#e5e2e1] font-semibold text-xs transition-all">
-                        <span>Ver Libros en Notion</span>
-                        <span class="material-symbols-outlined text-[15px]">open_in_new</span>
-                    </a>
                 </div>
             </section>
 
@@ -259,14 +249,19 @@
             </section>
 
             <!-- CATÁLOGO & ABM MULTIMEDIA -->
-            <section class="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
+            <section class="glass-card rounded-2xl p-5 sm:p-8 space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/[0.08] pb-4">
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[#ff5f52] text-[22px]">category</span>
-                            <h2 class="text-xl font-bold font-headline-md text-white">Catálogo &amp; ABM Multimedia</h2>
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[#ff5f52] text-[22px]">category</span>
+                                <h2 class="text-xl font-bold font-headline-md text-white">Catálogo &amp; ABM Multimedia</h2>
+                            </div>
+                            <p class="text-xs text-[#8e8e93] mt-0.5">Gestioná tus libros, series y películas.</p>
                         </div>
-                        <p class="text-xs text-[#8e8e93] mt-0.5">Gestioná tus libros, series y películas (persistencia local en navegador).</p>
+                        <button type="button" onclick="toggleBloque('ocio-catalogo')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors flex-shrink-0" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-ocio-catalogo">
+                            <span id="chevron-ocio-catalogo" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                        </button>
                     </div>
                     <div class="flex items-center p-1 rounded-xl bg-[#08080a] border border-white/[0.08] gap-1">
                         <button id="btnTab-libros" type="button" onclick="cambiarTabOcio('libros')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-[#ff5f52] text-white transition-all">📚 Libros (<span id="count-libros">0</span>)</button>
@@ -275,25 +270,27 @@
                     </div>
                 </div>
 
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div class="relative flex-1 min-w-[220px] max-w-md">
-                        <span class="material-symbols-outlined text-[18px] text-[#8e8e93] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">search</span>
-                        <input id="ocio-buscador" type="text" oninput="renderizarCatalogoOcio()" placeholder="Buscar por título, autor, plataforma o género..."
-                               class="w-full bg-[#08080a] border border-white/[0.08] rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#ff5f52]/50" />
+                <div id="content-ocio-catalogo" class="space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div class="relative flex-1 min-w-[220px] max-w-md">
+                            <span class="material-symbols-outlined text-[18px] text-[#8e8e93] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">search</span>
+                            <input id="ocio-buscador" type="text" oninput="renderizarCatalogoOcio()" placeholder="Buscar por título, autor, plataforma o género..."
+                                   class="w-full bg-[#08080a] border border-white/[0.08] rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#ff5f52]/50" />
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button type="button" onclick="toggleVistaCatalogoOcio()" id="btn-vista-ocio" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#18181d] border border-white/[0.08] text-xs font-bold text-[#e5e2e1] hover:bg-[#232329]">
+                                <span class="material-symbols-outlined text-[16px]">view_kanban</span>
+                                <span>Vista: Tablero</span>
+                            </button>
+                            <button type="button" onclick="abrirModalOcio(tabActual)" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#ff5f52] text-white font-bold text-xs hover:opacity-90">
+                                <span class="material-symbols-outlined text-[16px]">add</span>
+                                <span id="btn-nuevo-tab-lbl">Nuevo libro</span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <button type="button" onclick="toggleVistaCatalogoOcio()" id="btn-vista-ocio" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#18181d] border border-white/[0.08] text-xs font-bold text-[#e5e2e1] hover:bg-[#232329]">
-                            <span class="material-symbols-outlined text-[16px]">view_kanban</span>
-                            <span>Vista: Tablero</span>
-                        </button>
-                        <button type="button" onclick="abrirModalOcio(tabActual)" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#ff5f52] text-white font-bold text-xs hover:opacity-90">
-                            <span class="material-symbols-outlined text-[16px]">add</span>
-                            <span id="btn-nuevo-tab-lbl">Nuevo libro</span>
-                        </button>
-                    </div>
-                </div>
 
-                <div id="grid-catalogo-ocio" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+                    <div id="grid-catalogo-ocio" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+                </div>
             </section>
 
             <!-- TABLERO KANBAN DE ACTIVIDADES -->
@@ -303,12 +300,19 @@
                         <h2 class="text-xl font-bold font-headline-md text-white">Tablero de Actividades &amp; Finde</h2>
                         <p class="text-xs text-[#8e8e93]">Mové ideas de ocio entre columnas con las flechas.</p>
                     </div>
-                    <button type="button" onclick="abrirModalKanban()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#18181d] hover:bg-[#232329] border border-white/[0.08] text-white font-bold text-xs">
-                        <span class="material-symbols-outlined text-[16px]">add</span>
-                        <span>Nueva actividad</span>
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="abrirModalKanban()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#18181d] hover:bg-[#232329] border border-white/[0.08] text-white font-bold text-xs">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>Nueva actividad</span>
+                        </button>
+                        <button type="button" onclick="toggleBloque('ocio-kanban')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-ocio-kanban">
+                            <span id="chevron-ocio-kanban" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                        </button>
+                    </div>
                 </div>
-                <div id="grid-kanban-ocio" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+                <div id="content-ocio-kanban">
+                    <div id="grid-kanban-ocio" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+                </div>
             </section>
         </div>
 
