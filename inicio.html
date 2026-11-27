@@ -555,11 +555,11 @@
             <p id="foco-error-msg" class="hidden text-[12px] text-[#ff5f52] font-semibold"></p>
 
             <!-- Footer Modal -->
-            <div class="pt-3 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3">
-                <span class="text-[11px] text-[#8e8e93]">Borrador local · Ctrl + Enter para guardar en Notion</span>
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="limpiarTodoFocoDiario()" class="px-3.5 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] text-[#a1a1aa] hover:text-white text-xs font-bold transition-all">Limpiar todo</button>
-                    <button type="button" onclick="guardarFocoDiarioEnNotion()" class="px-4 py-2.5 rounded-xl bg-[#ffb961] hover:bg-[#ffb961]/90 text-[#2b1700] text-xs font-extrabold inline-flex items-center gap-1.5 transition-all active:scale-95">
+            <div class="pt-3 border-t border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <span class="text-[11px] text-[#8e8e93]">Borrador local<span class="hidden sm:inline"> · Ctrl + Enter para guardar en Notion</span></span>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button type="button" onclick="limpiarTodoFocoDiario()" class="flex-1 sm:flex-initial justify-center px-3.5 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] text-[#a1a1aa] hover:text-white text-xs font-bold inline-flex items-center transition-all">Limpiar todo</button>
+                    <button type="button" onclick="guardarFocoDiarioEnNotion()" class="flex-1 sm:flex-initial justify-center px-4 py-2.5 rounded-xl bg-[#ffb961] hover:bg-[#ffb961]/90 text-[#2b1700] text-xs font-extrabold inline-flex items-center gap-1.5 transition-all active:scale-95">
                         <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
                         <span>Guardar en Notion</span>
                     </button>
@@ -1043,7 +1043,7 @@
             const fases = ["Todas", "Menstrual", "Folicular", "Ovulatoria", "Lútea"];
             document.getElementById("hist-foco-filtros").innerHTML = fases.map((f) => {
                 const act = f === faseFiltro;
-                return `<button type="button" onclick="renderizarHistorialFoco('${f}')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-all ${act ? "bg-[#38bdf8] text-[#082f49]" : "bg-[#18181d] text-[#a1a1aa] hover:text-white border border-white/[0.08]"}">${f}</button>`;
+                return `<button type="button" onclick="renderizarHistorialFoco('${f}')" class="px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${act ? "bg-[#38bdf8] text-[#082f49]" : "bg-[#18181d] text-[#a1a1aa] hover:text-white border border-white/[0.08]"}">${f}</button>`;
             }).join("");
 
             const lista = (inicioFocoHistorial || []).filter((r) => faseFiltro === "Todas" || r.fase_ciclo === faseFiltro);
