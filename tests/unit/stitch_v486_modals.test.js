@@ -60,6 +60,15 @@ describe('Pantallas Stitch v4.86 — Detalle de Evento, Foco Diario y Vacíos Co
     expect(sa).toContain('id="salud-sugerencias-wrap"');
     expect(sa).toContain('asistente_sabry:salud_sugerencias_v1');
     expect(sa).toContain('function abrirModalSugerenciaSalud');
+    expect(sa).toContain('Salud → Registro de Síntoma →');
+  });
+
+  test('somatic_shell.js incluye sidebar colapsable y finanzas.html breadcrumb en Capa 2', () => {
+    const ss = fs.readFileSync(path.join(__dirname, '../../src/utils/somatic_shell.js'), 'utf8');
+    expect(ss).toContain('ss-sidebar-collapsed');
+    expect(ss).toContain('ss-btn-collapse-sidebar');
+    const fin = fs.readFileSync(path.join(__dirname, '../../finanzas.html'), 'utf8');
+    expect(fin).toContain('Finanzas → Egreso →');
   });
 
   test('renderizarAgendaEventos agrega botón de detalle y estado vacío compasivo', () => {

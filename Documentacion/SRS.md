@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.89 (Gestión Emocional ancho completo, Recordatorios Varios rediseñado y Sugerencias de Bienestar en Salud)  
+**Versión:** 4.90 (Sidebar colapsable en desktop, Breadcrumbs en Capa 2 y Footer unificado en Inicio)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
@@ -12,6 +12,7 @@
 
 | Versión | Fecha | Autor | Descripción del Cambio / Hito Técnico |
 | :--- | :--- | :--- | :--- |
+| **v4.90** | Noviembre 2026 | Sabrina Sanso | **Sidebar colapsable, Breadcrumbs Capa 2 y Footer unificado (`src/utils/somatic_shell.js`, `finanzas.html`, `salud.html`, `inicio.html`):**<br>- `somatic_shell.js`: toggle desktop para colapsar/expandir el sidebar a `72px` (solo íconos) en los 11 módulos con persistencia en `localStorage` (`asistente_sabry:sidebar_collapsed`).<br>- `finanzas.html` y `salud.html`: breadcrumbs de retorno y `Esc` en submodales Capa 2 (`#modal-fin-opcion-vuelo`, `#modal-salud-med-vuelo`).<br>- `inicio.html` + `extract_and_audit.py`: footer institucional unificado con `GitHub Pages Release`. |
 | **v4.89** | Noviembre 2026 | Sabrina Sanso | **Gestión Emocional, Recordatorios Varios y Salud (`gestion-emocional.html`, `recordatorios-varios.html`, `salud.html`):**<br>- `gestion-emocional.html`: cabecera a ancho completo y barra de acciones unificada en `Caja de Herramientas Conscientes`.<br>- `recordatorios-varios.html`: rediseño alineado con `Recordatorios Diarios` (cards `#18181b`, KPIs compactos, caja `Feedback de Mentora · SabryOff` y CTA ancho completo).<br>- `salud.html`: mini-ABM `Sugerencias de Bienestar` (`Somático`, `Nutrición`, `Descanso`) persistido en `localStorage` (`asistente_sabry:salud_sugerencias_v1`). |
 | **v4.88** | Noviembre 2026 | Sabrina Sanso | **Modales S.T.O.P. y Ciclo en Inicio, Calendario Somático y Declutter (`inicio.html`, `recordatorios-diarios.html`, `agenda-personal.html`):**<br>- `inicio.html`: modales `#modal-stop-inicio` (pasos S-T-O-P + respirador 4-4-4) y `#modal-ciclo-inicio` (ajuste de fase/síntomas directo a Notion vía `crear_fase_ciclo` / `actualizar_fase_ciclo`).<br>- `#modal-historial-foco`: switcher Lista/Calendario, sub-filtro por Tipo de Meta, Calendario Somático mensual + Drawer de detalle con `Duplicar a hoy`, y Heatmap Anual 52 semanas colapsable.<br>- Limpieza visual en `inicio.html`, `recordatorios-diarios.html` y `agenda-personal.html`. |
 | **v4.87** | Noviembre 2026 | Sabrina Sanso | **Foco & Intención Diaria ABM + Notion (`inicio.html`, `extract_and_audit.py`, workflows):**<br>- Nueva BD `🎯 Foco & Intención Diaria` (`NOTION_DB_FOCO_DIARIO`) con 1 fila por día y vínculo con fase/día del ciclo menstrual.<br>- `extract_and_audit.py` suma `sincronizar_foco_diario()` (inyecta `inicioFocoHistorial`) y `guardar_foco_diario()` (upsert por fecha).<br>- `inicio.html` implementa edición en borrador local + envío a Notion (`notion_write.js`), intención obligatoria + presets fijos, hasta 3 prioridades opcionales con etiquetas (`Meta física`, `Meta mental`, `Meta social/espiritual`), limpieza directa, modal `#modal-historial-foco` y remoción del badge `Salud_Ciclo_Sabry`. |

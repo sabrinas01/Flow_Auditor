@@ -571,19 +571,21 @@
     <!-- SUBMODAL CREACIÓN EN VUELO: MEDICAMENTO / SUPLEMENTO (CAPA 2) -->
     <div id="modal-salud-med-vuelo" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarSubmodalMedSalud()">
         <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4 border border-[#83da85]/40 shadow-2xl" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between gap-2">
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30">CAPA 2 • MEDICAMENTO EN VUELO</span>
-                <button type="button" onclick="cerrarSubmodalMedSalud()" class="p-1 hover:bg-white/5 rounded-full text-[#8e8e93]">
-                    <span class="material-symbols-outlined text-[18px]">close</span>
+                <button type="button" onclick="cerrarSubmodalMedSalud()" class="px-2 py-1 hover:bg-white/5 rounded-full text-[11px] text-[#8e8e93] hover:text-white inline-flex items-center gap-1" title="Esc | Cerrar a Salud">
+                    <span>Esc</span>
+                    <span class="material-symbols-outlined text-[16px]">close</span>
                 </button>
             </div>
+            <p class="text-[11px] text-[#8e8e93] font-medium">Salud → Registro de Síntoma → <span class="text-[#83da85]">+ Nuevo Medicamento</span></p>
             <h3 class="text-base font-bold text-white">Registrar Medicamento / Suplemento</h3>
             <form onsubmit="return guardarSubmodalMedSalud(event)" class="space-y-3">
                 <input id="sal-med-nombre" type="text" required maxlength="80" placeholder="Nombre (ej. Magnesio / Ibuprofeno)" class="w-full bg-[#1c1c1f] border border-[#232326] focus:border-[#83da85] rounded-lg px-3 py-2.5 text-white text-sm outline-none" />
                 <input id="sal-med-dosis" type="text" maxlength="60" placeholder="Dosis / Horario (ej. 400mg noche)" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-xs outline-none" />
                 <div class="flex gap-2 pt-1">
-                    <button type="button" onclick="cerrarSubmodalMedSalud()" class="flex-1 py-2.5 rounded-xl bg-[#18181d] text-white text-xs font-semibold">Volver</button>
-                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-[#83da85] text-[#08080a] text-xs font-bold">Agregar y vincular</button>
+                    <button type="button" onclick="cerrarSubmodalMedSalud()" class="flex-1 py-2.5 rounded-xl bg-[#18181d] text-white text-xs font-semibold">← Volver al síntoma</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-[#83da85] text-[#08080a] text-xs font-bold">Guardar y vincular</button>
                 </div>
             </form>
         </div>

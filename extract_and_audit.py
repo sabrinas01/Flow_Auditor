@@ -314,6 +314,11 @@ def _inyectar_timestamps_y_version(html_content, timestamps, app_version):
         rf'\g<1>{app_version}',
         html_content,
     )
+    html_content = re.sub(
+        r'(<strong id="footer-version"[^>]*>)[^<]+(</strong>)',
+        rf'\g<1>{app_version}\g<2>',
+        html_content,
+    )
     return html_content
 
 
