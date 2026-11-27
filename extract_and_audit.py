@@ -304,6 +304,16 @@ def _inyectar_timestamps_y_version(html_content, timestamps, app_version):
     html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?"\s*;', f'const timestampNextStr = "{timestamps["proxima"]}";', html_content)
     html_content = re.sub(r'const\s+timestampServerStr\s*=\s*".*?"\s*;', f'const timestampServerStr = "{timestamps["servidor"]}";', html_content)
     html_content = re.sub(r'const\s+appVersionStr\s*=\s*".*?"\s*;', f'const appVersionStr = "{app_version}";', html_content)
+    html_content = re.sub(
+        r'(<p class="text-\[10px\] text-\[#8e8e93\] tracking-widest uppercase mt-0\.5">)v[^<]+(</p>)',
+        rf'\g<1>{app_version}\g<2>',
+        html_content,
+    )
+    html_content = re.sub(
+        r'(Sistema activo\s*•\s*)v[^<]+',
+        rf'\g<1>{app_version}',
+        html_content,
+    )
     return html_content
 
 
@@ -1491,6 +1501,7 @@ def sincronizar_salud(timestamps, app_version):
     if inicio_path.exists():
         with open(inicio_path, "r", encoding="utf-8") as f_ini:
             ini_content = f_ini.read()
+        ini_content = _inyectar_timestamps_y_version(ini_content, timestamps, app_version)
         json_ciclo = json.dumps(fases_ciclo, ensure_ascii=False).replace("</", "<\\/")
         ini_content = re.sub(
             r"const\s+inicioCiclo\s*=\s*\[.*?\]\s*;",
