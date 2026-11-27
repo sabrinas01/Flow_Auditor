@@ -2425,6 +2425,7 @@ def sincronizar_habitos_disciplina(timestamps, app_version):
             "racha_progreso": (pr.get("Racha / Progreso") or {}).get("number"),
             "ultima_fecha": ((pr.get("Última fecha") or {}).get("date") or {}).get("start"),
             "nota": "".join(t.get("plain_text", "") for t in (pr.get("Nota / Micro-hábito") or {}).get("rich_text", [])),
+            "historial_fechas": "".join(t.get("plain_text", "") for t in (pr.get("Historial fechas") or {}).get("rich_text", [])),
         })
 
     res_form, sch_form = _consultar_bd_salud(DB_FORMACIONES, "FORMACIONES MIS CURSOS", page_size=100, paginar=True)
@@ -2501,6 +2502,8 @@ def _construir_propiedades_habito(datos):
         props["Última fecha"] = {"date": {"start": datos["ultima_fecha"]}}
     if datos.get("nota") is not None:
         props["Nota / Micro-hábito"] = {"rich_text": [{"text": {"content": str(datos["nota"])}}] if datos["nota"] else []}
+    if datos.get("historial_fechas") is not None:
+        props["Historial fechas"] = {"rich_text": [{"text": {"content": str(datos["historial_fechas"])[:1990]}}] if datos["historial_fechas"] else []}
     return props
 
 

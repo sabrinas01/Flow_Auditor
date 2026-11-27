@@ -58,6 +58,7 @@
 | `Modal Editar Fase del Ciclo & Agregar Síntoma - Salud` | `v4.44` / `v4.58` | `salud.html` |
 | `Modal Salud Control Médico y Terapia - AsistenteSabry v4.46` | `v4.44` / `v4.57` | `salud.html` |
 | `Flujo Crítico: Modales Encadenados (Salud: Síntoma → Medicamento en Vuelo)` | `v4.83` | `salud.html` (`#modal-salud-med-vuelo`) |
+| `Modal Registrar en Energía Guiado (v4.92 - Salud)` & `Modal Registrar en Energía - Factor de Recarga (v4.92)` | `v4.92` | `salud.html` (`#modal-energia`) + `src/utils/salud_logic.js` |
 
 ---
 
@@ -99,6 +100,7 @@
 | `Modal Desarrollo Personal` & `Modal Crear y Editar Recurso Multimodal` | `v4.55` / `v4.63` | `desarrollo-personal.html` |
 | `Flujo Crítico: Modales Encadenados (Práctica → Recurso en Vuelo)` | `v4.73` | `desarrollo-personal.html` (`#modal-recurso-vuelo`) |
 | `Flujo Crítico: Confirmación Destructiva & Guardrail Compasivo` | `v4.74` | `desarrollo-personal.html` (`#modal-guardrail-desarrollo`, `#modal-papelera-dp`) |
+| `Modal Desarrollo Personal - Paso 1: Elegir Pilar y Tipo (v4.94)` & `Paso 2: Detalle Guiado (v4.94)` | `v4.94` | `desarrollo-personal.html` (`#modal-desarrollo`) |
 
 ---
 
@@ -110,6 +112,7 @@
 | `Matriz de Rachas y Heatmap Anual de Hábitos` | `v4.75` | `habitos-y-disciplina.html` |
 | `Modal Crear y Editar Hábito` & `Modal Crear y Editar Formación` | `v4.66` / `v4.67` | `habitos-y-disciplina.html` |
 | `Flujo Crítico: Modales Encadenados (Hábito → Formación en Vuelo)` | `v4.75` | `habitos-y-disciplina.html` |
+| `Hábitos Diarios, Check Rápido & Matriz Real (v4.93)` | `v4.93` | `habitos-y-disciplina.html` + `src/utils/habitos_logic.js` + `extract_and_audit.py` |
 
 ---
 

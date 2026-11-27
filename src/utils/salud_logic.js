@@ -271,23 +271,52 @@ function calcularEnergiaDesdeCiclo(fases, registrosMente, hoyIso) {
   };
 }
 
+function detectarDuplicadoEnergia(registros, { nombre, fase, pageId }) {
+  const normNombre = (nombre || "").trim().toLowerCase();
+  const normFase = (fase || "Todas").trim().toLowerCase();
+  if (!normNombre) return { duplicado: false };
+  const otros = (registros || []).filter((r) => (r.id || "") !== (pageId || ""));
+  const exacto = otros.some(
+    (r) => (r.nombre || "").trim().toLowerCase() === normNombre
+      && (r.fase || "Todas").trim().toLowerCase() === normFase
+  );
+  if (!exacto) return { duplicado: false };
+  const similares = otros.filter((r) => {
+    const rn = (r.nombre || "").trim().toLowerCase();
+    const rf = (r.fase || "Todas").trim().toLowerCase();
+    return rf === normFase && (rn === normNombre || rn.startsWith(`${normNombre} - registro numero `) || rn.startsWith(`${normNombre} registro numero `));
+  });
+  const siguienteNumero = similares.length + 1;
+  return {
+    duplicado: true,
+    siguienteNumero,
+    sugerencia: `${(nombre || "").trim()} - registro numero ${siguienteNumero}`,
+  };
+}
+
 function construirPayloadEnergiaSalud(datos) {
   const nombre = (datos.nombre || "").trim();
   if (!nombre) return { ok: false, error: "El nombre es obligatorio." };
 
-  const pctRaw = datos.porcentaje !== "" && datos.porcentaje !== null && datos.porcentaje !== undefined
-    ? Number(datos.porcentaje)
-    : null;
-  if (pctRaw !== null && (!Number.isFinite(pctRaw) || pctRaw < 0 || pctRaw > 100)) {
-    return { ok: false, error: "El porcentaje debe estar entre 0 y 100." };
+  const tipo = (datos.tipo || "").trim() || "⚡ Factor de Recarga";
+  const esCurva = tipo.includes("Curva");
+
+  let pctRaw = null;
+  if (esCurva) {
+    pctRaw = datos.porcentaje !== "" && datos.porcentaje !== null && datos.porcentaje !== undefined
+      ? Number(datos.porcentaje)
+      : null;
+    if (pctRaw === null || !Number.isFinite(pctRaw) || pctRaw < 0 || pctRaw > 100) {
+      return { ok: false, error: "Ingresá el porcentaje de energía (0 a 100%) para la Curva Circadiana." };
+    }
   }
 
   const payload = {
     nombre,
-    tipo: (datos.tipo || "").trim() || "⚡ Factor de Recarga",
+    tipo,
     fase: (datos.fase || "").trim() || "Todas",
-    porcentaje: pctRaw,
-    detalle: (datos.detalle || "").trim() || null,
+    porcentaje: esCurva ? pctRaw : null,
+    detalle: esCurva ? null : ((datos.detalle || "").trim() || null),
   };
   const pageId = (datos.pageId || "").trim();
   if (pageId) payload.page_id = pageId;
@@ -306,6 +335,7 @@ if (typeof module !== "undefined" && module.exports) {
     calcularMetricasSesiones,
     calcularResumenMenteSalud,
     calcularEnergiaDesdeCiclo,
+    detectarDuplicadoEnergia,
     construirPayloadEnergiaSalud,
   };
 }

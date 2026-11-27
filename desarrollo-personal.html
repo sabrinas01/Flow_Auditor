@@ -407,7 +407,7 @@
 
     <!-- MODAL DESARROLLO PERSONAL (CAPA 1) -->
     <div id="modal-desarrollo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalDesarrollo()">
-        <div id="dp-modal-card" class="glass-card rounded-2xl p-6 w-full max-w-lg my-8 transition-all duration-200" onclick="event.stopPropagation()">
+        <div id="dp-modal-card" class="glass-card rounded-2xl p-6 w-full max-w-2xl my-8 transition-all duration-200" onclick="event.stopPropagation()">
             <div id="dp-pause-banner" class="hidden mb-4 px-3 py-2 rounded-xl bg-[#ffb961]/10 border border-[#ffb961]/30 flex items-center justify-between gap-2 text-[11px] font-semibold text-[#ffb961]">
                 <span class="flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-[15px]">pause_circle</span>
@@ -417,6 +417,7 @@
             <div class="flex justify-between items-center mb-5">
                 <div class="flex items-center gap-2.5 flex-wrap">
                     <h3 id="dp-modal-titulo" class="text-headline-md font-headline-md text-white">Nuevo registro</h3>
+                    <span id="dp-step-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#ff5f52]/15 text-[#ff5f52] border border-[#ff5f52]/30">Paso 1 de 2</span>
                     <span id="dp-draft-badge" class="hidden px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30">✓ Borrador restaurado</span>
                 </div>
                 <button type="button" onclick="cerrarModalDesarrollo(true)" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]" title="Cerrar (Esc)">
@@ -425,67 +426,101 @@
             </div>
             <form id="form-desarrollo" class="space-y-4" oninput="guardarBorradorDesarrollo()" onsubmit="return manejarSubmitDesarrollo(event)">
                 <input id="dp-page-id" type="hidden" value="" />
-                <div>
-                    <label for="dp-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre / Título *</label>
-                    <input id="dp-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
-                </div>
-                <div class="grid grid-cols-2 gap-3">
+                <input id="dp-pilar" type="hidden" value="" />
+                <input id="dp-tipo" type="hidden" value="" />
+
+                <!-- PASO 1: ELEGIR PILAR Y TIPO -->
+                <div id="dp-step-1" class="space-y-5">
+                    <p class="text-[13px] text-[#a1a1aa]">Elegí el área y el formato de lo que querés registrar para mostrarte solo los campos necesarios.</p>
                     <div>
-                        <label for="dp-pilar" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Pilar</label>
-                        <select id="dp-pilar" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                        <p class="text-[12px] font-semibold text-[#e5e2e1] mb-2">1. ¿En qué pilar estás trabajando?</p>
+                        <div id="dp-pilares-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5"></div>
                     </div>
                     <div>
-                        <label for="dp-tipo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Tipo</label>
-                        <select id="dp-tipo" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                        <p class="text-[12px] font-semibold text-[#e5e2e1] mb-2">2. ¿Qué tipo de registro es?</p>
+                        <div id="dp-tipos-cards" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
                     </div>
-                </div>
-                <div class="grid grid-cols-3 gap-3">
-                    <div>
-                        <label for="dp-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
-                        <select id="dp-estado" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
-                    </div>
-                    <div>
-                        <label for="dp-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha</label>
-                        <input id="dp-fecha" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
-                    </div>
-                    <div>
-                        <label for="dp-puntaje" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Puntaje (0-100)</label>
-                        <input id="dp-puntaje" type="number" min="0" max="100" step="0.5" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="cerrarModalDesarrollo(true)" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                        <button type="button" onclick="irAPaso2Desarrollo()" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-3 rounded-xl inline-flex items-center justify-center gap-1.5">
+                            <span>Siguiente: Completar detalle</span>
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </button>
                     </div>
                 </div>
-                <div>
-                    <label for="dp-frecuencia" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Frecuencia / Técnica</label>
-                    <input id="dp-frecuencia" type="text" maxlength="120" placeholder="Ej. CNV · Validación / DIARIO · 5 MIN" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                <!-- PASO 2: DETALLE GUIADO -->
+                <div id="dp-step-2" class="hidden space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-[#08080a] border border-white/[0.08]">
+                        <span id="dp-resumen-seleccion" class="text-xs font-bold text-white"></span>
+                        <button type="button" onclick="irAPaso1Desarrollo()" class="text-xs font-semibold text-[#ff5f52] hover:underline inline-flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">arrow_back</span>
+                            <span>Cambiar tipo / pilar</span>
+                        </button>
+                    </div>
                     <div>
-                        <div class="flex items-center justify-between gap-2 mb-1.5">
-                            <label for="dp-recurso" class="block text-[12px] font-semibold text-[#8e8e93]">Recurso asociado</label>
-                            <button type="button" onclick="abrirSubmodalRecursoVuelo()" class="text-[11px] font-bold text-[#a855f7] hover:text-[#c084fc] flex items-center gap-1 transition-colors" title="Crear recurso sin perder este borrador">
-                                <span class="material-symbols-outlined text-[14px]">add_circle</span>
-                                <span>Crear en vuelo</span>
-                            </button>
+                        <label for="dp-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre / Título *</label>
+                        <input id="dp-nombre" type="text" required maxlength="200" placeholder="Escribí un título claro y breve..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div id="dp-grupo-estado">
+                            <label for="dp-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
+                            <select id="dp-estado" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
                         </div>
-                        <input id="dp-recurso" list="dp-libros-datalist" type="text" maxlength="200" placeholder="Elegí o escribí un libro, curso o charla..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
-                        <datalist id="dp-libros-datalist"></datalist>
-                        <p id="dp-recurso-toast" class="hidden mt-1 text-[11px] text-[#83da85] font-semibold">✓ Recurso vinculado a la práctica</p>
+                        <div>
+                            <label for="dp-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha</label>
+                            <input id="dp-fecha" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                        </div>
+                    </div>
+                    <div id="dp-grupo-puntaje" class="p-3.5 rounded-xl bg-[#08080a] border border-[#ff5f52]/25 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label for="dp-puntaje-slider" class="text-[12px] font-semibold text-[#e5e2e1]">Nivel de avance / Puntaje</label>
+                            <span id="dp-puntaje-valor" class="text-base font-extrabold text-[#ff5f52]">0%</span>
+                        </div>
+                        <input id="dp-puntaje-slider" type="range" min="0" max="100" step="5" value="0" oninput="actualizarSliderDP(this.value)" class="w-full accent-[#ff5f52] cursor-pointer" />
+                        <input id="dp-puntaje" type="hidden" value="" />
+                    </div>
+                    <div id="dp-grupo-frecuencia">
+                        <label for="dp-frecuencia" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Frecuencia / Técnica</label>
+                        <input id="dp-frecuencia" type="text" maxlength="120" placeholder="Ej. CNV · Validación / DIARIO · 5 MIN" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div id="dp-recurso-toggle-wrap" class="hidden">
+                        <button type="button" onclick="mostrarBloqueRecursoDP()" class="text-xs font-semibold text-[#a855f7] hover:text-[#c084fc] inline-flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[15px]">add_circle</span>
+                            <span>+ Vincular recurso o enlace opcional</span>
+                        </button>
+                    </div>
+                    <div id="dp-grupo-recurso" class="grid grid-cols-1 gap-3">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-1.5">
+                                <label for="dp-recurso" class="block text-[12px] font-semibold text-[#8e8e93]">Recurso asociado</label>
+                                <button type="button" onclick="abrirSubmodalRecursoVuelo()" class="text-[11px] font-bold text-[#a855f7] hover:text-[#c084fc] flex items-center gap-1 transition-colors" title="Crear nuevo recurso sin perder este borrador">
+                                    <span class="material-symbols-outlined text-[14px]">add_circle</span>
+                                    <span>+ Nuevo recurso</span>
+                                </button>
+                            </div>
+                            <input id="dp-recurso" list="dp-libros-datalist" type="text" maxlength="200" placeholder="Elegí o escribí un libro, curso o charla..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                            <datalist id="dp-libros-datalist"></datalist>
+                            <p id="dp-recurso-toast" class="hidden mt-1 text-[11px] text-[#83da85] font-semibold">✓ Recurso vinculado a la práctica</p>
+                        </div>
+                        <div>
+                            <label for="dp-enlace" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Enlace (URL opcional)</label>
+                            <input id="dp-enlace" type="url" placeholder="https://..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                        </div>
                     </div>
                     <div>
-                        <label for="dp-enlace" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Enlace (URL opcional)</label>
-                        <input id="dp-enlace" type="url" placeholder="https://..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                        <label for="dp-nota" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nota / Descripción</label>
+                        <textarea id="dp-nota" rows="3" maxlength="1000" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></textarea>
                     </div>
-                </div>
-                <div>
-                    <label for="dp-nota" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nota / Descripción</label>
-                    <textarea id="dp-nota" rows="3" maxlength="1000" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></textarea>
-                </div>
-                <p id="dp-mensaje" class="text-[13px] hidden"></p>
-                <div class="flex gap-3 pt-1">
-                    <button id="dp-btn-eliminar" type="button" onclick="abrirGuardrailEliminacion()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl" title="Opciones de archivo o eliminación segura">
-                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
-                    </button>
-                    <button type="button" onclick="cerrarModalDesarrollo(true)" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                    <p id="dp-mensaje" class="text-[13px] hidden"></p>
+                    <div class="flex gap-3 pt-1">
+                        <button id="dp-btn-eliminar" type="button" onclick="abrirGuardrailEliminacion()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl" title="Opciones de archivo o eliminación segura">
+                            <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                        </button>
+                        <button type="button" onclick="irAPaso1Desarrollo()" class="bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] px-4 py-3 rounded-xl">← Atrás</button>
+                        <button type="button" onclick="cerrarModalDesarrollo(true)" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                        <button type="submit" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -913,15 +948,133 @@
             cerrarModal("modal-desarrollo");
         }
 
+        const DP_PILARES_META = {
+            "🗣️ Comunicación": "Escucha activa y acuerdos",
+            "💖 Autoestima": "Diálogo interno y logros",
+            "🧭 Autoconocimiento": "Valores e introspección",
+        };
+        const DP_TIPOS_META = {
+            "💬 Conversación": "Charla importante o acuerdo",
+            "🏆 Logro / Validación": "Avance o reconocimiento personal",
+            "🪞 Reflexión / Disparador": "Insight o pregunta del día",
+            "🎯 Valor / Meta": "Objetivo o principio guía",
+            "🏋️ Ejercicio práctico": "Dinámica o hábito aplicable",
+            "🎥 Video / Masterclass": "Charla o clase grabada",
+            "📖 Lectura / Libro": "Libro, ensayo o artículo",
+        };
+
+        function _tipoUsaPuntaje(tipo) {
+            return ["🏋️ Ejercicio práctico", "🎥 Video / Masterclass", "📖 Lectura / Libro", "🎯 Valor / Meta"].includes(tipo);
+        }
+        function _tipoUsaFrecuencia(tipo) {
+            return ["🏋️ Ejercicio práctico", "💬 Conversación"].includes(tipo);
+        }
+        function _tipoUsaRecursoDefault(tipo) {
+            return ["🏋️ Ejercicio práctico", "🎥 Video / Masterclass", "📖 Lectura / Libro"].includes(tipo);
+        }
+
+        function _renderWizardPaso1Cards() {
+            const pilarSel = document.getElementById("dp-pilar").value;
+            const tipoSel = document.getElementById("dp-tipo").value;
+            const contPil = document.getElementById("dp-pilares-cards");
+            const contTip = document.getElementById("dp-tipos-cards");
+            if (contPil) {
+                contPil.innerHTML = (desarrolloPersonalOpciones.pilares || []).map((p) => {
+                    const activo = p === pilarSel;
+                    return `<button type="button" onclick="seleccionarPilarDP('${escapeHtml(p)}')" class="text-left p-3 rounded-xl bg-[#1c1c1f] border transition-all ${activo ? "border-[#ff5f52] ring-1 ring-[#ff5f52]/50" : "border-[#232326] hover:border-white/20"}">
+                        <p class="text-[13px] font-bold text-white">${escapeHtml(p)}</p>
+                        <p class="text-[11px] text-[#8e8e93] mt-0.5">${escapeHtml(DP_PILARES_META[p] || "")}</p>
+                    </button>`;
+                }).join("");
+            }
+            if (contTip) {
+                contTip.innerHTML = (desarrolloPersonalOpciones.tipos || []).map((t) => {
+                    const activo = t === tipoSel;
+                    return `<button type="button" onclick="seleccionarTipoDP('${escapeHtml(t)}')" class="text-left p-3 rounded-xl bg-[#1c1c1f] border transition-all ${activo ? "border-[#ff5f52] ring-1 ring-[#ff5f52]/50" : "border-[#232326] hover:border-white/20"}">
+                        <p class="text-[13px] font-bold text-white">${escapeHtml(t)}</p>
+                        <p class="text-[11px] text-[#8e8e93] mt-0.5">${escapeHtml(DP_TIPOS_META[t] || "")}</p>
+                    </button>`;
+                }).join("");
+            }
+        }
+
+        function seleccionarPilarDP(pilar) {
+            document.getElementById("dp-pilar").value = pilar;
+            _renderWizardPaso1Cards();
+            _aplicarVisibilidadCamposDP();
+            guardarBorradorDesarrollo();
+        }
+
+        function seleccionarTipoDP(tipo) {
+            document.getElementById("dp-tipo").value = tipo;
+            _renderWizardPaso1Cards();
+            _aplicarVisibilidadCamposDP();
+            guardarBorradorDesarrollo();
+        }
+
+        function actualizarSliderDP(val) {
+            const num = Math.min(100, Math.max(0, Number(val) || 0));
+            document.getElementById("dp-puntaje-slider").value = String(num);
+            document.getElementById("dp-puntaje").value = String(num);
+            document.getElementById("dp-puntaje-valor").textContent = `${num}%`;
+        }
+
+        function mostrarBloqueRecursoDP() {
+            document.getElementById("dp-grupo-recurso").classList.remove("hidden");
+            document.getElementById("dp-recurso-toggle-wrap").classList.add("hidden");
+        }
+
+        function _aplicarVisibilidadCamposDP() {
+            const pilar = document.getElementById("dp-pilar").value;
+            const tipo = document.getElementById("dp-tipo").value;
+            const resEl = document.getElementById("dp-resumen-seleccion");
+            if (resEl) resEl.textContent = `${pilar} · ${tipo}`;
+
+            const usaPuntaje = _tipoUsaPuntaje(tipo);
+            document.getElementById("dp-grupo-puntaje").classList.toggle("hidden", !usaPuntaje);
+            if (!usaPuntaje) document.getElementById("dp-puntaje").value = "";
+
+            const usaFrec = _tipoUsaFrecuencia(tipo);
+            document.getElementById("dp-grupo-frecuencia").classList.toggle("hidden", !usaFrec);
+
+            const usaRec = _tipoUsaRecursoDefault(tipo)
+                || Boolean(document.getElementById("dp-recurso").value.trim())
+                || Boolean(document.getElementById("dp-enlace").value.trim());
+            document.getElementById("dp-grupo-recurso").classList.toggle("hidden", !usaRec);
+            document.getElementById("dp-recurso-toggle-wrap").classList.toggle("hidden", usaRec);
+
+            const esPuntual = tipo === "🏆 Logro / Validación" || tipo === "🪞 Reflexión / Disparador";
+            const estEl = document.getElementById("dp-estado");
+            if (esPuntual && estEl && !document.getElementById("dp-page-id").value && estEl.value === "En curso") {
+                if ([...estEl.options].some((o) => o.value === "Completado")) estEl.value = "Completado";
+            }
+        }
+
+        function irAPaso1Desarrollo() {
+            document.getElementById("dp-step-1").classList.remove("hidden");
+            document.getElementById("dp-step-2").classList.add("hidden");
+            document.getElementById("dp-step-badge").textContent = "Paso 1 de 2";
+            _renderWizardPaso1Cards();
+        }
+
+        function irAPaso2Desarrollo() {
+            _aplicarVisibilidadCamposDP();
+            document.getElementById("dp-step-1").classList.add("hidden");
+            document.getElementById("dp-step-2").classList.remove("hidden");
+            document.getElementById("dp-step-badge").textContent = "Paso 2 de 2";
+            setTimeout(() => document.getElementById("dp-nombre").focus(), 40);
+        }
+
         function abrirModalDesarrollo(pilarPre, tipoPre) {
             document.getElementById("form-desarrollo").reset();
             document.getElementById("dp-page-id").value = "";
             document.getElementById("dp-modal-titulo").textContent = "Nuevo registro";
             _poblarDatalistLibros();
-            _poblarSelect("dp-pilar", desarrolloPersonalOpciones.pilares, pilarPre || desarrolloPersonalOpciones.pilares[0]);
-            _poblarSelect("dp-tipo", desarrolloPersonalOpciones.tipos, tipoPre || desarrolloPersonalOpciones.tipos[0]);
+            document.getElementById("dp-pilar").value = pilarPre || desarrolloPersonalOpciones.pilares[0];
+            document.getElementById("dp-tipo").value = tipoPre || desarrolloPersonalOpciones.tipos[0];
             _poblarSelect("dp-estado", desarrolloPersonalOpciones.estados, "En curso");
             document.getElementById("dp-fecha").value = hoyLocalISO();
+            actualizarSliderDP(0);
             document.getElementById("dp-btn-eliminar").classList.add("hidden");
             document.getElementById("dp-mensaje").classList.add("hidden");
             document.getElementById("dp-recurso-toast").classList.add("hidden");
@@ -931,10 +1084,10 @@
             if (borrador) {
                 document.getElementById("dp-nombre").value = borrador.nombre || "";
                 if (borrador.pilar && !pilarPre) document.getElementById("dp-pilar").value = borrador.pilar;
-                if (borrador.tipo) document.getElementById("dp-tipo").value = borrador.tipo;
+                if (borrador.tipo && !tipoPre) document.getElementById("dp-tipo").value = borrador.tipo;
                 if (borrador.estado) document.getElementById("dp-estado").value = borrador.estado;
                 if (borrador.fecha) document.getElementById("dp-fecha").value = borrador.fecha;
-                document.getElementById("dp-puntaje").value = borrador.puntaje || "";
+                if (borrador.puntaje !== undefined && borrador.puntaje !== "") actualizarSliderDP(borrador.puntaje);
                 document.getElementById("dp-frecuencia").value = borrador.frecuencia || "";
                 document.getElementById("dp-recurso").value = borrador.recurso || "";
                 document.getElementById("dp-enlace").value = borrador.enlace || "";
@@ -944,6 +1097,11 @@
                 badgeBorrador.classList.add("hidden");
             }
             _setCapa1Pausada(false);
+            if (pilarPre || tipoPre) {
+                irAPaso2Desarrollo();
+            } else {
+                irAPaso1Desarrollo();
+            }
             abrirModal("modal-desarrollo");
         }
 
@@ -1047,11 +1205,11 @@
             document.getElementById("dp-page-id").value = r.id;
             document.getElementById("dp-modal-titulo").textContent = "Editar registro";
             document.getElementById("dp-nombre").value = r.nombre || "";
-            _poblarSelect("dp-pilar", desarrolloPersonalOpciones.pilares, r.pilar || desarrolloPersonalOpciones.pilares[0]);
-            _poblarSelect("dp-tipo", desarrolloPersonalOpciones.tipos, r.tipo || desarrolloPersonalOpciones.tipos[0]);
+            document.getElementById("dp-pilar").value = r.pilar || desarrolloPersonalOpciones.pilares[0];
+            document.getElementById("dp-tipo").value = r.tipo || desarrolloPersonalOpciones.tipos[0];
             _poblarSelect("dp-estado", desarrolloPersonalOpciones.estados, r.estado || "En curso");
             document.getElementById("dp-fecha").value = r.fecha || "";
-            document.getElementById("dp-puntaje").value = r.puntaje !== null && r.puntaje !== undefined ? r.puntaje : "";
+            actualizarSliderDP(r.puntaje !== null && r.puntaje !== undefined ? r.puntaje : 0);
             document.getElementById("dp-frecuencia").value = r.frecuencia_tecnica || "";
             _poblarDatalistLibros();
             document.getElementById("dp-recurso").value = r.recurso_asociado || "";
@@ -1059,6 +1217,8 @@
             document.getElementById("dp-nota").value = r.nota || "";
             document.getElementById("dp-btn-eliminar").classList.remove("hidden");
             document.getElementById("dp-mensaje").classList.add("hidden");
+            document.getElementById("dp-draft-badge").classList.add("hidden");
+            irAPaso2Desarrollo();
             abrirModal("modal-desarrollo");
         }
 
@@ -1116,15 +1276,16 @@
         async function manejarSubmitDesarrollo(event) {
             event.preventDefault();
             const pageId = document.getElementById("dp-page-id").value.trim();
+            const tipo = document.getElementById("dp-tipo").value;
             const res = construirPayloadDesarrollo({
                 pageId,
                 nombre: document.getElementById("dp-nombre").value,
                 pilar: document.getElementById("dp-pilar").value,
-                tipo: document.getElementById("dp-tipo").value,
+                tipo,
                 estado: document.getElementById("dp-estado").value,
                 fecha: document.getElementById("dp-fecha").value,
-                puntaje: document.getElementById("dp-puntaje").value,
-                frecuenciaTecnica: document.getElementById("dp-frecuencia").value,
+                puntaje: _tipoUsaPuntaje(tipo) ? document.getElementById("dp-puntaje").value : "",
+                frecuenciaTecnica: _tipoUsaFrecuencia(tipo) ? document.getElementById("dp-frecuencia").value : "",
                 recursoAsociado: document.getElementById("dp-recurso").value,
                 enlace: document.getElementById("dp-enlace").value,
                 nota: document.getElementById("dp-nota").value,
