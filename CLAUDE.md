@@ -124,6 +124,10 @@ Este gate solo verifica `PRD.md`/`SRS.md`. Los destinos en Notion (`Solicitudes 
   1. **Rol Analista Funcional (AF) primero:** al cargar una nueva solicitud de función, setearte primero como **AF (Analista Funcional)** y hacer preguntas puntuales a Sabrina para completar y confirmar los **criterios de aceptación** antes de pasar a diseño o código.
   2. **Diseño en Google Stitch:** una vez confirmados los criterios de aceptación, diseñar la pantalla en **Google Stitch**.
   3. **Enlace en la página de Notion:** dejar el enlace directo de Stitch en la página de **Notion** correspondiente (`Solicitudes de funciones` / HU) para que Sabrina pueda revisarla y hacer ajustes.
+- **Reglas de Diseño UI & Versionado de Pantallas (Stitch + Código):**
+  - **Editar siempre la última versión:** al modificar una pantalla existente, partir y editar siempre sobre la **última versión** vigente (no sobre versiones viejas).
+  - **Crear nuevas pantallas desde la última versión:** toda pantalla nueva debe partir desde la **última versión del sistema de diseño** y respetar todos los **ajustes ya realizados** (incluyendo responsive mobile y mejoras vigentes).
+  - **Sistema de diseño del código como fuente visual:** al implementar pantallas en código, usar siempre las clases, tokens, componentes y estructura reales definidos en `Documentacion/DESIGN.md`, `styles.css`, `tailwind.config.js` y `src/utils/somatic_shell.js` (aunque un mockup de Stitch tenga diferencias visuales).
 - **Idioma:** responder siempre en español.
 
 ## Contexto rápido del proyecto
