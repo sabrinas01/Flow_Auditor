@@ -155,7 +155,7 @@
             <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
             <div class="min-w-0">
                 <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
-                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.87</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo</p>
             </div>
         </div>
     </aside>
@@ -190,23 +190,23 @@
         </header>
 
         <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
-            <!-- Mini-resumen Stitch (4 KPIs) -->
+            <!-- Mini-resumen Stitch (4 KPIs compactos alineados a Recordatorios Diarios) -->
             <section class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <div class="glass-card rounded-2xl p-4 border-l-4 border-l-[#83da85]">
-                    <p class="text-[10px] font-label-caps text-[#8e8e93]">TOTAL ACTIVOS</p>
-                    <p id="varios-resumen-total" class="text-[22px] font-bold text-[#83da85] mt-1">0</p>
+                <div class="bg-[#18181b] rounded-2xl p-4 border border-white/[0.06] border-l-4 border-l-[#ff5f52] shadow-2xl">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93]">URGENTES HOY</p>
+                    <p id="varios-resumen-hoy" class="text-[22px] font-bold text-[#ff5f52] mt-1">0</p>
                 </div>
-                <div class="glass-card rounded-2xl p-4 border-l-4 border-l-[#ff5f52]">
-                    <p class="text-[10px] font-label-caps text-[#8e8e93]">HOY &amp; URGENTE</p>
-                    <p id="varios-resumen-hoy" class="text-[22px] font-bold text-white mt-1">0</p>
-                </div>
-                <div class="glass-card rounded-2xl p-4 border-l-4 border-l-[#e49102]">
+                <div class="bg-[#18181b] rounded-2xl p-4 border border-white/[0.06] border-l-4 border-l-[#e49102] shadow-2xl">
                     <p class="text-[10px] font-label-caps text-[#8e8e93]">PRÓXIMOS DÍAS</p>
                     <p id="varios-resumen-manana" class="text-[22px] font-bold text-white mt-1">0</p>
                 </div>
-                <div class="glass-card rounded-2xl p-4 border-l-4 border-l-[#00aaff]">
-                    <p class="text-[10px] font-label-caps text-[#8e8e93]">HISTORIAL / BACKLOG</p>
+                <div class="bg-[#18181b] rounded-2xl p-4 border border-white/[0.06] border-l-4 border-l-[#00aaff] shadow-2xl">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93]">AYER &amp; SIN FECHA</p>
                     <p id="varios-resumen-resto" class="text-[22px] font-bold text-white mt-1">0</p>
+                </div>
+                <div class="bg-[#18181b] rounded-2xl p-4 border border-white/[0.06] border-l-4 border-l-[#83da85] shadow-2xl">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93]">TOTAL ACTIVOS</p>
+                    <p id="varios-resumen-total" class="text-[22px] font-bold text-[#83da85] mt-1">0</p>
                 </div>
             </section>
 
@@ -216,12 +216,9 @@
             <section class="grid grid-cols-1 gap-grid-gutter">
 
                 <!-- Hoy -->
-                <article class="glass-card rounded-2xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6">
+                <article class="glass-card rounded-2xl p-5 sm:p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-5 shadow-2xl">
                     <div class="flex justify-between items-start">
-                        <div class="space-y-1">
-                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">HOY</p>
-                            <h2 class="text-headline-md font-headline-md text-white">Recordatorios de hoy</h2>
-                        </div>
+                        <h2 class="text-headline-md font-headline-md text-white">Recordatorios de hoy</h2>
                         <div class="flex items-center gap-2">
                             <span id="total-varios-hoy-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 ítems</span>
                             <button type="button" onclick="toggleBloque('varios-hoy')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-hoy">
@@ -230,19 +227,14 @@
                         </div>
                     </div>
                     <div id="content-varios-hoy">
-                        <div id="list-varios-hoy" class="space-y-3">
-                            <!-- Se inyectan las filas dinámicamente -->
-                        </div>
+                        <div id="list-varios-hoy" class="space-y-3"></div>
                     </div>
                 </article>
 
                 <!-- Mañana -->
-                <article class="glass-card rounded-2xl p-8 border-l-4 border-l-[#e49102] flex flex-col gap-6">
+                <article class="glass-card rounded-2xl p-5 sm:p-8 border-l-4 border-l-[#e49102] flex flex-col gap-5 shadow-2xl">
                     <div class="flex justify-between items-start">
-                        <div class="space-y-1">
-                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">MAÑANA</p>
-                            <h2 class="text-headline-md font-headline-md text-white">Recordatorios de mañana</h2>
-                        </div>
+                        <h2 class="text-headline-md font-headline-md text-white">Recordatorios de mañana</h2>
                         <div class="flex items-center gap-2">
                             <span id="total-varios-manana-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
                             <button type="button" onclick="toggleBloque('varios-manana')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-manana">
@@ -251,19 +243,14 @@
                         </div>
                     </div>
                     <div id="content-varios-manana">
-                        <div id="list-varios-manana" class="space-y-3">
-                            <!-- Se inyectan las filas dinámicamente -->
-                        </div>
+                        <div id="list-varios-manana" class="space-y-3"></div>
                     </div>
                 </article>
 
                 <!-- Ayer -->
-                <article class="glass-card rounded-2xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
+                <article class="glass-card rounded-2xl p-5 sm:p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-5 shadow-2xl">
                     <div class="flex justify-between items-start">
-                        <div class="space-y-1">
-                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">AYER</p>
-                            <h2 class="text-headline-md font-headline-md text-white">Recordatorios de ayer</h2>
-                        </div>
+                        <h2 class="text-headline-md font-headline-md text-white">Recordatorios de ayer</h2>
                         <div class="flex items-center gap-2">
                             <span id="total-varios-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
                             <button type="button" onclick="toggleBloque('varios-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-ayer">
@@ -272,19 +259,14 @@
                         </div>
                     </div>
                     <div id="content-varios-ayer">
-                        <div id="list-varios-ayer" class="space-y-3">
-                            <!-- Se inyectan las filas dinámicamente -->
-                        </div>
+                        <div id="list-varios-ayer" class="space-y-3"></div>
                     </div>
                 </article>
 
-                <!-- Sin fecha (nuevo v4.26): ítems "Por hacer" sin la propiedad Fecha cargada -->
-                <article class="glass-card rounded-2xl p-8 border-l-4 border-l-[#8e8e93] flex flex-col gap-6">
+                <!-- Sin fecha -->
+                <article class="glass-card rounded-2xl p-5 sm:p-8 border-l-4 border-l-[#8e8e93] flex flex-col gap-5 shadow-2xl">
                     <div class="flex justify-between items-start">
-                        <div class="space-y-1">
-                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">SIN FECHA</p>
-                            <h2 class="text-headline-md font-headline-md text-white">Recordatorios sin fecha</h2>
-                        </div>
+                        <h2 class="text-headline-md font-headline-md text-white">Recordatorios sin fecha</h2>
                         <div class="flex items-center gap-2">
                             <span id="total-varios-sin-fecha-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
                             <button type="button" onclick="toggleBloque('varios-sin-fecha')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-sin-fecha">
@@ -293,18 +275,28 @@
                         </div>
                     </div>
                     <div id="content-varios-sin-fecha">
-                        <div id="list-varios-sin-fecha" class="space-y-3">
-                            <!-- Se inyectan las filas dinámicamente -->
-                        </div>
+                        <div id="list-varios-sin-fecha" class="space-y-3"></div>
                     </div>
                 </article>
             </section>
 
-            <!-- Botón de Redirección Oficial a Notion DB -->
-            <section class="flex flex-col items-center py-4">
+            <!-- Caja Mentora SabryOff (alineada a Recordatorios Diarios) -->
+            <section class="bg-[#18181b] rounded-2xl p-6 border border-white/[0.06] border-l-4 border-l-[#ff5f52] flex items-start gap-4">
+                <div class="w-10 h-10 rounded-xl bg-[#e49102]/15 border border-[#e49102]/30 flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-[#e49102]">lightbulb</span>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-[11px] font-label-caps text-[#e49102] tracking-widest">FEEDBACK DE MENTORA</p>
+                    <p class="text-[14px] text-white italic leading-relaxed">"Priorizá solo lo de hoy; lo que quede sin fecha o de ayer puede esperar o reprogramarse sin culpa, cielo. 🧠✨"</p>
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] pt-1">— CON AMOR 💚 SABRYOFF</p>
+                </div>
+            </section>
+
+            <!-- Botón de Redirección Oficial a Notion DB (Ancho completo) -->
+            <section class="w-full py-2">
                 <a href="https://app.notion.com/p/22ca38bb7a6e8011b667ee8b299227ba?v=362a38bb7a6e80a1b42a000c2a8aeffe&source=copy_link"
                    target="_blank"
-                   class="bg-[#c0453b] hover:bg-[#c0453b]/90 text-white font-bold text-[16px] py-4 px-10 rounded-xl flex items-center gap-3 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
+                   class="w-full bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[15px] py-4 px-8 rounded-xl flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/25 uppercase tracking-wide">
                     <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
                     <span>Ir a Recordatorios Varios</span>
                     <span class="material-symbols-outlined text-[20px]">open_in_new</span>

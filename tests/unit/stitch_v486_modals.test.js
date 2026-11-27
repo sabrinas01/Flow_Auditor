@@ -46,6 +46,22 @@ describe('Pantallas Stitch v4.86 — Detalle de Evento, Foco Diario y Vacíos Co
     expect(py).toContain('def sincronizar_foco_diario(');
   });
 
+  test('gestion-emocional.html, recordatorios-varios.html y salud.html reflejan mejoras v4.89', () => {
+    const ge = fs.readFileSync(path.join(__dirname, '../../gestion-emocional.html'), 'utf8');
+    expect(ge).toContain('Ver Biometría &amp; Ciclo en Salud');
+    expect(ge).toContain('Registrar práctica rápida');
+
+    const rv = fs.readFileSync(path.join(__dirname, '../../recordatorios-varios.html'), 'utf8');
+    expect(rv).toContain('URGENTES HOY');
+    expect(rv).toContain('FEEDBACK DE MENTORA');
+    expect(rv).toContain('SABRYOFF');
+
+    const sa = fs.readFileSync(path.join(__dirname, '../../salud.html'), 'utf8');
+    expect(sa).toContain('id="salud-sugerencias-wrap"');
+    expect(sa).toContain('asistente_sabry:salud_sugerencias_v1');
+    expect(sa).toContain('function abrirModalSugerenciaSalud');
+  });
+
   test('renderizarAgendaEventos agrega botón de detalle y estado vacío compasivo', () => {
     document.body.innerHTML = `
       <span id="total-eventos-manana-lbl"></span>

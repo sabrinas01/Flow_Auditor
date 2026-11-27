@@ -125,7 +125,7 @@
             <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
             <div class="min-w-0">
                 <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
-                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.87</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo</p>
             </div>
         </div>
     </aside>
@@ -287,19 +287,29 @@
 
             <!-- CAJA DE HERRAMIENTAS CONSCIENTES -->
             <section id="sec-caja-consciente" class="glass-card rounded-2xl p-6 sm:p-8 border-l-4 border-l-[#a855f7] space-y-5">
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div>
+                <div class="space-y-4">
+                    <div class="w-full space-y-1.5">
                         <p class="text-[11px] font-label-caps text-[#a855f7] tracking-widest">REGULACIÓN AUTONÓMICA</p>
                         <h2 class="text-headline-md font-headline-md text-white">Caja de Herramientas Conscientes</h2>
+                        <p class="text-[13px] text-[#a1a1aa] leading-relaxed">Recursos somáticos y respiraciones guiadas disponibles al instante según tu nivel de energía y fase del ciclo.</p>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2">
+                    <div class="w-full flex flex-wrap items-center gap-2.5 pt-1 border-t border-white/[0.06]">
+                        <a href="inicio.html" class="px-3 py-1.5 rounded-xl bg-[#18181d] hover:bg-[#232329] border border-white/[0.08] text-[#e5e2e1] text-xs font-semibold inline-flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[14px]">home</span>
+                            <span>Inicio</span>
+                        </a>
                         <a href="salud.html#sec-cuerpo" class="px-3 py-1.5 rounded-xl bg-[#18181d] hover:bg-[#232329] border border-white/[0.08] text-[#ffb961] text-xs font-semibold inline-flex items-center gap-1">
-                            <span>Ver Biometría &amp; Ciclo</span>
+                            <span>Ver Biometría &amp; Ciclo en Salud</span>
                             <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
                         </a>
-                        <button type="button" onclick="toggleNuevaHerramienta()" class="px-3.5 py-1.5 rounded-xl bg-[#a855f7]/20 hover:bg-[#a855f7]/30 border border-[#a855f7]/40 text-[#e9d5ff] text-xs font-bold">
-                            + Agregar herramienta
-                        </button>
+                        <div class="flex flex-wrap items-center gap-2 sm:ml-auto">
+                            <button type="button" onclick="toggleNuevaHerramienta()" class="px-3.5 py-1.5 rounded-xl bg-[#a855f7]/20 hover:bg-[#a855f7]/30 border border-[#a855f7]/40 text-[#e9d5ff] text-xs font-bold">
+                                + Agregar nueva herramienta
+                            </button>
+                            <button type="button" onclick="abrirModalEmocional()" class="px-3.5 py-1.5 rounded-xl bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white text-xs font-bold">
+                                Registrar práctica rápida
+                            </button>
+                        </div>
                     </div>
                 </div>
 
