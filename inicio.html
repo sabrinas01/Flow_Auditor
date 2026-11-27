@@ -120,7 +120,7 @@
             <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
             <div class="min-w-0">
                 <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
-                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.87</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo</p>
             </div>
         </div>
     </aside>
@@ -158,11 +158,7 @@
 
         <div class="flex-1 max-w-[1200px] w-full mx-auto p-container-padding space-y-8">
             <!-- HERO / SALUDO -->
-            <section class="pt-2 space-y-3">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff5f52]/10 border border-[#ff5f52]/30 text-[#ff5f52] text-[11px] font-bold tracking-widest uppercase">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#ff5f52]"></span>
-                    <span>Espacio Personal</span>
-                </div>
+            <section class="pt-2 space-y-2">
                 <h1 class="font-display-lg text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
                     Bienvenida <span class="text-[#ff5f52]">Sabry</span>
                 </h1>
@@ -272,14 +268,14 @@
                         <div id="inicio-ciclo-sintomas" class="flex flex-wrap gap-1.5"></div>
                     </div>
                     <div class="flex flex-wrap gap-2.5 flex-shrink-0">
-                        <a href="gestion-emocional.html" class="px-4 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.1] text-[#83da85] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                        <button id="btn-abrir-stop-inicio" type="button" onclick="abrirModalStopInicio()" class="px-4 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.1] text-[#83da85] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
                             <span>🌿 Caja S.T.O.P.</span>
-                            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
-                        </a>
-                        <a href="salud.html#sec-cuerpo" class="px-4 py-2.5 rounded-xl bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[15px]">self_improvement</span>
+                        </button>
+                        <button id="btn-abrir-ciclo-inicio" type="button" onclick="abrirModalCicloInicio()" class="px-4 py-2.5 rounded-xl bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all">
                             <span>Registrar Síntoma / Ajustar Fase</span>
-                            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
-                        </a>
+                            <span class="material-symbols-outlined text-[15px]">edit_calendar</span>
+                        </button>
                     </div>
                 </div>
             </section>
@@ -572,18 +568,166 @@
     <!-- MODAL HISTORIAL DE FOCOS POR FASE DEL CICLO         -->
     <!-- =================================================== -->
     <div id="modal-historial-foco" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarModalHistorialFoco()">
-        <div class="glass-card rounded-2xl p-6 sm:p-7 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/[0.12] space-y-5" onclick="event.stopPropagation()">
-            <div class="flex items-start justify-between gap-4">
+        <div class="glass-card rounded-2xl p-5 sm:p-7 w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-white/[0.12] space-y-5" onclick="event.stopPropagation()">
+            <div class="flex flex-wrap items-start justify-between gap-3">
                 <div class="space-y-1">
                     <p class="text-[10px] font-label-caps text-[#38bdf8] tracking-widest uppercase">NOTION • HISTORIAL SOMÁTICO</p>
-                    <h3 class="text-xl sm:text-2xl font-headline-md font-extrabold text-white">Historial de Focos por Fase del Ciclo</h3>
+                    <h3 class="text-xl sm:text-2xl font-headline-md font-extrabold text-white">Historial de Focos &amp; Calendario Somático</h3>
                 </div>
-                <button type="button" onclick="cerrarModalHistorialFoco()" class="p-2 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white transition-colors" title="Cerrar (Esc)">
-                    <span class="material-symbols-outlined text-[20px]">close</span>
-                </button>
+                <div class="flex items-center gap-2">
+                    <div class="inline-flex rounded-xl bg-[#18181d] border border-white/[0.08] p-1">
+                        <button id="btn-vista-lista-foco" type="button" onclick="cambiarVistaHistorialFoco('lista')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-[#38bdf8] text-[#082f49]">Lista</button>
+                        <button id="btn-vista-cal-foco" type="button" onclick="cambiarVistaHistorialFoco('calendario')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-[#a1a1aa] hover:text-white">Calendario</button>
+                    </div>
+                    <button type="button" onclick="cerrarModalHistorialFoco()" class="p-2 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white transition-colors" title="Cerrar (Esc)">
+                        <span class="material-symbols-outlined text-[20px]">close</span>
+                    </button>
+                </div>
             </div>
-            <div id="hist-foco-filtros" class="flex flex-wrap gap-2"></div>
-            <div id="hist-foco-lista" class="space-y-3"></div>
+
+            <!-- Filtros por Fase y Tipo de Meta -->
+            <div class="space-y-2.5">
+                <div id="hist-foco-filtros" class="flex flex-wrap gap-2"></div>
+                <div id="hist-foco-meta-filtros" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <!-- Vista Lista -->
+            <div id="hist-foco-vista-lista">
+                <div id="hist-foco-lista" class="space-y-3"></div>
+            </div>
+
+            <!-- Vista Calendario Somático + Drawer + Heatmap Anual -->
+            <div id="hist-foco-vista-cal" class="hidden space-y-4">
+                <div id="hist-cal-kpis" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5"></div>
+
+                <div class="flex flex-wrap items-center justify-between gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3.5 py-2.5">
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="moverMesCalendarioFoco(-1)" class="p-1.5 rounded-lg hover:bg-white/10 text-[#a1a1aa] hover:text-white"><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
+                        <span id="hist-cal-mes-lbl" class="text-sm font-bold text-white min-w-[130px] text-center">Noviembre 2026</span>
+                        <button type="button" onclick="moverMesCalendarioFoco(1)" class="p-1.5 rounded-lg hover:bg-white/10 text-[#a1a1aa] hover:text-white"><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
+                    </div>
+                    <button type="button" onclick="irAHoyCalendarioFoco()" class="px-3 py-1 rounded-lg bg-[#232326] hover:bg-[#2d2d32] text-xs font-bold text-[#ffb961]">Hoy</button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="lg:col-span-2 space-y-2">
+                        <div class="grid grid-cols-7 gap-1.5 text-center text-[10px] font-label-caps text-[#8e8e93] uppercase">
+                            <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+                        </div>
+                        <div id="hist-cal-grid" class="grid grid-cols-7 gap-1.5"></div>
+                    </div>
+                    <div id="hist-cal-drawer" class="rounded-xl bg-[#18181d] border border-white/[0.08] p-4 space-y-3"></div>
+                </div>
+
+                <!-- Panorama Anual Colapsable 52 semanas -->
+                <div class="rounded-xl bg-[#141418] border border-white/[0.08] p-4 space-y-3">
+                    <button type="button" onclick="toggleHeatmapAnualFoco()" class="w-full flex items-center justify-between gap-2 text-left">
+                        <div>
+                            <p class="text-xs font-bold text-white">Panorama Anual · 52 Semanas de Foco &amp; Ciclos</p>
+                            <p id="hist-anual-resumen" class="text-[11px] text-[#8e8e93]">Resumen anual por fase menstrual</p>
+                        </div>
+                        <span id="hist-anual-chevron" class="material-symbols-outlined text-[20px] text-[#8e8e93]">expand_more</span>
+                    </button>
+                    <div id="hist-anual-body" class="hidden space-y-3 pt-2 border-t border-white/[0.06]">
+                        <div id="hist-anual-heatmap" class="overflow-x-auto pb-1"></div>
+                        <div id="hist-anual-fases" class="flex flex-wrap gap-2 text-[11px]"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- MODAL CAJA S.T.O.P. DIRECTO EN INICIO               -->
+    <!-- =================================================== -->
+    <div id="modal-stop-inicio" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarModalStopInicio()">
+        <div class="glass-card rounded-2xl p-6 sm:p-7 w-full max-w-lg max-h-[90vh] overflow-y-auto border border-[#83da85]/30 space-y-5" onclick="event.stopPropagation()">
+            <div class="flex items-start justify-between gap-4">
+                <div class="space-y-1">
+                    <p class="text-[10px] font-label-caps text-[#83da85] tracking-widest uppercase">REGULACIÓN SOMÁTICA RÁPIDA</p>
+                    <h3 class="text-xl font-headline-md font-extrabold text-white">Protocolo Guiado S.T.O.P.</h3>
+                </div>
+                <button type="button" onclick="cerrarModalStopInicio()" class="p-2 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white"><span class="material-symbols-outlined text-[20px]">close</span></button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5 text-xs">
+                <div class="rounded-xl bg-[#18181d] border border-white/[0.08] p-3"><strong class="text-[#ff5f52]">S · Stop:</strong> <span class="text-[#e2beba]">Frená 10 segundos lo que estás haciendo.</span></div>
+                <div class="rounded-xl bg-[#18181d] border border-white/[0.08] p-3"><strong class="text-[#ffb961]">T · Toma aire:</strong> <span class="text-[#e2beba]">Inhalá lento en 4s, sostené 4s, exhalá 4s.</span></div>
+                <div class="rounded-xl bg-[#18181d] border border-white/[0.08] p-3"><strong class="text-[#38bdf8]">O · Observa:</strong> <span class="text-[#e2beba]">Notá hombros, mandíbula y emoción sin juzgar.</span></div>
+                <div class="rounded-xl bg-[#18181d] border border-white/[0.08] p-3"><strong class="text-[#83da85]">P · Procede:</strong> <span class="text-[#e2beba]">Elegí un único paso amable y realista.</span></div>
+            </div>
+
+            <div class="rounded-2xl bg-[#141418] border border-[#83da85]/25 p-5 text-center space-y-3">
+                <p id="stop-ini-fase-txt" class="text-sm font-bold text-[#83da85]">Respiración Cuadrada 4-4-4</p>
+                <p id="stop-ini-timer-txt" class="text-3xl font-extrabold font-mono text-white">00:48</p>
+                <div class="flex justify-center gap-2">
+                    <button type="button" onclick="iniciarRespiracionStopInicio()" class="px-4 py-2 rounded-xl bg-[#83da85] text-[#00390e] text-xs font-extrabold">Iniciar pausa 48s</button>
+                    <button type="button" onclick="detenerRespiracionStopInicio()" class="px-3.5 py-2 rounded-xl bg-[#1c1c1f] text-[#a1a1aa] hover:text-white text-xs font-bold">Reiniciar</button>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/[0.08]">
+                <a href="gestion-emocional.html" class="text-xs font-bold text-[#83da85] hover:underline inline-flex items-center gap-1">
+                    <span>Ir a Gestión Emocional completa</span>
+                    <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                </a>
+                <button type="button" onclick="cerrarModalStopInicio()" class="px-4 py-2 rounded-xl bg-[#1c1c1f] text-white text-xs font-bold">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- MODAL AJUSTAR FASE / SÍNTOMA EN INICIO              -->
+    <!-- =================================================== -->
+    <div id="modal-ciclo-inicio" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarModalCicloInicio()">
+        <div class="glass-card rounded-2xl p-6 sm:p-7 w-full max-w-lg max-h-[90vh] overflow-y-auto border border-[#ff5f52]/30 space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-start justify-between gap-4">
+                <div class="space-y-1">
+                    <p class="text-[10px] font-label-caps text-[#ff5f52] tracking-widest uppercase">SALUD_CICLO_SABRY · NOTION</p>
+                    <h3 class="text-xl font-headline-md font-extrabold text-white">Ajustar Fase &amp; Registrar Síntoma</h3>
+                </div>
+                <button type="button" onclick="cerrarModalCicloInicio()" class="p-2 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white"><span class="material-symbols-outlined text-[20px]">close</span></button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label for="ini-ciclo-nombre" class="block text-xs font-semibold text-[#8e8e93] mb-1">Fase *</label>
+                    <select id="ini-ciclo-nombre" class="w-full bg-[#18181d] border border-white/[0.1] rounded-lg px-3 py-2 text-[13px] text-white">
+                        <option value="Fase menstrual">Fase menstrual</option>
+                        <option value="Fase Folicular">Fase Folicular</option>
+                        <option value="Fase ovulatoria">Fase ovulatoria</option>
+                        <option value="Fase Lútea">Fase Lútea</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="ini-ciclo-fecha" class="block text-xs font-semibold text-[#8e8e93] mb-1">Fecha inicio *</label>
+                    <input id="ini-ciclo-fecha" type="date" class="w-full bg-[#18181d] border border-white/[0.1] rounded-lg px-3 py-2 text-[13px] text-white" />
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-[#8e8e93] mb-1.5">Síntomas frecuentes</label>
+                <div id="ini-ciclo-sintomas-chips" class="flex flex-wrap gap-1.5"></div>
+                <input id="ini-ciclo-sintoma-extra" type="text" maxlength="40" placeholder="Otro síntoma (opcional)..." class="mt-2 w-full bg-[#18181d] border border-white/[0.1] rounded-lg px-3 py-2 text-[13px] text-white placeholder-[#8e8e93]" />
+            </div>
+
+            <div>
+                <label for="ini-ciclo-notas" class="block text-xs font-semibold text-[#8e8e93] mb-1">Notas somáticas</label>
+                <textarea id="ini-ciclo-notas" rows="2" placeholder="Cómo se siente tu cuerpo hoy..." class="w-full bg-[#18181d] border border-white/[0.1] rounded-lg px-3 py-2 text-[13px] text-white placeholder-[#8e8e93]"></textarea>
+            </div>
+
+            <p id="ini-ciclo-msg" class="hidden text-xs text-[#ff5f52] font-semibold"></p>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/[0.08]">
+                <a href="salud.html#sec-cuerpo" class="text-xs font-bold text-[#ffb4aa] hover:underline inline-flex items-center gap-1">
+                    <span>Abrir Salud completo</span>
+                    <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                </a>
+                <div class="flex gap-2">
+                    <button type="button" onclick="cerrarModalCicloInicio()" class="px-3.5 py-2 rounded-xl bg-[#1c1c1f] text-white text-xs font-bold">Cancelar</button>
+                    <button type="button" onclick="guardarCicloDesdeInicio()" class="px-4 py-2 rounded-xl bg-[#ff5f52] text-white text-xs font-extrabold">Guardar en Notion</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1025,11 +1169,20 @@
             }
         }
 
+        let _filtroHistorialMeta = "Todas";
+        let _vistaHistorialFoco = "lista";
+        let _calAnioFoco = new Date().getFullYear();
+        let _calMesFoco = new Date().getMonth();
+        let _calDiaSel = _hoyIsoART();
+        let _stopTimer = null;
+        let _stopSegundos = 48;
+        const SINTOMAS_RAPIDOS_INICIO = ["Fatiga", "Cólicos", "Sensibilidad", "Dolor lumbar", "Claridad mental", "Buen descanso"];
+
         function abrirModalHistorialFoco() {
             const modal = document.getElementById("modal-historial-foco");
             modal.classList.remove("hidden");
             modal.classList.add("flex");
-            renderizarHistorialFoco(_filtroHistorialFase);
+            renderizarHistorialFoco(_filtroHistorialFase, _filtroHistorialMeta);
         }
 
         function cerrarModalHistorialFoco() {
@@ -1038,22 +1191,57 @@
             modal.classList.remove("flex");
         }
 
-        function renderizarHistorialFoco(faseFiltro = "Todas") {
+        function cambiarVistaHistorialFoco(vista) {
+            _vistaHistorialFoco = vista === "calendario" ? "calendario" : "lista";
+            const esCal = _vistaHistorialFoco === "calendario";
+            document.getElementById("hist-foco-vista-lista").classList.toggle("hidden", esCal);
+            document.getElementById("hist-foco-vista-cal").classList.toggle("hidden", !esCal);
+            document.getElementById("btn-vista-lista-foco").className = `px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${!esCal ? "bg-[#38bdf8] text-[#082f49]" : "text-[#a1a1aa] hover:text-white"}`;
+            document.getElementById("btn-vista-cal-foco").className = `px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${esCal ? "bg-[#38bdf8] text-[#082f49]" : "text-[#a1a1aa] hover:text-white"}`;
+            renderizarHistorialFoco(_filtroHistorialFase, _filtroHistorialMeta);
+        }
+
+        function _registrosFiltradosFoco(faseFiltro, metaFiltro) {
+            return (inicioFocoHistorial || []).filter((r) => {
+                if (faseFiltro !== "Todas" && r.fase_ciclo !== faseFiltro) return false;
+                if (metaFiltro === "Todas") return true;
+                return (r.prioridades || []).some((p) => (p.texto || "").trim() && p.tag === metaFiltro);
+            });
+        }
+
+        function renderizarHistorialFoco(faseFiltro = "Todas", metaFiltro = _filtroHistorialMeta) {
             _filtroHistorialFase = faseFiltro;
+            _filtroHistorialMeta = metaFiltro;
+
             const fases = ["Todas", "Menstrual", "Folicular", "Ovulatoria", "Lútea"];
             document.getElementById("hist-foco-filtros").innerHTML = fases.map((f) => {
                 const act = f === faseFiltro;
-                return `<button type="button" onclick="renderizarHistorialFoco('${f}')" class="px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${act ? "bg-[#38bdf8] text-[#082f49]" : "bg-[#18181d] text-[#a1a1aa] hover:text-white border border-white/[0.08]"}">${f}</button>`;
+                return `<button type="button" onclick="renderizarHistorialFoco('${f}', _filtroHistorialMeta)" class="px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${act ? "bg-[#38bdf8] text-[#082f49]" : "bg-[#18181d] text-[#a1a1aa] hover:text-white border border-white/[0.08]"}">${f}</button>`;
             }).join("");
 
-            const lista = (inicioFocoHistorial || []).filter((r) => faseFiltro === "Todas" || r.fase_ciclo === faseFiltro);
+            const metas = ["Todas", "Meta física", "Meta mental", "Meta social/espiritual"];
+            document.getElementById("hist-foco-meta-filtros").innerHTML = metas.map((m) => {
+                const count = (inicioFocoHistorial || []).reduce((acc, r) => {
+                    const prios = (r.prioridades || []).filter((p) => (p.texto || "").trim());
+                    return acc + (m === "Todas" ? prios.length : prios.filter((p) => p.tag === m).length);
+                }, 0);
+                const act = m === metaFiltro;
+                return `<button type="button" onclick="renderizarHistorialFoco(_filtroHistorialFase, '${m}')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all ${act ? "bg-[#ffb961] text-[#2b1700]" : "bg-[#141418] text-[#a1a1aa] hover:text-white border border-white/[0.06]"}">${m === "Todas" ? "Todas las metas" : m} (${count})</button>`;
+            }).join("");
+
+            const lista = _registrosFiltradosFoco(faseFiltro, metaFiltro);
+            if (_vistaHistorialFoco === "calendario") {
+                _renderCalendarioSomaticoFoco(lista);
+                return;
+            }
+
             const cont = document.getElementById("hist-foco-lista");
             if (lista.length === 0) {
-                cont.innerHTML = `<div class="rounded-xl bg-[#18181d] border border-white/[0.06] p-6 text-center text-[13px] text-[#8e8e93]">Todavía no hay focos guardados en Notion para esta fase. Guardá tu foco de hoy para empezar el historial.</div>`;
+                cont.innerHTML = `<div class="rounded-xl bg-[#18181d] border border-white/[0.06] p-6 text-center text-[13px] text-[#8e8e93]">Todavía no hay focos guardados en Notion para este filtro. Guardá tu foco de hoy para empezar el historial.</div>`;
                 return;
             }
             cont.innerHTML = lista.map((r) => {
-                const prios = (r.prioridades || []).filter((p) => (p.texto || "").trim());
+                const prios = (r.prioridades || []).filter((p) => (p.texto || "").trim() && (metaFiltro === "Todas" || p.tag === metaFiltro));
                 return `
                     <article class="rounded-xl bg-[#18181d] border border-white/[0.08] p-4 space-y-3">
                         <div class="flex flex-wrap items-center justify-between gap-2">
@@ -1075,11 +1263,277 @@
             }).join("");
         }
 
-        document.addEventListener("keydown", (e) => {
-            const modalHist = document.getElementById("modal-historial-foco");
-            if (modalHist && !modalHist.classList.contains("hidden") && e.key === "Escape") {
-                cerrarModalHistorialFoco();
+        function _colorFaseCal(fase) {
+            if (fase === "Menstrual") return "border-[#ff5f52]/50 bg-[#ff5f52]/15 text-[#ffb4aa]";
+            if (fase === "Folicular") return "border-[#83da85]/50 bg-[#83da85]/15 text-[#83da85]";
+            if (fase === "Ovulatoria") return "border-[#38bdf8]/50 bg-[#38bdf8]/15 text-[#38bdf8]";
+            if (fase === "Lútea") return "border-[#ffb961]/50 bg-[#ffb961]/15 text-[#ffb961]";
+            return "border-white/[0.06] bg-[#141418] text-[#8e8e93]";
+        }
+
+        function moverMesCalendarioFoco(delta) {
+            _calMesFoco += delta;
+            if (_calMesFoco < 0) { _calMesFoco = 11; _calAnioFoco--; }
+            if (_calMesFoco > 11) { _calMesFoco = 0; _calAnioFoco++; }
+            renderizarHistorialFoco(_filtroHistorialFase, _filtroHistorialMeta);
+        }
+
+        function irAHoyCalendarioFoco() {
+            const d = new Date();
+            _calAnioFoco = d.getFullYear();
+            _calMesFoco = d.getMonth();
+            _calDiaSel = _hoyIsoART();
+            renderizarHistorialFoco(_filtroHistorialFase, _filtroHistorialMeta);
+        }
+
+        function seleccionarDiaCalendarioFoco(fechaIso) {
+            _calDiaSel = fechaIso;
+            renderizarHistorialFoco(_filtroHistorialFase, _filtroHistorialMeta);
+        }
+
+        function duplicarFocoAHoy(fechaOrigen) {
+            const reg = (inicioFocoHistorial || []).find((r) => r.fecha === fechaOrigen);
+            if (!reg) return;
+            const ciclo = _inferirCicloActual();
+            const nuevo = {
+                ..._leerFocoDiario(),
+                fecha: _hoyIsoART(),
+                intencion: reg.intencion || "",
+                fase_ciclo: ciclo.fase,
+                dia_ciclo: ciclo.dia,
+                disponibilidad: reg.disponibilidad || "Moderada / Estable",
+                dirty: true,
+                prioridades: [0, 1, 2].map((i) => ({
+                    texto: (reg.prioridades && reg.prioridades[i] && reg.prioridades[i].texto) || "",
+                    tag: (reg.prioridades && reg.prioridades[i] && reg.prioridades[i].tag) || FOCO_ETIQUETAS[i],
+                    hecho: false,
+                })),
+            };
+            _guardarFocoStorage(nuevo);
+            renderizarFocoInicio();
+            cerrarModalHistorialFoco();
+            abrirModalFocoDiario();
+        }
+
+        function _renderCalendarioSomaticoFoco(lista) {
+            const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById("hist-cal-mes-lbl").textContent = `${meses[_calMesFoco]} ${_calAnioFoco}`;
+
+            const pref = `${_calAnioFoco}-${String(_calMesFoco + 1).padStart(2, "0")}`;
+            const delMes = lista.filter((r) => (r.fecha || "").startsWith(pref));
+            const metasTot = delMes.reduce((a, r) => a + (r.prioridades || []).filter((p) => (p.texto || "").trim()).length, 0);
+            const metasOk = delMes.reduce((a, r) => a + (r.prioridades || []).filter((p) => (p.texto || "").trim() && p.hecho).length, 0);
+            const diasMes = new Date(_calAnioFoco, _calMesFoco + 1, 0).getDate();
+            const cob = Math.round((delMes.length / diasMes) * 100);
+            const ciclo = _inferirCicloActual();
+
+            document.getElementById("hist-cal-kpis").innerHTML = `
+                <div class="rounded-xl bg-[#18181d] border border-white/[0.08] p-3"><p class="text-[10px] text-[#8e8e93] uppercase">Entradas mes</p><p class="text-lg font-extrabold text-white">${delMes.length}</p></div>
+                <div class="rounded-xl bg-[#18181d] border border-white/[0.08] p-3"><p class="text-[10px] text-[#8e8e93] uppercase">Fase actual</p><p class="text-sm font-extrabold text-[#ffb961] truncate">${ciclo.fase}${ciclo.dia ? ` · D${ciclo.dia}` : ""}</p></div>
+                <div class="rounded-xl bg-[#18181d] border border-white/[0.08] p-3"><p class="text-[10px] text-[#8e8e93] uppercase">Cobertura</p><p class="text-lg font-extrabold text-[#38bdf8]">${cob}%</p></div>
+                <div class="rounded-xl bg-[#18181d] border border-white/[0.08] p-3"><p class="text-[10px] text-[#8e8e93] uppercase">Metas</p><p class="text-lg font-extrabold text-[#83da85]">${metasOk} / ${metasTot}</p></div>
+            `;
+
+            const mapaPorFecha = {};
+            lista.forEach((r) => { if (r.fecha) mapaPorFecha[r.fecha] = r; });
+
+            const primerDiaSemana = (new Date(_calAnioFoco, _calMesFoco, 1).getDay() + 6) % 7;
+            let celdas = "";
+            for (let i = 0; i < primerDiaSemana; i++) {
+                celdas += `<div class="h-14 rounded-lg bg-[#0e0e11] border border-white/[0.03]"></div>`;
+            }
+            for (let d = 1; d <= diasMes; d++) {
+                const iso = `${pref}-${String(d).padStart(2, "0")}`;
+                const reg = mapaPorFecha[iso];
+                const sel = iso === _calDiaSel;
+                const cls = reg ? _colorFaseCal(reg.fase_ciclo) : "border-white/[0.06] bg-[#141418] text-[#8e8e93]";
+                celdas += `<button type="button" onclick="seleccionarDiaCalendarioFoco('${iso}')" class="h-14 rounded-lg border p-1.5 text-left flex flex-col justify-between transition-all ${cls} ${sel ? "ring-2 ring-white" : ""}">
+                    <span class="text-[11px] font-bold">${d}</span>
+                    <span class="text-[9px] truncate">${reg ? escapeHtml(reg.fase_ciclo || "Foco") : ""}</span>
+                </button>`;
+            }
+            document.getElementById("hist-cal-grid").innerHTML = celdas;
+
+            const selReg = mapaPorFecha[_calDiaSel];
+            const drawer = document.getElementById("hist-cal-drawer");
+            if (!selReg) {
+                drawer.innerHTML = `<p class="text-xs font-bold text-white">${escapeHtml(_calDiaSel)}</p><p class="text-xs text-[#8e8e93]">Sin foco guardado en Notion para este día.</p>`;
+            } else {
+                const prios = (selReg.prioridades || []).filter((p) => (p.texto || "").trim());
+                drawer.innerHTML = `
+                    <div class="space-y-1">
+                        <p class="text-xs font-bold text-[#ffb961]">${escapeHtml(selReg.fecha)} · ${escapeHtml(selReg.fase_ciclo || "Ciclo")}${selReg.dia_ciclo ? ` D${selReg.dia_ciclo}` : ""}</p>
+                        <p class="text-sm font-semibold text-white italic">"${escapeHtml(selReg.intencion || "")}"</p>
+                    </div>
+                    <div class="space-y-1.5">${prios.map((p) => `<p class="text-xs ${p.hecho ? "text-[#83da85]" : "text-[#e5e2e1]"}">${p.hecho ? "✓" : "○"} ${escapeHtml(p.texto)}</p>`).join("") || '<p class="text-xs text-[#8e8e93]">Sin prioridades</p>'}</div>
+                    <button type="button" onclick="duplicarFocoAHoy('${escapeHtml(selReg.fecha)}')" class="w-full py-2 rounded-lg bg-[#232326] hover:bg-[#2d2d32] text-xs font-bold text-white">Duplicar a hoy</button>
+                `;
+            }
+
+            _renderHeatmapAnualFoco(lista);
+        }
+
+        function toggleHeatmapAnualFoco() {
+            const body = document.getElementById("hist-anual-body");
+            const chev = document.getElementById("hist-anual-chevron");
+            const abierto = !body.classList.contains("hidden");
+            body.classList.toggle("hidden", abierto);
+            chev.style.transform = abierto ? "rotate(0deg)" : "rotate(180deg)";
+        }
+
+        function _renderHeatmapAnualFoco(lista) {
+            const mapa = {};
+            const conteo = { Menstrual: 0, Folicular: 0, Ovulatoria: 0, Lútea: 0 };
+            lista.forEach((r) => {
+                if (r.fecha) mapa[r.fecha] = r;
+                if (conteo[r.fase_ciclo] !== undefined) conteo[r.fase_ciclo]++;
+            });
+            document.getElementById("hist-anual-resumen").textContent = `${lista.length} registros totales en Notion`;
+            const hoy = new Date();
+            let cols = "";
+            for (let w = 51; w >= 0; w--) {
+                let cells = "";
+                for (let d = 0; d < 7; d++) {
+                    const dt = new Date(hoy.getTime() - (w * 7 + (6 - d)) * 86400000);
+                    const iso = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+                    const reg = mapa[iso];
+                    const bg = !reg ? "bg-[#1c1c1f]"
+                        : reg.fase_ciclo === "Menstrual" ? "bg-[#ff5f52]/70"
+                        : reg.fase_ciclo === "Folicular" ? "bg-[#83da85]/70"
+                        : reg.fase_ciclo === "Ovulatoria" ? "bg-[#38bdf8]/70"
+                        : "bg-[#ffb961]/70";
+                    cells += `<span title="${iso}${reg ? ` · ${reg.fase_ciclo}` : ""}" class="w-2.5 h-2.5 rounded-sm ${bg} block"></span>`;
+                }
+                cols += `<div class="flex flex-col gap-1">${cells}</div>`;
+            }
+            document.getElementById("hist-anual-heatmap").innerHTML = `<div class="flex gap-1 min-w-max">${cols}</div>`;
+            document.getElementById("hist-anual-fases").innerHTML = Object.entries(conteo).map(([k, v]) => `<span class="px-2 py-0.5 rounded-full bg-[#18181d] border border-white/[0.08] text-[#e5e2e1]">${k}: <strong>${v}</strong></span>`).join("");
+        }
+
+        function abrirModalStopInicio() {
+            detenerRespiracionStopInicio();
+            const m = document.getElementById("modal-stop-inicio");
+            m.classList.remove("hidden");
+            m.classList.add("flex");
+        }
+
+        function cerrarModalStopInicio() {
+            detenerRespiracionStopInicio();
+            const m = document.getElementById("modal-stop-inicio");
+            m.classList.add("hidden");
+            m.classList.remove("flex");
+        }
+
+        function iniciarRespiracionStopInicio() {
+            detenerRespiracionStopInicio();
+            _stopSegundos = 48;
+            const fases = ["Inhalá profundo (4s)...", "Sostené suave (4s)...", "Exhalá lento (4s)..."];
+            const update = () => {
+                document.getElementById("stop-ini-timer-txt").textContent = `00:${String(_stopSegundos).padStart(2, "0")}`;
+                const idx = Math.floor((48 - _stopSegundos) / 4) % 3;
+                document.getElementById("stop-ini-fase-txt").textContent = _stopSegundos === 0 ? "¡Pausa completada! Elegí un paso amable." : fases[idx];
+            };
+            update();
+            _stopTimer = setInterval(() => {
+                _stopSegundos--;
+                update();
+                if (_stopSegundos <= 0) {
+                    clearInterval(_stopTimer);
+                    _stopTimer = null;
+                }
+            }, 1000);
+        }
+
+        function detenerRespiracionStopInicio() {
+            if (_stopTimer) { clearInterval(_stopTimer); _stopTimer = null; }
+            _stopSegundos = 48;
+            const t = document.getElementById("stop-ini-timer-txt");
+            const f = document.getElementById("stop-ini-fase-txt");
+            if (t) t.textContent = "00:48";
+            if (f) f.textContent = "Respiración Cuadrada 4-4-4";
+        }
+
+        function abrirModalCicloInicio() {
+            const { faseActual } = obtenerResumenCiclo(inicioCiclo, _hoyIsoART());
+            const faseObj = (inicioCiclo || []).find((f) => f.nombre === faseActual) || {};
+            document.getElementById("ini-ciclo-nombre").value = faseObj.nombre || "Fase Lútea";
+            document.getElementById("ini-ciclo-fecha").value = faseObj.inicio || _hoyIsoART();
+            document.getElementById("ini-ciclo-notas").value = faseObj.notas || "";
+            document.getElementById("ini-ciclo-sintoma-extra").value = "";
+            document.getElementById("ini-ciclo-msg").classList.add("hidden");
+            const actuales = Array.isArray(faseObj.sintomas) ? faseObj.sintomas : [];
+            document.getElementById("ini-ciclo-sintomas-chips").innerHTML = SINTOMAS_RAPIDOS_INICIO.map((s) => `
+                <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#18181d] border border-white/[0.08] text-xs text-white cursor-pointer">
+                    <input type="checkbox" value="${escapeHtml(s)}" ${actuales.includes(s) ? "checked" : ""} class="ini-sint-chk rounded bg-[#131313] text-[#ff5f52]" />
+                    <span>${escapeHtml(s)}</span>
+                </label>
+            `).join("");
+            const m = document.getElementById("modal-ciclo-inicio");
+            m.classList.remove("hidden");
+            m.classList.add("flex");
+        }
+
+        function cerrarModalCicloInicio() {
+            const m = document.getElementById("modal-ciclo-inicio");
+            m.classList.add("hidden");
+            m.classList.remove("flex");
+        }
+
+        async function guardarCicloDesdeInicio() {
+            const nombre = document.getElementById("ini-ciclo-nombre").value;
+            const inicio = document.getElementById("ini-ciclo-fecha").value;
+            const msgEl = document.getElementById("ini-ciclo-msg");
+            if (!nombre || !inicio) {
+                msgEl.textContent = "Completá la fase y la fecha de inicio.";
+                msgEl.classList.remove("hidden");
                 return;
+            }
+            const sintomas = Array.from(document.querySelectorAll(".ini-sint-chk:checked")).map((c) => c.value);
+            const extra = (document.getElementById("ini-ciclo-sintoma-extra").value || "").trim();
+            if (extra) sintomas.push(extra);
+            const notas = (document.getElementById("ini-ciclo-notas").value || "").trim();
+            const existente = (inicioCiclo || []).find((f) => f.nombre === nombre && f.id);
+
+            let token = "";
+            try { token = localStorage.getItem(FOCO_TOKEN_KEY) || ""; } catch (e) {}
+            if (!token) {
+                msgEl.textContent = "Configurá tu token de GitHub en 'Definir Foco' o desde Salud para guardar en Notion.";
+                msgEl.classList.remove("hidden");
+                return;
+            }
+
+            cerrarModalCicloInicio();
+            mostrarSpinnerFoco("cargando", "Guardando ciclo en Notion...", "Esperando confirmación (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const accion = existente ? "actualizar_fase_ciclo" : "crear_fase_ciclo";
+                const payload = { page_id: existente ? existente.id : "", nombre, inicio, sintomas, notas };
+                const { url, options } = construirSolicitudNotionWrite(FOCO_GITHUB_OWNER, FOCO_GITHUB_REPO, accion, payload, token);
+                const resp = await fetch(url, options);
+                if (resp.status !== 204) {
+                    mostrarSpinnerFoco("error", "Error al enviar", `GitHub respondió (${resp.status}).`);
+                    return;
+                }
+                const conf = await esperarConfirmacionWorkflow({ owner: FOCO_GITHUB_OWNER, repo: FOCO_GITHUB_REPO, token, workflowFile: WORKFLOW_NOTION_WRITE, dispatchedAfterMs });
+                if (conf.ok) {
+                    mostrarSpinnerFoco("ok", "¡Ciclo actualizado en Notion!", "Recargando Inicio...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerFoco("error", "No se pudo confirmar", conf.error);
+                }
+            } catch (e) {
+                mostrarSpinnerFoco("error", "Error de conexión", "Intentá nuevamente.");
+            }
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                const mStop = document.getElementById("modal-stop-inicio");
+                if (mStop && !mStop.classList.contains("hidden")) { cerrarModalStopInicio(); return; }
+                const mCiclo = document.getElementById("modal-ciclo-inicio");
+                if (mCiclo && !mCiclo.classList.contains("hidden")) { cerrarModalCicloInicio(); return; }
+                const modalHist = document.getElementById("modal-historial-foco");
+                if (modalHist && !modalHist.classList.contains("hidden")) { cerrarModalHistorialFoco(); return; }
             }
             const modal = document.getElementById("modal-foco-diario");
             if (!modal || modal.classList.contains("hidden")) return;

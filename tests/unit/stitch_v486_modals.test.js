@@ -24,6 +24,11 @@ describe('Pantallas Stitch v4.86 — Detalle de Evento, Foco Diario y Vacíos Co
     expect(html).toContain('id="widget-foco-inicio"');
     expect(html).toContain('id="modal-foco-diario"');
     expect(html).toContain('id="modal-historial-foco"');
+    expect(html).toContain('id="modal-stop-inicio"');
+    expect(html).toContain('id="modal-ciclo-inicio"');
+    expect(html).toContain('id="hist-foco-vista-cal"');
+    expect(html).toContain('id="hist-anual-heatmap"');
+    expect(html).toContain('id="hist-foco-meta-filtros"');
     expect(html).toContain('function abrirModalFocoDiario');
     expect(html).toContain('function guardarFocoDiarioEnNotion');
     expect(html).toContain('asistente_sabry:foco_diario_v1');
