@@ -967,7 +967,7 @@
             return ["🏋️ Ejercicio práctico", "🎥 Video / Masterclass", "📖 Lectura / Libro", "🎯 Valor / Meta"].includes(tipo);
         }
         function _tipoUsaFrecuencia(tipo) {
-            return ["🏋️ Ejercicio práctico", "💬 Conversación"].includes(tipo);
+            return tipo === "🏋️ Ejercicio práctico";
         }
         function _tipoUsaRecursoDefault(tipo) {
             return ["🏋️ Ejercicio práctico", "🎥 Video / Masterclass", "📖 Lectura / Libro"].includes(tipo);
