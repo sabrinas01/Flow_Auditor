@@ -22,6 +22,9 @@ describe('Pantallas Stitch v4.86 — Detalle de Evento, Foco Diario y Vacíos Co
   test('inicio.html incluye el bloque Foco & Intención Diaria, ABM con Notion e Historial', () => {
     const html = fs.readFileSync(path.join(__dirname, '../../inicio.html'), 'utf8');
     expect(html).toContain('id="widget-foco-inicio"');
+    expect(html).toContain('id="widget-accesos-inicio"');
+    expect(html).toContain('function _resolverNombreFaseSelect');
+    expect(html).toContain('asistente_sabry:focus_mode');
     expect(html).toContain('id="modal-foco-diario"');
     expect(html).toContain('id="modal-historial-foco"');
     expect(html).toContain('id="modal-stop-inicio"');

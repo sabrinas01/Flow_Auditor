@@ -281,7 +281,7 @@
             </section>
 
             <!-- ACCESOS DIRECTOS (GRILLA 3 COLUMNAS) -->
-            <section class="space-y-4">
+            <section id="widget-accesos-inicio" class="space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <h2 class="text-lg font-headline-md font-extrabold text-white flex items-center gap-2">
                         <span>⚡ Accesos directos</span>
@@ -539,7 +539,7 @@
                         <span class="text-[13px] font-bold text-white">Activar Modo Focus Somático</span>
                         <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#38bdf8]/15 text-[#38bdf8]">Recomendado</span>
                     </div>
-                    <p class="text-[11px] text-[#8e8e93]">Reduce el ruido visual en Inicio para evitar sobreestimulación.</p>
+                    <p class="text-[11px] text-[#8e8e93]">Oculta Accesos directos en Inicio y sincroniza con Foco Profundo en SomaticShell.</p>
                 </div>
             </label>
 
@@ -950,6 +950,9 @@
             document.getElementById("inicio-foco-ciclo-badge").textContent = cicloTxt;
             document.getElementById("inicio-foco-disp-badge").textContent = data.disponibilidad || "Moderada / Estable";
             document.getElementById("inicio-foco-mode-badge").classList.toggle("hidden", !data.modoFocus);
+            const accSec = document.getElementById("widget-accesos-inicio");
+            if (accSec) accSec.classList.toggle("hidden", Boolean(data.modoFocus));
+            try { localStorage.setItem("asistente_sabry:focus_mode", data.modoFocus ? "Foco Profundo" : "Equilibrado"); } catch (e) {}
 
             const syncBadge = document.getElementById("inicio-foco-sync-badge");
             if (data.dirty) {
@@ -1457,10 +1460,31 @@
             if (f) f.textContent = "Respiración Cuadrada 4-4-4";
         }
 
+        function _resolverNombreFaseSelect(rawNombre) {
+            const val = (rawNombre || "").trim();
+            const sel = document.getElementById("ini-ciclo-nombre");
+            if (!sel) return "Fase Lútea";
+            const exacto = Array.from(sel.options).find((o) => o.value === val);
+            if (exacto) return exacto.value;
+            const low = val.toLowerCase();
+            if (low.includes("menstru")) return "Fase menstrual";
+            if (low.includes("folicul")) return "Fase Folicular";
+            if (low.includes("ovul")) return "Fase ovulatoria";
+            if (low.includes("lúte") || low.includes("lute")) return "Fase Lútea";
+            if (val) {
+                const opt = document.createElement("option");
+                opt.value = val;
+                opt.textContent = val;
+                sel.appendChild(opt);
+                return val;
+            }
+            return "Fase Lútea";
+        }
+
         function abrirModalCicloInicio() {
             const { faseActual } = obtenerResumenCiclo(inicioCiclo, _hoyIsoART());
             const faseObj = (inicioCiclo || []).find((f) => f.nombre === faseActual) || {};
-            document.getElementById("ini-ciclo-nombre").value = faseObj.nombre || "Fase Lútea";
+            document.getElementById("ini-ciclo-nombre").value = _resolverNombreFaseSelect(faseObj.nombre || faseActual);
             document.getElementById("ini-ciclo-fecha").value = faseObj.inicio || _hoyIsoART();
             document.getElementById("ini-ciclo-notas").value = faseObj.notas || "";
             document.getElementById("ini-ciclo-sintoma-extra").value = "";

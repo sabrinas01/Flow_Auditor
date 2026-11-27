@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.90 (Sidebar colapsable en desktop, Breadcrumbs en Capa 2 y Footer unificado en Inicio)  
+**Versión:** 4.91 (Modo Focus Somático conectado + Fix select de Fase en Inicio)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
@@ -12,6 +12,7 @@
 
 | Versión | Fecha | Autor | Descripción del Cambio / Hito Técnico |
 | :--- | :--- | :--- | :--- |
+| **v4.91** | Noviembre 2026 | Sabrina Sanso | **Modo Focus Somático conectado + Fix select de Fase (`inicio.html`):**<br>- `renderizarFocoInicio()` oculta `#widget-accesos-inicio` cuando `modoFocus` está activo y sincroniza `asistente_sabry:focus_mode` con `SomaticShell`.<br>- `_resolverNombreFaseSelect()` normaliza y preselecciona correctamente la fase actual de `Salud_Ciclo_Sabry` en `#ini-ciclo-nombre`. |
 | **v4.90** | Noviembre 2026 | Sabrina Sanso | **Sidebar colapsable, Breadcrumbs Capa 2 y Footer unificado (`src/utils/somatic_shell.js`, `finanzas.html`, `salud.html`, `inicio.html`):**<br>- `somatic_shell.js`: toggle desktop para colapsar/expandir el sidebar a `72px` (solo íconos) en los 11 módulos con persistencia en `localStorage` (`asistente_sabry:sidebar_collapsed`).<br>- `finanzas.html` y `salud.html`: breadcrumbs de retorno y `Esc` en submodales Capa 2 (`#modal-fin-opcion-vuelo`, `#modal-salud-med-vuelo`).<br>- `inicio.html` + `extract_and_audit.py`: footer institucional unificado con `GitHub Pages Release`. |
 | **v4.89** | Noviembre 2026 | Sabrina Sanso | **Gestión Emocional, Recordatorios Varios y Salud (`gestion-emocional.html`, `recordatorios-varios.html`, `salud.html`):**<br>- `gestion-emocional.html`: cabecera a ancho completo y barra de acciones unificada en `Caja de Herramientas Conscientes`.<br>- `recordatorios-varios.html`: rediseño alineado con `Recordatorios Diarios` (cards `#18181b`, KPIs compactos, caja `Feedback de Mentora · SabryOff` y CTA ancho completo).<br>- `salud.html`: mini-ABM `Sugerencias de Bienestar` (`Somático`, `Nutrición`, `Descanso`) persistido en `localStorage` (`asistente_sabry:salud_sugerencias_v1`). |
 | **v4.88** | Noviembre 2026 | Sabrina Sanso | **Modales S.T.O.P. y Ciclo en Inicio, Calendario Somático y Declutter (`inicio.html`, `recordatorios-diarios.html`, `agenda-personal.html`):**<br>- `inicio.html`: modales `#modal-stop-inicio` (pasos S-T-O-P + respirador 4-4-4) y `#modal-ciclo-inicio` (ajuste de fase/síntomas directo a Notion vía `crear_fase_ciclo` / `actualizar_fase_ciclo`).<br>- `#modal-historial-foco`: switcher Lista/Calendario, sub-filtro por Tipo de Meta, Calendario Somático mensual + Drawer de detalle con `Duplicar a hoy`, y Heatmap Anual 52 semanas colapsable.<br>- Limpieza visual en `inicio.html`, `recordatorios-diarios.html` y `agenda-personal.html`. |
