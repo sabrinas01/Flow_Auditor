@@ -171,7 +171,7 @@
                 </p>
             </section>
 
-            <!-- FOCO & INTENCIÓN DIARIA (STITCH) -->
+            <!-- FOCO & INTENCIÓN DIARIA (STITCH + NOTION) -->
             <section id="widget-foco-inicio" class="glass-card rounded-2xl p-6 sm:p-7 border-l-4 border-l-[#ffb961] space-y-5">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div class="space-y-1.5 min-w-0 flex-1">
@@ -180,23 +180,31 @@
                                 <span class="material-symbols-outlined text-[15px]">anchor</span>
                                 <span>Foco &amp; Intención Diaria</span>
                             </span>
+                            <span id="inicio-foco-ciclo-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#ff5f52]/15 text-[#ffb4aa] border border-[#ff5f52]/30">Fase Lútea</span>
                             <span id="inicio-foco-disp-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30">Moderada / Estable</span>
                             <span id="inicio-foco-mode-badge" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#38bdf8]/15 text-[#38bdf8] border border-[#38bdf8]/30">Modo Focus Somático</span>
+                            <span id="inicio-foco-sync-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.06] text-[#a1a1aa] border border-white/[0.08]">Borrador local</span>
                         </div>
                         <p id="inicio-foco-intencion" class="text-[16px] sm:text-[18px] font-bold text-white leading-snug">
                             "Elegir la calma por sobre la prisa. Atender lo crucial sin sobrecargas."
                         </p>
                     </div>
-                    <button id="btn-editar-foco" type="button" onclick="abrirModalFocoDiario()" class="px-4 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.1] text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all flex-shrink-0">
-                        <span class="material-symbols-outlined text-[16px] text-[#ffb961]">tune</span>
-                        <span>Definir Foco</span>
-                    </button>
+                    <div class="flex flex-wrap items-center gap-2 flex-shrink-0">
+                        <button id="btn-historial-foco" type="button" onclick="abrirModalHistorialFoco()" class="px-3.5 py-2.5 rounded-xl bg-[#18181d] hover:bg-[#232326] border border-white/[0.1] text-[#e2beba] hover:text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px] text-[#38bdf8]">history</span>
+                            <span>Historial</span>
+                        </button>
+                        <button id="btn-editar-foco" type="button" onclick="abrirModalFocoDiario()" class="px-4 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.1] text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px] text-[#ffb961]">tune</span>
+                            <span>Definir Foco</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="space-y-2.5">
                     <div class="flex items-center justify-between text-[11px] font-label-caps text-[#8e8e93] uppercase tracking-widest">
-                        <span>Prioridades No Negociables (Regla de 3)</span>
-                        <span id="inicio-foco-prio-count" class="text-[#ffb961] font-bold">0 de 3 completadas</span>
+                        <span>Prioridades No Negociables (Hasta 3)</span>
+                        <span id="inicio-foco-prio-count" class="text-[#ffb961] font-bold">0 de 0 completadas</span>
                     </div>
                     <div id="inicio-foco-prioridades" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
                 </div>
@@ -219,10 +227,6 @@
                             Bienestar &amp; Ritmo Biológico / Fase Hormonal Activa
                         </h2>
                     </div>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#83da85]/10 border border-[#83da85]/30 text-[#83da85] text-[11px] font-semibold">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#83da85]"></span>
-                        <span>Sincronizado con Notion BD: Salud_Ciclo_Sabry</span>
-                    </span>
                 </div>
 
                 <!-- 3 SUB-TARJETAS MÉTRICAS EN FILA -->
@@ -394,7 +398,7 @@
     </main>
 
     <!-- =================================================== -->
-    <!-- MODAL EDICIÓN DE FOCO DIARIO (STITCH)               -->
+    <!-- MODAL EDICIÓN DE FOCO DIARIO (ABM + NOTION)         -->
     <!-- =================================================== -->
     <div id="modal-foco-diario" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarModalFocoDiario()">
         <div class="glass-card rounded-2xl p-6 sm:p-7 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/[0.12] space-y-5" onclick="event.stopPropagation()">
@@ -402,7 +406,7 @@
                 <div class="space-y-1">
                     <p class="text-[10px] font-label-caps text-[#ffb961] tracking-widest uppercase">INICIO • INTENCIÓN &amp; PROTECCIÓN SOMÁTICA</p>
                     <h3 class="text-xl sm:text-2xl font-headline-md font-extrabold text-white">Definir Foco &amp; Intención Diaria</h3>
-                    <p class="text-[13px] text-[#a1a1aa]">Alineá tu energía con las prioridades reales de hoy. Recordá que no todo lo urgente es vital.</p>
+                    <p class="text-[13px] text-[#a1a1aa]">Se guarda en local mientras editás y se envía a Notion al presionar Guardar.</p>
                 </div>
                 <button type="button" onclick="cerrarModalFocoDiario()" class="px-2.5 py-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white text-xs font-bold inline-flex items-center gap-1 transition-colors" title="Cerrar modal (Esc)">
                     <span class="material-symbols-outlined text-[18px]">close</span>
@@ -410,52 +414,85 @@
                 </button>
             </div>
 
-            <!-- Intención Principal -->
+            <!-- Vínculo con Ciclo Menstrual -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-xl bg-[#18181d] border border-white/[0.08] p-3.5">
+                <div class="space-y-1">
+                    <label for="foco-fase-ciclo" class="text-[10px] font-label-caps text-[#ffb4aa] uppercase tracking-widest">Fase del Ciclo Asociada</label>
+                    <select id="foco-fase-ciclo" onchange="actualizarBorradorFoco()" class="w-full bg-[#131313] border border-white/[0.1] rounded-lg px-3 py-2 text-[13px] text-white focus:outline-none focus:border-[#ff5f52]">
+                        <option value="Menstrual">Menstrual</option>
+                        <option value="Folicular">Folicular</option>
+                        <option value="Ovulatoria">Ovulatoria</option>
+                        <option value="Lútea">Lútea</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label for="foco-dia-ciclo" class="text-[10px] font-label-caps text-[#ffb4aa] uppercase tracking-widest">Día del Ciclo (opcional)</label>
+                    <input id="foco-dia-ciclo" type="number" min="1" max="45" oninput="actualizarBorradorFoco()" placeholder="Ej. 22" class="w-full bg-[#131313] border border-white/[0.1] rounded-lg px-3 py-2 text-[13px] text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#ff5f52]" />
+                </div>
+            </div>
+
+            <!-- Intención Principal (Obligatoria) -->
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
                     <label for="foco-input-intencion" class="text-[11px] font-label-caps text-[#e2beba] uppercase tracking-widest flex items-center gap-1.5">
                         <span class="material-symbols-outlined text-[15px] text-[#ffb961]">anchor</span>
-                        <span>Intención Principal del Día (Ancla Cognitiva)</span>
+                        <span>Intención Principal del Día <span class="text-[#ff5f52]">*</span></span>
                     </label>
                     <span id="foco-char-count" class="text-[11px] text-[#8e8e93] font-mono">0/120</span>
                 </div>
-                <textarea id="foco-input-intencion" rows="2" maxlength="120" oninput="actualizarContadorFoco()" placeholder="Escribí tu intención para hoy..." class="w-full bg-[#18181d] border border-white/[0.1] rounded-xl px-4 py-3 text-[14px] text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#ffb961]"></textarea>
+                <textarea id="foco-input-intencion" rows="2" maxlength="120" required oninput="actualizarContadorFoco(); actualizarBorradorFoco();" placeholder="Escribí tu intención obligatoria para hoy..." class="w-full bg-[#18181d] border border-white/[0.1] rounded-xl px-4 py-3 text-[14px] text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#ffb961]"></textarea>
                 <div class="flex flex-wrap items-center gap-1.5">
                     <span class="text-[10px] font-label-caps text-[#8e8e93] uppercase mr-1">Presets:</span>
+                    <button type="button" onclick="aplicarPresetFoco('Avanzar con claridad en un proyecto: un bloque profundo a la vez, sin dispersarme.')" class="px-2.5 py-1 rounded-full bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] text-[11px] text-[#e5e2e1]">Claridad en un proyecto</button>
+                    <button type="button" onclick="aplicarPresetFoco('Cerrar definiciones claves con foco en lo esencial y entregas limpias.')" class="px-2.5 py-1 rounded-full bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] text-[11px] text-[#e5e2e1]">Definiciones claves</button>
+                    <button type="button" onclick="aplicarPresetFoco('Aprovechar mi pico de energía para crear, decidir y comunicar con seguridad.')" class="px-2.5 py-1 rounded-full bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] text-[11px] text-[#e5e2e1]">Pico de energía</button>
                     <button type="button" onclick="aplicarPresetFoco('Elegir la calma por sobre la prisa. Atender lo crucial sin sobrecargas.')" class="px-2.5 py-1 rounded-full bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] text-[11px] text-[#e5e2e1]">Calma &amp; Presencia</button>
-                    <button type="button" onclick="aplicarPresetFoco('Ejecución enfocada en bloques breves, cerrando pendientes clave sin dispersión.')" class="px-2.5 py-1 rounded-full bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] text-[11px] text-[#e5e2e1]">Ejecución Enfocada</button>
-                    <button type="button" onclick="aplicarPresetFoco('Baja fricción y modo lútea: ritmo amable, pausas reales y cero autoexigencia.')" class="px-2.5 py-1 rounded-full bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] text-[11px] text-[#e5e2e1]">Baja Fricción (Modo Lútea)</button>
-                    <button type="button" onclick="aplicarPresetFoco('Sostener límites claros hoy: decir no a lo accesorio para cuidar mi energía.')" class="px-2.5 py-1 rounded-full bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] text-[11px] text-[#e5e2e1]">Límites Claros</button>
+                    <button type="button" onclick="aplicarPresetFoco('Ritmo amable hoy: lo mínimo necesario, hidratación y cero autoexigencia.')" class="px-2.5 py-1 rounded-full bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.08] text-[11px] text-[#e5e2e1]">Ritmo amable</button>
                 </div>
             </div>
 
-            <!-- 3 Prioridades No Negociables -->
+            <!-- Hasta 3 Prioridades No Negociables -->
             <div class="space-y-2.5">
                 <div class="flex items-center justify-between">
                     <span class="text-[11px] font-label-caps text-[#e2beba] uppercase tracking-widest flex items-center gap-1.5">
                         <span class="material-symbols-outlined text-[15px] text-[#83da85]">check_circle</span>
-                        <span>Las 3 Prioridades No Negociables</span>
+                        <span>Prioridades No Negociables (Hasta 3)</span>
                     </span>
-                    <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-white/[0.06] text-[#a1a1aa] font-semibold">Regla de 3 // Reducción de Ruido</span>
+                    <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-white/[0.06] text-[#a1a1aa] font-semibold">Slots opcionales · Limpieza directa</span>
                 </div>
                 <div class="space-y-2">
-                    <div class="flex items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2">
+                    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2">
                         <span class="text-[11px] font-mono text-[#8e8e93] w-5">01</span>
-                        <input id="foco-p0-check" type="checkbox" class="rounded border-white/20 bg-[#131313] text-[#83da85]" />
-                        <input id="foco-p0-text" type="text" maxlength="80" placeholder="Prioridad 1..." class="flex-1 bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
-                        <input id="foco-p0-tag" type="text" maxlength="24" placeholder="Etiqueta" class="w-28 bg-[#232326] rounded-lg px-2 py-1 text-[11px] text-[#ffb961] placeholder-[#8e8e93] focus:outline-none" />
+                        <input id="foco-p0-check" type="checkbox" onchange="actualizarBorradorFoco()" class="rounded border-white/20 bg-[#131313] text-[#83da85]" />
+                        <input id="foco-p0-text" type="text" maxlength="80" oninput="actualizarBorradorFoco()" placeholder="Prioridad 1 (opcional)..." class="flex-1 min-w-[140px] bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
+                        <select id="foco-p0-tag" onchange="actualizarBorradorFoco()" class="bg-[#232326] rounded-lg px-2 py-1 text-[11px] text-[#e5e2e1] focus:outline-none">
+                            <option value="Meta física">Meta física</option>
+                            <option value="Meta mental">Meta mental</option>
+                            <option value="Meta social/espiritual">Meta social/espiritual</option>
+                        </select>
+                        <button type="button" onclick="limpiarSlotFoco(0)" class="p-1 text-[#8e8e93] hover:text-[#ff5f52] rounded" title="Limpiar prioridad 1"><span class="material-symbols-outlined text-[16px]">close</span></button>
                     </div>
-                    <div class="flex items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2">
+                    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2">
                         <span class="text-[11px] font-mono text-[#8e8e93] w-5">02</span>
-                        <input id="foco-p1-check" type="checkbox" class="rounded border-white/20 bg-[#131313] text-[#83da85]" />
-                        <input id="foco-p1-text" type="text" maxlength="80" placeholder="Prioridad 2..." class="flex-1 bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
-                        <input id="foco-p1-tag" type="text" maxlength="24" placeholder="Etiqueta" class="w-28 bg-[#232326] rounded-lg px-2 py-1 text-[11px] text-[#83da85] placeholder-[#8e8e93] focus:outline-none" />
+                        <input id="foco-p1-check" type="checkbox" onchange="actualizarBorradorFoco()" class="rounded border-white/20 bg-[#131313] text-[#83da85]" />
+                        <input id="foco-p1-text" type="text" maxlength="80" oninput="actualizarBorradorFoco()" placeholder="Prioridad 2 (opcional)..." class="flex-1 min-w-[140px] bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
+                        <select id="foco-p1-tag" onchange="actualizarBorradorFoco()" class="bg-[#232326] rounded-lg px-2 py-1 text-[11px] text-[#e5e2e1] focus:outline-none">
+                            <option value="Meta física">Meta física</option>
+                            <option value="Meta mental">Meta mental</option>
+                            <option value="Meta social/espiritual">Meta social/espiritual</option>
+                        </select>
+                        <button type="button" onclick="limpiarSlotFoco(1)" class="p-1 text-[#8e8e93] hover:text-[#ff5f52] rounded" title="Limpiar prioridad 2"><span class="material-symbols-outlined text-[16px]">close</span></button>
                     </div>
-                    <div class="flex items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2">
+                    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2">
                         <span class="text-[11px] font-mono text-[#8e8e93] w-5">03</span>
-                        <input id="foco-p2-check" type="checkbox" class="rounded border-white/20 bg-[#131313] text-[#83da85]" />
-                        <input id="foco-p2-text" type="text" maxlength="80" placeholder="Prioridad 3..." class="flex-1 bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
-                        <input id="foco-p2-tag" type="text" maxlength="24" placeholder="Etiqueta" class="w-28 bg-[#232326] rounded-lg px-2 py-1 text-[11px] text-[#38bdf8] placeholder-[#8e8e93] focus:outline-none" />
+                        <input id="foco-p2-check" type="checkbox" onchange="actualizarBorradorFoco()" class="rounded border-white/20 bg-[#131313] text-[#83da85]" />
+                        <input id="foco-p2-text" type="text" maxlength="80" oninput="actualizarBorradorFoco()" placeholder="Prioridad 3 (opcional)..." class="flex-1 min-w-[140px] bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
+                        <select id="foco-p2-tag" onchange="actualizarBorradorFoco()" class="bg-[#232326] rounded-lg px-2 py-1 text-[11px] text-[#e5e2e1] focus:outline-none">
+                            <option value="Meta física">Meta física</option>
+                            <option value="Meta mental">Meta mental</option>
+                            <option value="Meta social/espiritual">Meta social/espiritual</option>
+                        </select>
+                        <button type="button" onclick="limpiarSlotFoco(2)" class="p-1 text-[#8e8e93] hover:text-[#ff5f52] rounded" title="Limpiar prioridad 3"><span class="material-symbols-outlined text-[16px]">close</span></button>
                     </div>
                 </div>
             </div>
@@ -490,7 +527,7 @@
 
             <!-- Modo Focus Somático Toggle -->
             <label class="flex items-start gap-3 p-3.5 rounded-xl bg-[#18181d] border border-white/[0.08] cursor-pointer">
-                <input id="foco-modo-somatico" type="checkbox" class="mt-0.5 rounded border-white/20 bg-[#131313] text-[#38bdf8]" />
+                <input id="foco-modo-somatico" type="checkbox" onchange="actualizarBorradorFoco()" class="mt-0.5 rounded border-white/20 bg-[#131313] text-[#38bdf8]" />
                 <div class="space-y-0.5">
                     <div class="flex items-center gap-2">
                         <span class="text-[13px] font-bold text-white">Activar Modo Focus Somático</span>
@@ -500,26 +537,72 @@
                 </div>
             </label>
 
+            <!-- Token inline si falta PAT -->
+            <div id="foco-vista-token" class="hidden rounded-xl bg-[#18181d] border border-[#ffb961]/30 p-4 space-y-2.5">
+                <p class="text-[12px] text-[#ffb961] font-bold">🔑 Pegá tu token de GitHub para guardar en Notion</p>
+                <div class="flex gap-2">
+                    <input id="foco-token-input" type="password" placeholder="github_pat_..." class="flex-1 bg-[#131313] border border-white/[0.1] rounded-lg px-3 py-2 text-[13px] text-white" />
+                    <button type="button" onclick="guardarTokenFoco()" class="px-3.5 py-2 rounded-lg bg-[#ffb961] text-[#2b1700] text-xs font-extrabold">Guardar token</button>
+                </div>
+            </div>
+
+            <p id="foco-error-msg" class="hidden text-[12px] text-[#ff5f52] font-semibold"></p>
+
             <!-- Footer Modal -->
             <div class="pt-3 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3">
-                <span class="text-[11px] text-[#8e8e93]">Guardado local · Atajo: Ctrl + Enter para guardar</span>
+                <span class="text-[11px] text-[#8e8e93]">Borrador local · Ctrl + Enter para guardar en Notion</span>
                 <div class="flex items-center gap-2">
-                    <button type="button" onclick="restablecerFocoDiario()" class="px-3.5 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] text-[#a1a1aa] hover:text-white text-xs font-bold transition-all">Restablecer Foco</button>
-                    <button type="button" onclick="guardarFocoDiario()" class="px-4 py-2.5 rounded-xl bg-[#ffb961] hover:bg-[#ffb961]/90 text-[#2b1700] text-xs font-extrabold inline-flex items-center gap-1.5 transition-all active:scale-95">
-                        <span class="material-symbols-outlined text-[16px]">check</span>
-                        <span>Guardar Foco de Hoy</span>
+                    <button type="button" onclick="limpiarTodoFocoDiario()" class="px-3.5 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] text-[#a1a1aa] hover:text-white text-xs font-bold transition-all">Limpiar todo</button>
+                    <button type="button" onclick="guardarFocoDiarioEnNotion()" class="px-4 py-2.5 rounded-xl bg-[#ffb961] hover:bg-[#ffb961]/90 text-[#2b1700] text-xs font-extrabold inline-flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
+                        <span>Guardar en Notion</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- =================================================== -->
+    <!-- MODAL HISTORIAL DE FOCOS POR FASE DEL CICLO         -->
+    <!-- =================================================== -->
+    <div id="modal-historial-foco" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarModalHistorialFoco()">
+        <div class="glass-card rounded-2xl p-6 sm:p-7 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/[0.12] space-y-5" onclick="event.stopPropagation()">
+            <div class="flex items-start justify-between gap-4">
+                <div class="space-y-1">
+                    <p class="text-[10px] font-label-caps text-[#38bdf8] tracking-widest uppercase">NOTION • HISTORIAL SOMÁTICO</p>
+                    <h3 class="text-xl sm:text-2xl font-headline-md font-extrabold text-white">Historial de Focos por Fase del Ciclo</h3>
+                </div>
+                <button type="button" onclick="cerrarModalHistorialFoco()" class="p-2 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white transition-colors" title="Cerrar (Esc)">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <div id="hist-foco-filtros" class="flex flex-wrap gap-2"></div>
+            <div id="hist-foco-lista" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- SPINNER NOTION                                      -->
+    <!-- =================================================== -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ffb961] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#83da85] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <p id="spinner-titulo" class="text-[15px] font-bold text-white">Guardando en Notion...</p>
+            <p id="spinner-subtitulo" class="text-[12px] text-[#8e8e93]">Esperando confirmación (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarSpinnerFoco()" class="hidden w-full py-2.5 rounded-xl bg-[#1c1c1f] text-white text-xs font-bold">Cerrar</button>
+        </div>
+    </div>
+
     <script src="./src/utils/dashboard_logic.js"></script>
     <script src="./src/utils/dom_render.js"></script>
     <script src="./src/utils/salud_logic.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
     <script src="./src/utils/somatic_shell.js"></script>
     <script>
         const inicioCiclo = [];
+        const inicioFocoHistorial = [];
 
         const PERFIL_FASE_INICIO = {
             menstrual: { energia: "40%", energiaPct: 40, sensibilidad: "Alta", sensPct: 75, tip: "Energía introspectiva. Priorizá descanso, hidratación tibia y tareas livianas sin sobreexigencia." },
@@ -585,17 +668,25 @@
         });
 
         // =================================================== //
-        // FOCO & INTENCIÓN DIARIA (STITCH)                    //
+        // FOCO & INTENCIÓN DIARIA (ABM LOCAL + NOTION)        //
         // =================================================== //
         const FOCO_STORAGE_KEY = "asistente_sabry:foco_diario_v1";
+        const FOCO_TOKEN_KEY = "asistente_sabry:github_pat";
+        const FOCO_GITHUB_OWNER = "sabrinas01";
+        const FOCO_GITHUB_REPO = "Flow_Auditor";
+        const FOCO_ETIQUETAS = ["Meta física", "Meta mental", "Meta social/espiritual"];
         const FOCO_DEFAULT = {
+            fecha: "",
             intencion: "Elegir la calma por sobre la prisa. Atender lo crucial sin sobrecargas.",
+            fase_ciclo: "Lútea",
+            dia_ciclo: "",
             disponibilidad: "Moderada / Estable",
             modoFocus: true,
+            dirty: false,
             prioridades: [
-                { texto: "Revisar pendientes clave en Notion", tag: "FOCO", hecho: false },
-                { texto: "Caminata somática & pausa de respiración", tag: "BIENESTAR", hecho: false },
-                { texto: "Control diario de gastos y cuotas", tag: "FINANZAS", hecho: false },
+                { texto: "Caminata somática & pausa de respiración", tag: "Meta física", hecho: false },
+                { texto: "Cerrar definiciones claves del día", tag: "Meta mental", hecho: false },
+                { texto: "", tag: "Meta social/espiritual", hecho: false },
             ],
         };
         const RECOMENDACIONES_FOCO = {
@@ -604,44 +695,137 @@
             "Baja / Resguardo": "Modo mantenimiento y resguardo: priorizá tareas livianas, hidratación tibia y pausas frecuentes sin culpa.",
         };
         let _dispSeleccionada = FOCO_DEFAULT.disponibilidad;
+        let _filtroHistorialFase = "Todas";
+
+        function _hoyIsoART() {
+            const d = new Date();
+            const p = (n) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+        }
+
+        function _inferirCicloActual() {
+            const hoyIso = _hoyIsoART();
+            const { faseActual } = obtenerResumenCiclo(inicioCiclo, hoyIso);
+            const lower = (faseActual || "").toLowerCase();
+            let fase = "Lútea";
+            if (lower.includes("menstru")) fase = "Menstrual";
+            else if (lower.includes("folicul")) fase = "Folicular";
+            else if (lower.includes("ovul")) fase = "Ovulatoria";
+
+            let dia = "";
+            const faseObj = (inicioCiclo || []).find((f) => f.nombre === faseActual);
+            if (faseObj && faseObj.inicio) {
+                const diff = Math.floor((Date.parse(hoyIso) - Date.parse(faseObj.inicio)) / 86400000);
+                if (Number.isFinite(diff) && diff >= 0) dia = String(diff + 1);
+            }
+            return { fase, dia };
+        }
 
         function _leerFocoDiario() {
+            const hoy = _hoyIsoART();
+            const remotoHoy = (inicioFocoHistorial || []).find((r) => r.fecha === hoy);
+            const cicloInferido = _inferirCicloActual();
             try {
                 const raw = localStorage.getItem(FOCO_STORAGE_KEY);
-                if (!raw) return JSON.parse(JSON.stringify(FOCO_DEFAULT));
-                const parsed = JSON.parse(raw);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed && parsed.fecha === hoy && (parsed.dirty || !remotoHoy)) {
+                        return {
+                            ...FOCO_DEFAULT,
+                            ...parsed,
+                            fase_ciclo: parsed.fase_ciclo || cicloInferido.fase,
+                            dia_ciclo: parsed.dia_ciclo !== undefined && parsed.dia_ciclo !== "" ? parsed.dia_ciclo : cicloInferido.dia,
+                            prioridades: [0, 1, 2].map((i) => {
+                                const p = (parsed.prioridades && parsed.prioridades[i]) || {};
+                                return {
+                                    texto: p.texto || "",
+                                    tag: FOCO_ETIQUETAS.includes(p.tag) ? p.tag : FOCO_ETIQUETAS[i],
+                                    hecho: Boolean(p.hecho),
+                                };
+                            }),
+                        };
+                    }
+                }
+            } catch (e) {}
+
+            if (remotoHoy) {
                 return {
-                    ...FOCO_DEFAULT,
-                    ...parsed,
-                    prioridades: Array.isArray(parsed.prioridades) && parsed.prioridades.length === 3
-                        ? parsed.prioridades
-                        : JSON.parse(JSON.stringify(FOCO_DEFAULT.prioridades)),
+                    fecha: hoy,
+                    page_id: remotoHoy.id || "",
+                    intencion: remotoHoy.intencion || "",
+                    fase_ciclo: remotoHoy.fase_ciclo || cicloInferido.fase,
+                    dia_ciclo: remotoHoy.dia_ciclo != null ? String(remotoHoy.dia_ciclo) : cicloInferido.dia,
+                    disponibilidad: remotoHoy.disponibilidad || "Moderada / Estable",
+                    modoFocus: Boolean(remotoHoy.modo_focus),
+                    dirty: false,
+                    prioridades: [0, 1, 2].map((i) => {
+                        const p = (remotoHoy.prioridades && remotoHoy.prioridades[i]) || {};
+                        return {
+                            texto: p.texto || "",
+                            tag: FOCO_ETIQUETAS.includes(p.tag) ? p.tag : FOCO_ETIQUETAS[i],
+                            hecho: Boolean(p.hecho),
+                        };
+                    }),
                 };
-            } catch (e) {
-                return JSON.parse(JSON.stringify(FOCO_DEFAULT));
             }
+
+            return {
+                ...JSON.parse(JSON.stringify(FOCO_DEFAULT)),
+                fecha: hoy,
+                fase_ciclo: cicloInferido.fase,
+                dia_ciclo: cicloInferido.dia,
+            };
         }
 
         function _guardarFocoStorage(data) {
             try { localStorage.setItem(FOCO_STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
         }
 
+        function _colorEtiquetaFoco(tag) {
+            if (tag === "Meta física") return "bg-[#83da85]/15 text-[#83da85]";
+            if (tag === "Meta mental") return "bg-[#38bdf8]/15 text-[#38bdf8]";
+            return "bg-[#ffb961]/15 text-[#ffb961]";
+        }
+
         function renderizarFocoInicio() {
             const data = _leerFocoDiario();
-            document.getElementById("inicio-foco-intencion").textContent = `"${data.intencion || FOCO_DEFAULT.intencion}"`;
+            const intEl = document.getElementById("inicio-foco-intencion");
+            intEl.textContent = data.intencion ? `"${data.intencion}"` : "Definí tu intención para hoy...";
+
+            const cicloTxt = `Fase ${data.fase_ciclo || "Lútea"}${data.dia_ciclo ? ` · Día ${data.dia_ciclo}` : ""}`;
+            document.getElementById("inicio-foco-ciclo-badge").textContent = cicloTxt;
             document.getElementById("inicio-foco-disp-badge").textContent = data.disponibilidad || "Moderada / Estable";
             document.getElementById("inicio-foco-mode-badge").classList.toggle("hidden", !data.modoFocus);
 
-            const hechas = data.prioridades.filter((p) => p.hecho).length;
-            document.getElementById("inicio-foco-prio-count").textContent = `${hechas} de 3 completadas`;
+            const syncBadge = document.getElementById("inicio-foco-sync-badge");
+            if (data.dirty) {
+                syncBadge.textContent = "Borrador local sin guardar";
+                syncBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30";
+            } else if (data.page_id) {
+                syncBadge.textContent = "Guardado en Notion";
+                syncBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30";
+            } else {
+                syncBadge.textContent = "Borrador local";
+                syncBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.06] text-[#a1a1aa] border border-white/[0.08]";
+            }
+
+            const activas = data.prioridades
+                .map((p, idx) => ({ ...p, idx }))
+                .filter((p) => (p.texto || "").trim().length > 0);
+            const hechas = activas.filter((p) => p.hecho).length;
+            document.getElementById("inicio-foco-prio-count").textContent = `${hechas} de ${activas.length} completadas`;
 
             const cont = document.getElementById("inicio-foco-prioridades");
-            cont.innerHTML = data.prioridades.map((p, idx) => `
+            if (activas.length === 0) {
+                cont.innerHTML = `<div class="md:col-span-3 rounded-xl bg-[#18181d] border border-white/[0.06] px-4 py-3 text-[13px] text-[#8e8e93]">Sin prioridades cargadas para hoy · Tocá <strong>Definir Foco</strong> para sumar hasta 3.</div>`;
+                return;
+            }
+            cont.innerHTML = activas.map((p) => `
                 <label class="flex items-start gap-2.5 p-3 rounded-xl bg-[#18181d] border border-white/[0.06] cursor-pointer hover:border-white/20 transition-colors">
-                    <input type="checkbox" ${p.hecho ? "checked" : ""} onchange="togglePrioridadFocoInicio(${idx})" class="mt-0.5 rounded border-white/20 bg-[#131313] text-[#83da85]" />
+                    <input type="checkbox" ${p.hecho ? "checked" : ""} onchange="togglePrioridadFocoInicio(${p.idx})" class="mt-0.5 rounded border-white/20 bg-[#131313] text-[#83da85]" />
                     <div class="min-w-0 flex-1 space-y-1">
-                        <p class="text-[13px] font-semibold ${p.hecho ? "line-through text-[#8e8e93]" : "text-white"} truncate">${escapeHtml(p.texto || `Prioridad ${idx + 1}`)}</p>
-                        ${p.tag ? `<span class="inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-white/[0.06] text-[#ffb961]">${escapeHtml(p.tag)}</span>` : ""}
+                        <p class="text-[13px] font-semibold ${p.hecho ? "line-through text-[#8e8e93]" : "text-white"} truncate">${escapeHtml(p.texto)}</p>
+                        ${p.tag ? `<span class="inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${_colorEtiquetaFoco(p.tag)}">${escapeHtml(p.tag)}</span>` : ""}
                     </div>
                 </label>
             `).join("");
@@ -651,6 +835,7 @@
             const data = _leerFocoDiario();
             if (!data.prioridades[idx]) return;
             data.prioridades[idx].hecho = !data.prioridades[idx].hecho;
+            data.dirty = true;
             _guardarFocoStorage(data);
             renderizarFocoInicio();
         }
@@ -663,6 +848,7 @@
         function aplicarPresetFoco(texto) {
             document.getElementById("foco-input-intencion").value = texto;
             actualizarContadorFoco();
+            actualizarBorradorFoco();
         }
 
         function seleccionarDisponibilidadFoco(nombre) {
@@ -674,24 +860,72 @@
                 btn.classList.toggle("border-white/[0.08]", !activo);
             });
             document.getElementById("foco-recomendacion-somatica").textContent = RECOMENDACIONES_FOCO[nombre] || RECOMENDACIONES_FOCO["Moderada / Estable"];
+            actualizarBorradorFoco();
+        }
+
+        function _leerFormularioFoco(dirtyFlag = true) {
+            const prev = _leerFocoDiario();
+            return {
+                fecha: _hoyIsoART(),
+                page_id: prev.page_id || "",
+                fase_ciclo: document.getElementById("foco-fase-ciclo").value || "Lútea",
+                dia_ciclo: (document.getElementById("foco-dia-ciclo").value || "").trim(),
+                intencion: (document.getElementById("foco-input-intencion").value || "").trim(),
+                disponibilidad: _dispSeleccionada,
+                modoFocus: document.getElementById("foco-modo-somatico").checked,
+                dirty: dirtyFlag,
+                prioridades: [0, 1, 2].map((i) => ({
+                    hecho: document.getElementById(`foco-p${i}-check`).checked,
+                    texto: (document.getElementById(`foco-p${i}-text`).value || "").trim(),
+                    tag: document.getElementById(`foco-p${i}-tag`).value || FOCO_ETIQUETAS[i],
+                })),
+            };
+        }
+
+        function actualizarBorradorFoco() {
+            const modal = document.getElementById("modal-foco-diario");
+            if (!modal || modal.classList.contains("hidden")) return;
+            const data = _leerFormularioFoco(true);
+            _guardarFocoStorage(data);
+            renderizarFocoInicio();
+        }
+
+        function limpiarSlotFoco(idx) {
+            document.getElementById(`foco-p${idx}-check`).checked = false;
+            document.getElementById(`foco-p${idx}-text`).value = "";
+            actualizarBorradorFoco();
+        }
+
+        function limpiarTodoFocoDiario() {
+            document.getElementById("foco-input-intencion").value = "";
+            actualizarContadorFoco();
+            [0, 1, 2].forEach((i) => {
+                document.getElementById(`foco-p${i}-check`).checked = false;
+                document.getElementById(`foco-p${i}-text`).value = "";
+            });
+            actualizarBorradorFoco();
         }
 
         function abrirModalFocoDiario() {
             const data = _leerFocoDiario();
+            document.getElementById("foco-fase-ciclo").value = data.fase_ciclo || "Lútea";
+            document.getElementById("foco-dia-ciclo").value = data.dia_ciclo || "";
             document.getElementById("foco-input-intencion").value = data.intencion || "";
             actualizarContadorFoco();
             [0, 1, 2].forEach((i) => {
-                const p = data.prioridades[i] || { texto: "", tag: "", hecho: false };
+                const p = data.prioridades[i] || { texto: "", tag: FOCO_ETIQUETAS[i], hecho: false };
                 document.getElementById(`foco-p${i}-check`).checked = Boolean(p.hecho);
                 document.getElementById(`foco-p${i}-text`).value = p.texto || "";
-                document.getElementById(`foco-p${i}-tag`).value = p.tag || "";
+                document.getElementById(`foco-p${i}-tag`).value = FOCO_ETIQUETAS.includes(p.tag) ? p.tag : FOCO_ETIQUETAS[i];
             });
             document.getElementById("foco-modo-somatico").checked = Boolean(data.modoFocus);
-            seleccionarDisponibilidadFoco(data.disponibilidad || "Moderada / Estable");
+            document.getElementById("foco-error-msg").classList.add("hidden");
+            document.getElementById("foco-vista-token").classList.add("hidden");
 
             const modal = document.getElementById("modal-foco-diario");
             modal.classList.remove("hidden");
             modal.classList.add("flex");
+            seleccionarDisponibilidadFoco(data.disponibilidad || "Moderada / Estable");
         }
 
         function cerrarModalFocoDiario() {
@@ -700,35 +934,153 @@
             modal.classList.remove("flex");
         }
 
-        function guardarFocoDiario() {
-            const data = {
-                intencion: (document.getElementById("foco-input-intencion").value || "").trim() || FOCO_DEFAULT.intencion,
-                disponibilidad: _dispSeleccionada,
-                modoFocus: document.getElementById("foco-modo-somatico").checked,
-                prioridades: [0, 1, 2].map((i) => ({
-                    hecho: document.getElementById(`foco-p${i}-check`).checked,
-                    texto: (document.getElementById(`foco-p${i}-text`).value || "").trim() || FOCO_DEFAULT.prioridades[i].texto,
-                    tag: (document.getElementById(`foco-p${i}-tag`).value || "").trim().toUpperCase(),
-                })),
-            };
-            _guardarFocoStorage(data);
-            cerrarModalFocoDiario();
-            renderizarFocoInicio();
+        function guardarTokenFoco() {
+            const tk = (document.getElementById("foco-token-input").value || "").trim();
+            if (!tk) return;
+            try { localStorage.setItem(FOCO_TOKEN_KEY, tk); } catch (e) {}
+            document.getElementById("foco-token-input").value = "";
+            document.getElementById("foco-vista-token").classList.add("hidden");
+            guardarFocoDiarioEnNotion();
         }
 
-        function restablecerFocoDiario() {
-            _guardarFocoStorage(FOCO_DEFAULT);
-            abrirModalFocoDiario();
-            renderizarFocoInicio();
+        function mostrarSpinnerFoco(estado, titulo, subtitulo) {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado === "cargando");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+
+        function cerrarSpinnerFoco() {
+            document.getElementById("modal-spinner-notion").classList.add("hidden");
+            document.getElementById("modal-spinner-notion").classList.remove("flex");
+        }
+
+        async function guardarFocoDiarioEnNotion() {
+            const data = _leerFormularioFoco(true);
+            const errEl = document.getElementById("foco-error-msg");
+            if (!data.intencion) {
+                errEl.textContent = "La intención principal del día es obligatoria (mínimo 1 carácter).";
+                errEl.classList.remove("hidden");
+                return;
+            }
+            errEl.classList.add("hidden");
+            _guardarFocoStorage(data);
+
+            let token = "";
+            try { token = localStorage.getItem(FOCO_TOKEN_KEY) || ""; } catch (e) {}
+            if (!token) {
+                document.getElementById("foco-vista-token").classList.remove("hidden");
+                return;
+            }
+
+            cerrarModalFocoDiario();
+            mostrarSpinnerFoco("cargando", "Guardando foco en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const payload = {
+                    page_id: data.page_id || "",
+                    fecha: data.fecha,
+                    intencion: data.intencion,
+                    fase_ciclo: data.fase_ciclo,
+                    dia_ciclo: data.dia_ciclo,
+                    disponibilidad: data.disponibilidad,
+                    modo_focus: data.modoFocus,
+                    prioridades: data.prioridades,
+                };
+                const { url, options } = construirSolicitudNotionWrite(FOCO_GITHUB_OWNER, FOCO_GITHUB_REPO, "guardar_foco_diario", payload, token);
+                const resp = await fetch(url, options);
+                if (resp.status !== 204) {
+                    mostrarSpinnerFoco("error", "No se pudo enviar a Notion", `GitHub respondió (${resp.status}). Tu borrador sigue guardado en local.`);
+                    return;
+                }
+                const conf = await esperarConfirmacionWorkflow({
+                    owner: FOCO_GITHUB_OWNER,
+                    repo: FOCO_GITHUB_REPO,
+                    token,
+                    workflowFile: WORKFLOW_NOTION_WRITE,
+                    dispatchedAfterMs,
+                });
+                if (conf.ok) {
+                    data.dirty = false;
+                    _guardarFocoStorage(data);
+                    renderizarFocoInicio();
+                    mostrarSpinnerFoco("ok", "¡Foco guardado en Notion!", "Recargando Inicio...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerFoco("error", "No se pudo confirmar", conf.error);
+                }
+            } catch (e) {
+                mostrarSpinnerFoco("error", "Error de conexión", "Tu borrador sigue guardado en local.");
+            }
+        }
+
+        function abrirModalHistorialFoco() {
+            const modal = document.getElementById("modal-historial-foco");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+            renderizarHistorialFoco(_filtroHistorialFase);
+        }
+
+        function cerrarModalHistorialFoco() {
+            const modal = document.getElementById("modal-historial-foco");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        }
+
+        function renderizarHistorialFoco(faseFiltro = "Todas") {
+            _filtroHistorialFase = faseFiltro;
+            const fases = ["Todas", "Menstrual", "Folicular", "Ovulatoria", "Lútea"];
+            document.getElementById("hist-foco-filtros").innerHTML = fases.map((f) => {
+                const act = f === faseFiltro;
+                return `<button type="button" onclick="renderizarHistorialFoco('${f}')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-all ${act ? "bg-[#38bdf8] text-[#082f49]" : "bg-[#18181d] text-[#a1a1aa] hover:text-white border border-white/[0.08]"}">${f}</button>`;
+            }).join("");
+
+            const lista = (inicioFocoHistorial || []).filter((r) => faseFiltro === "Todas" || r.fase_ciclo === faseFiltro);
+            const cont = document.getElementById("hist-foco-lista");
+            if (lista.length === 0) {
+                cont.innerHTML = `<div class="rounded-xl bg-[#18181d] border border-white/[0.06] p-6 text-center text-[13px] text-[#8e8e93]">Todavía no hay focos guardados en Notion para esta fase. Guardá tu foco de hoy para empezar el historial.</div>`;
+                return;
+            }
+            cont.innerHTML = lista.map((r) => {
+                const prios = (r.prioridades || []).filter((p) => (p.texto || "").trim());
+                return `
+                    <article class="rounded-xl bg-[#18181d] border border-white/[0.08] p-4 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="text-[12px] font-bold text-white">${escapeHtml(r.fecha || "Sin fecha")}</span>
+                                ${r.fase_ciclo ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#ff5f52]/15 text-[#ffb4aa]">${escapeHtml(r.fase_ciclo)}${r.dia_ciclo ? ` · Día ${r.dia_ciclo}` : ""}</span>` : ""}
+                                ${r.disponibilidad ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.06] text-[#a1a1aa]">${escapeHtml(r.disponibilidad)}</span>` : ""}
+                            </div>
+                        </div>
+                        <p class="text-[14px] font-semibold text-white italic">"${escapeHtml(r.intencion || "")}"</p>
+                        ${prios.length ? `<div class="space-y-1.5">${prios.map((p) => `
+                            <div class="flex items-center justify-between gap-2 text-[12px]">
+                                <span class="${p.hecho ? "text-[#83da85]" : "text-[#e5e2e1]"} truncate">${p.hecho ? "✓" : "○"} ${escapeHtml(p.texto)}</span>
+                                ${p.tag ? `<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase flex-shrink-0 ${_colorEtiquetaFoco(p.tag)}">${escapeHtml(p.tag)}</span>` : ""}
+                            </div>
+                        `).join("")}</div>` : ""}
+                    </article>
+                `;
+            }).join("");
         }
 
         document.addEventListener("keydown", (e) => {
+            const modalHist = document.getElementById("modal-historial-foco");
+            if (modalHist && !modalHist.classList.contains("hidden") && e.key === "Escape") {
+                cerrarModalHistorialFoco();
+                return;
+            }
             const modal = document.getElementById("modal-foco-diario");
             if (!modal || modal.classList.contains("hidden")) return;
             if (e.key === "Escape") cerrarModalFocoDiario();
             if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
                 e.preventDefault();
-                guardarFocoDiario();
+                guardarFocoDiarioEnNotion();
             }
         });
 

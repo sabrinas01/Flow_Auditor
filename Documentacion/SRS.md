@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.86 (Detalle de Evento en Agenda, Foco Diario en Inicio y Vacíos Compasivos — Stitch)  
+**Versión:** 4.87 (Foco & Intención Diaria ABM conectado a Notion + Historial por Fase del Ciclo)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
@@ -12,6 +12,7 @@
 
 | Versión | Fecha | Autor | Descripción del Cambio / Hito Técnico |
 | :--- | :--- | :--- | :--- |
+| **v4.87** | Noviembre 2026 | Sabrina Sanso | **Foco & Intención Diaria ABM + Notion (`inicio.html`, `extract_and_audit.py`, workflows):**<br>- Nueva BD `🎯 Foco & Intención Diaria` (`NOTION_DB_FOCO_DIARIO`) con 1 fila por día y vínculo con fase/día del ciclo menstrual.<br>- `extract_and_audit.py` suma `sincronizar_foco_diario()` (inyecta `inicioFocoHistorial`) y `guardar_foco_diario()` (upsert por fecha).<br>- `inicio.html` implementa edición en borrador local + envío a Notion (`notion_write.js`), intención obligatoria + presets fijos, hasta 3 prioridades opcionales con etiquetas (`Meta física`, `Meta mental`, `Meta social/espiritual`), limpieza directa, modal `#modal-historial-foco` y remoción del badge `Salud_Ciclo_Sabry`. |
 | **v4.86** | Noviembre 2026 | Sabrina Sanso | **Pantallas Stitch pendientes (`agenda-personal.html`, `inicio.html`, `src/utils/dom_render.js`):**<br>- `agenda-personal.html`: modal `Detalle de Evento Seleccionado` (`#modal-detalle-evento`) con duración, enlace a Notion, energía requerida, sugerencia somática, checklist operativo persistido en `localStorage` (`asistente_sabry:agenda_checklist_v1`), duplicar bloque, posponer +30 min y marcar como completado (`Hecha`).<br>- `inicio.html`: bloque `Foco & Intención Diaria` (`#widget-foco-inicio`) y modal `#modal-foco-diario` con intención (120 chars + presets), 3 prioridades no negociables, disponibilidad somática y Modo Focus Somático persistido en `localStorage` (`asistente_sabry:foco_diario_v1`).<br>- `src/utils/dom_render.js`: estados de vacío compasivos enriquecidos en `renderizarAgendaEventos()` y `renderizarRecordatoriosVarios()`. |
 | **v4.85** | Noviembre 2026 | Sabrina Sanso | **Micro-pasos compasivos en Recordatorios diarios (`recordatorios-diarios.html`):**<br>- Botón `✨ Descomponer en micro-pasos` dentro del modal de edición de tarea diaria (`#modal-editar-diario`) con checklist de 3 micro-pasos persistido por tarea en `localStorage` (`asistente_sabry:rd_micropasos_v1`). |
 | **v4.84** | Noviembre 2026 | Sabrina Sanso | **Gestión de climas del Barómetro (`gestion-emocional.html`):**<br>- Modo `Gestionar opciones` para editar o eliminar climas del Barómetro Emocional con persistencia en `localStorage` (`asistente_sabry:barometro_opciones_v1`). |

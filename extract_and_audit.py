@@ -106,12 +106,13 @@ DB_DESARROLLO_PERSONAL = os.getenv("NOTION_DB_DESARROLLO_PERSONAL")
 DB_HABITOS = os.getenv("NOTION_DB_HABITOS")
 DB_FORMACIONES = os.getenv("NOTION_DB_FORMACIONES")
 DB_SALUD_ENERGIA = os.getenv("NOTION_DB_SALUD_ENERGIA")
+DB_FOCO_DIARIO = os.getenv("NOTION_DB_FOCO_DIARIO")
 
 
 def validar_credenciales():
     try:
         # Uso de helper interno para resolución robusta de variables de entorno
-        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS, DB_GESTION_EMOCIONAL, DB_EMOCIONES, DB_RELACIONES, DB_FRASES, DB_DESARROLLO_PERSONAL, DB_HABITOS, DB_FORMACIONES, DB_SALUD_ENERGIA
+        global NOTION_API_KEY, DB_RECORDATORIOS_DIARIOS, DB_RECORDATORIOS_VARIOS, DB_AGENDA_EVENTOS, DB_INGRESOS, DB_EGRESOS, DB_CUOTAS_TARJETA, DB_SESIONES, DB_CICLO, DB_SALUD_PENDIENTES, DB_LIBROS, DB_SERIES, DB_PELICULAS, DB_GESTION_EMOCIONAL, DB_EMOCIONES, DB_RELACIONES, DB_FRASES, DB_DESARROLLO_PERSONAL, DB_HABITOS, DB_FORMACIONES, DB_SALUD_ENERGIA, DB_FOCO_DIARIO
         NOTION_API_KEY = get_env_var(["NOTION_API_KEY", "NOTION_TOKEN"], required=True, min_length=20)
         DB_RECORDATORIOS_DIARIOS = get_env_var(["NOTION_DB_RECORDATORIOS_DIARIOS", "NOTION_DATABASE_ID", "NOTION_DB_ID"], required=True, min_length=32)
         # Opcionales: su ausencia (o cualquier fallo al consultarlas) no debe abortar
@@ -136,6 +137,7 @@ def validar_credenciales():
         DB_HABITOS = get_env_var(["NOTION_DB_HABITOS"], required=False)
         DB_FORMACIONES = get_env_var(["NOTION_DB_FORMACIONES"], required=False)
         DB_SALUD_ENERGIA = get_env_var(["NOTION_DB_SALUD_ENERGIA"], required=False)
+        DB_FOCO_DIARIO = get_env_var(["NOTION_DB_FOCO_DIARIO"], required=False)
     except (EnvironmentError, ValueError) as e:
         print(f"❌ [ERROR CRÍTICO]: {e}")
         sys.exit(1)
@@ -415,6 +417,11 @@ def auditar_consistencia_tripartita():
         sincronizar_habitos_disciplina(timestamps, app_version)
     except Exception as e:
         print(f"⚠️ [HÁBITOS Y DISCIPLINA]: error inesperado al sincronizar ({e}), se omite.")
+
+    try:
+        sincronizar_foco_diario()
+    except Exception as e:
+        print(f"⚠️ [FOCO DIARIO]: error inesperado al sincronizar ({e}), se omite.")
 
     verificar_consumo_ram()
 
@@ -2219,6 +2226,8 @@ def ejecutar_accion_notion(payload):
         crear_formacion_curso(datos)
     elif accion == "actualizar_formacion_curso":
         actualizar_formacion_curso(datos)
+    elif accion == "guardar_foco_diario":
+        guardar_foco_diario(datos)
     elif accion == "archivar_pagina":
         archivar_pagina_notion(datos)
     else:
@@ -2576,6 +2585,121 @@ def actualizar_energia_salud(datos):
     props = _construir_propiedades_energia_salud(datos)
     _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR ENERGIA SALUD")
     print(f"✅ [ACTUALIZAR ENERGIA SALUD]: '{datos.get('nombre')}' ({page_id}) actualizada.")
+
+
+def sincronizar_foco_diario():
+    """Inyecta el historial de 🎯 Foco & Intención Diaria en inicio.html."""
+    ini_path = BASE_DIR / "inicio.html"
+    if not ini_path.exists():
+        print("ℹ️ [FOCO DIARIO]: inicio.html no encontrado, se omite.")
+        return
+    if not DB_FOCO_DIARIO:
+        print("ℹ️ [FOCO DIARIO]: NOTION_DB_FOCO_DIARIO no configurada, se omite sync.")
+        return
+
+    resultados, _ = _consultar_bd_salud(DB_FOCO_DIARIO, "FOCO DIARIO", paginar=True)
+    historial = []
+    for page in resultados:
+        props = page.get("properties", {})
+        intencion = _texto_propiedad(props.get("Intención"))
+        if not intencion:
+            continue
+        fecha = _fecha_propiedad(props.get("Fecha"))
+        fase = _select_propiedad(props.get("Fase ciclo"))
+        dia_val = (props.get("Día ciclo") or {}).get("number")
+        disponibilidad = _select_propiedad(props.get("Disponibilidad"))
+        modo_focus = bool((props.get("Modo Focus") or {}).get("checkbox"))
+        prioridades = []
+        for idx in (1, 2, 3):
+            texto = _texto_propiedad(props.get(f"Prioridad {idx}"))
+            tag = _select_propiedad(props.get(f"Etiqueta {idx}"))
+            hecha = bool((props.get(f"Hecha {idx}") or {}).get("checkbox"))
+            prioridades.append({"texto": texto, "tag": tag, "hecha": hecha})
+        historial.append({
+            "id": page.get("id", ""),
+            "fecha": fecha,
+            "intencion": intencion,
+            "fase_ciclo": fase,
+            "dia_ciclo": dia_val,
+            "disponibilidad": disponibilidad,
+            "modo_focus": modo_focus,
+            "prioridades": prioridades,
+        })
+
+    historial.sort(key=lambda r: r.get("fecha") or "", reverse=True)
+    with open(ini_path, "r", encoding="utf-8") as f_ini:
+        ini_content = f_ini.read()
+    json_hist = json.dumps(historial, ensure_ascii=False).replace("</", "<\\/")
+    ini_content = re.sub(
+        r"const\s+inicioFocoHistorial\s*=\s*\[.*?\]\s*;",
+        lambda _m, jv=json_hist: f"const inicioFocoHistorial = {jv};",
+        ini_content,
+        flags=re.DOTALL,
+    )
+    with open(ini_path, "w", encoding="utf-8") as f_ini:
+        f_ini.write(ini_content)
+    print(f"✅ Frontend inicio.html (Foco Diario: {len(historial)} registros) sincronizado.")
+
+
+def _construir_propiedades_foco_diario(datos):
+    intencion = (datos.get("intencion") or "").strip()
+    fecha = (datos.get("fecha") or "").strip()
+    if not intencion:
+        print("❌ [FOCO DIARIO]: la intención del día es obligatoria.")
+        sys.exit(1)
+    if not fecha:
+        fecha = datetime.now(ZONA_ARGENTINA).strftime("%Y-%m-%d")
+
+    props = {
+        "Intención": {"title": [{"text": {"content": intencion[:120]}}]},
+        "Fecha": {"date": {"start": fecha}},
+        "Modo Focus": {"checkbox": bool(datos.get("modo_focus"))},
+    }
+    fase = (datos.get("fase_ciclo") or "").strip()
+    if fase:
+        props["Fase ciclo"] = {"select": {"name": fase}}
+    dia_ciclo = datos.get("dia_ciclo")
+    if dia_ciclo is not None and str(dia_ciclo).strip() != "":
+        try:
+            props["Día ciclo"] = {"number": int(dia_ciclo)}
+        except (TypeError, ValueError):
+            pass
+    disp = (datos.get("disponibilidad") or "").strip()
+    if disp:
+        props["Disponibilidad"] = {"select": {"name": disp}}
+
+    prioridades = datos.get("prioridades") or []
+    for idx in (1, 2, 3):
+        p = prioridades[idx - 1] if idx - 1 < len(prioridades) and isinstance(prioridades[idx - 1], dict) else {}
+        texto = (p.get("texto") or "").strip()
+        tag = (p.get("tag") or "").strip()
+        hecha = bool(p.get("hecha")) if texto else False
+        props[f"Prioridad {idx}"] = {"rich_text": [{"text": {"content": texto}}] if texto else []}
+        props[f"Etiqueta {idx}"] = {"select": {"name": tag}} if (texto and tag) else {"select": None}
+        props[f"Hecha {idx}"] = {"checkbox": hecha}
+    return fecha, intencion, props
+
+
+def guardar_foco_diario(datos):
+    if not DB_FOCO_DIARIO:
+        print("❌ [GUARDAR FOCO DIARIO]: NOTION_DB_FOCO_DIARIO no configurada.")
+        sys.exit(1)
+    fecha, intencion, props = _construir_propiedades_foco_diario(datos)
+    page_id = (datos.get("page_id") or "").strip()
+
+    if not page_id:
+        resultados, _ = _consultar_bd_salud(DB_FOCO_DIARIO, "FOCO DIARIO", paginar=True)
+        for page in resultados:
+            if _fecha_propiedad((page.get("properties") or {}).get("Fecha")) == fecha:
+                page_id = page.get("id", "")
+                break
+
+    if page_id:
+        _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR FOCO DIARIO")
+        print(f"✅ [FOCO DIARIO]: '{intencion}' ({fecha}) actualizado ({page_id}).")
+    else:
+        res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", {"parent": {"database_id": DB_FOCO_DIARIO}, "properties": props}, "CREAR FOCO DIARIO")
+        print(f"✅ [FOCO DIARIO]: '{intencion}' ({fecha}) creado ({res.get('id', '?')}).")
 
 
 def sincronizar_agenda_personal(timestamps, app_version):
