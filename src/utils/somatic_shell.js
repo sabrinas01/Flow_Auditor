@@ -79,8 +79,58 @@
       .replace(/"/g, "&quot;");
   }
 
+  function _initSidebarColapsable() {
+    if (typeof document === "undefined") return;
+    const sidebar = document.getElementById("sidebar");
+    if (!sidebar) return;
+
+    if (!document.getElementById("ss-sidebar-style")) {
+      const style = document.createElement("style");
+      style.id = "ss-sidebar-style";
+      style.textContent = `
+        @media (min-width: 1024px) {
+          body.ss-sidebar-collapsed #sidebar { width: 72px !important; padding-left: 0.625rem !important; padding-right: 0.625rem !important; align-items: center; }
+          body.ss-sidebar-collapsed #sidebar > div:first-child { justify-content: center; padding-left: 0; padding-right: 0; width: 100%; }
+          body.ss-sidebar-collapsed #sidebar > div:first-child > div:nth-child(2) { display: none; }
+          body.ss-sidebar-collapsed #sidebar nav { width: 100%; }
+          body.ss-sidebar-collapsed #sidebar nav a,
+          body.ss-sidebar-collapsed #sidebar a[href*="contras"] { justify-content: center; padding-left: 0.5rem; padding-right: 0.5rem; }
+          body.ss-sidebar-collapsed #sidebar nav a span:not(.material-symbols-outlined),
+          body.ss-sidebar-collapsed #sidebar a[href*="contras"] span:not(.material-symbols-outlined) { display: none; }
+          body.ss-sidebar-collapsed #sidebar > div:last-child { justify-content: center; padding-left: 0; padding-right: 0; }
+          body.ss-sidebar-collapsed #sidebar > div:last-child > div:nth-child(2) { display: none; }
+          body.ss-sidebar-collapsed main { margin-left: 72px !important; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    const headerRow = sidebar.firstElementChild;
+    if (headerRow && !document.getElementById("ss-btn-collapse-sidebar")) {
+      const btn = document.createElement("button");
+      btn.id = "ss-btn-collapse-sidebar";
+      btn.type = "button";
+      btn.className = "hidden lg:inline-flex ml-auto p-1.5 rounded-lg text-[#8e8e93] hover:text-white hover:bg-white/[0.06] transition-colors flex-shrink-0";
+      btn.title = "Colapsar / expandir barra lateral";
+      btn.innerHTML = `<span class="material-symbols-outlined text-[18px]">dock_to_left</span>`;
+      btn.addEventListener("click", () => {
+        const next = !document.body.classList.contains("ss-sidebar-collapsed");
+        document.body.classList.toggle("ss-sidebar-collapsed", next);
+        try { localStorage.setItem("asistente_sabry:sidebar_collapsed", next ? "1" : "0"); } catch (e) {}
+      });
+      headerRow.appendChild(btn);
+    }
+
+    try {
+      if (localStorage.getItem("asistente_sabry:sidebar_collapsed") === "1") {
+        document.body.classList.add("ss-sidebar-collapsed");
+      }
+    } catch (e) {}
+  }
+
   function _injectShell() {
     if (typeof document === "undefined" || document.getElementById("somatic-shell-root")) return;
+    _initSidebarColapsable();
 
     const root = document.createElement("div");
     root.id = "somatic-shell-root";

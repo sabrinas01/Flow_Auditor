@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
@@ -73,7 +73,7 @@
             <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
             <div>
                 <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
-                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.76</p>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.87</p>
             </div>
         </div>
 
@@ -134,7 +134,7 @@
             <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
             <div class="min-w-0">
                 <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
-                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.76</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.87</p>
             </div>
         </div>
     </aside>
@@ -216,7 +216,10 @@
                         <p class="text-[11px] font-label-caps text-[#ff5f52] tracking-widest">01 · DISCIPLINA COMPASIVA</p>
                         <h2 class="text-headline-md font-headline-md text-white">Hábitos Diarios &amp; Rachas</h2>
                     </div>
-                    <span id="hab-count-lbl" class="text-xs px-3 py-1 rounded-full bg-[#ff5f52]/10 text-[#ff5f52] font-semibold">0 hábitos</span>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="hab-hechos-hoy-lbl" class="text-xs px-3 py-1 rounded-full bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30 font-semibold">0/0 hechos hoy</span>
+                        <span id="hab-count-lbl" class="text-xs px-3 py-1 rounded-full bg-[#ff5f52]/10 text-[#ff5f52] font-semibold">0 hábitos</span>
+                    </div>
                 </div>
                 <div id="list-habitos" class="space-y-3"></div>
                 <div class="pt-4 border-t border-white/[0.06] space-y-3">
@@ -453,26 +456,48 @@
             document.getElementById("hab-kpi-curso").textContent = String(res.formacionesEnCurso);
             document.getElementById("hab-kpi-comp").textContent = String(res.formacionesCompletadas);
 
+            const hoyIso = hoyLocalISO();
+            const hechosHoyCount = habitos.filter((h) => estaHabitoHechoHoy(h, hoyIso)).length;
+            const hechosEl = document.getElementById("hab-hechos-hoy-lbl");
+            if (hechosEl) hechosEl.textContent = `${hechosHoyCount}/${habitos.length} hechos hoy`;
+
             document.getElementById("hab-count-lbl").textContent = `${habitos.length} hábitos`;
             document.getElementById("form-count-lbl").textContent = `${formaciones.length} formaciones`;
 
+            const habitosOrdenados = [...habitos].sort((a, b) => {
+                const aHecho = estaHabitoHechoHoy(a, hoyIso) ? 1 : 0;
+                const bHecho = estaHabitoHechoHoy(b, hoyIso) ? 1 : 0;
+                return aHecho - bHecho;
+            });
+
             const contHab = document.getElementById("list-habitos");
-            contHab.innerHTML = habitos.length === 0
+            contHab.innerHTML = habitosOrdenados.length === 0
                 ? `<div class="status-row flex items-center justify-center py-4 px-4 text-[#8e8e93] text-[13px]">Sin hábitos registrados aún</div>`
-                : habitos.map((h) => `
-                    <div class="status-row p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div class="min-w-0 space-y-1">
+                : habitosOrdenados.map((h) => {
+                    const hechoHoy = estaHabitoHechoHoy(h, hoyIso);
+                    const congeladoHoy = estaHabitoCongeladoHoy(h, hoyIso);
+                    return `
+                    <div class="status-row p-4 flex items-center justify-between gap-3 ${hechoHoy ? "opacity-75 bg-[#83da85]/[0.04] border border-[#83da85]/20" : ""}">
+                        <div class="min-w-0 space-y-1 flex-1">
                             <div class="flex flex-wrap items-center gap-2">
-                                <span class="text-white font-bold text-[15px]">${escapeHtml(h.nombre)}</span>
+                                <span class="font-bold text-[15px] ${hechoHoy ? "text-[#a1a1aa] line-through decoration-[#83da85]/60" : "text-white"}">${escapeHtml(h.nombre)}</span>
                                 ${h.categoria ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-white/[0.06] text-[#e5e2e1]">${escapeHtml(h.categoria)}</span>` : ""}
                                 <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#ffb961]/15 text-[#ffb961]">🔥 ${Number(h.racha_progreso) || 0} días</span>
-                                ${h.estado ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-[#83da85]/15 text-[#83da85]">${escapeHtml(h.estado)}</span>` : ""}
+                                ${hechoHoy ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#83da85]/20 text-[#83da85]">✓ Hecho hoy</span>` : (h.estado ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-[#83da85]/15 text-[#83da85]">${escapeHtml(h.estado)}</span>` : "")}
+                                ${congeladoHoy && !hechoHoy ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#38bdf8]/15 text-[#38bdf8]">❄️ Protegido hoy</span>` : ""}
                             </div>
                             ${h.frecuencia_meta || h.nota ? `<p class="text-[12px] text-[#a1a1aa]">${[h.frecuencia_meta, h.nota].filter(Boolean).map(escapeHtml).join(" · ")}</p>` : ""}
                         </div>
-                        <button type="button" onclick="abrirModalEditarHabito('${escapeHtml(h.id || "")}')" class="p-2 hover:bg-white/10 rounded-lg text-[#a1a1aa] hover:text-white self-start sm:self-center" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            ${hechoHoy
+                                ? `<button type="button" disabled aria-label="Hábito completado hoy" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-[#83da85]/20 border border-[#83da85] text-[#83da85] text-xs font-bold cursor-default"><span class="w-4 h-4 rounded-full bg-[#83da85] text-[#111115] flex items-center justify-center text-[11px] font-extrabold">✓</span><span>Hecho</span></button>`
+                                : `<button type="button" onclick="marcarHabitoHechoHoy('${escapeHtml(h.id || "")}')" title="Marcar como hecho hoy" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-[#83da85]/15 border border-white/[0.15] hover:border-[#83da85]/60 text-[#e5e2e1] hover:text-[#83da85] text-xs font-semibold transition-all active:scale-95"><span class="w-4 h-4 rounded-full border-2 border-current inline-block"></span><span>Hecho</span></button>`
+                            }
+                            <button type="button" onclick="abrirModalEditarHabito('${escapeHtml(h.id || "")}')" class="p-2 hover:bg-white/10 rounded-lg text-[#a1a1aa] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                        </div>
                     </div>
-                `).join("");
+                `;
+                }).join("");
 
             const estadosCols = habitosOpciones.estados_formacion || ESTADOS_FORMACION;
             const contForm = document.getElementById("kanban-formaciones");
@@ -616,6 +641,7 @@
         async function manejarSubmitHabito(event) {
             event.preventDefault();
             const pageId = document.getElementById("hab-page-id").value.trim();
+            const existente = pageId ? (habitosRegistros || []).find((x) => x.id === pageId) : null;
             const res = construirPayloadHabito({
                 pageId,
                 nombre: document.getElementById("hab-nombre").value,
@@ -626,6 +652,7 @@
                 ultimaFecha: document.getElementById("hab-fecha").value,
                 frecuenciaMeta: document.getElementById("hab-frecuencia").value,
                 nota: document.getElementById("hab-nota").value,
+                historialFechas: existente && existente.historial_fechas ? existente.historial_fechas : "",
             });
             if (!res.ok) {
                 const msg = document.getElementById("hab-mensaje");
@@ -721,23 +748,60 @@
             cerrarModal("modal-formacion");
             await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: pageId });
         }
+        async function marcarHabitoHechoHoy(id) {
+            const idx = (habitosRegistros || []).findIndex((x) => x.id === id);
+            if (idx < 0) return;
+            const hoyIso = hoyLocalISO();
+            const res = completarHabitoHoy(habitosRegistros[idx], hoyIso);
+            if (!res.changed) return;
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return; }
+
+            habitosRegistros[idx] = res.actualizado;
+            renderizarHabitosYDisciplina();
+            renderizarHeatmapHabitos();
+            await ejecutarEscrituraConSpinner("actualizar_habito_disciplina", res.payload);
+        }
+
         const CONGELACION_KEY = "asistente_sabry:habitos_congelacion";
         let _habitoPausadoParaFormacion = false;
 
-        function toggleCongelacionCompasiva() {
-            let activo = false;
-            try {
-                activo = localStorage.getItem(CONGELACION_KEY) === "1";
-                localStorage.setItem(CONGELACION_KEY, activo ? "0" : "1");
-                activo = !activo;
-            } catch (e) {}
-            _actualizarBtnCongelacion(activo);
+        async function toggleCongelacionCompasiva() {
+            const hoyIso = hoyLocalISO();
+            const habitos = (habitosRegistros || []).filter((x) => !x.modulo || (x.modulo || "").includes("Hábito"));
+            const yaActivo = habitos.some((h) => estaHabitoCongeladoHoy(h, hoyIso))
+                || (() => { try { return localStorage.getItem(CONGELACION_KEY) === hoyIso; } catch (_e) { return false; } })();
+            const activar = !yaActivo;
+
+            if (habitos.length > 0 && !obtenerTokenGuardado()) {
+                abrirModal("modal-token-notion");
+                return;
+            }
+
+            try { localStorage.setItem(CONGELACION_KEY, activar ? hoyIso : ""); } catch (_e) {}
+
+            const payloads = [];
+            (habitosRegistros || []).forEach((h, i) => {
+                if (h.modulo && !(h.modulo || "").includes("Hábito")) return;
+                if ((h.estado || "").toLowerCase().includes("pausa")) return;
+                const r = alternarCongelacionHabitoHoy(h, hoyIso, activar);
+                if (r.changed) {
+                    habitosRegistros[i] = r.actualizado;
+                    payloads.push(r.payload);
+                }
+            });
+
+            renderizarHabitosYDisciplina();
+            renderizarHeatmapHabitos();
+
+            for (const p of payloads) {
+                await ejecutarEscrituraConSpinner("actualizar_habito_disciplina", p);
+            }
         }
 
         function _actualizarBtnCongelacion(activo) {
             const btn = document.getElementById("btn-congelar-racha");
             if (!btn) return;
-            btn.textContent = activo ? "❄️ Racha Protegida (Activa)" : "❄️ Congelación Compasiva";
+            btn.textContent = activo ? "❄️ Racha Protegida (Hoy)" : "❄️ Congelación Compasiva";
             btn.className = activo
                 ? "px-3 py-1.5 rounded-xl bg-[#38bdf8]/30 border border-[#38bdf8] text-white text-xs font-bold transition-all"
                 : "px-3 py-1.5 rounded-xl bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/35 text-[#38bdf8] text-xs font-bold transition-all";
@@ -746,15 +810,21 @@
         function renderizarHeatmapHabitos() {
             const cont = document.getElementById("hab-heatmap-anual");
             if (!cont) return;
-            const totalActivos = (typeof habitosRegistros !== "undefined" ? habitosRegistros.length : 0);
-            const celdas = [];
-            for (let i = 0; i < 52; i++) {
-                const nivel = totalActivos > 0 ? ((i + totalActivos) % 4) : 0;
-                const colores = ["bg-white/[0.05]", "bg-[#83da85]/25", "bg-[#83da85]/55", "bg-[#83da85]"];
-                celdas.push(`<div class="h-3 rounded-sm ${colores[nivel]}" title="Semana ${i + 1}"></div>`);
-            }
-            cont.innerHTML = celdas.join("");
-            try { _actualizarBtnCongelacion(localStorage.getItem(CONGELACION_KEY) === "1"); } catch (e) {}
+            const hoyIso = hoyLocalISO();
+            const habitos = (typeof habitosRegistros !== "undefined" ? habitosRegistros : []).filter((x) => !x.modulo || (x.modulo || "").includes("Hábito"));
+            const celdas = calcularMatriz52Semanas(habitos, hoyIso);
+            const colores = ["bg-white/[0.06]", "bg-[#83da85]/30", "bg-[#83da85]/60", "bg-[#83da85]"];
+            cont.innerHTML = celdas.map((c) => {
+                const cls = c.esCongelada && c.cumplidos === 0
+                    ? "bg-[#38bdf8]/65 ring-1 ring-[#38bdf8]"
+                    : c.esCongelada
+                        ? `${colores[c.nivel]} ring-1 ring-[#38bdf8]`
+                        : colores[c.nivel];
+                return `<div class="h-3.5 rounded-sm ${cls} transition-colors" title="${escapeHtml(c.tooltip)}"></div>`;
+            }).join("");
+            const congeladoHoy = habitos.some((h) => estaHabitoCongeladoHoy(h, hoyIso))
+                || (() => { try { return localStorage.getItem(CONGELACION_KEY) === hoyIso; } catch (_e) { return false; } })();
+            _actualizarBtnCongelacion(congeladoHoy);
         }
 
         function abrirFormacionEnVueloDesdeHabito() {

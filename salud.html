@@ -69,7 +69,7 @@
             <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
             <div>
                 <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
-                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.76</p>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.87</p>
             </div>
         </div>
 
@@ -129,7 +129,7 @@
             <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
             <div class="min-w-0">
                 <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
-                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.76</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo</p>
             </div>
         </div>
     </aside>
@@ -278,6 +278,21 @@
                     </div>
                     <div id="ciclo-sintomas-top" class="flex flex-wrap gap-2"></div>
                     <div id="ciclo-historial-list" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
+
+                    <!-- Sugerencias de Bienestar (mini-ABM Stitch) -->
+                    <div id="salud-sugerencias-wrap" class="pt-4 border-t border-white/[0.08] space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                                <p class="text-[11px] font-label-caps text-[#83da85] tracking-widest uppercase">SUGERENCIAS DE BIENESTAR</p>
+                                <p class="text-[12px] text-[#8e8e93]">Cuidados somáticos, nutrición y descanso personalizables.</p>
+                            </div>
+                            <button id="btn-add-sugerencia-salud" type="button" onclick="abrirModalSugerenciaSalud()" class="px-3 py-1.5 rounded-xl bg-[#53a759]/20 hover:bg-[#53a759]/30 border border-[#53a759]/40 text-[#83da85] text-xs font-bold inline-flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[15px]">add</span>
+                                <span>Añadir</span>
+                            </button>
+                        </div>
+                        <div id="salud-sugerencias-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+                    </div>
                 </section>
 
                 <!-- 1.2 CONTROLES MÉDICOS Y SALUD PENDIENTES -->
@@ -288,7 +303,7 @@
                             <h3 class="text-headline-md font-headline-md text-white">Controles médicos y salud pendientes</h3>
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
-                            <a href="https://app.notion.com/p/332a38bb7a6e80099b50f227e57f7d7a?v=332a38bb7a6e80998a85000cb18b0a30&source=copy_link"
+                            <a href="https://app.notion.com/p/1a8a38bb7a6e804aa8b1cb1e03e94716?v=1a8a38bb7a6e80cc95cf000c48a8ba99&source=copy_link"
                                target="_blank" rel="noopener"
                                class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
                                 <span>Ver en Notion</span>
@@ -312,7 +327,7 @@
                             <h3 class="text-headline-md font-headline-md text-white">Diario de sesiones & Movimiento</h3>
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
-                            <a href="https://app.notion.com/p/27ca38bb7a6e80f39a12fef0dd401367?v=27ca38bb7a6e80578eca000cdc6ed0ee&source=copy_link"
+                            <a href="https://app.notion.com/p/2a6a38bb7a6e80d98a43e768c2510ef2?v=2a6a38bb7a6e805d85c4000cdfc36d3a&source=copy_link"
                                target="_blank" rel="noopener"
                                class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
                                 <span>Ver en Notion</span>
@@ -419,11 +434,21 @@
                         <p id="energia-desc" class="text-[13px] text-[#8e8e93] leading-relaxed"></p>
                     </div>
                     <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#38bdf8] space-y-4">
-                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">CURVA CIRCADIANA DEL DÍA</p>
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">CURVA CIRCADIANA DEL DÍA</p>
+                            <button type="button" onclick="abrirModalEnergia('📈 Curva Circadiana')" class="w-7 h-7 rounded-lg bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/35 text-[#38bdf8] flex items-center justify-center transition-all" title="Agregar franja a Curva Circadiana">
+                                <span class="material-symbols-outlined text-[16px]">add</span>
+                            </button>
+                        </div>
                         <div id="energia-curva-list" class="space-y-3"></div>
                     </div>
                     <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#53a759] space-y-4">
-                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">FACTORES DE RECARGA VITAL</p>
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">FACTORES DE RECARGA VITAL</p>
+                            <button type="button" onclick="abrirModalEnergia('⚡ Factor de Recarga')" class="w-7 h-7 rounded-lg bg-[#53a759]/15 hover:bg-[#53a759]/25 border border-[#53a759]/35 text-[#53a759] flex items-center justify-center transition-all" title="Agregar hábito o Factor de Recarga">
+                                <span class="material-symbols-outlined text-[16px]">add</span>
+                            </button>
+                        </div>
                         <div id="energia-factores-list" class="space-y-3"></div>
                     </div>
                 </div>
@@ -556,19 +581,21 @@
     <!-- SUBMODAL CREACIÓN EN VUELO: MEDICAMENTO / SUPLEMENTO (CAPA 2) -->
     <div id="modal-salud-med-vuelo" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarSubmodalMedSalud()">
         <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4 border border-[#83da85]/40 shadow-2xl" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between gap-2">
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30">CAPA 2 • MEDICAMENTO EN VUELO</span>
-                <button type="button" onclick="cerrarSubmodalMedSalud()" class="p-1 hover:bg-white/5 rounded-full text-[#8e8e93]">
-                    <span class="material-symbols-outlined text-[18px]">close</span>
+                <button type="button" onclick="cerrarSubmodalMedSalud()" class="px-2 py-1 hover:bg-white/5 rounded-full text-[11px] text-[#8e8e93] hover:text-white inline-flex items-center gap-1" title="Esc | Cerrar a Salud">
+                    <span>Esc</span>
+                    <span class="material-symbols-outlined text-[16px]">close</span>
                 </button>
             </div>
+            <p class="text-[11px] text-[#8e8e93] font-medium">Salud → Registro de Síntoma → <span class="text-[#83da85]">+ Nuevo Medicamento</span></p>
             <h3 class="text-base font-bold text-white">Registrar Medicamento / Suplemento</h3>
             <form onsubmit="return guardarSubmodalMedSalud(event)" class="space-y-3">
                 <input id="sal-med-nombre" type="text" required maxlength="80" placeholder="Nombre (ej. Magnesio / Ibuprofeno)" class="w-full bg-[#1c1c1f] border border-[#232326] focus:border-[#83da85] rounded-lg px-3 py-2.5 text-white text-sm outline-none" />
                 <input id="sal-med-dosis" type="text" maxlength="60" placeholder="Dosis / Horario (ej. 400mg noche)" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-xs outline-none" />
                 <div class="flex gap-2 pt-1">
-                    <button type="button" onclick="cerrarSubmodalMedSalud()" class="flex-1 py-2.5 rounded-xl bg-[#18181d] text-white text-xs font-semibold">Volver</button>
-                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-[#83da85] text-[#08080a] text-xs font-bold">Agregar y vincular</button>
+                    <button type="button" onclick="cerrarSubmodalMedSalud()" class="flex-1 py-2.5 rounded-xl bg-[#18181d] text-white text-xs font-semibold">← Volver al síntoma</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-[#83da85] text-[#08080a] text-xs font-bold">Guardar y vincular</button>
                 </div>
             </form>
         </div>
@@ -636,45 +663,78 @@
 
     <!-- MODAL ENERGÍA & RECARGA VITAL -->
     <div id="modal-energia" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-energia')">
-        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-center mb-5">
-                <h3 id="eng-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar en Energía</h3>
+        <div class="glass-card rounded-2xl p-6 w-full max-w-lg my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <p class="text-[10px] font-label-caps text-[#ffb961] tracking-widest">03 · ENERGÍA</p>
+                    <h3 id="eng-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar en Energía</h3>
+                </div>
                 <button type="button" onclick="cerrarModal('modal-energia')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
                     <span class="material-symbols-outlined text-[20px]">close</span>
                 </button>
             </div>
             <form id="form-energia" class="space-y-4" onsubmit="return manejarSubmitEnergia(event)">
                 <input id="eng-page-id" type="hidden" value="" />
+                <input id="eng-tipo" type="hidden" value="📈 Curva Circadiana" />
                 <div>
-                    <label for="eng-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre *</label>
-                    <input id="eng-nombre" type="text" required maxlength="200" placeholder="Ej. Hidratación tibia / Mañana (07-13)" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label for="eng-tipo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Tipo</label>
-                        <select id="eng-tipo" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]">
-                            <option value="⚡ Factor de Recarga">⚡ Factor de Recarga</option>
-                            <option value="📈 Curva Circadiana">📈 Curva Circadiana</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="eng-fase" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fase</label>
-                        <select id="eng-fase" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]">
-                            <option value="Todas">Todas</option>
-                            <option value="❄️ Menstrual">❄️ Menstrual</option>
-                            <option value="🌸 Folicular">🌸 Folicular</option>
-                            <option value="☀️ Ovulatoria">☀️ Ovulatoria</option>
-                            <option value="🍂 Lútea">🍂 Lútea</option>
-                        </select>
+                    <p class="text-[12px] font-semibold text-[#8e8e93] mb-2">¿Qué querés registrar?</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <button id="eng-card-curva" type="button" onclick="seleccionarTipoEnergia('📈 Curva Circadiana')" class="text-left p-3.5 rounded-xl bg-[#1c1c1f] border-2 border-[#38bdf8] transition-all">
+                            <p class="text-[13px] font-bold text-white">📈 Curva Circadiana</p>
+                            <p class="text-[11px] text-[#a1a1aa] mt-0.5 leading-snug">Franja horaria y nivel de energía (%).</p>
+                        </button>
+                        <button id="eng-card-factor" type="button" onclick="seleccionarTipoEnergia('⚡ Factor de Recarga')" class="text-left p-3.5 rounded-xl bg-[#1c1c1f] border border-[#232326] hover:border-[#53a759]/50 transition-all">
+                            <p class="text-[13px] font-bold text-white">⚡ Factor de Recarga</p>
+                            <p class="text-[11px] text-[#a1a1aa] mt-0.5 leading-snug">Hábito o acción que te devuelve energía.</p>
+                        </button>
                     </div>
                 </div>
                 <div>
-                    <label for="eng-porcentaje" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Porcentaje (0-100, opcional para curva)</label>
-                    <input id="eng-porcentaje" type="number" min="0" max="100" step="1" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    <label id="eng-nombre-label" for="eng-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Franja horaria *</label>
+                    <input id="eng-nombre" type="text" required maxlength="200" oninput="verificarDuplicadoEnergiaLive()" placeholder="Ej. Mañana (07-13)" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    <div id="eng-chips-factor" class="hidden flex flex-wrap gap-1.5 mt-2">
+                        <button type="button" onclick="aplicarChipFactor('Hidratación tibia')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#53a759]/15 hover:bg-[#53a759]/25 text-[#83da85] border border-[#53a759]/30 transition-all">💧 Hidratación tibia</button>
+                        <button type="button" onclick="aplicarChipFactor('Siesta 20 min')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#53a759]/15 hover:bg-[#53a759]/25 text-[#83da85] border border-[#53a759]/30 transition-all">😴 Siesta 20 min</button>
+                        <button type="button" onclick="aplicarChipFactor('Caminar al sol')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#53a759]/15 hover:bg-[#53a759]/25 text-[#83da85] border border-[#53a759]/30 transition-all">☀️ Caminar al sol</button>
+                        <button type="button" onclick="aplicarChipFactor('Respiración 4-7-8')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#53a759]/15 hover:bg-[#53a759]/25 text-[#83da85] border border-[#53a759]/30 transition-all">🌬️ Respiración 4-7-8</button>
+                        <button type="button" onclick="aplicarChipFactor('Estiramiento suave')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#53a759]/15 hover:bg-[#53a759]/25 text-[#83da85] border border-[#53a759]/30 transition-all">🧘 Estiramiento suave</button>
+                    </div>
+                </div>
+                <div id="eng-duplicado-aviso" class="hidden p-3 rounded-xl bg-[#ffb961]/10 border border-[#ffb961]/40 text-[12px] text-[#ffb961] space-y-1.5">
+                    <p id="eng-duplicado-texto"></p>
+                    <button id="eng-duplicado-btn" type="button" class="px-2.5 py-1 rounded-lg bg-[#ffb961] text-[#111115] font-bold text-[11px]">Usar título sugerido</button>
+                </div>
+                <div id="eng-grupo-curva" class="p-3.5 rounded-xl bg-[#08080a] border border-[#38bdf8]/25 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <label for="eng-porcentaje-slider" class="text-[12px] font-semibold text-[#e5e2e1]">Nivel de energía *</label>
+                        <div class="flex items-center gap-2">
+                            <span id="eng-porcentaje-estado" class="text-[10px] font-label-caps px-2 py-0.5 rounded-full bg-[#38bdf8]/15 text-[#38bdf8]">VALLE</span>
+                            <span id="eng-porcentaje-valor" class="text-lg font-extrabold text-[#38bdf8]">25%</span>
+                        </div>
+                    </div>
+                    <input id="eng-porcentaje-slider" type="range" min="0" max="100" step="5" value="25" oninput="actualizarSliderEnergia(this.value)" class="w-full accent-[#38bdf8] cursor-pointer" />
+                    <input id="eng-porcentaje" type="hidden" value="25" />
+                    <div class="flex justify-between text-[10px] text-[#8e8e93]">
+                        <span>0%</span>
+                        <span>25%</span>
+                        <span>50%</span>
+                        <span>75%</span>
+                        <span>100%</span>
+                    </div>
                 </div>
                 <div>
-                    <label for="eng-detalle" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Detalle / Nota</label>
-                    <textarea id="eng-detalle" rows="2" maxlength="400" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></textarea>
+                    <label for="eng-fase" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fase del ciclo</label>
+                    <select id="eng-fase" onchange="verificarDuplicadoEnergiaLive()" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]">
+                        <option value="Todas">Todas</option>
+                        <option value="❄️ Menstrual">❄️ Menstrual</option>
+                        <option value="🌸 Folicular">🌸 Folicular</option>
+                        <option value="☀️ Ovulatoria">☀️ Ovulatoria</option>
+                        <option value="🍂 Lútea">🍂 Lútea</option>
+                    </select>
+                </div>
+                <div id="eng-grupo-detalle" class="hidden">
+                    <label for="eng-detalle" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Detalle / Nota (opcional)</label>
+                    <textarea id="eng-detalle" rows="2" maxlength="400" placeholder="Cuándo aplicarlo o cómo te ayuda..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></textarea>
                 </div>
                 <p id="eng-mensaje" class="text-[13px] hidden"></p>
                 <div class="flex gap-3 pt-1">
@@ -1415,39 +1475,132 @@
             return false;
         }
 
-        function abrirModalEnergia() {
+        function _obtenerFaseActualEnergiaOption() {
+            const e = calcularEnergiaDesdeCiclo(saludCiclo, saludMenteRegistros, hoyLocalISO());
+            const nombre = (e && e.faseNombre) || "";
+            if (nombre.includes("Menstrual")) return "❄️ Menstrual";
+            if (nombre.includes("Folicular")) return "🌸 Folicular";
+            if (nombre.includes("Ovulatoria")) return "☀️ Ovulatoria";
+            if (nombre.includes("Lútea")) return "🍂 Lútea";
+            return "Todas";
+        }
+
+        function actualizarSliderEnergia(val) {
+            const num = Math.min(100, Math.max(0, Number(val) || 0));
+            document.getElementById("eng-porcentaje-slider").value = String(num);
+            document.getElementById("eng-porcentaje").value = String(num);
+            document.getElementById("eng-porcentaje-valor").textContent = `${num}%`;
+            const est = document.getElementById("eng-porcentaje-estado");
+            if (est) {
+                est.textContent = num <= 30 ? "VALLE" : num <= 60 ? "MODERADA" : num <= 85 ? "ÓPTIMA" : "PICO";
+            }
+        }
+
+        function seleccionarTipoEnergia(tipo) {
+            const esCurva = (tipo || "").includes("Curva");
+            document.getElementById("eng-tipo").value = esCurva ? "📈 Curva Circadiana" : "⚡ Factor de Recarga";
+
+            const cardCurva = document.getElementById("eng-card-curva");
+            const cardFactor = document.getElementById("eng-card-factor");
+            if (cardCurva && cardFactor) {
+                cardCurva.className = esCurva
+                    ? "text-left p-3.5 rounded-xl bg-[#1c1c1f] border-2 border-[#38bdf8] transition-all"
+                    : "text-left p-3.5 rounded-xl bg-[#1c1c1f] border border-[#232326] hover:border-[#38bdf8]/50 transition-all opacity-75";
+                cardFactor.className = !esCurva
+                    ? "text-left p-3.5 rounded-xl bg-[#1c1c1f] border-2 border-[#53a759] transition-all"
+                    : "text-left p-3.5 rounded-xl bg-[#1c1c1f] border border-[#232326] hover:border-[#53a759]/50 transition-all opacity-75";
+            }
+
+            document.getElementById("eng-nombre-label").textContent = esCurva ? "Franja horaria *" : "Hábito o acción *";
+            document.getElementById("eng-nombre").placeholder = esCurva ? "Ej. Mañana (07-13)" : "Ej. Hidratación tibia";
+            document.getElementById("eng-grupo-curva").classList.toggle("hidden", !esCurva);
+            document.getElementById("eng-chips-factor").classList.toggle("hidden", esCurva);
+            document.getElementById("eng-grupo-detalle").classList.toggle("hidden", esCurva);
+            if (!esCurva) {
+                document.getElementById("eng-porcentaje").value = "";
+            } else if (document.getElementById("eng-porcentaje").value === "") {
+                actualizarSliderEnergia(25);
+            }
+        }
+
+        function aplicarChipFactor(texto) {
+            const input = document.getElementById("eng-nombre");
+            input.value = texto;
+            verificarDuplicadoEnergiaLive();
+            input.focus();
+        }
+
+        function verificarDuplicadoEnergiaLive() {
+            const aviso = document.getElementById("eng-duplicado-aviso");
+            const txt = document.getElementById("eng-duplicado-texto");
+            const btn = document.getElementById("eng-duplicado-btn");
+            if (!aviso || !txt || !btn) return { duplicado: false };
+            const dup = detectarDuplicadoEnergia(saludEnergiaRegistros, {
+                nombre: document.getElementById("eng-nombre").value,
+                fase: document.getElementById("eng-fase").value,
+                pageId: document.getElementById("eng-page-id").value,
+            });
+            if (!dup.duplicado) {
+                aviso.classList.add("hidden");
+                return dup;
+            }
+            txt.textContent = `Ya existe un registro con ese nombre en esta fase. Agregá "registro numero ${dup.siguienteNumero}" en el título para diferenciarlo.`;
+            btn.onclick = () => {
+                document.getElementById("eng-nombre").value = dup.sugerencia;
+                aviso.classList.add("hidden");
+            };
+            aviso.classList.remove("hidden");
+            return dup;
+        }
+
+        function abrirModalEnergia(tipoPreseleccionado) {
             document.getElementById("form-energia").reset();
             document.getElementById("eng-page-id").value = "";
             document.getElementById("eng-modal-titulo").textContent = "Registrar en Energía";
             document.getElementById("eng-btn-eliminar").classList.add("hidden");
             document.getElementById("eng-mensaje").classList.add("hidden");
+            document.getElementById("eng-duplicado-aviso").classList.add("hidden");
+            document.getElementById("eng-fase").value = _obtenerFaseActualEnergiaOption();
+            actualizarSliderEnergia(25);
+            seleccionarTipoEnergia(tipoPreseleccionado || "📈 Curva Circadiana");
             abrirModal("modal-energia");
         }
 
         function abrirModalEditarEnergia(id) {
             const x = (saludEnergiaRegistros || []).find((r) => r.id === id);
             if (!x) return;
-            abrirModalEnergia();
+            const tipo = x.tipo || "⚡ Factor de Recarga";
+            abrirModalEnergia(tipo);
             document.getElementById("eng-page-id").value = x.id;
             document.getElementById("eng-modal-titulo").textContent = "Editar registro de Energía";
             document.getElementById("eng-nombre").value = x.nombre || "";
-            document.getElementById("eng-tipo").value = x.tipo || "⚡ Factor de Recarga";
-            document.getElementById("eng-fase").value = x.fase || "Todas";
-            document.getElementById("eng-porcentaje").value = x.porcentaje !== null && x.porcentaje !== undefined ? x.porcentaje : "";
+            document.getElementById("eng-fase").value = x.fase || _obtenerFaseActualEnergiaOption();
+            if (tipo.includes("Curva")) {
+                actualizarSliderEnergia(x.porcentaje !== null && x.porcentaje !== undefined ? x.porcentaje : 25);
+            }
             document.getElementById("eng-detalle").value = x.detalle || "";
             document.getElementById("eng-btn-eliminar").classList.remove("hidden");
         }
 
         async function manejarSubmitEnergia(event) {
             event.preventDefault();
+            const dup = verificarDuplicadoEnergiaLive();
+            if (dup.duplicado) {
+                const msg = document.getElementById("eng-mensaje");
+                msg.textContent = `Registro duplicado: agregá "registro numero ${dup.siguienteNumero}" en el título antes de guardar.`;
+                msg.className = "text-[13px] text-[#ffb961]";
+                return false;
+            }
             const pageId = document.getElementById("eng-page-id").value.trim();
+            const tipo = document.getElementById("eng-tipo").value;
+            const esCurva = tipo.includes("Curva");
             const res = construirPayloadEnergiaSalud({
                 pageId,
                 nombre: document.getElementById("eng-nombre").value,
-                tipo: document.getElementById("eng-tipo").value,
+                tipo,
                 fase: document.getElementById("eng-fase").value,
-                porcentaje: document.getElementById("eng-porcentaje").value,
-                detalle: document.getElementById("eng-detalle").value,
+                porcentaje: esCurva ? document.getElementById("eng-porcentaje").value : "",
+                detalle: esCurva ? "" : document.getElementById("eng-detalle").value,
             });
             if (!res.ok) {
                 const msg = document.getElementById("eng-mensaje");
@@ -1493,6 +1646,130 @@
             }
             if (typeof renderizarHistorialCiclo === "function") renderizarHistorialCiclo();
         }
+
+        // =================================================== //
+        // SUGERENCIAS DE BIENESTAR MINI-ABM (STITCH)          //
+        // =================================================== //
+        const SALUD_SUGERENCIAS_KEY = "asistente_sabry:salud_sugerencias_v1";
+        const SALUD_SUGERENCIAS_DEFAULT = [
+            { id: "sug-1", texto: "Calor local y descanso activo", categoria: "Somático" },
+            { id: "sug-2", texto: "Hidratación tibia e infusión de jengibre", categoria: "Nutrición" },
+        ];
+
+        function _leerSugerenciasSalud() {
+            try {
+                const raw = localStorage.getItem(SALUD_SUGERENCIAS_KEY);
+                if (!raw) return JSON.parse(JSON.stringify(SALUD_SUGERENCIAS_DEFAULT));
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : JSON.parse(JSON.stringify(SALUD_SUGERENCIAS_DEFAULT));
+            } catch (e) {
+                return JSON.parse(JSON.stringify(SALUD_SUGERENCIAS_DEFAULT));
+            }
+        }
+
+        function _guardarSugerenciasSalud(lista) {
+            try { localStorage.setItem(SALUD_SUGERENCIAS_KEY, JSON.stringify(lista)); } catch (e) {}
+        }
+
+        function renderizarSugerenciasSalud() {
+            const cont = document.getElementById("salud-sugerencias-list");
+            if (!cont) return;
+            const lista = _leerSugerenciasSalud();
+            if (lista.length === 0) {
+                cont.innerHTML = `<p class="sm:col-span-2 text-xs text-[#8e8e93] italic">Sin sugerencias cargadas. Tocá + Añadir para sumar un cuidado.</p>`;
+                return;
+            }
+            cont.innerHTML = lista.map((s, idx) => `
+                <div class="flex items-center justify-between gap-2 rounded-xl bg-[#18181d] border border-white/[0.08] px-3.5 py-2.5">
+                    <div class="min-w-0 flex-1 space-y-0.5">
+                        <span class="inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#53a759]/15 text-[#83da85]">${escapeHtml(s.categoria || "Somático")}</span>
+                        <p class="text-[13px] font-medium text-white truncate">${escapeHtml(s.texto || "")}</p>
+                    </div>
+                    <div class="flex items-center gap-1 flex-shrink-0">
+                        <button type="button" onclick="abrirModalSugerenciaSalud(${idx})" class="p-1 text-[#8e8e93] hover:text-white rounded" title="Editar"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+                        <button type="button" onclick="eliminarSugerenciaSalud(${idx})" class="p-1 text-[#8e8e93] hover:text-[#ff5f52] rounded" title="Eliminar"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function abrirModalSugerenciaSalud(idx = null) {
+            let m = document.getElementById("modal-sugerencia-salud");
+            if (!m) {
+                m = document.createElement("div");
+                m.id = "modal-sugerencia-salud";
+                m.className = "fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-md p-4";
+                m.onclick = () => cerrarModalSugerenciaSalud();
+                m.innerHTML = `
+                    <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4 border border-white/[0.12]" onclick="event.stopPropagation()">
+                        <div class="flex items-center justify-between">
+                            <h3 id="sug-modal-titulo" class="text-lg font-headline-md font-bold text-white">Sugerencia de Bienestar</h3>
+                            <button type="button" onclick="cerrarModalSugerenciaSalud()" class="p-1 text-[#8e8e93] hover:text-white"><span class="material-symbols-outlined text-[20px]">close</span></button>
+                        </div>
+                        <input id="sug-edit-idx" type="hidden" value="" />
+                        <div class="space-y-3">
+                            <div>
+                                <label for="sug-texto" class="block text-xs font-semibold text-[#8e8e93] mb-1">Cuidado / protocolo *</label>
+                                <input id="sug-texto" type="text" maxlength="100" placeholder="Ej. Calor local y descanso activo" class="w-full bg-[#18181d] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white" />
+                            </div>
+                            <div>
+                                <label for="sug-categoria" class="block text-xs font-semibold text-[#8e8e93] mb-1">Categoría</label>
+                                <select id="sug-categoria" class="w-full bg-[#18181d] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white">
+                                    <option value="Somático">Somático</option>
+                                    <option value="Nutrición">Nutrición</option>
+                                    <option value="Descanso">Descanso</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 pt-2">
+                            <button type="button" onclick="cerrarModalSugerenciaSalud()" class="flex-1 py-2.5 rounded-xl bg-[#1c1c1f] text-white text-xs font-bold">Cancelar</button>
+                            <button type="button" onclick="guardarSugerenciaSalud()" class="flex-1 py-2.5 rounded-xl bg-[#83da85] text-[#00390e] text-xs font-extrabold">Guardar</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(m);
+            }
+            const lista = _leerSugerenciasSalud();
+            const item = idx !== null && lista[idx] ? lista[idx] : null;
+            document.getElementById("sug-modal-titulo").textContent = item ? "Editar sugerencia" : "Nueva sugerencia";
+            document.getElementById("sug-edit-idx").value = item ? String(idx) : "";
+            document.getElementById("sug-texto").value = item ? item.texto : "";
+            document.getElementById("sug-categoria").value = item ? item.categoria : "Somático";
+            m.classList.remove("hidden");
+            m.classList.add("flex");
+        }
+
+        function cerrarModalSugerenciaSalud() {
+            const m = document.getElementById("modal-sugerencia-salud");
+            if (!m) return;
+            m.classList.add("hidden");
+            m.classList.remove("flex");
+        }
+
+        function guardarSugerenciaSalud() {
+            const texto = (document.getElementById("sug-texto").value || "").trim();
+            if (!texto) return;
+            const categoria = document.getElementById("sug-categoria").value || "Somático";
+            const idxStr = document.getElementById("sug-edit-idx").value;
+            const lista = _leerSugerenciasSalud();
+            if (idxStr !== "" && lista[Number(idxStr)]) {
+                lista[Number(idxStr)] = { ...lista[Number(idxStr)], texto, categoria };
+            } else {
+                lista.push({ id: `sug-${Date.now()}`, texto, categoria });
+            }
+            _guardarSugerenciasSalud(lista);
+            cerrarModalSugerenciaSalud();
+            renderizarSugerenciasSalud();
+        }
+
+        function eliminarSugerenciaSalud(idx) {
+            const lista = _leerSugerenciasSalud();
+            lista.splice(idx, 1);
+            _guardarSugerenciasSalud(lista);
+            renderizarSugerenciasSalud();
+        }
+
+        document.addEventListener("DOMContentLoaded", renderizarSugerenciasSalud);
     </script>
     <script src="./src/utils/somatic_shell.js"></script>
 </body>

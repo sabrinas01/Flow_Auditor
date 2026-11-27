@@ -10,6 +10,7 @@ const {
   calcularMetricasSesiones,
   calcularResumenMenteSalud,
   calcularEnergiaDesdeCiclo,
+  detectarDuplicadoEnergia,
   construirPayloadEnergiaSalud,
 } = require('../../src/utils/salud_logic.js');
 
@@ -141,9 +142,11 @@ describe('Salud reagrupada (Sesiones, Mente y Energía)', () => {
     expect(res.factores).toHaveLength(3);
   });
 
-  test('construirPayloadEnergiaSalud valida nombre y porcentaje y arma payload', () => {
+  test('construirPayloadEnergiaSalud valida tipo guiado, oculta porcentaje en Factor y exige porcentaje en Curva', () => {
     expect(construirPayloadEnergiaSalud({ nombre: '' }).ok).toBe(false);
-    expect(construirPayloadEnergiaSalud({ nombre: 'Mañana', porcentaje: 150 }).ok).toBe(false);
+    expect(construirPayloadEnergiaSalud({ nombre: 'Mañana', tipo: '📈 Curva Circadiana', porcentaje: '' }).ok).toBe(false);
+    expect(construirPayloadEnergiaSalud({ nombre: 'Mañana', tipo: '📈 Curva Circadiana', porcentaje: 150 }).ok).toBe(false);
+
     expect(construirPayloadEnergiaSalud({
       pageId: 'eng-1',
       nombre: 'Hidratación tibia',
@@ -158,10 +161,40 @@ describe('Salud reagrupada (Sesiones, Mente y Energía)', () => {
         nombre: 'Hidratación tibia',
         tipo: '⚡ Factor de Recarga',
         fase: '❄️ Menstrual',
-        porcentaje: 80,
+        porcentaje: null,
         detalle: 'Infusiones calmantes',
       },
     });
+
+    expect(construirPayloadEnergiaSalud({
+      nombre: 'Mañana (07-13)',
+      tipo: '📈 Curva Circadiana',
+      fase: '🌸 Folicular',
+      porcentaje: '25',
+      detalle: 'Ignorado en curva',
+    })).toEqual({
+      ok: true,
+      payload: {
+        nombre: 'Mañana (07-13)',
+        tipo: '📈 Curva Circadiana',
+        fase: '🌸 Folicular',
+        porcentaje: 25,
+        detalle: null,
+      },
+    });
+  });
+
+  test('detectarDuplicadoEnergia avisa y sugiere registro numero X', () => {
+    const regs = [
+      { id: '1', nombre: 'Mañana', fase: '🌸 Folicular' },
+      { id: '2', nombre: 'Mañana - registro numero 2', fase: '🌸 Folicular' },
+    ];
+    expect(detectarDuplicadoEnergia(regs, { nombre: 'Mañana', fase: '🌸 Folicular' })).toEqual({
+      duplicado: true,
+      siguienteNumero: 3,
+      sugerencia: 'Mañana - registro numero 3',
+    });
+    expect(detectarDuplicadoEnergia(regs, { nombre: 'Mañana', fase: '🌸 Folicular', pageId: '1' }).duplicado).toBe(false);
   });
 });
 
@@ -246,9 +279,11 @@ describe('Salud reagrupada (Sesiones, Mente y Energía)', () => {
     expect(res.factores).toHaveLength(3);
   });
 
-  test('construirPayloadEnergiaSalud valida nombre y porcentaje y arma payload', () => {
+  test('construirPayloadEnergiaSalud valida tipo guiado, oculta porcentaje en Factor y exige porcentaje en Curva', () => {
     expect(construirPayloadEnergiaSalud({ nombre: '' }).ok).toBe(false);
-    expect(construirPayloadEnergiaSalud({ nombre: 'Mañana', porcentaje: 150 }).ok).toBe(false);
+    expect(construirPayloadEnergiaSalud({ nombre: 'Mañana', tipo: '📈 Curva Circadiana', porcentaje: '' }).ok).toBe(false);
+    expect(construirPayloadEnergiaSalud({ nombre: 'Mañana', tipo: '📈 Curva Circadiana', porcentaje: 150 }).ok).toBe(false);
+
     expect(construirPayloadEnergiaSalud({
       pageId: 'eng-1',
       nombre: 'Hidratación tibia',
@@ -263,9 +298,39 @@ describe('Salud reagrupada (Sesiones, Mente y Energía)', () => {
         nombre: 'Hidratación tibia',
         tipo: '⚡ Factor de Recarga',
         fase: '❄️ Menstrual',
-        porcentaje: 80,
+        porcentaje: null,
         detalle: 'Infusiones calmantes',
       },
     });
+
+    expect(construirPayloadEnergiaSalud({
+      nombre: 'Mañana (07-13)',
+      tipo: '📈 Curva Circadiana',
+      fase: '🌸 Folicular',
+      porcentaje: '25',
+      detalle: 'Ignorado en curva',
+    })).toEqual({
+      ok: true,
+      payload: {
+        nombre: 'Mañana (07-13)',
+        tipo: '📈 Curva Circadiana',
+        fase: '🌸 Folicular',
+        porcentaje: 25,
+        detalle: null,
+      },
+    });
+  });
+
+  test('detectarDuplicadoEnergia avisa y sugiere registro numero X', () => {
+    const regs = [
+      { id: '1', nombre: 'Mañana', fase: '🌸 Folicular' },
+      { id: '2', nombre: 'Mañana - registro numero 2', fase: '🌸 Folicular' },
+    ];
+    expect(detectarDuplicadoEnergia(regs, { nombre: 'Mañana', fase: '🌸 Folicular' })).toEqual({
+      duplicado: true,
+      siguienteNumero: 3,
+      sugerencia: 'Mañana - registro numero 3',
+    });
+    expect(detectarDuplicadoEnergia(regs, { nombre: 'Mañana', fase: '🌸 Folicular', pageId: '1' }).duplicado).toBe(false);
   });
 });

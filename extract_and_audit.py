@@ -304,6 +304,21 @@ def _inyectar_timestamps_y_version(html_content, timestamps, app_version):
     html_content = re.sub(r'const\s+timestampNextStr\s*=\s*".*?"\s*;', f'const timestampNextStr = "{timestamps["proxima"]}";', html_content)
     html_content = re.sub(r'const\s+timestampServerStr\s*=\s*".*?"\s*;', f'const timestampServerStr = "{timestamps["servidor"]}";', html_content)
     html_content = re.sub(r'const\s+appVersionStr\s*=\s*".*?"\s*;', f'const appVersionStr = "{app_version}";', html_content)
+    html_content = re.sub(
+        r'(<p class="text-\[10px\] text-\[#8e8e93\] tracking-widest uppercase mt-0\.5">)v[^<]+(</p>)',
+        rf'\g<1>{app_version}\g<2>',
+        html_content,
+    )
+    html_content = re.sub(
+        r'(Sistema activo\s*•\s*)v[^<]+',
+        rf'\g<1>{app_version}',
+        html_content,
+    )
+    html_content = re.sub(
+        r'(<strong id="footer-version"[^>]*>)[^<]+(</strong>)',
+        rf'\g<1>{app_version}\g<2>',
+        html_content,
+    )
     return html_content
 
 
@@ -1491,6 +1506,7 @@ def sincronizar_salud(timestamps, app_version):
     if inicio_path.exists():
         with open(inicio_path, "r", encoding="utf-8") as f_ini:
             ini_content = f_ini.read()
+        ini_content = _inyectar_timestamps_y_version(ini_content, timestamps, app_version)
         json_ciclo = json.dumps(fases_ciclo, ensure_ascii=False).replace("</", "<\\/")
         ini_content = re.sub(
             r"const\s+inicioCiclo\s*=\s*\[.*?\]\s*;",
@@ -2409,6 +2425,7 @@ def sincronizar_habitos_disciplina(timestamps, app_version):
             "racha_progreso": (pr.get("Racha / Progreso") or {}).get("number"),
             "ultima_fecha": ((pr.get("Última fecha") or {}).get("date") or {}).get("start"),
             "nota": "".join(t.get("plain_text", "") for t in (pr.get("Nota / Micro-hábito") or {}).get("rich_text", [])),
+            "historial_fechas": "".join(t.get("plain_text", "") for t in (pr.get("Historial fechas") or {}).get("rich_text", [])),
         })
 
     res_form, sch_form = _consultar_bd_salud(DB_FORMACIONES, "FORMACIONES MIS CURSOS", page_size=100, paginar=True)
@@ -2485,6 +2502,8 @@ def _construir_propiedades_habito(datos):
         props["Última fecha"] = {"date": {"start": datos["ultima_fecha"]}}
     if datos.get("nota") is not None:
         props["Nota / Micro-hábito"] = {"rich_text": [{"text": {"content": str(datos["nota"])}}] if datos["nota"] else []}
+    if datos.get("historial_fechas") is not None:
+        props["Historial fechas"] = {"rich_text": [{"text": {"content": str(datos["historial_fechas"])[:1990]}}] if datos["historial_fechas"] else []}
     return props
 
 

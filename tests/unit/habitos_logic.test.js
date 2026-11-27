@@ -4,6 +4,11 @@ const {
   calcularResumenHabitos,
   construirPayloadHabito,
   construirPayloadFormacion,
+  estaHabitoHechoHoy,
+  estaHabitoCongeladoHoy,
+  completarHabitoHoy,
+  alternarCongelacionHabitoHoy,
+  calcularMatriz52Semanas,
 } = require('../../src/utils/habitos_logic.js');
 
 describe('habitos_logic', () => {
@@ -81,5 +86,32 @@ describe('habitos_logic', () => {
         nota: 'Módulo 5 en curso',
       },
     });
+  });
+
+  test('completarHabitoHoy suma +1 una sola vez por día y es idempotente', () => {
+    const hab = { id: 'h-1', nombre: 'Respiración', racha_progreso: 2, ultima_fecha: '2026-11-20', estado: 'Activo' };
+    const r1 = completarHabitoHoy(hab, '2026-11-27');
+    expect(r1.changed).toBe(true);
+    expect(r1.payload.racha_progreso).toBe(3);
+    expect(r1.payload.ultima_fecha).toBe('2026-11-27');
+    expect(estaHabitoHechoHoy(r1.actualizado, '2026-11-27')).toBe(true);
+
+    // Segunda vez en el mismo día no tiene acción
+    const r2 = completarHabitoHoy(r1.actualizado, '2026-11-27');
+    expect(r2.changed).toBe(false);
+  });
+
+  test('alternarCongelacionHabitoHoy y calcularMatriz52Semanas registran fechas reales', () => {
+    const hab = { id: 'h-2', nombre: 'Agua', racha_progreso: 4, historial_fechas: JSON.stringify({ done: ['2026-11-26'], frozen: [] }) };
+    const c1 = alternarCongelacionHabitoHoy(hab, '2026-11-27', true);
+    expect(c1.changed).toBe(true);
+    expect(estaHabitoCongeladoHoy(c1.actualizado, '2026-11-27')).toBe(true);
+
+    const matriz = calcularMatriz52Semanas([c1.actualizado], '2026-11-27');
+    expect(matriz).toHaveLength(52);
+    const ultimaSemana = matriz[51];
+    expect(ultimaSemana.cumplidos).toBe(1);
+    expect(ultimaSemana.congelados).toBe(1);
+    expect(ultimaSemana.esCongelada).toBe(true);
   });
 });

@@ -70,7 +70,7 @@
             <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
             <div>
                 <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
-                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.76</p>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.87</p>
             </div>
         </div>
 
@@ -130,7 +130,7 @@
             <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
             <div class="min-w-0">
                 <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
-                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.76</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.87</p>
             </div>
         </div>
     </aside>
@@ -419,18 +419,20 @@
     <!-- SUBMODAL CREACIÓN EN VUELO: TARJETA / CATEGORÍA (CAPA 2) -->
     <div id="modal-fin-opcion-vuelo" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarSubmodalFinOpcion()">
         <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4 border border-[#ffb961]/40 shadow-2xl" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between gap-2">
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30">CAPA 2 • EN VUELO</span>
-                <button type="button" onclick="cerrarSubmodalFinOpcion()" class="p-1 hover:bg-white/5 rounded-full text-[#8e8e93]">
-                    <span class="material-symbols-outlined text-[18px]">close</span>
+                <button type="button" onclick="cerrarSubmodalFinOpcion()" class="px-2 py-1 hover:bg-white/5 rounded-full text-[11px] text-[#8e8e93] hover:text-white inline-flex items-center gap-1" title="Esc | Cerrar a Finanzas">
+                    <span>Esc</span>
+                    <span class="material-symbols-outlined text-[16px]">close</span>
                 </button>
             </div>
+            <p class="text-[11px] text-[#8e8e93] font-medium">Finanzas → Egreso → <span class="text-[#ffb961]">+ En vuelo</span></p>
             <h3 id="fin-ov-titulo" class="text-base font-bold text-white">Nueva tarjeta</h3>
             <form onsubmit="return guardarSubmodalFinOpcion(event)" class="space-y-3">
                 <input id="fin-ov-tipo" type="hidden" value="tarjeta" />
                 <input id="fin-ov-valor" type="text" required maxlength="80" placeholder="Ej. Visa Signature Sabri" class="w-full bg-[#1c1c1f] border border-[#232326] focus:border-[#ffb961] rounded-lg px-3 py-2.5 text-white text-sm outline-none" />
                 <div class="flex gap-2">
-                    <button type="button" onclick="cerrarSubmodalFinOpcion()" class="flex-1 py-2.5 rounded-xl bg-[#1c1c1f] text-white text-xs font-semibold">Volver</button>
+                    <button type="button" onclick="cerrarSubmodalFinOpcion()" class="flex-1 py-2.5 rounded-xl bg-[#1c1c1f] text-white text-xs font-semibold">← Volver al gasto</button>
                     <button type="submit" class="flex-1 py-2.5 rounded-xl bg-[#ffb961] text-[#08080a] text-xs font-bold">Agregar y seleccionar</button>
                 </div>
             </form>

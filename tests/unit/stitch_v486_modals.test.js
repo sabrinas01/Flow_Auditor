@@ -22,8 +22,16 @@ describe('Pantallas Stitch v4.86 — Detalle de Evento, Foco Diario y Vacíos Co
   test('inicio.html incluye el bloque Foco & Intención Diaria, ABM con Notion e Historial', () => {
     const html = fs.readFileSync(path.join(__dirname, '../../inicio.html'), 'utf8');
     expect(html).toContain('id="widget-foco-inicio"');
+    expect(html).toContain('id="widget-accesos-inicio"');
+    expect(html).toContain('function _resolverNombreFaseSelect');
+    expect(html).toContain('asistente_sabry:focus_mode');
     expect(html).toContain('id="modal-foco-diario"');
     expect(html).toContain('id="modal-historial-foco"');
+    expect(html).toContain('id="modal-stop-inicio"');
+    expect(html).toContain('id="modal-ciclo-inicio"');
+    expect(html).toContain('id="hist-foco-vista-cal"');
+    expect(html).toContain('id="hist-anual-heatmap"');
+    expect(html).toContain('id="hist-foco-meta-filtros"');
     expect(html).toContain('function abrirModalFocoDiario');
     expect(html).toContain('function guardarFocoDiarioEnNotion');
     expect(html).toContain('asistente_sabry:foco_diario_v1');
@@ -39,6 +47,31 @@ describe('Pantallas Stitch v4.86 — Detalle de Evento, Foco Diario y Vacíos Co
     expect(py).toContain('NOTION_DB_FOCO_DIARIO');
     expect(py).toContain('def guardar_foco_diario(');
     expect(py).toContain('def sincronizar_foco_diario(');
+  });
+
+  test('gestion-emocional.html, recordatorios-varios.html y salud.html reflejan mejoras v4.89', () => {
+    const ge = fs.readFileSync(path.join(__dirname, '../../gestion-emocional.html'), 'utf8');
+    expect(ge).toContain('Ver Biometría &amp; Ciclo en Salud');
+    expect(ge).toContain('Registrar práctica rápida');
+
+    const rv = fs.readFileSync(path.join(__dirname, '../../recordatorios-varios.html'), 'utf8');
+    expect(rv).toContain('URGENTES HOY');
+    expect(rv).toContain('FEEDBACK DE MENTORA');
+    expect(rv).toContain('SABRYOFF');
+
+    const sa = fs.readFileSync(path.join(__dirname, '../../salud.html'), 'utf8');
+    expect(sa).toContain('id="salud-sugerencias-wrap"');
+    expect(sa).toContain('asistente_sabry:salud_sugerencias_v1');
+    expect(sa).toContain('function abrirModalSugerenciaSalud');
+    expect(sa).toContain('Salud → Registro de Síntoma →');
+  });
+
+  test('somatic_shell.js incluye sidebar colapsable y finanzas.html breadcrumb en Capa 2', () => {
+    const ss = fs.readFileSync(path.join(__dirname, '../../src/utils/somatic_shell.js'), 'utf8');
+    expect(ss).toContain('ss-sidebar-collapsed');
+    expect(ss).toContain('ss-btn-collapse-sidebar');
+    const fin = fs.readFileSync(path.join(__dirname, '../../finanzas.html'), 'utf8');
+    expect(fin).toContain('Finanzas → Egreso →');
   });
 
   test('renderizarAgendaEventos agrega botón de detalle y estado vacío compasivo', () => {
