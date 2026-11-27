@@ -200,7 +200,7 @@
                            class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label for="ct-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha *</label>
                         <input id="ct-fecha" name="fecha" type="date" required
@@ -234,7 +234,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label for="ct-tipo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Tipo de tarea</label>
                         <select id="ct-tipo" name="tipoTarea"
@@ -361,17 +361,17 @@
 
             <!-- Checklist Operativo del Bloque -->
             <div class="rounded-xl bg-[#141418] border border-white/[0.08] p-4 space-y-3">
-                <div class="flex items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center justify-between gap-2">
                     <span class="text-[11px] font-label-caps text-[#e2beba] uppercase tracking-widest flex items-center gap-1.5">
                         <span class="material-symbols-outlined text-[16px] text-[#83da85]">checklist</span>
                         <span>Objetivos &amp; Entregables del Foco</span>
                     </span>
-                    <span id="det-ev-checklist-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#83da85]/15 text-[#83da85]">0 / 0 completados</span>
+                    <span id="det-ev-checklist-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#83da85]/15 text-[#83da85] whitespace-nowrap">0 / 0 completados</span>
                 </div>
                 <div id="det-ev-checklist-items" class="space-y-2"></div>
                 <div class="flex gap-2 pt-1">
-                    <input id="det-ev-checklist-input" type="text" maxlength="100" placeholder="Agregar objetivo o paso concreto..." onkeydown="if (event.key === 'Enter') { event.preventDefault(); agregarItemChecklistDetalle(); }" class="flex-1 bg-[#1c1c1f] border border-white/[0.1] rounded-lg px-3 py-2 text-[13px] text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#ff5f52]" />
-                    <button type="button" onclick="agregarItemChecklistDetalle()" class="px-3 py-2 rounded-lg bg-[#232326] hover:bg-[#2d2d32] text-white text-xs font-bold transition-colors">+ Agregar</button>
+                    <input id="det-ev-checklist-input" type="text" maxlength="100" placeholder="Agregar objetivo o paso concreto..." onkeydown="if (event.key === 'Enter') { event.preventDefault(); agregarItemChecklistDetalle(); }" class="flex-1 min-w-0 bg-[#1c1c1f] border border-white/[0.1] rounded-lg px-3 py-2 text-[13px] text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#ff5f52]" />
+                    <button type="button" onclick="agregarItemChecklistDetalle()" class="flex-shrink-0 whitespace-nowrap px-3 py-2 rounded-lg bg-[#232326] hover:bg-[#2d2d32] text-white text-xs font-bold transition-colors">+ Agregar</button>
                 </div>
             </div>
 
@@ -385,17 +385,17 @@
             </div>
 
             <!-- Footer Acciones -->
-            <div class="pt-3 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-2.5">
-                <button type="button" onclick="eliminarDesdeDetalle()" class="px-3.5 py-2.5 rounded-xl bg-[#ff5f52]/10 hover:bg-[#ff5f52]/20 border border-[#ff5f52]/30 text-[#ff5f52] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+            <div class="pt-3 border-t border-white/[0.08] flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-2.5">
+                <button type="button" onclick="eliminarDesdeDetalle()" class="w-full sm:w-auto justify-center px-3.5 py-2.5 rounded-xl bg-[#ff5f52]/10 hover:bg-[#ff5f52]/20 border border-[#ff5f52]/30 text-[#ff5f52] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
                     <span class="material-symbols-outlined text-[16px]">event_busy</span>
                     <span>Eliminar evento</span>
                 </button>
-                <div class="flex flex-wrap items-center gap-2">
-                    <button id="det-ev-btn-posponer" type="button" onclick="posponerEvento30Min()" class="px-3.5 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.1] text-[#ffb961] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                    <button id="det-ev-btn-posponer" type="button" onclick="posponerEvento30Min()" class="w-full sm:w-auto justify-center px-3.5 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.1] text-[#ffb961] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
                         <span class="material-symbols-outlined text-[16px]">more_time</span>
                         <span>Posponer 30 min</span>
                     </button>
-                    <button type="button" onclick="completarEventoDesdeDetalle()" class="px-4 py-2.5 rounded-xl bg-[#83da85] hover:bg-[#83da85]/90 text-[#00390e] text-xs font-extrabold inline-flex items-center gap-1.5 transition-all active:scale-95">
+                    <button type="button" onclick="completarEventoDesdeDetalle()" class="w-full sm:w-auto justify-center px-4 py-2.5 rounded-xl bg-[#83da85] hover:bg-[#83da85]/90 text-[#00390e] text-xs font-extrabold inline-flex items-center gap-1.5 transition-all active:scale-95">
                         <span class="material-symbols-outlined text-[16px]">check</span>
                         <span>Marcar como Completado</span>
                     </button>
@@ -546,7 +546,7 @@
         <!-- =================================================== -->
         <!-- FOOTER -->
         <!-- =================================================== -->
-        <footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+        <footer class="w-full pt-10 pb-24 lg:pb-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8">
                 <div class="space-y-4">
                     <div class="flex items-center gap-2">

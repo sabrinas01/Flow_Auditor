@@ -172,8 +172,8 @@
             </section>
 
             <!-- FOCO & INTENCIÓN DIARIA (STITCH + NOTION) -->
-            <section id="widget-foco-inicio" class="glass-card rounded-2xl p-6 sm:p-7 border-l-4 border-l-[#ffb961] space-y-5">
-                <div class="flex flex-wrap items-start justify-between gap-4">
+            <section id="widget-foco-inicio" class="glass-card rounded-2xl p-5 sm:p-7 border-l-4 border-l-[#ffb961] space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                     <div class="space-y-1.5 min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="inline-flex items-center gap-1.5 text-[11px] font-label-caps text-[#ffb961] tracking-widest uppercase">
@@ -189,12 +189,12 @@
                             "Elegir la calma por sobre la prisa. Atender lo crucial sin sobrecargas."
                         </p>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2 flex-shrink-0">
-                        <button id="btn-historial-foco" type="button" onclick="abrirModalHistorialFoco()" class="px-3.5 py-2.5 rounded-xl bg-[#18181d] hover:bg-[#232326] border border-white/[0.1] text-[#e2beba] hover:text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                    <div class="flex flex-wrap items-center gap-2 flex-shrink-0 w-full sm:w-auto">
+                        <button id="btn-historial-foco" type="button" onclick="abrirModalHistorialFoco()" class="flex-1 sm:flex-initial justify-center px-3.5 py-2.5 rounded-xl bg-[#18181d] hover:bg-[#232326] border border-white/[0.1] text-[#e2beba] hover:text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all">
                             <span class="material-symbols-outlined text-[16px] text-[#38bdf8]">history</span>
                             <span>Historial</span>
                         </button>
-                        <button id="btn-editar-foco" type="button" onclick="abrirModalFocoDiario()" class="px-4 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.1] text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                        <button id="btn-editar-foco" type="button" onclick="abrirModalFocoDiario()" class="flex-1 sm:flex-initial justify-center px-4 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.1] text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all">
                             <span class="material-symbols-outlined text-[16px] text-[#ffb961]">tune</span>
                             <span>Definir Foco</span>
                         </button>
@@ -202,9 +202,9 @@
                 </div>
 
                 <div class="space-y-2.5">
-                    <div class="flex items-center justify-between text-[11px] font-label-caps text-[#8e8e93] uppercase tracking-widest">
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] font-label-caps text-[#8e8e93] uppercase tracking-widest">
                         <span>Prioridades No Negociables (Hasta 3)</span>
-                        <span id="inicio-foco-prio-count" class="text-[#ffb961] font-bold">0 de 0 completadas</span>
+                        <span id="inicio-foco-prio-count" class="text-[#ffb961] font-bold whitespace-nowrap">0 de 0 completadas</span>
                     </div>
                     <div id="inicio-foco-prioridades" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
                 </div>
@@ -384,7 +384,7 @@
         </div>
 
         <!-- FOOTER INSTITUCIONAL UNIFICADO -->
-        <footer class="w-full py-8 mt-8 border-t border-[#232326] bg-[#0e0e0e]">
+        <footer class="w-full pt-8 pb-24 lg:pb-8 mt-8 border-t border-[#232326] bg-[#0e0e0e]">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center px-container-padding max-w-[1200px] mx-auto gap-4">
                 <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] text-[#8e8e93]">
                     <span class="w-2 h-2 rounded-full bg-[#83da85] shadow-[0_0_8px_#83da85]"></span>
@@ -453,46 +453,52 @@
 
             <!-- Hasta 3 Prioridades No Negociables -->
             <div class="space-y-2.5">
-                <div class="flex items-center justify-between">
+                <div class="flex flex-wrap items-center justify-between gap-2">
                     <span class="text-[11px] font-label-caps text-[#e2beba] uppercase tracking-widest flex items-center gap-1.5">
                         <span class="material-symbols-outlined text-[15px] text-[#83da85]">check_circle</span>
                         <span>Prioridades No Negociables (Hasta 3)</span>
                     </span>
-                    <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-white/[0.06] text-[#a1a1aa] font-semibold">Slots opcionales · Limpieza directa</span>
+                    <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-white/[0.06] text-[#a1a1aa] font-semibold whitespace-nowrap">Slots opcionales · Limpieza directa</span>
                 </div>
                 <div class="space-y-2">
-                    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2">
-                        <span class="text-[11px] font-mono text-[#8e8e93] w-5">01</span>
-                        <input id="foco-p0-check" type="checkbox" onchange="actualizarBorradorFoco()" class="rounded border-white/20 bg-[#131313] text-[#83da85]" />
-                        <input id="foco-p0-text" type="text" maxlength="80" oninput="actualizarBorradorFoco()" placeholder="Prioridad 1 (opcional)..." class="flex-1 min-w-[140px] bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
-                        <select id="foco-p0-tag" onchange="actualizarBorradorFoco()" class="bg-[#232326] rounded-lg px-2 py-1 text-[11px] text-[#e5e2e1] focus:outline-none">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2.5">
+                        <div class="flex items-center gap-2 flex-1 min-w-0">
+                            <span class="text-[11px] font-mono text-[#8e8e93] w-5 flex-shrink-0">01</span>
+                            <input id="foco-p0-check" type="checkbox" onchange="actualizarBorradorFoco()" class="rounded border-white/20 bg-[#131313] text-[#83da85] flex-shrink-0" />
+                            <input id="foco-p0-text" type="text" maxlength="80" oninput="actualizarBorradorFoco()" placeholder="Prioridad 1 (opcional)..." class="flex-1 min-w-0 bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
+                            <button type="button" onclick="limpiarSlotFoco(0)" class="p-1 text-[#8e8e93] hover:text-[#ff5f52] rounded flex-shrink-0" title="Limpiar prioridad 1"><span class="material-symbols-outlined text-[16px]">close</span></button>
+                        </div>
+                        <select id="foco-p0-tag" onchange="actualizarBorradorFoco()" class="w-full sm:w-auto bg-[#232326] rounded-lg px-2.5 py-1.5 sm:py-1 text-[11px] text-[#e5e2e1] focus:outline-none">
                             <option value="Meta física">Meta física</option>
                             <option value="Meta mental">Meta mental</option>
                             <option value="Meta social/espiritual">Meta social/espiritual</option>
                         </select>
-                        <button type="button" onclick="limpiarSlotFoco(0)" class="p-1 text-[#8e8e93] hover:text-[#ff5f52] rounded" title="Limpiar prioridad 1"><span class="material-symbols-outlined text-[16px]">close</span></button>
                     </div>
-                    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2">
-                        <span class="text-[11px] font-mono text-[#8e8e93] w-5">02</span>
-                        <input id="foco-p1-check" type="checkbox" onchange="actualizarBorradorFoco()" class="rounded border-white/20 bg-[#131313] text-[#83da85]" />
-                        <input id="foco-p1-text" type="text" maxlength="80" oninput="actualizarBorradorFoco()" placeholder="Prioridad 2 (opcional)..." class="flex-1 min-w-[140px] bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
-                        <select id="foco-p1-tag" onchange="actualizarBorradorFoco()" class="bg-[#232326] rounded-lg px-2 py-1 text-[11px] text-[#e5e2e1] focus:outline-none">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2.5">
+                        <div class="flex items-center gap-2 flex-1 min-w-0">
+                            <span class="text-[11px] font-mono text-[#8e8e93] w-5 flex-shrink-0">02</span>
+                            <input id="foco-p1-check" type="checkbox" onchange="actualizarBorradorFoco()" class="rounded border-white/20 bg-[#131313] text-[#83da85] flex-shrink-0" />
+                            <input id="foco-p1-text" type="text" maxlength="80" oninput="actualizarBorradorFoco()" placeholder="Prioridad 2 (opcional)..." class="flex-1 min-w-0 bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
+                            <button type="button" onclick="limpiarSlotFoco(1)" class="p-1 text-[#8e8e93] hover:text-[#ff5f52] rounded flex-shrink-0" title="Limpiar prioridad 2"><span class="material-symbols-outlined text-[16px]">close</span></button>
+                        </div>
+                        <select id="foco-p1-tag" onchange="actualizarBorradorFoco()" class="w-full sm:w-auto bg-[#232326] rounded-lg px-2.5 py-1.5 sm:py-1 text-[11px] text-[#e5e2e1] focus:outline-none">
                             <option value="Meta física">Meta física</option>
                             <option value="Meta mental">Meta mental</option>
                             <option value="Meta social/espiritual">Meta social/espiritual</option>
                         </select>
-                        <button type="button" onclick="limpiarSlotFoco(1)" class="p-1 text-[#8e8e93] hover:text-[#ff5f52] rounded" title="Limpiar prioridad 2"><span class="material-symbols-outlined text-[16px]">close</span></button>
                     </div>
-                    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2">
-                        <span class="text-[11px] font-mono text-[#8e8e93] w-5">03</span>
-                        <input id="foco-p2-check" type="checkbox" onchange="actualizarBorradorFoco()" class="rounded border-white/20 bg-[#131313] text-[#83da85]" />
-                        <input id="foco-p2-text" type="text" maxlength="80" oninput="actualizarBorradorFoco()" placeholder="Prioridad 3 (opcional)..." class="flex-1 min-w-[140px] bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
-                        <select id="foco-p2-tag" onchange="actualizarBorradorFoco()" class="bg-[#232326] rounded-lg px-2 py-1 text-[11px] text-[#e5e2e1] focus:outline-none">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 bg-[#18181d] border border-white/[0.08] rounded-xl px-3 py-2.5">
+                        <div class="flex items-center gap-2 flex-1 min-w-0">
+                            <span class="text-[11px] font-mono text-[#8e8e93] w-5 flex-shrink-0">03</span>
+                            <input id="foco-p2-check" type="checkbox" onchange="actualizarBorradorFoco()" class="rounded border-white/20 bg-[#131313] text-[#83da85] flex-shrink-0" />
+                            <input id="foco-p2-text" type="text" maxlength="80" oninput="actualizarBorradorFoco()" placeholder="Prioridad 3 (opcional)..." class="flex-1 min-w-0 bg-transparent text-[13px] text-white placeholder-[#8e8e93] focus:outline-none" />
+                            <button type="button" onclick="limpiarSlotFoco(2)" class="p-1 text-[#8e8e93] hover:text-[#ff5f52] rounded flex-shrink-0" title="Limpiar prioridad 3"><span class="material-symbols-outlined text-[16px]">close</span></button>
+                        </div>
+                        <select id="foco-p2-tag" onchange="actualizarBorradorFoco()" class="w-full sm:w-auto bg-[#232326] rounded-lg px-2.5 py-1.5 sm:py-1 text-[11px] text-[#e5e2e1] focus:outline-none">
                             <option value="Meta física">Meta física</option>
                             <option value="Meta mental">Meta mental</option>
                             <option value="Meta social/espiritual">Meta social/espiritual</option>
                         </select>
-                        <button type="button" onclick="limpiarSlotFoco(2)" class="p-1 text-[#8e8e93] hover:text-[#ff5f52] rounded" title="Limpiar prioridad 3"><span class="material-symbols-outlined text-[16px]">close</span></button>
                     </div>
                 </div>
             </div>

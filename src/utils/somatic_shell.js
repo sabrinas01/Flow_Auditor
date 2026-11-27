@@ -106,6 +106,9 @@
         <button type="button" onclick="window.SomaticShell.abrirAtajos()" class="p-1.5 rounded-full hover:bg-white/[0.08] text-[#a855f7] flex items-center" title="Atajos & Modo Focus (Ctrl + /)">
           <span class="material-symbols-outlined text-[17px]">keyboard</span>
         </button>
+        <button type="button" onclick="if (typeof abrirAccesoRapidoOCR === 'function') abrirAccesoRapidoOCR()" class="p-1.5 rounded-full hover:bg-white/[0.08] text-[#83da85] flex items-center" title="Escanear foto o texto para Notion">
+          <span class="material-symbols-outlined text-[17px]">photo_camera</span>
+        </button>
         <button type="button" onclick="window.SomaticShell.abrirExportar()" class="p-1.5 rounded-full hover:bg-white/[0.08] text-[#38bdf8] flex items-center" title="Exportar Resumen">
           <span class="material-symbols-outlined text-[17px]">ios_share</span>
         </button>
