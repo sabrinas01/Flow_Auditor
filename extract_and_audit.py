@@ -2764,7 +2764,8 @@ def guardar_foco_diario(datos):
     if not page_id:
         resultados, _ = _consultar_bd_salud(DB_FOCO_DIARIO, "FOCO DIARIO", paginar=True)
         for page in resultados:
-            if _fecha_propiedad((page.get("properties") or {}).get("Fecha")) == fecha:
+            fecha_p = (((page.get("properties") or {}).get("Fecha") or {}).get("date") or {}).get("start")
+            if fecha_p == fecha:
                 page_id = page.get("id", "")
                 break
 
