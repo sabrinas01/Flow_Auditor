@@ -490,8 +490,8 @@
                         </div>
                         <div class="flex items-center gap-2 flex-shrink-0">
                             ${hechoHoy
-                                ? `<button type="button" disabled aria-label="Hábito completado hoy" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-[#83da85]/20 border border-[#83da85] text-[#83da85] text-xs font-bold cursor-default"><span class="w-4 h-4 rounded-full bg-[#83da85] text-[#111115] flex items-center justify-center text-[11px] font-extrabold">✓</span><span>Hecho</span></button>`
-                                : `<button type="button" onclick="marcarHabitoHechoHoy('${escapeHtml(h.id || "")}')" title="Marcar como hecho hoy" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-[#83da85]/15 border border-white/[0.15] hover:border-[#83da85]/60 text-[#e5e2e1] hover:text-[#83da85] text-xs font-semibold transition-all active:scale-95"><span class="w-4 h-4 rounded-full border-2 border-current inline-block"></span><span>Hecho</span></button>`
+                                ? `<button type="button" disabled aria-label="Hábito completado hoy" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#83da85]/20 border border-[#83da85] text-[#83da85] text-[13px] font-bold cursor-default"><span class="w-5 h-5 flex-shrink-0 rounded-full bg-[#83da85] text-[#111115] flex items-center justify-center text-[12px] font-extrabold">✓</span><span>Hecho</span></button>`
+                                : `<button type="button" onclick="marcarHabitoHechoHoy('${escapeHtml(h.id || "")}')" title="Marcar como hecho hoy" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/[0.04] hover:bg-[#83da85]/15 border border-white/[0.15] hover:border-[#83da85]/60 text-[#e5e2e1] hover:text-[#83da85] text-[13px] font-semibold transition-all active:scale-95"><span class="w-5 h-5 flex-shrink-0 rounded-full border-2 border-current inline-block"></span><span>Hecho</span></button>`
                             }
                             <button type="button" onclick="abrirModalEditarHabito('${escapeHtml(h.id || "")}')" class="p-2 hover:bg-white/10 rounded-lg text-[#a1a1aa] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
                         </div>
@@ -813,14 +813,14 @@
             const hoyIso = hoyLocalISO();
             const habitos = (typeof habitosRegistros !== "undefined" ? habitosRegistros : []).filter((x) => !x.modulo || (x.modulo || "").includes("Hábito"));
             const celdas = calcularMatriz52Semanas(habitos, hoyIso);
-            const colores = ["bg-white/[0.06]", "bg-[#83da85]/30", "bg-[#83da85]/60", "bg-[#83da85]"];
+            const colores = ["bg-white/[0.08]", "bg-[#83da85]/35", "bg-[#83da85]/65", "bg-[#83da85]"];
             cont.innerHTML = celdas.map((c) => {
                 const cls = c.esCongelada && c.cumplidos === 0
                     ? "bg-[#38bdf8]/65 ring-1 ring-[#38bdf8]"
                     : c.esCongelada
                         ? `${colores[c.nivel]} ring-1 ring-[#38bdf8]`
                         : colores[c.nivel];
-                return `<div class="h-3.5 rounded-sm ${cls} transition-colors" title="${escapeHtml(c.tooltip)}"></div>`;
+                return `<div class="h-3.5 rounded-sm ${cls} transition-colors" style="min-height:14px" title="${escapeHtml(c.tooltip)}"></div>`;
             }).join("");
             const congeladoHoy = habitos.some((h) => estaHabitoCongeladoHoy(h, hoyIso))
                 || (() => { try { return localStorage.getItem(CONGELACION_KEY) === hoyIso; } catch (_e) { return false; } })();

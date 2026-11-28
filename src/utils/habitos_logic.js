@@ -193,6 +193,15 @@ function calcularMatriz52Semanas(habitos, fechaHoy) {
   (habitos || []).forEach((h) => {
     const hist = parsearHistorialHabito(h.historial_fechas);
     if (h.ultima_fecha && !hist.done.includes(h.ultima_fecha)) hist.done.push(h.ultima_fecha);
+    const rachaNum = Number(h.racha_progreso) || 0;
+    if (hist.done.length <= 1 && rachaNum > 1 && h.ultima_fecha && /^\d{4}-\d{2}-\d{2}$/.test(h.ultima_fecha)) {
+      const endDt = new Date(`${h.ultima_fecha}T12:00:00Z`);
+      const dias = Math.min(rachaNum, 365);
+      for (let i = 0; i < dias; i++) {
+        const dIso = new Date(endDt.getTime() - i * 86400000).toISOString().slice(0, 10);
+        if (!hist.done.includes(dIso)) hist.done.push(dIso);
+      }
+    }
     hist.done.forEach((d) => { doneCounts[d] = (doneCounts[d] || 0) + 1; });
     hist.frozen.forEach((d) => { frozenCounts[d] = (frozenCounts[d] || 0) + 1; });
   });
