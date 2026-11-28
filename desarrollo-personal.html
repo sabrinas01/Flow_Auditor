@@ -300,11 +300,6 @@
                     </div>
                 </div>
 
-                <div class="p-4 rounded-xl bg-[#08080a] border border-white/[0.06] space-y-2.5">
-                    <p class="text-[11px] font-label-caps text-[#83da85] tracking-widest">PRÁCTICA SEMANAL · ESCUCHA ACTIVA (REGLA DE LOS 3 SEGUNDOS)</p>
-                    <div id="dp-checklist-3s" class="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-xs"></div>
-                </div>
-
                 <div id="list-comunicacion" class="space-y-3"></div>
             </section>
 
@@ -813,31 +808,6 @@
             document.getElementById("sec-comunicacion").classList.toggle("hidden", pilarFiltro !== "todos" && !pilarFiltro.includes("Comunic"));
             document.getElementById("sec-autoestima").classList.toggle("hidden", pilarFiltro !== "todos" && !pilarFiltro.includes("Autoestima"));
             document.getElementById("sec-autoconocimiento").classList.toggle("hidden", pilarFiltro !== "todos" && !pilarFiltro.includes("Autoconocimiento"));
-            _renderChecklist3s();
-        }
-
-        function _renderChecklist3s() {
-            const cont = document.getElementById("dp-checklist-3s");
-            if (!cont) return;
-            const pasos = [
-                "Pausar 3 segundos tras el punto de la otra persona.",
-                "Parafrasear antes de exponer mi punto de vista.",
-                "Detectar si respondo para ganar o para comprender.",
-            ];
-            let estado = [false, false, false];
-            try { estado = JSON.parse(localStorage.getItem("asistente_sabry:dp_escucha_3s") || "[false,false,false]"); } catch (e) {}
-            cont.innerHTML = pasos.map((txt, idx) => `
-                <label class="flex items-start gap-2.5 p-2.5 rounded-lg bg-[#18181d] border border-white/[0.05] cursor-pointer">
-                    <input type="checkbox" ${estado[idx] ? "checked" : ""} onchange="togglePaso3s(${idx}, this.checked)" class="mt-0.5 accent-[#83da85]" />
-                    <span class="text-[#e5e2e1] leading-snug">${escapeHtml(txt)}</span>
-                </label>`).join("");
-        }
-
-        function togglePaso3s(idx, checked) {
-            let estado = [false, false, false];
-            try { estado = JSON.parse(localStorage.getItem("asistente_sabry:dp_escucha_3s") || "[false,false,false]"); } catch (e) {}
-            estado[idx] = Boolean(checked);
-            try { localStorage.setItem("asistente_sabry:dp_escucha_3s", JSON.stringify(estado)); } catch (e) {}
         }
 
         function filtrarPilar(pilar) {
