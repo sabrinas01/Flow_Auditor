@@ -176,10 +176,7 @@
                                 <span class="material-symbols-outlined text-[15px]">anchor</span>
                                 <span>Foco &amp; Intención Diaria</span>
                             </span>
-                            <span id="inicio-foco-ciclo-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#ff5f52]/15 text-[#ffb4aa] border border-[#ff5f52]/30">Fase Lútea</span>
-                            <span id="inicio-foco-disp-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30">Moderada / Estable</span>
                             <span id="inicio-foco-mode-badge" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#38bdf8]/15 text-[#38bdf8] border border-[#38bdf8]/30">Modo Focus Somático</span>
-                            <span id="inicio-foco-sync-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.06] text-[#a1a1aa] border border-white/[0.08]">Borrador local</span>
                         </div>
                         <p id="inicio-foco-intencion" class="text-[16px] sm:text-[18px] font-bold text-white leading-snug">
                             "Elegir la calma por sobre la prisa. Atender lo crucial sin sobrecargas."
@@ -280,16 +277,16 @@
                 </div>
             </section>
 
-            <!-- ACCESOS DIRECTOS (GRILLA 3 COLUMNAS) -->
+            <!-- ACCESOS DIRECTOS (GRILLA 2 COLUMNAS) -->
             <section id="widget-accesos-inicio" class="space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <h2 class="text-lg font-headline-md font-extrabold text-white flex items-center gap-2">
                         <span>⚡ Accesos directos</span>
                     </h2>
-                    <span class="text-[12px] text-[#8e8e93]">3 accesos clave configurados</span>
+                    <span class="text-[12px] text-[#8e8e93]">2 accesos clave configurados</span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <!-- TARJETA 1: FINANZAS DIARIAS -->
                     <article class="glass-card rounded-2xl p-6 flex flex-col justify-between gap-5 border-t-4 border-t-[#ffb961]">
                         <div class="space-y-3">
@@ -337,45 +334,7 @@
                             </a>
                         </div>
                     </article>
-
-                    <!-- TARJETA 3: PAUSA CONSCIENTE -->
-                    <article class="glass-card rounded-2xl p-6 flex flex-col justify-between gap-5 border-t-4 border-t-[#83da85]">
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="inline-flex items-center gap-2 text-[12px] font-bold text-[#83da85] uppercase tracking-wider">
-                                    <span class="material-symbols-outlined text-[18px]">psychology</span>
-                                    <span>Pausa Consciente</span>
-                                </span>
-                                <a href="gestion-emocional.html" class="p-1 text-[#8e8e93] hover:text-white rounded-lg" title="Abrir Gestión Emocional">
-                                    <span class="material-symbols-outlined text-[18px]">more_vert</span>
-                                </a>
-                            </div>
-                            <h3 class="text-[17px] font-bold text-white leading-snug">¿Sentís sobrecarga o tensión somática?</h3>
-                            <p class="text-[13px] text-[#a1a1aa] leading-relaxed">Hacé una pausa consciente guiada de 2 minutos con el Protocolo S.T.O.P. o regulá tu respiración.</p>
-                        </div>
-                        <div class="pt-3 border-t border-white/[0.06] flex items-center justify-between gap-2">
-                            <span class="text-[11px] text-[#8e8e93]">Protocolo S.T.O.P.</span>
-                            <a href="gestion-emocional.html" class="px-3.5 py-2 rounded-xl bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white text-xs font-bold inline-flex items-center gap-1 transition-all">
-                                <span>Ir a Gestión Emocional</span>
-                                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
-                            </a>
-                        </div>
-                    </article>
                 </div>
-            </section>
-
-            <!-- BANNER INFERIOR DE ESTADO -->
-            <section class="glass-card rounded-2xl px-6 py-4 flex flex-wrap items-center justify-between gap-4 border border-[#83da85]/20">
-                <div class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-[#83da85] text-[24px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                    <div>
-                        <p class="text-[14px] font-bold text-white">Todo en orden con tu Sabri Studios</p>
-                        <p class="text-[12px] text-[#8e8e93]">Sincronización en tiempo real habilitada con Obsidian Metric System</p>
-                    </div>
-                </div>
-                <span class="px-3.5 py-1.5 rounded-full bg-[#83da85]/15 border border-[#83da85]/30 text-[#83da85] text-xs font-bold">
-                    Estado: Óptimo
-                </span>
             </section>
         </div>
 
@@ -946,24 +905,27 @@
             const intEl = document.getElementById("inicio-foco-intencion");
             intEl.textContent = data.intencion ? `"${data.intencion}"` : "Definí tu intención para hoy...";
 
-            const cicloTxt = `Fase ${data.fase_ciclo || "Lútea"}${data.dia_ciclo ? ` · Día ${data.dia_ciclo}` : ""}`;
-            document.getElementById("inicio-foco-ciclo-badge").textContent = cicloTxt;
-            document.getElementById("inicio-foco-disp-badge").textContent = data.disponibilidad || "Moderada / Estable";
+            const cicloEl = document.getElementById("inicio-foco-ciclo-badge");
+            if (cicloEl) cicloEl.textContent = `Fase ${data.fase_ciclo || "Lútea"}${data.dia_ciclo ? ` · Día ${data.dia_ciclo}` : ""}`;
+            const dispEl = document.getElementById("inicio-foco-disp-badge");
+            if (dispEl) dispEl.textContent = data.disponibilidad || "Moderada / Estable";
             document.getElementById("inicio-foco-mode-badge").classList.toggle("hidden", !data.modoFocus);
             const accSec = document.getElementById("widget-accesos-inicio");
             if (accSec) accSec.classList.toggle("hidden", Boolean(data.modoFocus));
             try { localStorage.setItem("asistente_sabry:focus_mode", data.modoFocus ? "Foco Profundo" : "Equilibrado"); } catch (e) {}
 
             const syncBadge = document.getElementById("inicio-foco-sync-badge");
-            if (data.dirty) {
-                syncBadge.textContent = "Borrador local sin guardar";
-                syncBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30";
-            } else if (data.page_id) {
-                syncBadge.textContent = "Guardado en Notion";
-                syncBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30";
-            } else {
-                syncBadge.textContent = "Borrador local";
-                syncBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.06] text-[#a1a1aa] border border-white/[0.08]";
+            if (syncBadge) {
+                if (data.dirty) {
+                    syncBadge.textContent = "Borrador local sin guardar";
+                    syncBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30";
+                } else if (data.page_id) {
+                    syncBadge.textContent = "Guardado en Notion";
+                    syncBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30";
+                } else {
+                    syncBadge.textContent = "Borrador local";
+                    syncBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.06] text-[#a1a1aa] border border-white/[0.08]";
+                }
             }
 
             const activas = data.prioridades
