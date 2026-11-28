@@ -820,8 +820,8 @@ function inicializarBloqueoPin() {
     btn.id = "btn-sidebar-pin";
     btn.type = "button";
     btn.title = "Bloqueo PIN";
-    btn.className = "ml-auto p-1.5 rounded-lg hover:bg-white/10 text-[#8e8e93] hover:text-[#ff5f52] transition-colors";
-    btn.innerHTML = `<span class="material-symbols-outlined text-[18px]">lock</span>`;
+    btn.className = "ml-auto p-1 rounded-md hover:bg-white/10 text-[#8e8e93] hover:text-[#ff5f52] transition-colors";
+    btn.innerHTML = `<span class="material-symbols-outlined text-[14px]">lock</span>`;
     btn.addEventListener("click", abrirModalPin);
     perfil.appendChild(btn);
   }
