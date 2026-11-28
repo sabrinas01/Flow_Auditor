@@ -101,6 +101,7 @@
 | `Flujo Crítico: Modales Encadenados (Práctica → Recurso en Vuelo)` | `v4.73` | `desarrollo-personal.html` (`#modal-recurso-vuelo`) |
 | `Flujo Crítico: Confirmación Destructiva & Guardrail Compasivo` | `v4.74` | `desarrollo-personal.html` (`#modal-guardrail-desarrollo`, `#modal-papelera-dp`) |
 | `Modal Desarrollo Personal - Paso 1: Elegir Pilar y Tipo (v4.94)` & `Paso 2: Detalle Guiado (v4.94)` | `v4.94` | `desarrollo-personal.html` (`#modal-desarrollo`) |
+| `Modal Desarrollo Personal - Paso 2: Ejercicio Práctico con Hábito (v4.95)` | `v4.95` | `desarrollo-personal.html` + `habitos-y-disciplina.html` + `extract_and_audit.py` |
 
 ---
 

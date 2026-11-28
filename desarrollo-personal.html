@@ -57,6 +57,7 @@
 
         const desarrolloPersonalRegistros = [];
         const desarrolloLibrosCatalogo = [];
+        const desarrolloHabitosCatalogo = [];
         const desarrolloPersonalOpciones = {
             "pilares": ["🗣️ Comunicación", "💖 Autoestima", "🧭 Autoconocimiento"],
             "tipos": ["💬 Conversación", "🏆 Logro / Validación", "🪞 Reflexión / Disparador", "🎯 Valor / Meta", "🏋️ Ejercicio práctico", "🎥 Video / Masterclass", "📖 Lectura / Libro"],
@@ -484,6 +485,32 @@
                         <label for="dp-frecuencia" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Frecuencia / Técnica</label>
                         <input id="dp-frecuencia" type="text" maxlength="120" placeholder="Ej. CNV · Validación / DIARIO · 5 MIN" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
                     </div>
+                    <div id="dp-grupo-habito" class="hidden p-3.5 rounded-xl bg-[#08080a] border border-[#83da85]/30 space-y-3">
+                        <p class="text-[10px] font-label-caps text-[#83da85] tracking-widest">TRACKING EN HÁBITOS</p>
+                        <div>
+                            <label for="dp-habito-vinculado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Vincular hábito existente</label>
+                            <select id="dp-habito-vinculado" onchange="onSelectHabitoVinculadoDP(this.value)" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]">
+                                <option value="">Sin hábito vinculado</option>
+                            </select>
+                        </div>
+                        <label class="flex items-start gap-2.5 cursor-pointer">
+                            <input id="dp-crear-habito" type="checkbox" onchange="onToggleCrearHabitoDP(this.checked)" class="mt-0.5 accent-[#83da85]" />
+                            <span class="text-[12px] text-[#e5e2e1] leading-snug">
+                                <strong class="block text-white">Crear también en Hábitos para trackear</strong>
+                                <span class="text-[11px] text-[#8e8e93]">Se creará automáticamente en 🔥 Hábitos y Disciplina usando el título y la frecuencia definida arriba.</span>
+                            </span>
+                        </label>
+                        <div id="dp-habito-cat-wrap" class="hidden">
+                            <label for="dp-habito-categoria" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Categoría en Hábitos</label>
+                            <select id="dp-habito-categoria" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]">
+                                <option value="🧠 Mente & Foco">🧠 Mente &amp; Foco</option>
+                                <option value="🌅 Mañana">🌅 Mañana</option>
+                                <option value="🌙 Noche">🌙 Noche</option>
+                                <option value="💪 Cuerpo & Salud">💪 Cuerpo &amp; Salud</option>
+                                <option value="💼 Carrera & Tech">💼 Carrera &amp; Tech</option>
+                            </select>
+                        </div>
+                    </div>
                     <div id="dp-recurso-toggle-wrap" class="hidden">
                         <button type="button" onclick="mostrarBloqueRecursoDP()" class="text-xs font-semibold text-[#a855f7] hover:text-[#c084fc] inline-flex items-center gap-1">
                             <span class="material-symbols-outlined text-[15px]">add_circle</span>
@@ -726,12 +753,15 @@
                 return;
             }
             cont.innerHTML = items.map((r) => {
+                const habId = Array.isArray(r.habito_vinculado_ids) && r.habito_vinculado_ids[0] ? r.habito_vinculado_ids[0] : "";
+                const habObj = habId ? (desarrolloHabitosCatalogo || []).find((h) => h.id === habId) : null;
                 const badges = [
                     r.tipo ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-white/[0.06] text-[#e5e2e1]">${escapeHtml(r.tipo)}</span>` : "",
                     r.frecuencia_tecnica ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-[#38bdf8]/15 text-[#38bdf8]">${escapeHtml(r.frecuencia_tecnica)}</span>` : "",
                     r.estado ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#ffb961]/15 text-[#ffb961]">${escapeHtml(r.estado)}</span>` : "",
                     r.puntaje !== null && r.puntaje !== undefined ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#83da85]/15 text-[#83da85]">${escapeHtml(String(r.puntaje))}</span>` : "",
                     r.recurso_asociado ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-[#a855f7]/15 text-[#a855f7]">🔗 ${escapeHtml(r.recurso_asociado)}</span>` : "",
+                    habId ? `<a href="habitos-y-disciplina.html" class="px-2 py-0.5 rounded-full text-[11px] bg-[#83da85]/15 text-[#83da85] hover:underline">🔥 ${escapeHtml((habObj && habObj.nombre) || "Hábito vinculado")}</a>` : "",
                 ].filter(Boolean).join("");
                 const enlaceHtml = r.enlace
                     ? `<a href="${escapeHtml(r.enlace)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[11px] text-[#38bdf8] hover:underline mt-1"><span>Abrir enlace</span><span class="material-symbols-outlined text-[13px]">open_in_new</span></a>`
@@ -1024,6 +1054,32 @@
             document.getElementById("dp-recurso-toggle-wrap").classList.add("hidden");
         }
 
+        function _poblarHabitosSelectDP(selectedId) {
+            const sel = document.getElementById("dp-habito-vinculado");
+            if (!sel) return;
+            const opts = ['<option value="">Sin hábito vinculado</option>']
+                .concat((desarrolloHabitosCatalogo || []).map((h) => `<option value="${escapeHtml(h.id)}">${escapeHtml(h.nombre)}${h.frecuencia_meta ? ` (${escapeHtml(h.frecuencia_meta)})` : ""}</option>`));
+            sel.innerHTML = opts.join("");
+            sel.value = selectedId || "";
+        }
+
+        function onSelectHabitoVinculadoDP(val) {
+            const chk = document.getElementById("dp-crear-habito");
+            if (val && chk && chk.checked) {
+                chk.checked = false;
+                document.getElementById("dp-habito-cat-wrap").classList.add("hidden");
+            }
+        }
+
+        function onToggleCrearHabitoDP(checked) {
+            const wrap = document.getElementById("dp-habito-cat-wrap");
+            if (wrap) wrap.classList.toggle("hidden", !checked);
+            if (checked) {
+                const sel = document.getElementById("dp-habito-vinculado");
+                if (sel) sel.value = "";
+            }
+        }
+
         function _aplicarVisibilidadCamposDP() {
             const pilar = document.getElementById("dp-pilar").value;
             const tipo = document.getElementById("dp-tipo").value;
@@ -1036,6 +1092,10 @@
 
             const usaFrec = _tipoUsaFrecuencia(tipo);
             document.getElementById("dp-grupo-frecuencia").classList.toggle("hidden", !usaFrec);
+
+            const esEjercicio = tipo === "🏋️ Ejercicio práctico";
+            const habGrp = document.getElementById("dp-grupo-habito");
+            if (habGrp) habGrp.classList.toggle("hidden", !esEjercicio);
 
             const usaRec = _tipoUsaRecursoDefault(tipo)
                 || Boolean(document.getElementById("dp-recurso").value.trim())
@@ -1070,6 +1130,9 @@
             document.getElementById("dp-page-id").value = "";
             document.getElementById("dp-modal-titulo").textContent = "Nuevo registro";
             _poblarDatalistLibros();
+            _poblarHabitosSelectDP("");
+            document.getElementById("dp-crear-habito").checked = false;
+            document.getElementById("dp-habito-cat-wrap").classList.add("hidden");
             document.getElementById("dp-pilar").value = pilarPre || desarrolloPersonalOpciones.pilares[0];
             document.getElementById("dp-tipo").value = tipoPre || desarrolloPersonalOpciones.tipos[0];
             _poblarSelect("dp-estado", desarrolloPersonalOpciones.estados, "En curso");
@@ -1212,6 +1275,10 @@
             actualizarSliderDP(r.puntaje !== null && r.puntaje !== undefined ? r.puntaje : 0);
             document.getElementById("dp-frecuencia").value = r.frecuencia_tecnica || "";
             _poblarDatalistLibros();
+            const habId = Array.isArray(r.habito_vinculado_ids) && r.habito_vinculado_ids[0] ? r.habito_vinculado_ids[0] : "";
+            _poblarHabitosSelectDP(habId);
+            document.getElementById("dp-crear-habito").checked = false;
+            document.getElementById("dp-habito-cat-wrap").classList.add("hidden");
             document.getElementById("dp-recurso").value = r.recurso_asociado || "";
             document.getElementById("dp-enlace").value = r.enlace || "";
             document.getElementById("dp-nota").value = r.nota || "";
@@ -1289,6 +1356,9 @@
                 recursoAsociado: document.getElementById("dp-recurso").value,
                 enlace: document.getElementById("dp-enlace").value,
                 nota: document.getElementById("dp-nota").value,
+                habitoVinculadoId: document.getElementById("dp-habito-vinculado").value,
+                crearHabito: document.getElementById("dp-crear-habito").checked,
+                habitoCategoria: document.getElementById("dp-habito-categoria").value,
             });
             if (!res.ok) {
                 const msg = document.getElementById("dp-mensaje");

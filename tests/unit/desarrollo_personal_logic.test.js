@@ -66,6 +66,19 @@ describe('desarrollo_personal_logic', () => {
         nota: 'Pausa antes de responder',
       },
     });
+
+    const conHabito = construirPayloadDesarrollo({
+      nombre: 'Método 2 minutos',
+      pilar: PILARES_DESARROLLO[2],
+      tipo: TIPOS_DESARROLLO[4],
+      frecuenciaTecnica: 'DIARIO · 2 MIN',
+      crearHabito: true,
+      habitoCategoria: '🧠 Mente & Foco',
+    });
+    expect(conHabito.ok).toBe(true);
+    expect(conHabito.payload.crear_habito).toBe(true);
+    expect(conHabito.payload.habito_categoria).toBe('🧠 Mente & Foco');
+    expect(conHabito.payload.habito_vinculado_id).toBeNull();
   });
 
   test('construirRecursoEnVuelo valida título, URL y formatea etiqueta del catálogo', () => {

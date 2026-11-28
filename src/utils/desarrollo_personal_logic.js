@@ -193,6 +193,15 @@ function construirPayloadDesarrollo(datos) {
     enlace: (datos.enlace || "").trim() || null,
     nota,
   };
+  if (tipo === "🏋️ Ejercicio práctico") {
+    if (datos.crearHabito) {
+      payload.crear_habito = true;
+      payload.habito_categoria = (datos.habitoCategoria || "").trim() || "🧠 Mente & Foco";
+      payload.habito_vinculado_id = null;
+    } else if (datos.habitoVinculadoId !== undefined) {
+      payload.habito_vinculado_id = (datos.habitoVinculadoId || "").trim() || null;
+    }
+  }
   const pageId = (datos.pageId || "").trim();
   if (pageId) payload.page_id = pageId;
 

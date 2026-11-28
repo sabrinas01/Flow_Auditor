@@ -1,7 +1,7 @@
 # 📑 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS)
 ## Proyecto: AsistenteSabry
 **Módulo:** Auditoría de Productividad, Recordatorios Diarios y Recordatorios Varios  
-**Versión:** 4.94 (Energía guiada, Check/Matriz real de Hábitos y Wizard Desarrollo Personal)  
+**Versión:** 4.95 (Relación bidireccional Ejercicio Práctico ↔ Hábitos)  
 **Estado:** Validado para Desarrollo y QA  
 **Autor:** IT Functional Analyst (Sabrina)  
 **Fecha de Emisión:** Julio 2026  
@@ -12,6 +12,7 @@
 
 | Versión | Fecha | Autor | Descripción del Cambio / Hito Técnico |
 | :--- | :--- | :--- | :--- |
+| **v4.95** | Noviembre 2026 | Sabrina Sanso | **Relación Ejercicio Práctico ↔ Hábitos (`desarrollo-personal.html`, `habitos-y-disciplina.html`, `extract_and_audit.py`):** relación bidireccional en Notion (`Hábito vinculado` ↔ `Ejercicio práctico`); en Paso 2 de `🏋️ Ejercicio práctico` permite elegir hábito existente o crear uno nuevo automáticamente con la frecuencia definida, preservando el hábito como histórico si se desvincula. |
 | **v4.94** | Noviembre 2026 | Sabrina Sanso | **Wizard 2 pasos en Desarrollo Personal (`desarrollo-personal.html`):** modal ampliado (`max-w-2xl`) con Paso 1 (tarjetas de Pilar y Tipo sin truncar) y Paso 2 (campos condicionales por Tipo, slider de avance 0–100%, Frecuencia solo en Ejercicio práctico, y `+ Nuevo recurso` para submodal). |
 | **v4.93** | Noviembre 2026 | Sabrina Sanso | **Check rápido de Hábitos + Matriz 52 semanas y Congelación Compasiva reales (`habitos-y-disciplina.html`, `habitos_logic.js`, `extract_and_audit.py`):** check `Hecho` idempotente a la derecha de cada hábito, contador `X/Y hechos hoy`, reordenamiento al final al completar, propiedad `Historial fechas` en `NOTION_DB_HABITOS`, matriz semanal real con tooltips y racha compasiva que nunca baja. |
 | **v4.92** | Noviembre 2026 | Sabrina Sanso | **Modal guiado de Energía en Salud (`salud.html`, `salud_logic.js`):** botones `+` por tarjeta, selector visual `📈 Curva Circadiana` vs `⚡ Factor de Recarga`, slider visual obligatorio (desde `25%`), fase actual preseleccionada, chips en Factor, porcentaje oculto en Factor, y aviso de duplicado con sugerencia `registro numero X`. |
@@ -200,6 +201,7 @@ El sistema es una herramienta híbrida y asíncrona de procesamiento de flujos d
 * **SRS-FR-M5-514 (Modal Guiado de Energía en Salud — nuevo v4.92):** `salud.html` incorpora accesos `+` directos en *Curva Circadiana* y *Factores de Recarga Vital* y rediseña `#modal-energia` con selector visual de tipo (`📈 Curva Circadiana` vs `⚡ Factor de Recarga`), slider visual obligatorio desde `25%` para Curva, preselección de la fase actual del ciclo, ocultamiento de porcentaje en Factor + chips rápidos + nota opcional, y detección de duplicados (`detectarDuplicadoEnergia()`) sugiriendo `registro numero X` en el título.
 * **SRS-FR-M5-515 (Check Rápido de Hábitos, Matriz Real de 52 Semanas y Congelación Compasiva — nuevo v4.93):** `habitos-y-disciplina.html`, `src/utils/habitos_logic.js` y `extract_and_audit.py` incorporan el botón `Hecho` idempotente a la derecha de cada hábito (`completarHabitoHoy()`), contador `X/Y hechos hoy`, reordenamiento al final al completarse hoy, propiedad `Historial fechas` en `NOTION_DB_HABITOS`, matriz semanal real de 52 semanas (`calcularMatriz52Semanas()`) con tooltips por semana y toggle `❄️ Congelación Compasiva` (`alternarCongelacionHabitoHoy()`) que protege los hábitos activos del día sin reiniciar la racha.
 * **SRS-FR-M5-516 (Wizard 2 Pasos en Desarrollo Personal — nuevo v4.94):** `desarrollo-personal.html` amplía `#modal-desarrollo` a `max-w-2xl` con flujo guiado en 2 pasos (`Paso 1: Pilar y Tipo` → `Paso 2: Detalle`), campos condicionales según el tipo (slider de avance 0–100% solo en Ejercicio/Video/Lectura/Meta; Frecuencia solo en Ejercicio práctico; bloque de Recurso visible por defecto en práctica/multimedia con botón `+ Nuevo recurso`) y preservación de borrador.
+* **SRS-FR-M5-517 (Vinculación Ejercicio Práctico ↔ Hábitos — nuevo v4.95):** Relación bidireccional en Notion entre `🌱 Desarrollo Personal` (`Hábito vinculado`) y `🔥 Hábitos y Disciplina` (`Ejercicio práctico`). En `desarrollo-personal.html`, el Paso 2 de `🏋️ Ejercicio práctico` muestra el bloque `TRACKING EN HÁBITOS` para elegir un hábito existente (`desarrolloHabitosCatalogo`) o marcar `"Crear también en Hábitos para trackear"` (`crear_habito`) con la frecuencia definida y categoría elegida. El tracking diario se realiza en `habitos-y-disciplina.html` y desvincular o eliminar el ejercicio conserva el hábito como histórico.
 
 ---
 
