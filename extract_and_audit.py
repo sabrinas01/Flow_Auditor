@@ -2277,7 +2277,26 @@ def sincronizar_desarrollo_personal(timestamps, app_version):
             "recurso_asociado": "".join(t.get("plain_text", "") for t in (pr.get("Recurso asociado") or {}).get("rich_text", [])),
             "enlace": (pr.get("Enlace") or {}).get("url"),
             "nota": "".join(t.get("plain_text", "") for t in (pr.get("Nota / Descripción") or {}).get("rich_text", [])),
+            "habito_vinculado_ids": [r.get("id") for r in ((pr.get("Hábito vinculado") or {}).get("relation") or []) if r.get("id")],
         })
+
+    habitos_dp = []
+    if DB_HABITOS:
+        res_hab_dp, _ = _consultar_bd_salud(DB_HABITOS, "DP HABITOS", page_size=100, paginar=True)
+        for hp in res_hab_dp:
+            hpr = hp.get("properties", {})
+            hmod = ((hpr.get("Módulo") or {}).get("select") or {}).get("name") or ""
+            if hmod and "Hábito" not in hmod:
+                continue
+            htit = "".join(t.get("plain_text", "") for t in (hpr.get("Nombre") or {}).get("title", []))
+            if htit:
+                habitos_dp.append({
+                    "id": hp.get("id"),
+                    "nombre": htit,
+                    "categoria": ((hpr.get("Categoría") or {}).get("select") or {}).get("name"),
+                    "frecuencia_meta": "".join(t.get("plain_text", "") for t in (hpr.get("Frecuencia / Meta") or {}).get("rich_text", [])),
+                    "estado": ((hpr.get("Estado") or {}).get("select") or {}).get("name"),
+                })
 
     libros_dp = []
     if DB_LIBROS:
@@ -2301,6 +2320,7 @@ def sincronizar_desarrollo_personal(timestamps, app_version):
     for nombre_const, valor in (
         ("desarrolloPersonalRegistros", registros),
         ("desarrolloLibrosCatalogo", libros_dp),
+        ("desarrolloHabitosCatalogo", habitos_dp),
     ):
         json_reg = json.dumps(valor, ensure_ascii=False).replace("</", "<\\/")
         html_content = re.sub(
@@ -2346,14 +2366,43 @@ def _construir_propiedades_desarrollo_personal(datos):
         props["Enlace"] = {"url": str(datos["enlace"])}
     if datos.get("nota") is not None:
         props["Nota / Descripción"] = {"rich_text": [{"text": {"content": str(datos["nota"])}}] if datos["nota"] else []}
+    if "habito_vinculado_id" in datos:
+        hid = (datos.get("habito_vinculado_id") or "").strip()
+        props["Hábito vinculado"] = {"relation": [{"id": hid}] if hid else []}
     return props
+
+
+def _crear_habito_desde_ejercicio_dp(datos):
+    if not DB_HABITOS:
+        print("ℹ️ [DP -> HABITO]: NOTION_DB_HABITOS no configurada, se omite creación automática.")
+        return None
+    hab_datos = {
+        "nombre": datos.get("nombre"),
+        "modulo": "🔥 Hábito",
+        "estado": "Activo",
+        "categoria": datos.get("habito_categoria") or "🧠 Mente & Foco",
+        "frecuencia_meta": datos.get("frecuencia_tecnica") or "Diario",
+        "racha_progreso": 0,
+        "nota": f"Vinculado desde Desarrollo Personal ({datos.get('pilar') or ''})".strip(),
+    }
+    props = _construir_propiedades_habito(hab_datos)
+    body = {"parent": {"database_id": DB_HABITOS}, "icon": {"type": "emoji", "emoji": "🔥"}, "properties": props}
+    res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", body, "CREAR HABITO DESDE DP")
+    hid = res.get("id")
+    print(f"✅ [DP -> HABITO]: '{datos.get('nombre')}' creado en Hábitos ({hid or '?'}).")
+    return hid
 
 
 def crear_desarrollo_personal(datos):
     if not DB_DESARROLLO_PERSONAL:
         print("❌ [DESARROLLO PERSONAL]: NOTION_DB_DESARROLLO_PERSONAL no configurada.")
         sys.exit(1)
-    props = _construir_propiedades_desarrollo_personal(datos)
+    datos_eff = dict(datos)
+    if datos_eff.get("crear_habito"):
+        hid = _crear_habito_desde_ejercicio_dp(datos_eff)
+        if hid:
+            datos_eff["habito_vinculado_id"] = hid
+    props = _construir_propiedades_desarrollo_personal(datos_eff)
     body = {"parent": {"database_id": DB_DESARROLLO_PERSONAL}, "icon": {"type": "emoji", "emoji": "🌱"}, "properties": props}
     res = _ejecutar_request_notion("POST", "https://api.notion.com/v1/pages", body, "CREAR DESARROLLO PERSONAL")
     print(f"✅ [CREAR DESARROLLO PERSONAL]: '{datos.get('nombre')}' creada ({res.get('id', '?')}).")
@@ -2364,7 +2413,12 @@ def actualizar_desarrollo_personal(datos):
     if not page_id:
         print("❌ [ACTUALIZAR DESARROLLO PERSONAL]: falta page_id.")
         sys.exit(1)
-    props = _construir_propiedades_desarrollo_personal(datos)
+    datos_eff = dict(datos)
+    if datos_eff.get("crear_habito"):
+        hid = _crear_habito_desde_ejercicio_dp(datos_eff)
+        if hid:
+            datos_eff["habito_vinculado_id"] = hid
+    props = _construir_propiedades_desarrollo_personal(datos_eff)
     _ejecutar_request_notion("PATCH", f"https://api.notion.com/v1/pages/{page_id}", {"properties": props}, "ACTUALIZAR DESARROLLO PERSONAL")
     print(f"✅ [ACTUALIZAR DESARROLLO PERSONAL]: '{datos.get('nombre')}' ({page_id}) actualizada.")
 
@@ -2426,6 +2480,7 @@ def sincronizar_habitos_disciplina(timestamps, app_version):
             "ultima_fecha": ((pr.get("Última fecha") or {}).get("date") or {}).get("start"),
             "nota": "".join(t.get("plain_text", "") for t in (pr.get("Nota / Micro-hábito") or {}).get("rich_text", [])),
             "historial_fechas": "".join(t.get("plain_text", "") for t in (pr.get("Historial fechas") or {}).get("rich_text", [])),
+            "ejercicios_vinculados_ids": [r.get("id") for r in ((pr.get("Ejercicio práctico") or {}).get("relation") or []) if r.get("id")],
         })
 
     res_form, sch_form = _consultar_bd_salud(DB_FORMACIONES, "FORMACIONES MIS CURSOS", page_size=100, paginar=True)

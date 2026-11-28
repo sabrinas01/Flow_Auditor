@@ -485,6 +485,7 @@
                                 <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#ffb961]/15 text-[#ffb961]">🔥 ${Number(h.racha_progreso) || 0} días</span>
                                 ${hechoHoy ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#83da85]/20 text-[#83da85]">✓ Hecho hoy</span>` : (h.estado ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-[#83da85]/15 text-[#83da85]">${escapeHtml(h.estado)}</span>` : "")}
                                 ${congeladoHoy && !hechoHoy ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#38bdf8]/15 text-[#38bdf8]">❄️ Protegido hoy</span>` : ""}
+                                ${Array.isArray(h.ejercicios_vinculados_ids) && h.ejercicios_vinculados_ids.length > 0 ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-[#ff5f52]/15 text-[#ff5f52]">🏋️ Ejercicio práctico</span>` : ""}
                             </div>
                             ${h.frecuencia_meta || h.nota ? `<p class="text-[12px] text-[#a1a1aa]">${[h.frecuencia_meta, h.nota].filter(Boolean).map(escapeHtml).join(" · ")}</p>` : ""}
                         </div>
