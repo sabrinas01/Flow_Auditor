@@ -69,17 +69,17 @@
     <!-- =================================================== -->
     <script>
         // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
-        const timestampLocalStr = "18/08/2026 20:20:23";
-        const appVersionStr = "dev";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
-        const timestampNextStr = "18/08/2026 21:20:23";
-        const timestampServerStr = "18/08/2026 23:20:23";
+        const timestampLocalStr = "28/11/2026 09:43:08";
+        const appVersionStr = "v4.95";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
+        const timestampNextStr = "28/11/2026 10:43:08";
+        const timestampServerStr = "28/11/2026 12:43:08";
 
         // Eventos (BD "Agenda Personal - Eventos"), clasificados por su propia
         // fecha programada en Ayer/Hoy/Mañana. Regla de negocio (SRS-FR-M5-502):
         // el backend ya descarta los eventos "FINALIZADO" — acá solo llegan
         // los que están "SIN_EMPEZAR" o "EN_CURSO".
         const agendaEventosAyer = [];
-        const agendaEventosHoy = [];
+        const agendaEventosHoy = [{"id": "421a38bb-7a6e-814c-b983-f938886e7a6c", "nombre": "Visitar a Fati", "inicio": "2026-11-28", "fin": null, "lugar": null, "tipo": "VINCULOS", "estado": "Sin empezar", "prioridad": "Media", "descripcion": null}, {"id": "425a38bb-7a6e-817e-9a3d-c9ce4feea92b", "nombre": "Trabajar en cursos con Barbi", "inicio": "2026-11-28T11:00:00.000-03:00", "fin": "2026-11-28T13:00:00.000-03:00", "lugar": null, "tipo": "RECORDATORIO", "estado": "Sin empezar", "prioridad": "Media", "descripcion": null}, {"id": "14fba3c7-bcf2-446c-9962-3dde072c9dd5", "nombre": "Visitar a Raquel y Tia Claudia", "inicio": "2026-11-28T17:30:00.000-03:00", "fin": null, "lugar": null, "tipo": "RECORDATORIO", "estado": "Sin empezar", "prioridad": "Media", "descripcion": null}];
         const agendaEventosManana = [];
     </script>
 
@@ -91,7 +91,7 @@
             <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
             <div>
                 <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
-                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.87</p>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.95</p>
             </div>
         </div>
 

@@ -50,21 +50,14 @@
 <body class="font-body-md text-body-md overflow-x-hidden antialiased">
 
     <script>
-        const timestampLocalStr = "24/11/2026 17:50:00";
-        const appVersionStr = "dev";
-        const timestampNextStr = "24/11/2026 18:50:00";
-        const timestampServerStr = "24/11/2026 20:50:00";
+        const timestampLocalStr = "28/11/2026 09:43:08";
+        const appVersionStr = "v4.95";
+        const timestampNextStr = "28/11/2026 10:43:08";
+        const timestampServerStr = "28/11/2026 12:43:08";
 
-        const habitosRegistros = [];
-        const formacionesRegistros = [];
-        const habitosOpciones = {
-            "modulos": ["🔥 Hábito", "🎓 Formación / Curso"],
-            "estados": ["Activo", "Por empezar", "En progreso", "En pausa", "Completado"],
-            "categorias": ["🌅 Mañana", "🌙 Noche", "🧠 Mente & Foco", "💪 Cuerpo & Salud", "💼 Carrera & Tech"],
-            "estados_formacion": ["Sin empezar", "En curso", "En pausa", "Terminado"],
-            "plataformas_formacion": ["Youtube", "Educación IT", "Kinetic Trainning Hub", "Identidad Argentina", "Oscar Méndez", "Ed team", "Instituto S.T", "CoderHouse", "Digital House", "Santander Open Academy", "Grabaciones de Zoom"],
-            "tematicas_formacion": ["Autoconocimiento", "Análisis funcional", "Gestión del tiempo", "Inglés", "BPMN", "Product ownership", "Cybersecurity", "API", "Management", "Desarrollo web", "Empresa"]
-        };
+        const habitosRegistros = [{"id": "426a38bb-7a6e-8139-ad09-fac7bf72bf67", "nombre": "Escucha activa (Regla de los 3 segundos)", "modulo": "🔥 Hábito", "estado": "Activo", "categoria": "🧠 Mente & Foco", "frecuencia_meta": "Semanal / 3 pasos", "racha_progreso": 0, "ultima_fecha": null, "nota": "1) Pausar 3s tras el punto de la otra persona. 2) Parafrasear antes de responder: \nPara parafrasear a otra persona (en el contexto de la comunicación interpersonal), debes reformular lo que dijo con tus propias palabras para confirmar que entendiste correctamente su mensaje o emoción, sin agregar juicios ni nueva información.\n\nEl proceso efectivo sigue estos pasos:\n\nEscucha activamente: Presta atención completa hasta que la otra persona termine de hablar, sin planificar tu respuesta mientras ella habla. ⁠\nIdentifica el punto central: Detecta la idea principal o la emoción detrás de lo dicho, no cada detalle secundario. ⁠\nReformula: Usa frases introductorias como \"Lo que entiendo es que...\", \"Suena como si dijeras que...\" o \"Así que sientes q\n3) Detectar si respondo para ganar o comprender.", "historial_fechas": "", "ejercicios_vinculados_ids": ["426a38bb-7a6e-8112-a6fd-e6b10cdfad73"]}, {"id": "424a38bb-7a6e-8123-9cf5-f1b567af1175", "nombre": "Una respiración al día 4-7-8", "modulo": "🔥 Hábito", "estado": "Activo", "categoria": "🧠 Mente & Foco", "frecuencia_meta": "Diario/1", "racha_progreso": 3, "ultima_fecha": "2026-11-27", "nota": "", "historial_fechas": "{\"done\":[\"2026-11-27\"],\"frozen\":[]}", "ejercicios_vinculados_ids": []}];
+        const formacionesRegistros = [{"id": "422a38bb-7a6e-80a3-9307-c648c1d803ed", "tema": "Hay equipo: Introducción a la ciberseguridad", "estado": "Terminado", "plataforma": "Fundacion Sadowsky", "tematica": ["Cybersecurity"], "inicio": "2026-10-01", "fin": "2026-11-30", "seccion_onenote": ""}, {"id": "371a38bb-7a6e-8037-9cbc-decf346d39fb", "tema": "Bootcamp de Comunidad Dojo", "estado": "Terminado", "plataforma": "Grabaciones de Zoom", "tematica": ["Cybersecurity"], "inicio": null, "fin": null, "seccion_onenote": ""}, {"id": "346a38bb-7a6e-80bf-82b8-daa11414e8e9", "tema": "Como crear y lanzar una empresa", "estado": "Sin empezar", "plataforma": "Santander Open Academy", "tematica": ["Empresa"], "inicio": "2026-05-02", "fin": "2026-05-31", "seccion_onenote": ""}, {"id": "2f3a38bb-7a6e-806d-90e0-ffbf381a090d", "tema": "Introducción al mundo web", "estado": "Sin empezar", "plataforma": "Educación IT", "tematica": ["Desarrollo web"], "inicio": null, "fin": null, "seccion_onenote": ""}, {"id": "1e8a38bb-7a6e-8077-bb1d-d49984bbb39e", "tema": "API REST", "estado": "Terminado", "plataforma": "Ed team", "tematica": ["API"], "inicio": null, "fin": null, "seccion_onenote": "API REST  (Vista web)"}, {"id": "1e8a38bb-7a6e-80c9-965a-c9af787ecc09", "tema": "Ciberseguridad", "estado": "Terminado", "plataforma": "CoderHouse", "tematica": ["Cybersecurity"], "inicio": null, "fin": null, "seccion_onenote": "Ciberseguridad  (Vista web)"}, {"id": "1e8a38bb-7a6e-804c-a32a-d23c85bcf260", "tema": "PO Fundamentals", "estado": "Terminado", "plataforma": "Kinetic Trainning Hub", "tematica": ["Product ownership"], "inicio": null, "fin": null, "seccion_onenote": "Curso PO Fundamentals  (Vista web)"}, {"id": "1e8a38bb-7a6e-8070-aa7e-d5d5500bda1d", "tema": "BPMN", "estado": "Terminado", "plataforma": "Kinetic Trainning Hub", "tematica": ["BPMN"], "inicio": null, "fin": null, "seccion_onenote": "Curso BPMN  (Vista web)"}, {"id": "1e8a38bb-7a6e-8038-bcde-c46a78843d75", "tema": "Análisis funcional", "estado": "Terminado", "plataforma": "Educación IT", "tematica": ["Análisis funcional"], "inicio": null, "fin": null, "seccion_onenote": "Analisis Funcional  (Vista web)"}, {"id": "1e8a38bb-7a6e-8049-82af-f990cc234f33", "tema": "Ingles SAINT THOMAS", "estado": "Terminado", "plataforma": "Instituto S.T", "tematica": ["Inglés"], "inicio": null, "fin": null, "seccion_onenote": "Sección en OneNote"}, {"id": "1e8a38bb-7a6e-8018-93d9-d919d62513ce", "tema": "AF By Oscar Mendez  ", "estado": "Terminado", "plataforma": "Oscar Méndez", "tematica": ["Análisis funcional"], "inicio": null, "fin": null, "seccion_onenote": "Sección en OneNote"}, {"id": "1e8a38bb-7a6e-804b-b32c-ed2a888dc03d", "tema": "Gestión y organización del tiempo", "estado": "Terminado", "plataforma": "Identidad Argentina", "tematica": ["Gestión del tiempo"], "inicio": null, "fin": null, "seccion_onenote": "Sección en OneNote"}, {"id": "174a38bb-7a6e-8052-b6c9-faebc6101bfc", "tema": "Introducción a la ciberseguridad", "estado": "En pausa", "plataforma": "Educación IT", "tematica": ["Cybersecurity"], "inicio": null, "fin": null, "seccion_onenote": ""}, {"id": "21cbaddc-0d04-4611-9736-6a1b856b9593", "tema": "Curso de autoconocimiento Flor C", "estado": "En pausa", "plataforma": "Youtube", "tematica": ["Autoconocimiento"], "inicio": null, "fin": null, "seccion_onenote": ""}, {"id": "c168fadb-f046-41a4-b1cc-73e1a9175f87", "tema": "Digital Mindset", "estado": "En curso", "plataforma": "Digital House", "tematica": ["Management"], "inicio": "2026-04-17", "fin": "2026-04-30", "seccion_onenote": ""}];
+        const habitosOpciones = {"modulos": ["🔥 Hábito", "🎓 Formación / Curso"], "estados": ["Activo", "Por empezar", "En progreso", "En pausa", "Completado"], "categorias": ["🌅 Mañana", "🌙 Noche", "🧠 Mente & Foco", "💪 Cuerpo & Salud", "💼 Carrera & Tech"], "estados_formacion": ["Sin empezar", "En curso", "En pausa", "Terminado"], "plataformas_formacion": ["Youtube", "Educación IT", "Kinetic Trainning Hub", "Identidad Argentina", "Oscar Méndez", "Ed team", "Instituto S.T", "CoderHouse", "Digital House", "Santander Open Academy", "Grabaciones de Zoom", "Fundacion Sadowsky"], "tematicas_formacion": ["Autoconocimiento", "Análisis funcional", "Gestión del tiempo", "Inglés", "BPMN", "Product ownership", "Cybersecurity", "API", "Management", "Desarrollo web", "Empresa"]};
     </script>
 
     <!-- SIDEBAR -->
@@ -73,7 +66,7 @@
             <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
             <div>
                 <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
-                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.87</p>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.95</p>
             </div>
         </div>
 
@@ -134,7 +127,7 @@
             <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
             <div class="min-w-0">
                 <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
-                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.87</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.95</p>
             </div>
         </div>
     </aside>

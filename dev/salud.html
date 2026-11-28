@@ -1,0 +1,1776 @@
+﻿<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Salud — AsistenteSabry</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0e0e0e">
+    <link rel="icon" href="./grafica/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./grafica/icons/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #08080a;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+        .status-row {
+            background: #18181d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .status-row:hover { background: #1f1f26; border-color: rgba(255, 255, 255, 0.12); }
+        #sidebar { transition: transform 0.3s ease; }
+        .spin-animation { animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden antialiased">
+
+    <script>
+        const timestampLocalStr = "28/11/2026 00:53:04";
+        const appVersionStr = "v4.95";
+        const timestampNextStr = "28/11/2026 01:53:04";
+        const timestampServerStr = "28/11/2026 03:53:04";
+
+        const saludSesiones = [];
+        const saludCiclo = [{"id": "421a38bb-7a6e-81b1-b3ba-e1d3bb1b9ce9", "nombre": "[11]-Fase menstrual", "inicio": "2026-11-24", "fin": "2026-11-29", "inicio_real": "2026-11-24", "fin_real": "2026-11-29", "proximo_inicio": "2026-12-18", "cantidad_dias": 6, "sintomas": ["Hinchazón abdominal", "Dolor abdominal", "Dolor de piernas", "Dolor de senos", "Irritación", "Hinchazón en las piernas", "Dolor espalda baja"]}, {"id": "420a38bb-7a6e-8129-b7df-e9714793b592", "nombre": "[11]-Fase Lútea", "inicio": "2026-11-18", "fin": "2026-11-23", "inicio_real": "2026-11-20", "fin_real": "2026-11-23", "proximo_inicio": "2026-12-14", "cantidad_dias": 4, "sintomas": ["Hinchazón abdominal", "Dolor de senos", "Cansancio Mental", "Libido media"]}, {"id": "41aa38bb-7a6e-80aa-9563-d0392ab62b72", "nombre": "[11]-Fase ovulatoria", "inicio": "2026-11-15", "fin": "2026-11-17", "inicio_real": "2026-11-15", "fin_real": "2026-11-17", "proximo_inicio": "2026-12-09", "cantidad_dias": 3, "sintomas": ["Dolor de senos", "Libido alta"]}, {"id": "411a38bb-7a6e-80da-b27c-e372d1cce3ed", "nombre": "[11]-Fase Folicular", "inicio": "2026-11-05", "fin": "2026-11-14", "inicio_real": "2026-11-05", "fin_real": "2026-11-14", "proximo_inicio": "2026-11-29", "cantidad_dias": 10, "sintomas": []}, {"id": "40ea38bb-7a6e-8085-8ac0-fd70db844b4f", "nombre": "[10-11]-Fase menstrual", "inicio": "2026-10-30", "fin": "2026-11-04", "inicio_real": "2026-10-30", "fin_real": "2026-11-04", "proximo_inicio": "2026-11-23", "cantidad_dias": 6, "sintomas": ["Libido alta", "Retención de liquido", "Hinchazón en las piernas", "Cansancio Mental", "Hinchazón abdominal"]}, {"id": "40ea38bb-7a6e-80ef-8620-e314254496a7", "nombre": "[10]-Fase Lútea", "inicio": "2026-10-23", "fin": "2026-10-29", "inicio_real": "2026-10-23", "fin_real": "2026-10-29", "proximo_inicio": "2026-11-16", "cantidad_dias": 7, "sintomas": ["Retención de liquido", "Hinchazón en los tobillos", "Irritabilidad"]}, {"id": "400a38bb-7a6e-80b1-81c1-d51e4664020e", "nombre": "[10]-Fase ovulatoria", "inicio": "2026-10-18", "fin": "2026-10-22", "inicio_real": "2026-10-18", "fin_real": "2026-10-22", "proximo_inicio": "2026-11-11", "cantidad_dias": 5, "sintomas": []}, {"id": "3f8a38bb-7a6e-80e9-b87a-cdfc4c887fe4", "nombre": "[MES]-Fase Folicular", "inicio": "2026-10-09", "fin": "2026-10-17", "inicio_real": "2026-10-09", "fin_real": "2026-10-17", "proximo_inicio": "2026-11-02", "cantidad_dias": 9, "sintomas": ["Hinchazón abdominal", "Dolor abdominal"]}, {"id": "3f1a38bb-7a6e-8060-b1b8-d1774d173611", "nombre": "[10]-Fase menstrual", "inicio": "2026-10-03", "fin": "2026-10-08", "inicio_real": "2026-10-03", "fin_real": "2026-10-08", "proximo_inicio": "2026-10-27", "cantidad_dias": 6, "sintomas": []}, {"id": "3eda38bb-7a6e-8009-8ac7-cc434ccac427", "nombre": "[09]-Fase Lútea", "inicio": "2026-09-28", "fin": "2026-10-02", "inicio_real": "2026-09-28", "fin_real": "2026-10-03", "proximo_inicio": "2026-10-22", "cantidad_dias": 6, "sintomas": []}, {"id": "3eda38bb-7a6e-807e-8df0-e89f5849e671", "nombre": "[09]-Fase ovulatoria", "inicio": "2026-09-24", "fin": "2026-09-27", "inicio_real": "2026-09-24", "fin_real": "2026-09-27", "proximo_inicio": "2026-10-18", "cantidad_dias": 4, "sintomas": []}, {"id": "3dfa38bb-7a6e-805d-ada9-e2d4e25f6791", "nombre": "[09]-Fase Folicular", "inicio": "2026-09-14", "fin": "2026-09-23", "inicio_real": "2026-09-14", "fin_real": "2026-09-23", "proximo_inicio": "2026-10-08", "cantidad_dias": 10, "sintomas": ["Libido media"]}, {"id": "3d9a38bb-7a6e-8068-8597-fe6bf1617704", "nombre": "[09] Fase menstrual", "inicio": "2026-09-08", "fin": "2026-09-13", "inicio_real": "2026-09-08", "fin_real": "2026-09-13", "proximo_inicio": "2026-10-02", "cantidad_dias": 6, "sintomas": ["Cansancio físico"]}, {"id": "3cba38bb-7a6e-8095-a590-f6019ae87922", "nombre": "[08]-Fase Lútea", "inicio": "2026-08-26", "fin": "2026-08-31", "inicio_real": "2026-08-26", "fin_real": "2026-08-31", "proximo_inicio": "2026-09-19", "cantidad_dias": 6, "sintomas": ["Dolor de senos", "Dolor de piernas", "Hinchazón en las piernas", "Libido media", "Dolor de ovario izquierdo"]}, {"id": "3c9a38bb-7a6e-80b0-ac38-f79568a46795", "nombre": "[08]-Fase ovulatoria", "inicio": "2026-08-22", "fin": "2026-08-25", "inicio_real": "2026-08-22", "fin_real": "2026-08-25", "proximo_inicio": "2026-09-15", "cantidad_dias": 4, "sintomas": ["Libido alta"]}, {"id": "3bfa38bb-7a6e-8064-9e2b-f64e9ea3edb7", "nombre": "[08]-Fase Folicular", "inicio": "2026-08-15", "fin": "2026-08-21", "inicio_real": "2026-08-15", "fin_real": "2026-08-21", "proximo_inicio": "2026-09-08", "cantidad_dias": 7, "sintomas": ["Hinchazón en las piernas"]}, {"id": "3b8a38bb-7a6e-80c1-bb3c-e41a84605b34", "nombre": "[08]-Fase menstrual", "inicio": "2026-08-09", "fin": "2026-08-14", "inicio_real": "2026-08-09", "fin_real": "2026-08-14", "proximo_inicio": "2026-09-02", "cantidad_dias": 6, "sintomas": ["Dolor abdominal", "Dolor de piernas", "Hinchazón en las piernas"]}, {"id": "3aca38bb-7a6e-80f9-a0a1-cc9d3095a4ab", "nombre": "[07]-Fase Lútea", "inicio": "2026-08-02", "fin": "2026-08-08", "inicio_real": "2026-07-28", "fin_real": "2026-08-02", "proximo_inicio": "2026-08-21", "cantidad_dias": 6, "sintomas": []}, {"id": "3aca38bb-7a6e-8095-a1f1-d1416338cdc7", "nombre": "[07]-Fase ovulatoria", "inicio": "2026-07-28", "fin": "2026-08-01", "inicio_real": "2026-07-24", "fin_real": "2026-07-27", "proximo_inicio": "2026-08-17", "cantidad_dias": 4, "sintomas": []}, {"id": "3a0a38bb-7a6e-8027-b94f-ccadb3285235", "nombre": "[07]-Fase Folicular", "inicio": "2026-07-16", "fin": "2026-07-27", "inicio_real": "2026-07-16", "fin_real": "2026-07-27", "proximo_inicio": "2026-08-09", "cantidad_dias": 12, "sintomas": ["Dolor abdominal"]}, {"id": "39ca38bb-7a6e-8089-b1b1-d07cda93a91b", "nombre": "[07]-Fase menstrual", "inicio": "2026-07-10", "fin": "2026-07-15", "inicio_real": "2026-07-10", "fin_real": "2026-07-15", "proximo_inicio": "2026-08-03", "cantidad_dias": 6, "sintomas": ["Hinchazón abdominal", "Dolor de senos", "Hinchazón en los senos"]}, {"id": "395a38bb-7a6e-809e-99ca-ef22629ece66", "nombre": "[07]-Fase Lútea", "inicio": "2026-07-04", "fin": "2026-07-09", "inicio_real": "2026-07-04", "fin_real": "2026-07-09", "proximo_inicio": "2026-07-28", "cantidad_dias": 6, "sintomas": []}, {"id": "395a38bb-7a6e-8012-9f37-d7f6d9b265e1", "nombre": "[07]-Fase ovulatoria", "inicio": "2026-07-01", "fin": "2026-07-03", "inicio_real": "2026-07-01", "fin_real": "2026-07-03", "proximo_inicio": "2026-07-25", "cantidad_dias": 3, "sintomas": []}, {"id": "387a38bb-7a6e-800f-a950-e46184108750", "nombre": "[06]-Fase Folicular", "inicio": "2026-06-21", "fin": "2026-06-30", "inicio_real": "2026-06-21", "fin_real": "2026-06-30", "proximo_inicio": "2026-07-15", "cantidad_dias": 10, "sintomas": ["Libido media", "Hinchazón abdominal"]}, {"id": "381a38bb-7a6e-80c9-8f5b-ec9d43f69f8b", "nombre": "[06]-Fase menstrual", "inicio": "2026-06-15", "fin": "2026-06-20", "inicio_real": "2026-06-15", "fin_real": "2026-06-20", "proximo_inicio": "2026-07-09", "cantidad_dias": 6, "sintomas": []}, {"id": "37ba38bb-7a6e-80c7-9cb7-e3a7ab419a87", "nombre": "[06]-Fase Lútea", "inicio": "2026-06-08", "fin": "2026-06-14", "inicio_real": "2026-06-08", "fin_real": "2026-06-13", "proximo_inicio": "2026-07-02", "cantidad_dias": 6, "sintomas": []}, {"id": "37ba38bb-7a6e-804b-82d3-f0f16fffa670", "nombre": "[06]-Fase ovulatoria", "inicio": "2026-06-02", "fin": "2026-06-07", "inicio_real": "2026-06-02", "fin_real": "2026-06-07", "proximo_inicio": "2026-06-26", "cantidad_dias": 6, "sintomas": []}, {"id": "36ca38bb-7a6e-8042-8b22-c93419650ce9", "nombre": "[05]-Fase Folicular", "inicio": "2026-05-25", "fin": "2026-06-01", "inicio_real": "2026-05-25", "fin_real": "2026-06-05", "proximo_inicio": "2026-06-18", "cantidad_dias": 12, "sintomas": []}, {"id": "365a38bb-7a6e-803a-b6ba-d288e7c48007", "nombre": "[05]-Fase menstrual", "inicio": "2026-05-19", "fin": "2026-05-24", "inicio_real": "2026-05-19", "fin_real": "2026-05-24", "proximo_inicio": "2026-06-12", "cantidad_dias": 6, "sintomas": ["Dolor de piernas", "Dolor abdominal", "Dolor del lado izquierdo"]}, {"id": "362a38bb-7a6e-80ee-837f-e171882957e7", "nombre": "[05]-Fase Lútea", "inicio": "2026-05-13", "fin": "2026-05-18", "inicio_real": "2026-05-14", "fin_real": "2026-05-18", "proximo_inicio": "2026-06-07", "cantidad_dias": 5, "sintomas": ["Dolor de ovario izquierdo", "Irritabilidad", "Cansancio Mental"]}];
+        const saludPendientes = [{"id": "425a38bb-7a6e-8123-9d53-e096f24bbd46", "nombre": "Sacar turno con un endocrinologo", "tipo": "💬 Pedir turno", "fecha_limite": null, "estado": "Sin empezar", "con_retraso": ""}, {"id": "386a38bb-7a6e-81b0-abad-dc41cd9e6365", "nombre": "Sacar turno con Oculista", "tipo": "💬 Pedir turno", "fecha_limite": null, "estado": "Sin empezar", "con_retraso": ""}, {"id": "317a38bb-7a6e-8157-a9ba-f4d7c91f69f0", "nombre": "Sacar turno con ginecolog@", "tipo": "💬 Pedir turno", "fecha_limite": null, "estado": "Sin empezar", "con_retraso": ""}, {"id": "1aca38bb-7a6e-8067-a958-c7614ac9a366", "nombre": "Sacar turno con Odontologa para limpieza bucal", "tipo": "💬 Pedir turno", "fecha_limite": null, "estado": "Sin empezar", "con_retraso": ""}];
+        const saludMenteRegistros = [{"id": "425a38bb-7a6e-81bd-a23c-f38846aa7eae", "nombre": "Tarde", "fecha": "2026-11-27", "barometro": "😠 Frustrada", "calma": 7, "energia": 5, "reflexion": "", "stop": false}, {"id": "425a38bb-7a6e-817f-bb3a-eed38743c3bd", "nombre": "Madrugada antes de dormir", "fecha": "2026-11-27", "barometro": "😌 En calma", "calma": 7, "energia": 5, "reflexion": "Es importante ordenar cuando la cabeza se dispersa", "stop": false}, {"id": "423a38bb-7a6e-811d-886b-eea01afdac77", "nombre": "Pre almuezo", "fecha": "2026-11-25", "barometro": "😌 En calma", "calma": 8, "energia": 6, "reflexion": "", "stop": false}, {"id": "423a38bb-7a6e-812a-ac88-d0c997a92dc2", "nombre": "Antes de dormir", "fecha": "2026-11-25", "barometro": "🤗Feliz", "calma": 8, "energia": 6, "reflexion": "", "stop": false}, {"id": "422a38bb-7a6e-8149-9c84-fa878d188c90", "nombre": "Post almuerzo", "fecha": "2026-11-24", "barometro": "😠 Frustrada", "calma": 6, "energia": 5, "reflexion": "Entiendo que puede haberle dicho eso solo para calmarla, pero no estoy de acuerdo", "stop": false}];
+        const saludEnergiaRegistros = [{"id": "425a38bb-7a6e-8159-945c-d3fa694a5346", "nombre": "🥄Alimentación", "tipo": "⚡ Factor de Recarga", "fase": "❄️ Menstrual", "porcentaje": null, "detalle": "merienda mas semillas para mayor saciedad"}, {"id": "425a38bb-7a6e-8123-83f4-d2d5e544ade3", "nombre": "Tarde", "tipo": "⚡ Factor de Recarga", "fase": "❄️ Menstrual", "porcentaje": 25, "detalle": "Me comi una cucharada de semillas"}, {"id": "425a38bb-7a6e-8125-98a3-d659c55c9efc", "nombre": "Tarde", "tipo": "📈 Curva Circadiana", "fase": "❄️ Menstrual", "porcentaje": 55, "detalle": "Mucho dolor abdominal y de cabeza"}];
+        const saludOpciones = {"estados_sesion": ["Hecha", "Sin empezar"], "sintomas": ["Hinchazón abdominal", "Dolor abdominal", "Dolor de piernas", "Dolor de senos", "Irritación", "Cansancio físico", "Cansancio Mental", "Hinchazón en las piernas", "Retención de liquido", "Hinchazón en los senos", "Libido alta", "Hinchazón en los tobillos", "Libido media", "Dolor de ovario izquierdo", "Irritabilidad", "Dolor del lado izquierdo", "Dolor espalda baja"], "tipos_pendiente": ["💻 Pedir autorización", "💬 Pedir turno", "🗓️TURNO AGENDADO", "📄Fichadetratamiento", "Única vez", "💊Medicación", "Estudio"], "estados_pendiente": ["Pendiente", "Sin empezar", "En curso", "Listo"]};
+    </script>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
+        <div class="flex items-center gap-3 mb-5 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.95</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span>Agenda personal</span>
+            </a>
+            <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">alarm</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">check_box</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="finanzas.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                <span>Finanzas</span>
+            </a>
+            <a href="salud.html" class="flex items-center gap-3 px-4 py-2 bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/30 rounded-xl font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                <span>Salud</span>
+            </a>
+            <a href="ocio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_library</span>
+                <span>Ocio</span>
+            </a>
+            <a href="gestion-emocional.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">psychology</span>
+                <span>Gestión emocional</span>
+            </a>
+            <a href="relaciones-y-limites.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">shield</span>
+                <span>Relaciones y límites</span>
+            </a>
+            <a href="desarrollo-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">trending_up</span>
+                <span>Desarrollo personal</span>
+            </a>
+            <a href="habitos-y-disciplina.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_fire_department</span>
+                <span>Hábitos y disciplina</span>
+            </a>
+        </nav>
+        <div class="pt-3 mt-3 border-t border-white/[0.08]">
+            <a href="https://contras.ai.studio/" target="_blank" rel="noopener" class="flex items-center gap-2 px-3 py-1.5 text-[#ffb961] hover:bg-[#ffb961]/10 rounded-lg transition-all text-[11px] font-semibold">
+                <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                <span>Contras AI Studio</span>
+            </a>
+        </div>
+        <div class="pt-3 mt-3 border-t border-white/[0.08] flex items-center gap-3 px-2">
+            <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
+            <div class="min-w-0">
+                <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo</p>
+            </div>
+        </div>
+    </aside>
+
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <main class="min-h-screen lg:ml-64">
+        <!-- TOP APP BAR -->
+        <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">Asistente Sabry</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">SALUD</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="inicio.html" class="hidden sm:inline-flex items-center gap-1 bg-[#111115] hover:bg-[#1c1c1f] px-3 py-1.5 rounded-lg border border-white/[0.08] text-xs text-[#e5e2e1] font-semibold">
+                        <span class="material-symbols-outlined text-[15px]">arrow_back</span>
+                        <span>Inicio</span>
+                    </a>
+                    <a href="gestion-emocional.html" class="hidden sm:inline-flex items-center gap-1 bg-[#83da85]/10 hover:bg-[#83da85]/20 px-3 py-1.5 rounded-lg border border-[#83da85]/30 text-xs text-[#83da85] font-semibold">
+                        <span>🌿 Gestión emocional</span>
+                    </a>
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- CABECERA -->
+            <section class="flex flex-wrap justify-between items-end gap-4 pb-2 border-b border-white/[0.06]">
+                <div class="space-y-1.5">
+                    <p class="text-[11px] font-label-caps text-[#ff5f52] tracking-widest">BIENESTAR · SALUD INTEGRAL · SISTEMA TRIMODAL</p>
+                    <h1 class="font-display-lg text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Salud</h1>
+                    <p class="text-[13px] text-[#8e8e93]">Cuerpo, Mente y Energía conectados en tiempo real con tus bases de Notion.</p>
+                </div>
+                <div class="flex flex-wrap gap-2 text-[11px]">
+                    <a href="#sec-cuerpo" class="px-3 py-1.5 rounded-full bg-[#ff5f52]/15 text-[#ff5f52] border border-[#ff5f52]/30 font-semibold">01 · Cuerpo</a>
+                    <a href="#sec-mente" class="px-3 py-1.5 rounded-full bg-[#00aaff]/15 text-[#00aaff] border border-[#00aaff]/30 font-semibold">02 · Mente</a>
+                    <a href="#sec-energia" class="px-3 py-1.5 rounded-full bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30 font-semibold">03 · Energía</a>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SECCIÓN 01 — CUERPO
+                 ========================================== -->
+            <div id="sec-cuerpo" class="space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#ff5f52] tracking-widest">SECCIÓN 01 · CUERPO</p>
+                        <h2 class="text-xl font-bold text-white">Ciclo biológico, controles clínicos y movimiento</h2>
+                    </div>
+                    <a href="gestion-emocional.html#sec-caja-consciente" class="px-3.5 py-2 rounded-xl bg-[#ffb961]/15 hover:bg-[#ffb961]/25 border border-[#ffb961]/30 text-[#ffb961] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                        <span>🌙 Regulación Somática → Gestión Emocional</span>
+                    </a>
+                </div>
+
+                <!-- 1.1 CICLO MENSTRUAL (INTACTO) -->
+                <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#ff5f52] space-y-6">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">SEGUIMIENTO</p>
+                            <h3 class="text-headline-md font-headline-md text-white">Ciclo menstrual</h3>
+                        </div>
+                        <a href="https://app.notion.com/p/332a38bb7a6e80d2b280ea0aba56fee6?v=332a38bb7a6e80a3b37b000c4575586b&source=copy_link"
+                           target="_blank" rel="noopener"
+                           class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
+                            <span>Ver en Notion</span>
+                            <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                        </a>
+                    </div>
+
+                    <!-- Fase actual y Próximo inicio -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-[#0e0e0f] p-5 rounded-xl border border-[#232326]">
+                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">FASE ACTUAL</p>
+                            <p id="ciclo-fase-actual" class="text-[18px] font-bold text-white">Sin registros</p>
+                        </div>
+                        <div class="bg-[#0e0e0f] p-5 rounded-xl border border-[#232326]">
+                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">INICIO DE PRÓXIMA FASE</p>
+                            <p id="ciclo-proximo-inicio" class="text-[18px] font-bold text-[#ffb961]">—</p>
+                        </div>
+                    </div>
+
+                    <!-- Botones por etapa -->
+                    <div class="space-y-2">
+                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">REGISTRAR ETAPA</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <button type="button" onclick="abrirModalCiclo('Fase menstrual')" class="bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/40 text-[#38bdf8] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">❄️ Fase menstrual</button>
+                            <button type="button" onclick="abrirModalCiclo('Fase Folicular')" class="bg-[#f472b6]/15 hover:bg-[#f472b6]/25 border border-[#f472b6]/40 text-[#f472b6] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">🌸 Fase Folicular</button>
+                            <button type="button" onclick="abrirModalCiclo('Fase ovulatoria')" class="bg-[#facc15]/15 hover:bg-[#facc15]/25 border border-[#facc15]/40 text-[#facc15] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">☀️ Fase ovulatoria</button>
+                            <button type="button" onclick="abrirModalCiclo('Fase Lútea')" class="bg-[#fb923c]/15 hover:bg-[#fb923c]/25 border border-[#fb923c]/40 text-[#fb923c] font-bold text-[13px] py-2.5 px-3 rounded-xl transition-all active:scale-95">🍂 Fase Lútea</button>
+                        </div>
+                    </div>
+
+                    <!-- Vista de calendario estilo Notion -->
+                    <div class="bg-[#0e0e0f] rounded-xl border border-[#232326] p-5 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <button type="button" onclick="cambiarMesCalendario(-1)" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" aria-label="Mes anterior">
+                                <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                            </button>
+                            <h3 id="calendario-mes-titulo" class="text-[15px] font-bold text-white uppercase tracking-wider"></h3>
+                            <button type="button" onclick="cambiarMesCalendario(1)" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" aria-label="Mes siguiente">
+                                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                            </button>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3 text-[11px] text-[#a1a1aa] pb-1">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#38bdf8]/15 text-[#38bdf8] border border-[#38bdf8]/30">❄️ Menstrual</span>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f472b6]/15 text-[#f472b6] border border-[#f472b6]/30">🌸 Folicular</span>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#facc15]/15 text-[#facc15] border border-[#facc15]/30">☀️ Ovulatoria</span>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#fb923c]/15 text-[#fb923c] border border-[#fb923c]/30">🍂 Lútea</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <div class="min-w-[620px] space-y-2">
+                                <div class="grid grid-cols-7 gap-1.5 text-center text-[11px] font-label-caps text-[#8e8e93] pb-1 border-b border-[#232326]">
+                                    <span>lun</span><span>mar</span><span>mié</span><span>jue</span><span>vie</span><span>sáb</span><span>dom</span>
+                                </div>
+                                <div id="calendario-grid" class="space-y-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 1.1b HISTORIAL DE SÍNTOMAS Y CICLOS PASADOS -->
+                <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#a855f7] space-y-5">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <div>
+                            <p class="text-[11px] font-label-caps text-[#a855f7] tracking-widest">HISTORIAL SOMÁTICO</p>
+                            <h3 class="text-headline-md font-headline-md text-white">Historial de Síntomas y Ciclos Pasados</h3>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button id="btn-vista-hist-ciclo" type="button" onclick="toggleVistaHistorialCiclo()" class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#a855f7]/35 text-[#e9d5ff] text-xs font-bold px-3 py-2 rounded-xl transition-all">
+                                Vista: Línea de Tiempo
+                            </button>
+                            <input id="ciclo-hist-buscador" type="text" oninput="renderizarHistorialCiclo()" placeholder="Filtrar por síntoma o fase..." class="bg-[#1c1c1f] border border-[#232326] rounded-xl px-3.5 py-2 text-[13px] text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#a855f7]" />
+                        </div>
+                    </div>
+                    <div id="ciclo-sintomas-top" class="flex flex-wrap gap-2"></div>
+                    <div id="ciclo-historial-list" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
+
+                    <!-- Sugerencias de Bienestar (mini-ABM Stitch) -->
+                    <div id="salud-sugerencias-wrap" class="pt-4 border-t border-white/[0.08] space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                                <p class="text-[11px] font-label-caps text-[#83da85] tracking-widest uppercase">SUGERENCIAS DE BIENESTAR</p>
+                                <p class="text-[12px] text-[#8e8e93]">Cuidados somáticos, nutrición y descanso personalizables.</p>
+                            </div>
+                            <button id="btn-add-sugerencia-salud" type="button" onclick="abrirModalSugerenciaSalud()" class="px-3 py-1.5 rounded-xl bg-[#53a759]/20 hover:bg-[#53a759]/30 border border-[#53a759]/40 text-[#83da85] text-xs font-bold inline-flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[15px]">add</span>
+                                <span>Añadir</span>
+                            </button>
+                        </div>
+                        <div id="salud-sugerencias-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+                    </div>
+                </section>
+
+                <!-- 1.2 CONTROLES MÉDICOS Y SALUD PENDIENTES -->
+                <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#00aaff] space-y-6">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS MÉDICAS</p>
+                            <h3 class="text-headline-md font-headline-md text-white">Controles médicos y salud pendientes</h3>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <a href="https://app.notion.com/p/1a8a38bb7a6e804aa8b1cb1e03e94716?v=1a8a38bb7a6e80cc95cf000c48a8ba99&source=copy_link"
+                               target="_blank" rel="noopener"
+                               class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
+                                <span>Ver en Notion</span>
+                                <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                            </a>
+                            <button type="button" onclick="abrirModalPendiente()"
+                                    class="bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                                <span class="material-symbols-outlined text-[18px]">add</span>
+                                <span>Registrar pendiente</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="list-pendientes-salud" class="space-y-3"></div>
+                </section>
+
+                <!-- 1.3 DIARIO DE SESIONES & MOVIMIENTO -->
+                <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#53a759] space-y-6">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">MOVIMIENTO</p>
+                            <h3 class="text-headline-md font-headline-md text-white">Diario de sesiones & Movimiento</h3>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <a href="https://app.notion.com/p/2a6a38bb7a6e80d98a43e768c2510ef2?v=2a6a38bb7a6e805d85c4000cdfc36d3a&source=copy_link"
+                               target="_blank" rel="noopener"
+                               class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
+                                <span>Ver en Notion</span>
+                                <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                            </a>
+                            <button type="button" onclick="abrirModalSesion()"
+                                    class="bg-[#53a759] hover:bg-[#53a759]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                                <span class="material-symbols-outlined text-[18px]">add</span>
+                                <span>Registrar sesión</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-[#0e0e0f] p-4 rounded-xl border border-[#232326]">
+                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">FRECUENCIA SEMANAL</p>
+                            <p id="ses-kpi-frecuencia" class="text-[20px] font-bold text-white">0 sesiones</p>
+                        </div>
+                        <div class="bg-[#0e0e0f] p-4 rounded-xl border border-[#232326]">
+                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">TIEMPO ACTIVO</p>
+                            <p id="ses-kpi-minutos" class="text-[20px] font-bold text-[#83da85]">0 min</p>
+                        </div>
+                        <div class="bg-[#0e0e0f] p-4 rounded-xl border border-[#232326]">
+                            <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">CONSISTENCIA</p>
+                            <p id="ses-kpi-consistencia" class="text-[20px] font-bold text-[#ffb961]">0%</p>
+                        </div>
+                    </div>
+                    <div id="list-sesiones" class="space-y-3"></div>
+                </section>
+            </div>
+
+            <!-- ==========================================
+                 SECCIÓN 02 — MENTE
+                 ========================================== -->
+            <div id="sec-mente" class="space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#00aaff] tracking-widest">SECCIÓN 02 · MENTE</p>
+                        <h2 class="text-xl font-bold text-white">Claridad mental, serenidad y pausas conscientes</h2>
+                    </div>
+                    <a href="gestion-emocional.html#sec-caja-consciente" class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#83da85] font-semibold text-[13px] px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all">
+                        <span>Abrir Caja de Herramientas Somáticas</span>
+                        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </a>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#00aaff] space-y-3">
+                        <div class="flex items-center justify-between">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">CHECK-IN SERENIDAD</p>
+                            <span id="mente-barometro-badge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-[#00aaff]/15 text-[#00aaff] font-semibold">—</span>
+                        </div>
+                        <p id="mente-calma-valor" class="text-3xl font-extrabold text-white">—</p>
+                        <p id="mente-calma-desc" class="text-[13px] text-[#8e8e93]">Promedio de calma en tus registros de Notion.</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#53a759] space-y-3">
+                        <div class="flex items-center justify-between">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">PAUSAS S.T.O.P.</p>
+                            <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-[#53a759]/15 text-[#83da85] font-semibold">Protocolo</span>
+                        </div>
+                        <p id="mente-stop-valor" class="text-3xl font-extrabold text-white">0 pausas</p>
+                        <p id="mente-stop-desc" class="text-[13px] text-[#8e8e93]">Veces que aplicaste S.T.O.P. en momentos clave.</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#a855f7] space-y-3 flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">ÚLTIMA REFLEXIÓN</p>
+                            <p id="mente-reflexion-texto" class="text-[14px] text-[#e5e2e1] italic leading-relaxed">Sin reflexiones registradas aún.</p>
+                        </div>
+                        <a href="gestion-emocional.html" class="text-[12px] text-[#a855f7] font-semibold inline-flex items-center gap-1 hover:underline">
+                            <span>Registrar en Gestión emocional</span>
+                            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 SECCIÓN 03 — ENERGÍA
+                 ========================================== -->
+            <div id="sec-energia" class="space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#ffb961] tracking-widest">SECCIÓN 03 · ENERGÍA</p>
+                        <h2 class="text-xl font-bold text-white">Termómetro de vitalidad, curva circadiana y recarga</h2>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="energia-fase-badge" class="text-[11px] px-3 py-1 rounded-full bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30 font-semibold">Sincronizado con ciclo</span>
+                        <a href="https://app.notion.com/p/422a38bb7a6e80f2a932c0a64912b922?v=422a38bb7a6e80dfa449000c4725e083&source=copy_link" target="_blank" rel="noopener" class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-xs px-3 py-1.5 rounded-lg inline-flex items-center gap-1">
+                            <span>Ver en Notion</span>
+                            <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                        </a>
+                        <button type="button" onclick="abrirModalEnergia()" class="bg-[#ffb961] hover:bg-[#ffb961]/90 text-[#111115] font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>Registrar en Energía</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#ffb961] space-y-3">
+                        <div class="flex items-center justify-between">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">BARÓMETRO DE ENERGÍA</p>
+                            <span id="energia-fuente-badge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-[#ffb961]/15 text-[#ffb961] font-semibold">—</span>
+                        </div>
+                        <p id="energia-puntaje-valor" class="text-3xl font-extrabold text-white">—</p>
+                        <p id="energia-etiqueta" class="text-[14px] font-semibold text-[#ffb961]"></p>
+                        <p id="energia-desc" class="text-[13px] text-[#8e8e93] leading-relaxed"></p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#38bdf8] space-y-4">
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">CURVA CIRCADIANA DEL DÍA</p>
+                            <button type="button" onclick="abrirModalEnergia('📈 Curva Circadiana')" class="w-7 h-7 rounded-lg bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/35 text-[#38bdf8] flex items-center justify-center transition-all" title="Agregar franja a Curva Circadiana">
+                                <span class="material-symbols-outlined text-[16px]">add</span>
+                            </button>
+                        </div>
+                        <div id="energia-curva-list" class="space-y-3"></div>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#53a759] space-y-4">
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">FACTORES DE RECARGA VITAL</p>
+                            <button type="button" onclick="abrirModalEnergia('⚡ Factor de Recarga')" class="w-7 h-7 rounded-lg bg-[#53a759]/15 hover:bg-[#53a759]/25 border border-[#53a759]/35 text-[#53a759] flex items-center justify-center transition-all" title="Agregar hábito o Factor de Recarga">
+                                <span class="material-symbols-outlined text-[16px]">add</span>
+                            </button>
+                        </div>
+                        <div id="energia-factores-list" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">dev</span></p>
+                    </div>
+                    <div class="flex flex-wrap gap-x-8 gap-y-2">
+                        <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Sabri Studios &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL REGISTRAR SESIÓN -->
+    <div id="modal-sesion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-sesion')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="ses-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar sesión</h3>
+                <button type="button" onclick="cerrarModal('modal-sesion')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-sesion" class="space-y-4" onsubmit="return manejarSubmitSesion(event)">
+                <input id="ses-page-id" type="hidden" value="" />
+                <div>
+                    <label for="ses-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre *</label>
+                    <input id="ses-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="ses-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha *</label>
+                        <input id="ses-fecha" type="date" required class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div>
+                        <label for="ses-duracion" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Duración (min)</label>
+                        <input id="ses-duracion" type="number" min="0" step="1" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                </div>
+                <div>
+                    <label for="ses-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado de la sesión</label>
+                    <select id="ses-estado" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                </div>
+                <p id="ses-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button type="button" onclick="cerrarModal('modal-sesion')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-[#53a759] hover:bg-[#53a759]/90 text-white font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRAR FASE CICLO -->
+    <div id="modal-ciclo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-ciclo')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="cic-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar etapa del ciclo</h3>
+                <button type="button" onclick="cerrarModal('modal-ciclo')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-ciclo" class="space-y-4" onsubmit="return manejarSubmitCiclo(event)">
+                <input id="cic-page-id" type="hidden" value="" />
+                <input id="cic-fase" type="hidden" value="" />
+                <div>
+                    <label for="cic-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre *</label>
+                    <input id="cic-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="cic-inicio" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Inicio de fase *</label>
+                        <input id="cic-inicio" type="date" required class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div>
+                        <label for="cic-fin" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fin de fase</label>
+                        <input id="cic-fin" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="cic-inicio-real" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Inicio (real)</label>
+                        <input id="cic-inicio-real" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div>
+                        <label for="cic-fin-real" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Finalización (real)</label>
+                        <input id="cic-fin-real" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-1.5">
+                        <label class="block text-[12px] font-semibold text-[#8e8e93]">Síntomas y medicación (podés elegir varios)</label>
+                        <button type="button" onclick="abrirSubmodalMedSalud()" class="text-[11px] font-bold text-[#83da85] hover:underline flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">medication</span>
+                            <span>+ Medicamento en vuelo</span>
+                        </button>
+                    </div>
+                    <div id="cic-sintomas-list" class="max-h-40 overflow-y-auto bg-[#1c1c1f] border border-[#232326] rounded-lg p-2.5 grid grid-cols-1 sm:grid-cols-2 gap-1.5"></div>
+                    <div class="flex gap-2 mt-2">
+                        <input id="cic-nuevo-sintoma" type="text" maxlength="80" placeholder="Nuevo síntoma (ej. Dolor lumbar)..." onkeydown="if(event.key==='Enter'){event.preventDefault();agregarNuevoSintomaCiclo();}" class="flex-1 bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[13px] placeholder-[#8e8e93]" />
+                        <button type="button" onclick="agregarNuevoSintomaCiclo()" class="bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 border border-[#ff5f52]/40 text-[#ff5f52] font-bold text-[12px] px-3 py-2 rounded-lg flex items-center gap-1 transition-all flex-shrink-0">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>Agregar</span>
+                        </button>
+                    </div>
+                </div>
+                <p id="cic-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button id="cic-btn-eliminar" type="button" onclick="confirmarEliminarCicloDesdeModal()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl transition-all" title="Mandar a la papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
+                    <button type="button" onclick="cerrarModal('modal-ciclo')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SUBMODAL CREACIÓN EN VUELO: MEDICAMENTO / SUPLEMENTO (CAPA 2) -->
+    <div id="modal-salud-med-vuelo" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarSubmodalMedSalud()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4 border border-[#83da85]/40 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30">CAPA 2 • MEDICAMENTO EN VUELO</span>
+                <button type="button" onclick="cerrarSubmodalMedSalud()" class="px-2 py-1 hover:bg-white/5 rounded-full text-[11px] text-[#8e8e93] hover:text-white inline-flex items-center gap-1" title="Esc | Cerrar a Salud">
+                    <span>Esc</span>
+                    <span class="material-symbols-outlined text-[16px]">close</span>
+                </button>
+            </div>
+            <p class="text-[11px] text-[#8e8e93] font-medium">Salud → Registro de Síntoma → <span class="text-[#83da85]">+ Nuevo Medicamento</span></p>
+            <h3 class="text-base font-bold text-white">Registrar Medicamento / Suplemento</h3>
+            <form onsubmit="return guardarSubmodalMedSalud(event)" class="space-y-3">
+                <input id="sal-med-nombre" type="text" required maxlength="80" placeholder="Nombre (ej. Magnesio / Ibuprofeno)" class="w-full bg-[#1c1c1f] border border-[#232326] focus:border-[#83da85] rounded-lg px-3 py-2.5 text-white text-sm outline-none" />
+                <input id="sal-med-dosis" type="text" maxlength="60" placeholder="Dosis / Horario (ej. 400mg noche)" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-xs outline-none" />
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="cerrarSubmodalMedSalud()" class="flex-1 py-2.5 rounded-xl bg-[#18181d] text-white text-xs font-semibold">← Volver al síntoma</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-[#83da85] text-[#08080a] text-xs font-bold">Guardar y vincular</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- UNDO TOAST 5 SEGUNDOS (CTRL + Z) -->
+    <div id="salud-undo-toast" class="hidden fixed bottom-5 left-5 z-[65] px-4 py-3 rounded-2xl bg-[#18181d] border border-[#ffb961]/45 shadow-2xl flex items-center gap-3">
+        <span class="material-symbols-outlined text-[#ffb961] text-[20px]">restore_from_trash</span>
+        <span id="salud-undo-texto" class="text-xs font-semibold text-white">Archivando registro en 5s…</span>
+        <button type="button" onclick="deshacerArchivadoSalud()" class="px-3 py-1 rounded-lg bg-[#ffb961] text-[#08080a] text-xs font-bold">Deshacer (Ctrl+Z)</button>
+    </div>
+
+    <!-- MODAL CONFIRMAR PAPELERA -->
+    <div id="modal-confirmar-papelera" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="cerrarModal('modal-confirmar-papelera')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-3 text-[#ff5f52]">
+                <span class="material-symbols-outlined text-[24px]">delete</span>
+                <h3 class="text-headline-md font-headline-md text-white">Mandar a la papelera</h3>
+            </div>
+            <p id="papelera-texto" class="text-[14px] text-[#e2beba] leading-relaxed">¿Deseas mandar esta fase a la papelera de Notion?</p>
+            <div class="flex gap-3 pt-1">
+                <button type="button" onclick="cerrarModal('modal-confirmar-papelera')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl">Cancelar</button>
+                <button type="button" onclick="ejecutarEnvioPapelera()" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-2.5 rounded-xl">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRAR PENDIENTE SALUD -->
+    <div id="modal-pendiente" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-pendiente')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="pen-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar pendiente</h3>
+                <button type="button" onclick="cerrarModal('modal-pendiente')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-pendiente" class="space-y-4" onsubmit="return manejarSubmitPendiente(event)">
+                <input id="pen-page-id" type="hidden" value="" />
+                <div>
+                    <label for="pen-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre de tarea *</label>
+                    <input id="pen-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="pen-tipo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Tipo de tarea</label>
+                        <select id="pen-tipo" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                    <div>
+                        <label for="pen-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
+                        <select id="pen-estado" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                </div>
+                <div>
+                    <label for="pen-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha límite</label>
+                    <input id="pen-fecha" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <p id="pen-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button type="button" onclick="cerrarModal('modal-pendiente')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ENERGÍA & RECARGA VITAL -->
+    <div id="modal-energia" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-energia')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-lg my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <p class="text-[10px] font-label-caps text-[#ffb961] tracking-widest">03 · ENERGÍA</p>
+                    <h3 id="eng-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar en Energía</h3>
+                </div>
+                <button type="button" onclick="cerrarModal('modal-energia')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-energia" class="space-y-4" onsubmit="return manejarSubmitEnergia(event)">
+                <input id="eng-page-id" type="hidden" value="" />
+                <input id="eng-tipo" type="hidden" value="📈 Curva Circadiana" />
+                <div>
+                    <p class="text-[12px] font-semibold text-[#8e8e93] mb-2">¿Qué querés registrar?</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <button id="eng-card-curva" type="button" onclick="seleccionarTipoEnergia('📈 Curva Circadiana')" class="text-left p-3.5 rounded-xl bg-[#1c1c1f] border-2 border-[#38bdf8] transition-all">
+                            <p class="text-[13px] font-bold text-white">📈 Curva Circadiana</p>
+                            <p class="text-[11px] text-[#a1a1aa] mt-0.5 leading-snug">Franja horaria y nivel de energía (%).</p>
+                        </button>
+                        <button id="eng-card-factor" type="button" onclick="seleccionarTipoEnergia('⚡ Factor de Recarga')" class="text-left p-3.5 rounded-xl bg-[#1c1c1f] border border-[#232326] hover:border-[#53a759]/50 transition-all">
+                            <p class="text-[13px] font-bold text-white">⚡ Factor de Recarga</p>
+                            <p class="text-[11px] text-[#a1a1aa] mt-0.5 leading-snug">Hábito o acción que te devuelve energía.</p>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label id="eng-nombre-label" for="eng-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Franja horaria *</label>
+                    <input id="eng-nombre" type="text" required maxlength="200" oninput="verificarDuplicadoEnergiaLive()" placeholder="Ej. Mañana (07-13)" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    <div id="eng-chips-factor" class="hidden flex flex-wrap gap-1.5 mt-2">
+                        <button type="button" onclick="aplicarChipFactor('Hidratación tibia')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#53a759]/15 hover:bg-[#53a759]/25 text-[#83da85] border border-[#53a759]/30 transition-all">💧 Hidratación tibia</button>
+                        <button type="button" onclick="aplicarChipFactor('Siesta 20 min')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#53a759]/15 hover:bg-[#53a759]/25 text-[#83da85] border border-[#53a759]/30 transition-all">😴 Siesta 20 min</button>
+                        <button type="button" onclick="aplicarChipFactor('Caminar al sol')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#53a759]/15 hover:bg-[#53a759]/25 text-[#83da85] border border-[#53a759]/30 transition-all">☀️ Caminar al sol</button>
+                        <button type="button" onclick="aplicarChipFactor('Respiración 4-7-8')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#53a759]/15 hover:bg-[#53a759]/25 text-[#83da85] border border-[#53a759]/30 transition-all">🌬️ Respiración 4-7-8</button>
+                        <button type="button" onclick="aplicarChipFactor('Estiramiento suave')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#53a759]/15 hover:bg-[#53a759]/25 text-[#83da85] border border-[#53a759]/30 transition-all">🧘 Estiramiento suave</button>
+                    </div>
+                </div>
+                <div id="eng-duplicado-aviso" class="hidden p-3 rounded-xl bg-[#ffb961]/10 border border-[#ffb961]/40 text-[12px] text-[#ffb961] space-y-1.5">
+                    <p id="eng-duplicado-texto"></p>
+                    <button id="eng-duplicado-btn" type="button" class="px-2.5 py-1 rounded-lg bg-[#ffb961] text-[#111115] font-bold text-[11px]">Usar título sugerido</button>
+                </div>
+                <div id="eng-grupo-curva" class="p-3.5 rounded-xl bg-[#08080a] border border-[#38bdf8]/25 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <label for="eng-porcentaje-slider" class="text-[12px] font-semibold text-[#e5e2e1]">Nivel de energía *</label>
+                        <div class="flex items-center gap-2">
+                            <span id="eng-porcentaje-estado" class="text-[10px] font-label-caps px-2 py-0.5 rounded-full bg-[#38bdf8]/15 text-[#38bdf8]">VALLE</span>
+                            <span id="eng-porcentaje-valor" class="text-lg font-extrabold text-[#38bdf8]">25%</span>
+                        </div>
+                    </div>
+                    <input id="eng-porcentaje-slider" type="range" min="0" max="100" step="5" value="25" oninput="actualizarSliderEnergia(this.value)" class="w-full accent-[#38bdf8] cursor-pointer" />
+                    <input id="eng-porcentaje" type="hidden" value="25" />
+                    <div class="flex justify-between text-[10px] text-[#8e8e93]">
+                        <span>0%</span>
+                        <span>25%</span>
+                        <span>50%</span>
+                        <span>75%</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+                <div>
+                    <label for="eng-fase" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fase del ciclo</label>
+                    <select id="eng-fase" onchange="verificarDuplicadoEnergiaLive()" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]">
+                        <option value="Todas">Todas</option>
+                        <option value="❄️ Menstrual">❄️ Menstrual</option>
+                        <option value="🌸 Folicular">🌸 Folicular</option>
+                        <option value="☀️ Ovulatoria">☀️ Ovulatoria</option>
+                        <option value="🍂 Lútea">🍂 Lútea</option>
+                    </select>
+                </div>
+                <div id="eng-grupo-detalle" class="hidden">
+                    <label for="eng-detalle" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Detalle / Nota (opcional)</label>
+                    <textarea id="eng-detalle" rows="2" maxlength="400" placeholder="Cuándo aplicarlo o cómo te ayuda..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></textarea>
+                </div>
+                <p id="eng-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button id="eng-btn-eliminar" type="button" onclick="confirmarEliminarEnergia()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl" title="Mandar a papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
+                    <button type="button" onclick="cerrarModal('modal-energia')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-[#ffb961] hover:bg-[#ffb961]/90 text-[#111115] font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TOKEN GITHUB -->
+    <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="cerrarModal('modal-token-notion')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center">
+                <h3 class="text-headline-md font-headline-md text-white">Configurar token de GitHub</h3>
+                <button type="button" onclick="cerrarModal('modal-token-notion')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <p class="text-[13px] text-[#e2beba] leading-relaxed">
+                Para guardar en Notion sin exponer sus claves, se usa un token de GitHub guardado únicamente en este navegador
+                (<strong>Contents: Read and write</strong> y <strong>Actions: Read-only</strong> sobre este repo).
+            </p>
+            <div>
+                <label for="sal-token-input" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Pegá el token acá</label>
+                <input id="sal-token-input" type="password" autocomplete="off" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+            </div>
+            <button type="button" onclick="guardarTokenSalud()" class="w-full bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl">Guardar token</button>
+        </div>
+    </div>
+
+    <!-- SPINNER CONFIRMACIÓN -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarModal('modal-spinner-notion')" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
+    <script src="./src/utils/salud_logic.js"></script>
+
+    <script>
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        const hoyDate = new Date();
+        let calAnio = hoyDate.getFullYear();
+        let calMes = hoyDate.getMonth();
+
+        function hoyLocalISO() {
+            const d = new Date();
+            const p = (n) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+        }
+
+        function obtenerTokenGuardado() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+
+        function _poblarSelect(id, opciones, incluirVacio, valor) {
+            const el = document.getElementById(id);
+            const html = incluirVacio ? ['<option value="">Sin especificar</option>'] : [];
+            (opciones || []).forEach((op) => {
+                html.push(`<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`);
+            });
+            el.innerHTML = html.join("");
+            if (valor) el.value = valor;
+        }
+
+        function renderizarSesiones() {
+            const met = calcularMetricasSesiones(saludSesiones, hoyLocalISO());
+            const elFreq = document.getElementById("ses-kpi-frecuencia");
+            const elMin = document.getElementById("ses-kpi-minutos");
+            const elCons = document.getElementById("ses-kpi-consistencia");
+            if (elFreq) elFreq.textContent = `${met.sesionesSemana} ${met.sesionesSemana === 1 ? "sesión" : "sesiones"}`;
+            if (elMin) elMin.textContent = `${met.minutosActivos} min`;
+            if (elCons) elCons.textContent = `${met.consistenciaPct}%`;
+
+            const cont = document.getElementById("list-sesiones");
+            cont.innerHTML = saludSesiones.length === 0
+                ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin sesiones registradas</div>`
+                : saludSesiones.slice(0, 8).map((s) => {
+                    const semTxt = s.semana !== null && s.semana !== undefined ? `Sem. ${s.semana}` : null;
+                    const meta = [s.fecha, s.duracion ? `${s.duracion} min` : null, semTxt, s.estado].filter(Boolean).map(escapeHtml).join(" · ");
+                    return `
+                        <div class="status-row flex items-center justify-between px-4 py-3 gap-3">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-white font-semibold truncate">${escapeHtml(s.nombre)}</p>
+                                <p class="text-[12px] text-[#8e8e93] truncate">${meta}</p>
+                            </div>
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                <button type="button" onclick="abrirModalEditarSesion('${escapeHtml(s.id || "")}')" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                                <button type="button" onclick="eliminarItemSalud('${escapeHtml(s.id || "")}')" class="p-1.5 hover:bg-[#ff5f52]/15 rounded-lg text-[#8e8e93] hover:text-[#ff5f52]" title="Mandar a papelera"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                            </div>
+                        </div>
+                    `;
+                }).join("");
+        }
+
+        function _fechaISO(d) {
+            const p = (n) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+        }
+
+        function renderizarCalendarioCiclo() {
+            const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            const mesesCortos = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+            document.getElementById("calendario-mes-titulo").textContent = `${meses[calMes]} ${calAnio}`;
+
+            const primerDia = new Date(calAnio, calMes, 1);
+            const offsetLunes = (primerDia.getDay() + 6) % 7;
+            const diasEnMes = new Date(calAnio, calMes + 1, 0).getDate();
+            const totalCeldas = Math.ceil((offsetLunes + diasEnMes) / 7) * 7;
+            const hoyIso = hoyLocalISO();
+
+            const inicioGrid = new Date(calAnio, calMes, 1 - offsetLunes);
+            const semanas = [];
+            for (let i = 0; i < totalCeldas; i += 7) {
+                const sem = [];
+                for (let j = 0; j < 7; j++) {
+                    const dt = new Date(inicioGrid.getFullYear(), inicioGrid.getMonth(), inicioGrid.getDate() + i + j);
+                    sem.push({ dt, iso: _fechaISO(dt), esMesActual: dt.getMonth() === calMes });
+                }
+                semanas.push(sem);
+            }
+
+            const htmlSemanas = semanas.map((sem) => {
+                const semIni = sem[0].iso;
+                const semFin = sem[6].iso;
+
+                const headerDias = sem.map((cel) => {
+                    const esHoy = cel.iso === hoyIso;
+                    const etiqueta = cel.dt.getDate() === 1 ? `1 ${mesesCortos[cel.dt.getMonth()]}` : `${cel.dt.getDate()}`;
+                    const cls = esHoy
+                        ? "inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-[#ff5f52] text-white font-bold shadow-md shadow-[#ff5f52]/30"
+                        : cel.esMesActual ? "text-[#e5e2e1] font-semibold" : "text-[#8e8e93]/60";
+                    return `<div class="text-right px-1.5 py-1 text-[12px]"><span class="${cls}">${esHoy ? "Hoy · " + etiqueta : etiqueta}</span></div>`;
+                }).join("");
+
+                const barras = (saludCiclo || [])
+                    .filter((f) => f.inicio && (f.fin || f.inicio) >= semIni && f.inicio <= semFin)
+                    .map((f) => {
+                        const fIni = f.inicio < semIni ? semIni : f.inicio;
+                        const fFinReal = f.fin || f.inicio;
+                        const fFin = fFinReal > semFin ? semFin : fFinReal;
+                        const colStart = sem.findIndex((c) => c.iso === fIni) + 1;
+                        const colEnd = sem.findIndex((c) => c.iso === fFin) + 1;
+                        return { f, colStart, span: Math.max(1, colEnd - colStart + 1) };
+                    })
+                    .sort((a, b) => a.colStart - b.colStart)
+                    .map(({ f, colStart, span }) => {
+                        const info = clasificarFasePorNombre(f.nombre);
+                        const clsColor = info ? info.bgClass : "bg-[#1c1c1f] text-white border-[#232326]";
+                        const emojiTxt = info && info.emoji ? `${info.emoji} ` : "";
+                        const diasTxt = f.cantidad_dias !== null && f.cantidad_dias !== undefined ? `${f.cantidad_dias} días` : "";
+                        const proxTxt = f.proximo_inicio ? `Próx: ${f.proximo_inicio}` : "";
+
+                        return `
+                            <div style="grid-column: ${colStart} / span ${span}; grid-row: 1;"
+                                 onclick="abrirModalEditarCiclo('${escapeHtml(f.id || "")}')"
+                                 title="Clic para editar esta fase"
+                                 class="rounded-lg border px-2.5 py-2 text-left cursor-pointer hover:opacity-90 transition-opacity ${clsColor}">
+                                <p class="text-[12px] font-bold truncate">${emojiTxt}${escapeHtml(f.nombre)} ✎</p>
+                                ${diasTxt ? `<p class="text-[11px] opacity-90">${escapeHtml(diasTxt)}</p>` : ""}
+                                ${proxTxt ? `<p class="text-[10px] opacity-75 truncate">${escapeHtml(proxTxt)}</p>` : ""}
+                            </div>
+                        `;
+                    }).join("");
+
+                return `
+                    <div class="border border-[#232326] rounded-xl p-2 bg-[#141416]/60">
+                        <div class="grid grid-cols-7 gap-1.5">${headerDias}</div>
+                        ${barras ? `<div class="grid grid-cols-7 gap-1.5 mt-1.5">${barras}</div>` : `<div class="h-4"></div>`}
+                    </div>
+                `;
+            }).join("");
+
+            document.getElementById("calendario-grid").innerHTML = htmlSemanas;
+        }
+
+        function cambiarMesCalendario(delta) {
+            calMes += delta;
+            if (calMes < 0) { calMes = 11; calAnio -= 1; }
+            if (calMes > 11) { calMes = 0; calAnio += 1; }
+            renderizarCalendarioCiclo();
+        }
+
+        function renderizarCicloResumen() {
+            const hoyIso = hoyLocalISO();
+            const { faseActual, proximoInicio, proximaFase, proximaFaseEmoji } = obtenerResumenCiclo(saludCiclo, hoyIso);
+            const infoActual = clasificarFasePorNombre(faseActual);
+            const emojiActual = infoActual && infoActual.emoji ? `${infoActual.emoji} ` : "";
+            const faseObj = saludCiclo.find((f) => f.nombre === faseActual);
+            const diasTxt = faseObj && faseObj.cantidad_dias !== null && faseObj.cantidad_dias !== undefined
+                ? ` (${faseObj.cantidad_dias} días)`
+                : "";
+            const rangoTxt = faseObj && faseObj.inicio
+                ? ` · ${faseObj.inicio}${faseObj.fin ? " a " + faseObj.fin : ""}`
+                : "";
+            document.getElementById("ciclo-fase-actual").textContent = `${emojiActual}${faseActual}${diasTxt}${rangoTxt}`;
+            const proxLabel = proximaFase
+                ? `${proximaFaseEmoji ? `${proximaFaseEmoji} ` : ""}${proximaFase} · ${proximoInicio || "Sin fecha calculada"}`
+                : (proximoInicio || "Sin fecha calculada");
+            document.getElementById("ciclo-proximo-inicio").textContent = proxLabel;
+            renderizarCalendarioCiclo();
+            renderizarHistorialCiclo();
+        }
+
+        function renderizarHistorialCiclo() {
+            const lista = [...(saludCiclo || [])].sort((a, b) => (b.inicio || "").localeCompare(a.inicio || ""));
+            const freq = {};
+            lista.forEach((f) => (f.sintomas || []).forEach((s) => { freq[s] = (freq[s] || 0) + 1; }));
+            const top = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 8);
+            document.getElementById("ciclo-sintomas-top").innerHTML = top.length === 0
+                ? `<span class="text-xs text-[#8e8e93]">Sin síntomas registrados en tus ciclos todavía.</span>`
+                : top.map(([s, n]) => `<button type="button" onclick="document.getElementById('ciclo-hist-buscador').value='${escapeHtml(s)}';renderizarHistorialCiclo();" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#a855f7]/15 text-[#e5e2e1] border border-[#a855f7]/30 hover:bg-[#a855f7]/25">${escapeHtml(s)} · ${n}</button>`).join("");
+
+            const q = ((document.getElementById("ciclo-hist-buscador") || {}).value || "").trim().toLowerCase();
+            const filtrados = lista.filter((f) => !q || `${f.nombre} ${(f.sintomas || []).join(" ")}`.toLowerCase().includes(q));
+            const cont = document.getElementById("ciclo-historial-list");
+            cont.innerHTML = filtrados.length === 0
+                ? `<div class="status-row flex items-center justify-center py-4 px-4 text-[#8e8e93] text-[13px]">Sin fases coincidentes</div>`
+                : filtrados.map((f) => {
+                    const info = clasificarFasePorNombre(f.nombre);
+                    const emoji = info && info.emoji ? `${info.emoji} ` : "";
+                    const chips = (f.sintomas || []).map((s) => `<span class="px-2 py-0.5 rounded-full text-[10px] bg-white/[0.06] text-[#e5e2e1]">${escapeHtml(s)}</span>`).join("");
+                    return `
+                        <div class="status-row p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div class="min-w-0 space-y-1">
+                                <p class="text-white font-semibold text-[14px]">${emoji}${escapeHtml(f.nombre)} <span class="text-[11px] font-normal text-[#8e8e93]">${escapeHtml(f.inicio || "")}${f.fin ? " a " + escapeHtml(f.fin) : ""}</span></p>
+                                ${chips ? `<div class="flex flex-wrap gap-1">${chips}</div>` : ""}
+                            </div>
+                            <button type="button" onclick="abrirModalEditarCiclo('${escapeHtml(f.id || "")}')" class="self-start sm:self-center p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white flex-shrink-0" title="Editar fase">
+                                <span class="material-symbols-outlined text-[18px]">edit</span>
+                            </button>
+                        </div>
+                    `;
+                }).join("");
+        }
+
+        function renderizarPendientesSalud() {
+            const cont = document.getElementById("list-pendientes-salud");
+            cont.innerHTML = saludPendientes.length === 0
+                ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin pendientes registrados</div>`
+                : saludPendientes.map((p) => {
+                    const tipoBadge = p.tipo
+                        ? `<span class="bg-[#00aaff]/15 text-[#00aaff] border border-[#00aaff]/30 px-2 py-0.5 rounded-full text-[11px] font-semibold flex-shrink-0">${escapeHtml(p.tipo)}</span>`
+                        : "";
+                    const meta = [p.fecha_limite, p.estado].filter(Boolean).map(escapeHtml).join(" · ");
+                    const retrasoHtml = p.con_retraso
+                        ? `<span class="bg-[#ff5f52]/15 text-[#ff5f52] px-2 py-0.5 rounded-full text-[11px] font-bold flex-shrink-0">Con retraso</span>`
+                        : "";
+                    return `
+                        <div class="status-row flex items-center justify-between px-4 py-3 gap-3">
+                            <span class="text-white font-semibold truncate min-w-0 flex-1">${escapeHtml(p.nombre)}</span>
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                ${tipoBadge}
+                                ${retrasoHtml}
+                                <span class="text-[12px] text-[#8e8e93] hidden sm:inline">${meta}</span>
+                                <button type="button" onclick="abrirModalEditarPendiente('${escapeHtml(p.id || "")}')" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                                <button type="button" onclick="eliminarItemSalud('${escapeHtml(p.id || "")}')" class="p-1.5 hover:bg-[#ff5f52]/15 rounded-lg text-[#8e8e93] hover:text-[#ff5f52]" title="Mandar a papelera"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                            </div>
+                        </div>
+                    `;
+                }).join("");
+        }
+
+        function renderizarMenteSalud() {
+            const m = calcularResumenMenteSalud(saludMenteRegistros);
+            document.getElementById("mente-barometro-badge").textContent = m.barometroActual;
+            document.getElementById("mente-calma-valor").textContent = m.calmaPromedio !== null ? `${m.calmaPromedio} / 10` : "Sin datos";
+            document.getElementById("mente-calma-desc").textContent = m.totalRegistros > 0
+                ? `Basado en ${m.totalRegistros} registro(s) recientes en Notion.`
+                : "Registra tu estado en Gestión emocional para ver tu promedio.";
+            document.getElementById("mente-stop-valor").textContent = `${m.pausasStop} ${m.pausasStop === 1 ? "pausa" : "pausas"}`;
+            document.getElementById("mente-reflexion-texto").textContent = m.ultimaReflexion
+                ? `“${m.ultimaReflexion}”`
+                : "Sin reflexiones registradas aún en Gestión emocional.";
+        }
+
+        function renderizarEnergiaSalud() {
+            const e = calcularEnergiaDesdeCiclo(saludCiclo, saludMenteRegistros, hoyLocalISO());
+            document.getElementById("energia-fase-badge").textContent = e.faseNombre !== "Sin registros" ? e.faseNombre : "Sin ciclo activo";
+            document.getElementById("energia-fuente-badge").textContent = e.fuentePuntaje;
+            document.getElementById("energia-puntaje-valor").textContent = `${e.puntaje} / 10`;
+            document.getElementById("energia-etiqueta").textContent = e.etiqueta;
+            document.getElementById("energia-desc").textContent = e.descripcion;
+
+            const customCurvas = (saludEnergiaRegistros || []).filter((x) => (x.tipo || "").includes("Curva"));
+            const customFactores = (saludEnergiaRegistros || []).filter((x) => !(x.tipo || "").includes("Curva"));
+
+            document.getElementById("energia-curva-list").innerHTML = customCurvas.length > 0
+                ? customCurvas.map((c) => {
+                    const pct = Math.min(100, Math.max(0, Number(c.porcentaje) || 50));
+                    return `
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between items-center text-[12px] gap-2">
+                                <span class="text-[#a1a1aa] truncate">${escapeHtml(c.nombre)}</span>
+                                <div class="flex items-center gap-1.5 flex-shrink-0">
+                                    <span class="font-bold text-white">${pct}%</span>
+                                    <button type="button" onclick="abrirModalEditarEnergia('${escapeHtml(c.id || "")}')" class="p-0.5 hover:bg-white/10 rounded text-[#8e8e93] hover:text-white"><span class="material-symbols-outlined text-[14px]">edit</span></button>
+                                </div>
+                            </div>
+                            <div class="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                                <div class="h-full rounded-full bg-gradient-to-r from-[#38bdf8] to-[#ffb961]" style="width: ${pct}%"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join("")
+                : e.curva.map((c) => `
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-[12px]">
+                            <span class="text-[#a1a1aa]">${escapeHtml(c.franja)}</span>
+                            <span class="font-bold text-white">${escapeHtml(c.nivel)} ${c.pct}%</span>
+                        </div>
+                        <div class="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                            <div class="h-full rounded-full bg-gradient-to-r from-[#38bdf8] to-[#ffb961]" style="width: ${c.pct}%"></div>
+                        </div>
+                    </div>
+                `).join("");
+
+            document.getElementById("energia-factores-list").innerHTML = customFactores.length > 0
+                ? customFactores.map((f) => `
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-start gap-2.5 min-w-0">
+                            <span class="material-symbols-outlined text-[18px] text-[#83da85] mt-0.5">bolt</span>
+                            <div class="min-w-0">
+                                <p class="text-[13px] font-semibold text-white truncate">${escapeHtml(f.nombre)}</p>
+                                ${f.detalle ? `<p class="text-[12px] text-[#8e8e93]">${escapeHtml(f.detalle)}</p>` : ""}
+                            </div>
+                        </div>
+                        <button type="button" onclick="abrirModalEditarEnergia('${escapeHtml(f.id || "")}')" class="p-1 hover:bg-white/10 rounded text-[#8e8e93] hover:text-white flex-shrink-0"><span class="material-symbols-outlined text-[15px]">edit</span></button>
+                    </div>
+                `).join("")
+                : e.factores.map((f) => `
+                    <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-[18px] text-[#83da85] mt-0.5">${escapeHtml(f.icono)}</span>
+                        <div class="min-w-0">
+                            <p class="text-[13px] font-semibold text-white">${escapeHtml(f.titulo)}</p>
+                            <p class="text-[12px] text-[#8e8e93]">${escapeHtml(f.detalle)}</p>
+                        </div>
+                    </div>
+                `).join("");
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initLocalStorage();
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
+            renderizarSesiones();
+            renderizarCicloResumen();
+            renderizarPendientesSalud();
+            renderizarMenteSalud();
+            renderizarEnergiaSalud();
+        });
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+            sidebar.classList.toggle('-translate-x-full', isOpen);
+            overlay.classList.toggle('hidden', isOpen);
+        }
+
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            });
+        }
+
+        function abrirModal(id) {
+            document.getElementById(id).classList.remove("hidden");
+            document.getElementById(id).classList.add("flex");
+        }
+        function cerrarModal(id) {
+            document.getElementById(id).classList.add("hidden");
+            document.getElementById(id).classList.remove("flex");
+        }
+
+        function abrirModalSesion() {
+            document.getElementById("form-sesion").reset();
+            document.getElementById("ses-page-id").value = "";
+            document.getElementById("ses-modal-titulo").textContent = "Registrar sesión";
+            document.getElementById("ses-fecha").value = hoyLocalISO();
+            _poblarSelect("ses-estado", saludOpciones.estados_sesion, false, "Hecha");
+            document.getElementById("ses-mensaje").classList.add("hidden");
+            abrirModal("modal-sesion");
+        }
+
+        function abrirModalEditarSesion(id) {
+            const s = (saludSesiones || []).find((x) => x.id === id);
+            if (!s) return;
+            document.getElementById("form-sesion").reset();
+            document.getElementById("ses-page-id").value = s.id;
+            document.getElementById("ses-modal-titulo").textContent = "Editar sesión";
+            document.getElementById("ses-nombre").value = s.nombre || "";
+            document.getElementById("ses-fecha").value = s.fecha || "";
+            document.getElementById("ses-duracion").value = s.duracion !== null && s.duracion !== undefined ? s.duracion : "";
+            _poblarSelect("ses-estado", saludOpciones.estados_sesion, false, s.estado || "Hecha");
+            document.getElementById("ses-mensaje").classList.add("hidden");
+            abrirModal("modal-sesion");
+        }
+
+        function _poblarCheckboxesSintomas(seleccionados) {
+            const setSel = new Set(seleccionados || []);
+            const base = Array.isArray(saludOpciones.sintomas) ? [...saludOpciones.sintomas] : [];
+            setSel.forEach((s) => {
+                if (s && !base.some((x) => x.toLowerCase() === s.toLowerCase())) {
+                    base.push(s);
+                }
+            });
+            saludOpciones.sintomas = base;
+            const contSintomas = document.getElementById("cic-sintomas-list");
+            contSintomas.innerHTML = base.map((s) => `
+                <label class="flex items-center gap-2 text-[13px] text-[#e5e2e1] cursor-pointer px-1.5 py-1 rounded hover:bg-white/5">
+                    <input type="checkbox" name="cic-sintoma" value="${escapeHtml(s)}"${setSel.has(s) ? " checked" : ""} class="accent-[#ff5f52] rounded" />
+                    <span class="truncate">${escapeHtml(s)}</span>
+                </label>
+            `).join("");
+        }
+
+        function agregarNuevoSintomaCiclo() {
+            const inp = document.getElementById("cic-nuevo-sintoma");
+            const val = (inp.value || "").trim();
+            if (!val) return;
+            const marcados = [...document.querySelectorAll('input[name="cic-sintoma"]:checked')].map((el) => el.value);
+            const existente = (saludOpciones.sintomas || []).find((x) => x.toLowerCase() === val.toLowerCase());
+            if (existente) {
+                if (!marcados.includes(existente)) marcados.push(existente);
+            } else {
+                saludOpciones.sintomas = [...(saludOpciones.sintomas || []), val];
+                marcados.push(val);
+            }
+            inp.value = "";
+            _poblarCheckboxesSintomas(marcados);
+            if (typeof mostrarToast === "function") {
+                mostrarToast(`Síntoma "${existente || val}" listo para guardar en Notion`, "success");
+            }
+        }
+
+        function abrirModalCiclo(fase) {
+            const hoy = hoyLocalISO();
+            document.getElementById("form-ciclo").reset();
+            document.getElementById("cic-page-id").value = "";
+            document.getElementById("cic-fase").value = fase;
+            document.getElementById("cic-modal-titulo").textContent = `Registrar ${fase}`;
+            document.getElementById("cic-nombre").value = `[${hoy.slice(5, 7)}]-${fase}`;
+            document.getElementById("cic-inicio").value = hoy;
+            document.getElementById("cic-inicio-real").value = hoy;
+            document.getElementById("cic-btn-eliminar").classList.add("hidden");
+            _poblarCheckboxesSintomas([]);
+            document.getElementById("cic-mensaje").classList.add("hidden");
+            abrirModal("modal-ciclo");
+        }
+
+        function abrirModalEditarCiclo(faseId) {
+            const f = (saludCiclo || []).find((x) => x.id === faseId);
+            if (!f || !f.id) return;
+            document.getElementById("form-ciclo").reset();
+            document.getElementById("cic-page-id").value = f.id;
+            document.getElementById("cic-fase").value = f.nombre || "";
+            document.getElementById("cic-modal-titulo").textContent = "Editar etapa del ciclo";
+            document.getElementById("cic-nombre").value = f.nombre || "";
+            document.getElementById("cic-inicio").value = f.inicio || "";
+            document.getElementById("cic-fin").value = f.fin || "";
+            document.getElementById("cic-inicio-real").value = f.inicio_real || f.inicio || "";
+            document.getElementById("cic-fin-real").value = f.fin_real || "";
+            document.getElementById("cic-btn-eliminar").classList.remove("hidden");
+            _poblarCheckboxesSintomas(f.sintomas || []);
+            document.getElementById("cic-mensaje").classList.add("hidden");
+            abrirModal("modal-ciclo");
+        }
+
+        let _papeleraCicloId = null;
+        function confirmarEliminarCicloDesdeModal() {
+            const pageId = document.getElementById("cic-page-id").value.trim();
+            const nombre = document.getElementById("cic-nombre").value.trim() || "esta fase";
+            if (!pageId) return;
+            _papeleraCicloId = pageId;
+            document.getElementById("papelera-texto").textContent = `¿Deseas mandar "${nombre}" a la papelera de Notion?`;
+            abrirModal("modal-confirmar-papelera");
+        }
+
+        let _undoSaludTimer = null;
+        let _undoSaludPendienteId = null;
+
+        async function ejecutarEnvioPapelera() {
+            if (!_papeleraCicloId) return;
+            const id = _papeleraCicloId;
+            _papeleraCicloId = null;
+            cerrarModal("modal-confirmar-papelera");
+            cerrarModal("modal-ciclo");
+
+            if (_undoSaludTimer) clearTimeout(_undoSaludTimer);
+            _undoSaludPendienteId = id;
+            const toast = document.getElementById("salud-undo-toast");
+            const txt = document.getElementById("salud-undo-texto");
+            let seg = 5;
+            if (txt) txt.textContent = `Archivando en ${seg}s…`;
+            if (toast) toast.classList.remove("hidden");
+
+            const tick = () => {
+                seg -= 1;
+                if (!_undoSaludPendienteId) return;
+                if (seg <= 0) {
+                    const targetId = _undoSaludPendienteId;
+                    _undoSaludPendienteId = null;
+                    if (toast) toast.classList.add("hidden");
+                    ejecutarEscrituraConSpinner("archivar_pagina", { page_id: targetId });
+                    return;
+                }
+                if (txt) txt.textContent = `Archivando en ${seg}s…`;
+                _undoSaludTimer = setTimeout(tick, 1000);
+            };
+            _undoSaludTimer = setTimeout(tick, 1000);
+        }
+
+        function deshacerArchivadoSalud() {
+            if (_undoSaludTimer) { clearTimeout(_undoSaludTimer); _undoSaludTimer = null; }
+            _undoSaludPendienteId = null;
+            const toast = document.getElementById("salud-undo-toast");
+            if (toast) toast.classList.add("hidden");
+        }
+
+        function abrirSubmodalMedSalud() {
+            document.getElementById("sal-med-nombre").value = "";
+            document.getElementById("sal-med-dosis").value = "";
+            abrirModal("modal-salud-med-vuelo");
+            setTimeout(() => document.getElementById("sal-med-nombre").focus(), 30);
+        }
+
+        function cerrarSubmodalMedSalud() {
+            cerrarModal("modal-salud-med-vuelo");
+        }
+
+        function guardarSubmodalMedSalud(event) {
+            event.preventDefault();
+            const nombre = document.getElementById("sal-med-nombre").value.trim();
+            const dosis = document.getElementById("sal-med-dosis").value.trim();
+            if (!nombre) return false;
+            const etiqueta = dosis ? `💊 ${nombre} (${dosis})` : `💊 ${nombre}`;
+            if (!saludOpciones.sintomas.includes(etiqueta)) {
+                saludOpciones.sintomas.unshift(etiqueta);
+            }
+            try {
+                const meds = JSON.parse(localStorage.getItem("asistente_sabry:salud_meds_v1") || "[]");
+                if (Array.isArray(meds) && !meds.includes(etiqueta)) {
+                    meds.unshift(etiqueta);
+                    localStorage.setItem("asistente_sabry:salud_meds_v1", JSON.stringify(meds));
+                }
+            } catch (e) {}
+            const actuales = [...document.querySelectorAll('input[name="cic-sintoma"]:checked')].map((el) => el.value);
+            actuales.push(etiqueta);
+            _poblarCheckboxesSintomas(actuales);
+            cerrarSubmodalMedSalud();
+            return false;
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z" && _undoSaludPendienteId) {
+                e.preventDefault();
+                deshacerArchivadoSalud();
+            }
+        });
+
+        function abrirModalPendiente() {
+            document.getElementById("form-pendiente").reset();
+            document.getElementById("pen-page-id").value = "";
+            document.getElementById("pen-modal-titulo").textContent = "Registrar pendiente";
+            _poblarSelect("pen-tipo", saludOpciones.tipos_pendiente, true, "");
+            _poblarSelect("pen-estado", saludOpciones.estados_pendiente, false, "Pendiente");
+            document.getElementById("pen-mensaje").classList.add("hidden");
+            abrirModal("modal-pendiente");
+        }
+
+        function abrirModalEditarPendiente(id) {
+            const p = (saludPendientes || []).find((x) => x.id === id);
+            if (!p) return;
+            document.getElementById("form-pendiente").reset();
+            document.getElementById("pen-page-id").value = p.id;
+            document.getElementById("pen-modal-titulo").textContent = "Editar pendiente";
+            document.getElementById("pen-nombre").value = p.nombre || "";
+            _poblarSelect("pen-tipo", saludOpciones.tipos_pendiente, true, p.tipo || "");
+            _poblarSelect("pen-estado", saludOpciones.estados_pendiente, false, p.estado || "Pendiente");
+            document.getElementById("pen-fecha").value = p.fecha_limite || "";
+            document.getElementById("pen-mensaje").classList.add("hidden");
+            abrirModal("modal-pendiente");
+        }
+
+        function eliminarItemSalud(pageId) {
+            if (!pageId) return;
+            _papeleraCicloId = pageId;
+            document.getElementById("papelera-texto").textContent = "¿Deseas mandar este registro a la papelera de Notion?";
+            abrirModal("modal-confirmar-papelera");
+        }
+
+        function guardarTokenSalud() {
+            const token = document.getElementById("sal-token-input").value.trim();
+            if (!token) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, token); } catch (e) {}
+            document.getElementById("sal-token-input").value = "";
+            cerrarModal("modal-token-notion");
+        }
+
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            abrirModal("modal-spinner-notion");
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+
+        async function ejecutarEscrituraConSpinner(accion, datos) {
+            const token = obtenerTokenGuardado();
+            if (!token) {
+                abrirModal("modal-token-notion");
+                return;
+            }
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, datos, token);
+                const respuesta = await fetch(url, options);
+                if (respuesta.status === 401 || respuesta.status === 404) {
+                    cerrarModal("modal-spinner-notion");
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModal("modal-token-notion");
+                    return;
+                }
+                if (respuesta.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${respuesta.status}). Probá de nuevo.`);
+                    return;
+                }
+                const confirmacion = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER,
+                    repo: GITHUB_REPO,
+                    token,
+                    workflowFile: WORKFLOW_NOTION_WRITE,
+                    dispatchedAfterMs,
+                });
+                if (confirmacion.ok) {
+                    mostrarSpinnerNotion("ok", "¡Notion actualizado!", "Recargando Salud...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", confirmacion.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub. Revisá tu conexión.");
+            }
+        }
+
+        async function manejarSubmitSesion(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("ses-page-id").value.trim();
+            const res = construirPayloadSesion({
+                pageId,
+                nombre: document.getElementById("ses-nombre").value,
+                fecha: document.getElementById("ses-fecha").value,
+                duracion: document.getElementById("ses-duracion").value,
+                estado: document.getElementById("ses-estado").value,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("ses-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
+            cerrarModal("modal-sesion");
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_sesion_salud" : "crear_sesion_salud", res.payload);
+            return false;
+        }
+
+        async function manejarSubmitCiclo(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("cic-page-id").value.trim();
+            const sintomas = [...document.querySelectorAll('input[name="cic-sintoma"]:checked')].map((el) => el.value);
+            const res = construirPayloadCiclo({
+                pageId,
+                fase: document.getElementById("cic-fase").value,
+                nombre: document.getElementById("cic-nombre").value,
+                inicio: document.getElementById("cic-inicio").value,
+                fin: document.getElementById("cic-fin").value,
+                inicioReal: document.getElementById("cic-inicio-real").value,
+                finReal: document.getElementById("cic-fin-real").value,
+                sintomas,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("cic-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
+            cerrarModal("modal-ciclo");
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_fase_ciclo" : "crear_fase_ciclo", res.payload);
+            return false;
+        }
+
+        async function manejarSubmitPendiente(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("pen-page-id").value.trim();
+            const res = construirPayloadPendienteSalud({
+                pageId,
+                nombre: document.getElementById("pen-nombre").value,
+                tipo: document.getElementById("pen-tipo").value,
+                fechaLimite: document.getElementById("pen-fecha").value,
+                estado: document.getElementById("pen-estado").value,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("pen-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
+            cerrarModal("modal-pendiente");
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_pendiente_salud" : "crear_pendiente_salud", res.payload);
+            return false;
+        }
+
+        function _obtenerFaseActualEnergiaOption() {
+            const e = calcularEnergiaDesdeCiclo(saludCiclo, saludMenteRegistros, hoyLocalISO());
+            const nombre = (e && e.faseNombre) || "";
+            if (nombre.includes("Menstrual")) return "❄️ Menstrual";
+            if (nombre.includes("Folicular")) return "🌸 Folicular";
+            if (nombre.includes("Ovulatoria")) return "☀️ Ovulatoria";
+            if (nombre.includes("Lútea")) return "🍂 Lútea";
+            return "Todas";
+        }
+
+        function actualizarSliderEnergia(val) {
+            const num = Math.min(100, Math.max(0, Number(val) || 0));
+            document.getElementById("eng-porcentaje-slider").value = String(num);
+            document.getElementById("eng-porcentaje").value = String(num);
+            document.getElementById("eng-porcentaje-valor").textContent = `${num}%`;
+            const est = document.getElementById("eng-porcentaje-estado");
+            if (est) {
+                est.textContent = num <= 30 ? "VALLE" : num <= 60 ? "MODERADA" : num <= 85 ? "ÓPTIMA" : "PICO";
+            }
+        }
+
+        function seleccionarTipoEnergia(tipo) {
+            const esCurva = (tipo || "").includes("Curva");
+            document.getElementById("eng-tipo").value = esCurva ? "📈 Curva Circadiana" : "⚡ Factor de Recarga";
+
+            const cardCurva = document.getElementById("eng-card-curva");
+            const cardFactor = document.getElementById("eng-card-factor");
+            if (cardCurva && cardFactor) {
+                cardCurva.className = esCurva
+                    ? "text-left p-3.5 rounded-xl bg-[#1c1c1f] border-2 border-[#38bdf8] transition-all"
+                    : "text-left p-3.5 rounded-xl bg-[#1c1c1f] border border-[#232326] hover:border-[#38bdf8]/50 transition-all opacity-75";
+                cardFactor.className = !esCurva
+                    ? "text-left p-3.5 rounded-xl bg-[#1c1c1f] border-2 border-[#53a759] transition-all"
+                    : "text-left p-3.5 rounded-xl bg-[#1c1c1f] border border-[#232326] hover:border-[#53a759]/50 transition-all opacity-75";
+            }
+
+            document.getElementById("eng-nombre-label").textContent = esCurva ? "Franja horaria *" : "Hábito o acción *";
+            document.getElementById("eng-nombre").placeholder = esCurva ? "Ej. Mañana (07-13)" : "Ej. Hidratación tibia";
+            document.getElementById("eng-grupo-curva").classList.toggle("hidden", !esCurva);
+            document.getElementById("eng-chips-factor").classList.toggle("hidden", esCurva);
+            document.getElementById("eng-grupo-detalle").classList.toggle("hidden", esCurva);
+            if (!esCurva) {
+                document.getElementById("eng-porcentaje").value = "";
+            } else if (document.getElementById("eng-porcentaje").value === "") {
+                actualizarSliderEnergia(25);
+            }
+        }
+
+        function aplicarChipFactor(texto) {
+            const input = document.getElementById("eng-nombre");
+            input.value = texto;
+            verificarDuplicadoEnergiaLive();
+            input.focus();
+        }
+
+        function verificarDuplicadoEnergiaLive() {
+            const aviso = document.getElementById("eng-duplicado-aviso");
+            const txt = document.getElementById("eng-duplicado-texto");
+            const btn = document.getElementById("eng-duplicado-btn");
+            if (!aviso || !txt || !btn) return { duplicado: false };
+            const dup = detectarDuplicadoEnergia(saludEnergiaRegistros, {
+                nombre: document.getElementById("eng-nombre").value,
+                fase: document.getElementById("eng-fase").value,
+                pageId: document.getElementById("eng-page-id").value,
+            });
+            if (!dup.duplicado) {
+                aviso.classList.add("hidden");
+                return dup;
+            }
+            txt.textContent = `Ya existe un registro con ese nombre en esta fase. Agregá "registro numero ${dup.siguienteNumero}" en el título para diferenciarlo.`;
+            btn.onclick = () => {
+                document.getElementById("eng-nombre").value = dup.sugerencia;
+                aviso.classList.add("hidden");
+            };
+            aviso.classList.remove("hidden");
+            return dup;
+        }
+
+        function abrirModalEnergia(tipoPreseleccionado) {
+            document.getElementById("form-energia").reset();
+            document.getElementById("eng-page-id").value = "";
+            document.getElementById("eng-modal-titulo").textContent = "Registrar en Energía";
+            document.getElementById("eng-btn-eliminar").classList.add("hidden");
+            document.getElementById("eng-mensaje").classList.add("hidden");
+            document.getElementById("eng-duplicado-aviso").classList.add("hidden");
+            document.getElementById("eng-fase").value = _obtenerFaseActualEnergiaOption();
+            actualizarSliderEnergia(25);
+            seleccionarTipoEnergia(tipoPreseleccionado || "📈 Curva Circadiana");
+            abrirModal("modal-energia");
+        }
+
+        function abrirModalEditarEnergia(id) {
+            const x = (saludEnergiaRegistros || []).find((r) => r.id === id);
+            if (!x) return;
+            const tipo = x.tipo || "⚡ Factor de Recarga";
+            abrirModalEnergia(tipo);
+            document.getElementById("eng-page-id").value = x.id;
+            document.getElementById("eng-modal-titulo").textContent = "Editar registro de Energía";
+            document.getElementById("eng-nombre").value = x.nombre || "";
+            document.getElementById("eng-fase").value = x.fase || _obtenerFaseActualEnergiaOption();
+            if (tipo.includes("Curva")) {
+                actualizarSliderEnergia(x.porcentaje !== null && x.porcentaje !== undefined ? x.porcentaje : 25);
+            }
+            document.getElementById("eng-detalle").value = x.detalle || "";
+            document.getElementById("eng-btn-eliminar").classList.remove("hidden");
+        }
+
+        async function manejarSubmitEnergia(event) {
+            event.preventDefault();
+            const dup = verificarDuplicadoEnergiaLive();
+            if (dup.duplicado) {
+                const msg = document.getElementById("eng-mensaje");
+                msg.textContent = `Registro duplicado: agregá "registro numero ${dup.siguienteNumero}" en el título antes de guardar.`;
+                msg.className = "text-[13px] text-[#ffb961]";
+                return false;
+            }
+            const pageId = document.getElementById("eng-page-id").value.trim();
+            const tipo = document.getElementById("eng-tipo").value;
+            const esCurva = tipo.includes("Curva");
+            const res = construirPayloadEnergiaSalud({
+                pageId,
+                nombre: document.getElementById("eng-nombre").value,
+                tipo,
+                fase: document.getElementById("eng-fase").value,
+                porcentaje: esCurva ? document.getElementById("eng-porcentaje").value : "",
+                detalle: esCurva ? "" : document.getElementById("eng-detalle").value,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("eng-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
+            cerrarModal("modal-energia");
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_energia_salud" : "crear_energia_salud", res.payload);
+            return false;
+        }
+
+        function confirmarEliminarEnergia() {
+            const pageId = document.getElementById("eng-page-id").value.trim();
+            if (!pageId) return;
+            cerrarModal("modal-energia");
+            eliminarItemSalud(pageId);
+        }
+
+        let _vistaHistComparativa = false;
+        function toggleVistaHistorialCiclo() {
+            _vistaHistComparativa = !_vistaHistComparativa;
+            const btn = document.getElementById("btn-vista-hist-ciclo");
+            if (btn) btn.textContent = _vistaHistComparativa ? "Vista: Comparativa por Fases" : "Vista: Línea de Tiempo";
+            const list = document.getElementById("ciclo-historial-list");
+            if (_vistaHistComparativa && list && Array.isArray(saludCiclo)) {
+                const grupos = {};
+                saludCiclo.forEach((f) => {
+                    const k = f.nombre || "Sin fase";
+                    if (!grupos[k]) grupos[k] = [];
+                    (f.sintomas || []).forEach((s) => grupos[k].push(s));
+                });
+                const entries = Object.entries(grupos);
+                list.innerHTML = entries.length === 0
+                    ? `<p class="text-[13px] text-[#8e8e93] text-center py-4">Sin datos suficientes para comparar fases.</p>`
+                    : entries.map(([fase, sints]) => `
+                        <div class="status-row p-3.5 space-y-1.5">
+                            <p class="text-[13px] font-bold text-white">${escapeHtml(fase)}</p>
+                            <p class="text-[12px] text-[#a1a1aa]">${sints.length > 0 ? escapeHtml([...new Set(sints)].join(" · ")) : "Sin síntomas registrados"}</p>
+                        </div>`).join("");
+                return;
+            }
+            if (typeof renderizarHistorialCiclo === "function") renderizarHistorialCiclo();
+        }
+
+        // =================================================== //
+        // SUGERENCIAS DE BIENESTAR MINI-ABM (STITCH)          //
+        // =================================================== //
+        const SALUD_SUGERENCIAS_KEY = "asistente_sabry:salud_sugerencias_v1";
+        const SALUD_SUGERENCIAS_DEFAULT = [
+            { id: "sug-1", texto: "Calor local y descanso activo", categoria: "Somático" },
+            { id: "sug-2", texto: "Hidratación tibia e infusión de jengibre", categoria: "Nutrición" },
+        ];
+
+        function _leerSugerenciasSalud() {
+            try {
+                const raw = localStorage.getItem(SALUD_SUGERENCIAS_KEY);
+                if (!raw) return JSON.parse(JSON.stringify(SALUD_SUGERENCIAS_DEFAULT));
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : JSON.parse(JSON.stringify(SALUD_SUGERENCIAS_DEFAULT));
+            } catch (e) {
+                return JSON.parse(JSON.stringify(SALUD_SUGERENCIAS_DEFAULT));
+            }
+        }
+
+        function _guardarSugerenciasSalud(lista) {
+            try { localStorage.setItem(SALUD_SUGERENCIAS_KEY, JSON.stringify(lista)); } catch (e) {}
+        }
+
+        function renderizarSugerenciasSalud() {
+            const cont = document.getElementById("salud-sugerencias-list");
+            if (!cont) return;
+            const lista = _leerSugerenciasSalud();
+            if (lista.length === 0) {
+                cont.innerHTML = `<p class="sm:col-span-2 text-xs text-[#8e8e93] italic">Sin sugerencias cargadas. Tocá + Añadir para sumar un cuidado.</p>`;
+                return;
+            }
+            cont.innerHTML = lista.map((s, idx) => `
+                <div class="flex items-center justify-between gap-2 rounded-xl bg-[#18181d] border border-white/[0.08] px-3.5 py-2.5">
+                    <div class="min-w-0 flex-1 space-y-0.5">
+                        <span class="inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#53a759]/15 text-[#83da85]">${escapeHtml(s.categoria || "Somático")}</span>
+                        <p class="text-[13px] font-medium text-white truncate">${escapeHtml(s.texto || "")}</p>
+                    </div>
+                    <div class="flex items-center gap-1 flex-shrink-0">
+                        <button type="button" onclick="abrirModalSugerenciaSalud(${idx})" class="p-1 text-[#8e8e93] hover:text-white rounded" title="Editar"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+                        <button type="button" onclick="eliminarSugerenciaSalud(${idx})" class="p-1 text-[#8e8e93] hover:text-[#ff5f52] rounded" title="Eliminar"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function abrirModalSugerenciaSalud(idx = null) {
+            let m = document.getElementById("modal-sugerencia-salud");
+            if (!m) {
+                m = document.createElement("div");
+                m.id = "modal-sugerencia-salud";
+                m.className = "fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-md p-4";
+                m.onclick = () => cerrarModalSugerenciaSalud();
+                m.innerHTML = `
+                    <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4 border border-white/[0.12]" onclick="event.stopPropagation()">
+                        <div class="flex items-center justify-between">
+                            <h3 id="sug-modal-titulo" class="text-lg font-headline-md font-bold text-white">Sugerencia de Bienestar</h3>
+                            <button type="button" onclick="cerrarModalSugerenciaSalud()" class="p-1 text-[#8e8e93] hover:text-white"><span class="material-symbols-outlined text-[20px]">close</span></button>
+                        </div>
+                        <input id="sug-edit-idx" type="hidden" value="" />
+                        <div class="space-y-3">
+                            <div>
+                                <label for="sug-texto" class="block text-xs font-semibold text-[#8e8e93] mb-1">Cuidado / protocolo *</label>
+                                <input id="sug-texto" type="text" maxlength="100" placeholder="Ej. Calor local y descanso activo" class="w-full bg-[#18181d] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white" />
+                            </div>
+                            <div>
+                                <label for="sug-categoria" class="block text-xs font-semibold text-[#8e8e93] mb-1">Categoría</label>
+                                <select id="sug-categoria" class="w-full bg-[#18181d] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white">
+                                    <option value="Somático">Somático</option>
+                                    <option value="Nutrición">Nutrición</option>
+                                    <option value="Descanso">Descanso</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 pt-2">
+                            <button type="button" onclick="cerrarModalSugerenciaSalud()" class="flex-1 py-2.5 rounded-xl bg-[#1c1c1f] text-white text-xs font-bold">Cancelar</button>
+                            <button type="button" onclick="guardarSugerenciaSalud()" class="flex-1 py-2.5 rounded-xl bg-[#83da85] text-[#00390e] text-xs font-extrabold">Guardar</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(m);
+            }
+            const lista = _leerSugerenciasSalud();
+            const item = idx !== null && lista[idx] ? lista[idx] : null;
+            document.getElementById("sug-modal-titulo").textContent = item ? "Editar sugerencia" : "Nueva sugerencia";
+            document.getElementById("sug-edit-idx").value = item ? String(idx) : "";
+            document.getElementById("sug-texto").value = item ? item.texto : "";
+            document.getElementById("sug-categoria").value = item ? item.categoria : "Somático";
+            m.classList.remove("hidden");
+            m.classList.add("flex");
+        }
+
+        function cerrarModalSugerenciaSalud() {
+            const m = document.getElementById("modal-sugerencia-salud");
+            if (!m) return;
+            m.classList.add("hidden");
+            m.classList.remove("flex");
+        }
+
+        function guardarSugerenciaSalud() {
+            const texto = (document.getElementById("sug-texto").value || "").trim();
+            if (!texto) return;
+            const categoria = document.getElementById("sug-categoria").value || "Somático";
+            const idxStr = document.getElementById("sug-edit-idx").value;
+            const lista = _leerSugerenciasSalud();
+            if (idxStr !== "" && lista[Number(idxStr)]) {
+                lista[Number(idxStr)] = { ...lista[Number(idxStr)], texto, categoria };
+            } else {
+                lista.push({ id: `sug-${Date.now()}`, texto, categoria });
+            }
+            _guardarSugerenciasSalud(lista);
+            cerrarModalSugerenciaSalud();
+            renderizarSugerenciasSalud();
+        }
+
+        function eliminarSugerenciaSalud(idx) {
+            const lista = _leerSugerenciasSalud();
+            lista.splice(idx, 1);
+            _guardarSugerenciasSalud(lista);
+            renderizarSugerenciasSalud();
+        }
+
+        document.addEventListener("DOMContentLoaded", renderizarSugerenciasSalud);
+    </script>
+    <script src="./src/utils/somatic_shell.js"></script>
+</body>
+</html>

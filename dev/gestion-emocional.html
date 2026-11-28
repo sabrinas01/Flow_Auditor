@@ -1,0 +1,936 @@
+﻿<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#08080a">
+    <title>Gestión emocional — AsistenteSabry</title>
+    <link rel="icon" type="image/png" href="./grafica/logo 1-1 NF.png">
+    <link rel="apple-touch-icon" href="./grafica/icons/apple-touch-icon.png">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #08080a;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+        .status-row {
+            background: #18181d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .status-row:hover { background: #1f1f26; border-color: rgba(255, 255, 255, 0.12); }
+        #sidebar { transition: transform 0.3s ease; }
+        .spin-animation { animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+
+    <script>
+        const timestampLocalStr = "28/11/2026 00:53:04";
+        const appVersionStr = "v4.95";
+        const timestampNextStr = "28/11/2026 01:53:04";
+        const timestampServerStr = "28/11/2026 03:53:04";
+        const gestionEmocionalRegistros = [{"id": "425a38bb-7a6e-81bd-a23c-f38846aa7eae", "nombre": "Tarde", "fecha": "2026-11-27", "barometro": "😠 Frustrada", "emocion_id": "3c7a38bb-7a6e-80ad-8f6b-e41df7fa7351", "emocion_nombre": "Verguenza", "calma": 7, "energia": 5, "disparador": "Procrastinar con las tareas de sabri studios, estoy muy metida en mi asistente", "reflexion": "", "stop": false}, {"id": "425a38bb-7a6e-817f-bb3a-eed38743c3bd", "nombre": "Madrugada antes de dormir", "fecha": "2026-11-27", "barometro": "😌 En calma", "emocion_id": null, "emocion_nombre": null, "calma": 7, "energia": 5, "disparador": "Avanzar con mí asistente y ajustar procesos de Sabri studios", "reflexion": "Es importante ordenar cuando la cabeza se dispersa", "stop": false}, {"id": "423a38bb-7a6e-811d-886b-eea01afdac77", "nombre": "Pre almuezo", "fecha": "2026-11-25", "barometro": "😌 En calma", "emocion_id": null, "emocion_nombre": null, "calma": 8, "energia": 6, "disparador": "Conversar con Flor de situaciones de emprendedoras", "reflexion": "", "stop": false}, {"id": "423a38bb-7a6e-812a-ac88-d0c997a92dc2", "nombre": "Antes de dormir", "fecha": "2026-11-25", "barometro": "🤗Feliz", "emocion_id": "334a38bb-7a6e-8087-99ae-e90f4e8333e1", "emocion_nombre": "Agradecimiento", "calma": 8, "energia": 6, "disparador": "Haber hecholas mejoras en mi herramienta de apoyo", "reflexion": "", "stop": false}, {"id": "422a38bb-7a6e-8149-9c84-fa878d188c90", "nombre": "Post almuerzo", "fecha": "2026-11-24", "barometro": "😠 Frustrada", "emocion_id": "325a38bb-7a6e-8007-b697-e083074e449f", "emocion_nombre": "Bronca", "calma": 6, "energia": 5, "disparador": "Que mi tío haya dicho que me ha llamado porque se lo ha pedido mi abuela y en realidad no me haya llamado", "reflexion": "Entiendo que puede haberle dicho eso solo para calmarla, pero no estoy de acuerdo", "stop": false}];
+        const gestionEmocionalOpciones = {"barometro": ["😌 En calma", "🎯 Enfocada", "✨ Inspirada", "😰 Ansiosa", "😴 Agotada", "😢 Triste", "😠 Frustrada", "🤗Feliz"]};
+        const emocionesCatalogo = [{"id": "3cba38bb-7a6e-803d-82fc-ef994283aa1a", "nombre": "Odio"}, {"id": "3c7a38bb-7a6e-80ad-8f6b-e41df7fa7351", "nombre": "Verguenza"}, {"id": "395a38bb-7a6e-8008-8807-dc9d8e232f80", "nombre": "Frustración"}, {"id": "338a38bb-7a6e-8016-8479-cb7ab4b42271", "nombre": "Liberación"}, {"id": "334a38bb-7a6e-8087-99ae-e90f4e8333e1", "nombre": "Agradecimiento"}, {"id": "32ea38bb-7a6e-80c2-949e-d52a2fb075b3", "nombre": "Inquietud"}, {"id": "32aa38bb-7a6e-802e-bbbc-ca79eaa5b5ff", "nombre": "Hartazgo"}, {"id": "329a38bb-7a6e-809c-84f5-c383d2f87617", "nombre": "Preocupación"}, {"id": "328a38bb-7a6e-80f4-8705-f9c21aeea1b4", "nombre": "Lentitud"}, {"id": "328a38bb-7a6e-80dc-9c85-f9e2dd0a763c", "nombre": "Desámino"}, {"id": "326a38bb-7a6e-8011-b18c-c01c509dc874", "nombre": "Esperanza"}, {"id": "326a38bb-7a6e-8093-9132-da3aebf08f08", "nombre": "Gratitud"}, {"id": "326a38bb-7a6e-8032-9299-fd92e0fe79cf", "nombre": "Ansiedad"}, {"id": "325a38bb-7a6e-80e6-a08e-eb8ac67318bd", "nombre": "Angustia"}, {"id": "325a38bb-7a6e-8007-b697-e083074e449f", "nombre": "Bronca"}, {"id": "325a38bb-7a6e-8063-88fe-c1ed433f9a8c", "nombre": "Tristeza"}];
+    </script>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
+        <div class="flex items-center gap-3 mb-5 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.95</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span>Agenda personal</span>
+            </a>
+            <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">alarm</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">check_box</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="finanzas.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                <span>Finanzas</span>
+            </a>
+            <a href="salud.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Salud</span>
+            </a>
+            <a href="ocio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_library</span>
+                <span>Ocio</span>
+            </a>
+            <a href="gestion-emocional.html" class="flex items-center gap-3 px-4 py-2 bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/30 rounded-xl font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
+                <span>Gestión emocional</span>
+            </a>
+            <a href="relaciones-y-limites.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">shield</span>
+                <span>Relaciones y límites</span>
+            </a>
+            <a href="desarrollo-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">trending_up</span>
+                <span>Desarrollo personal</span>
+            </a>
+            <a href="habitos-y-disciplina.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_fire_department</span>
+                <span>Hábitos y disciplina</span>
+            </a>
+        </nav>
+        <div class="pt-3 mt-3 border-t border-white/[0.08]">
+            <a href="https://contras.ai.studio/" target="_blank" rel="noopener" class="flex items-center gap-2 px-3 py-1.5 text-[#ffb961] hover:bg-[#ffb961]/10 rounded-lg transition-all text-[11px] font-semibold">
+                <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                <span>Contras AI Studio</span>
+            </a>
+        </div>
+
+        <div class="pt-3 mt-3 border-t border-white/[0.08] flex items-center gap-3 px-2">
+            <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
+            <div class="min-w-0">
+                <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo</p>
+            </div>
+        </div>
+    </aside>
+
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <main class="min-h-screen lg:ml-64">
+        <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">Asistente Sabry</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">GESTIÓN EMOCIONAL</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- CABECERA -->
+            <section class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-white/[0.08]">
+                <div class="space-y-2">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold font-headline-md text-white tracking-tight">GESTIÓN EMOCIONAL</h1>
+                    <p class="text-[13px] text-[#a1a1aa]">
+                        <span class="text-[#ff5f52] font-semibold">Objetivo:</span> Regular emociones y responder con conciencia.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2.5">
+                    <a href="inicio.html" class="flex items-center gap-1 px-3 py-2.5 rounded-xl bg-[#111115] hover:bg-[#1c1c21] border border-white/[0.08] text-[#e5e2e1] font-semibold text-xs">
+                        <span class="material-symbols-outlined text-[15px]">home</span>
+                        <span>Inicio</span>
+                    </a>
+                    <a href="salud.html#sec-cuerpo" class="flex items-center gap-1 px-3 py-2.5 rounded-xl bg-[#ff5f52]/10 hover:bg-[#ff5f52]/20 border border-[#ff5f52]/30 text-[#ff5f52] font-semibold text-xs">
+                        <span class="material-symbols-outlined text-[15px]">favorite</span>
+                        <span>Ciclo &amp; Salud</span>
+                    </a>
+                    <button type="button" onclick="abrirModalEmocion()" class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#ff5f52] hover:bg-[#ff4838] text-white font-bold text-xs transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[17px]">add</span>
+                        <span>+ Registro diario</span>
+                    </button>
+                    <a href="https://app.notion.com/p/9a7a38bb7a6e8303be4b81797e888fe5?v=759a38bb7a6e83f09f9b087bdc64cd4b&source=copy_link" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#111115] hover:bg-[#1c1c21] border border-white/[0.08] text-[#e5e2e1] font-semibold text-xs">
+                        <span>Ver en Notion</span>
+                        <span class="material-symbols-outlined text-[15px]">open_in_new</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- 4 KPIS -->
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#ff5f52]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">REGISTROS</p>
+                    <p id="kpi-emo-total" class="text-3xl font-extrabold text-white">0</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#ffb961]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">PREDOMINANTE</p>
+                    <p id="kpi-emo-pred" class="text-[17px] font-bold text-white truncate">Sin registros</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#83da85]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">PAUSAS S.T.O.P.</p>
+                    <p id="kpi-emo-stop" class="text-3xl font-extrabold text-[#83da85]">0</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#00aaff]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">CALMA PROMEDIO</p>
+                    <p id="kpi-emo-calma" class="text-3xl font-extrabold text-[#00aaff]">0.0<span class="text-sm text-[#8e8e93]">/10</span></p>
+                </div>
+            </section>
+
+            <!-- BARÓMETRO EMOCIONAL RÁPIDO -->
+            <section class="glass-card rounded-2xl p-6 sm:p-8 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">CHECK-IN RÁPIDO</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Barómetro Emocional</h2>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button id="btn-gestionar-barometro" type="button" onclick="toggleModoGestionBarometro()" class="px-3 py-1.5 rounded-xl bg-[#18181d] hover:bg-[#232329] border border-white/[0.1] text-xs font-semibold text-[#a1a1aa] hover:text-white inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[15px]">edit_note</span>
+                            <span>Gestionar opciones</span>
+                        </button>
+                        <button type="button" onclick="toggleNuevoClimaBarometro()" class="px-3 py-1.5 rounded-xl bg-[#18181d] hover:bg-[#232329] border border-dashed border-white/[0.2] text-xs font-semibold text-[#e5e2e1] inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[15px] text-[#ff5f52]">tune</span>
+                            <span>+ Nuevo clima</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="barometro-nuevo-wrap" class="hidden flex flex-wrap items-center gap-2 p-3 rounded-xl bg-[#08080a] border border-white/[0.08]">
+                    <input id="barometro-nuevo-input" type="text" maxlength="60" placeholder="Ej. 😌 En calma / 😰 Ansiosa..." onkeydown="if(event.key==='Enter'){event.preventDefault();agregarOpcionBarometro();}" class="flex-1 min-w-[200px] bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-xs placeholder-[#8e8e93]" />
+                    <button type="button" onclick="agregarOpcionBarometro()" class="px-3.5 py-2 rounded-lg bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white text-xs font-bold">Agregar y usar</button>
+                </div>
+                <div id="barometro-botones" class="flex flex-wrap gap-2.5"></div>
+            </section>
+
+            <!-- TENDENCIA CALMA VS ENERGÍA -->
+            <section class="glass-card rounded-2xl p-6 sm:p-8 border-l-4 border-l-[#00aaff] space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#00aaff] tracking-widest">CORRELACIÓN DIARIA</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Tendencia Calma vs. Energía</h2>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs">
+                        <span class="inline-flex items-center gap-1.5 text-[#00aaff] font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-[#00aaff]"></span>Calma</span>
+                        <span class="inline-flex items-center gap-1.5 text-[#ffb961] font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-[#ffb961]"></span>Energía</span>
+                    </div>
+                </div>
+                <div id="emo-chart-wrap" class="w-full overflow-x-auto">
+                    <svg id="emo-chart-svg" viewBox="0 0 600 150" class="w-full h-36 min-w-[360px]"></svg>
+                </div>
+                <p id="emo-chart-empty" class="hidden text-[13px] text-[#8e8e93] text-center py-3">Registra al menos 2 días en Notion para ver la curva de tendencia.</p>
+            </section>
+
+            <!-- PROTOCOLO S.T.O.P. -->
+            <section class="glass-card rounded-2xl p-6 sm:p-8 border-l-4 border-l-[#83da85] space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#83da85] tracking-widest">PAUSA CONSCIENTE</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Protocolo S.T.O.P.</h2>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button id="btn-stop-timer" type="button" onclick="iniciarTemporizadorSTOP()" class="px-3.5 py-2 rounded-xl bg-[#18181d] hover:bg-[#232329] border border-[#83da85]/40 text-[#83da85] font-bold text-xs inline-flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[15px]">timer</span>
+                            <span id="stop-timer-lbl">Pausa 03:00</span>
+                        </button>
+                        <button type="button" onclick="abrirModalEmocion('', true)" class="px-4 py-2 rounded-xl bg-[#83da85]/15 hover:bg-[#83da85]/25 border border-[#83da85]/30 text-[#83da85] font-bold text-xs">
+                            ✓ Registrar aplicando S.T.O.P.
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="p-4 rounded-xl bg-[#08080a] border border-white/[0.06]">
+                        <p class="text-xs font-bold text-[#ff5f52] mb-1">1. STOP (Detente)</p>
+                        <p class="text-xs text-[#a1a1aa]">Frená un momento lo que estás haciendo y nombrá la pausa.</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-[#08080a] border border-white/[0.06]">
+                        <p class="text-xs font-bold text-[#ffb961] mb-1">2. TAKE A BREATH (Respirá)</p>
+                        <p class="text-xs text-[#a1a1aa]">Tres inhalaciones lentas y profundas para bajar la activación.</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-[#08080a] border border-white/[0.06]">
+                        <p class="text-xs font-bold text-[#00aaff] mb-1">3. OBSERVE (Observá)</p>
+                        <p class="text-xs text-[#a1a1aa]">¿Qué sentís en el cuerpo? ¿Qué emoción y pensamiento hay?</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-[#08080a] border border-white/[0.06]">
+                        <p class="text-xs font-bold text-[#83da85] mb-1">4. PROCEED (Procedé)</p>
+                        <p class="text-xs text-[#a1a1aa]">Elegí la respuesta más amable y alineada con tus valores.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CAJA DE HERRAMIENTAS CONSCIENTES -->
+            <section id="sec-caja-consciente" class="glass-card rounded-2xl p-6 sm:p-8 border-l-4 border-l-[#a855f7] space-y-5">
+                <div class="space-y-4">
+                    <div class="w-full space-y-1.5">
+                        <p class="text-[11px] font-label-caps text-[#a855f7] tracking-widest">REGULACIÓN AUTONÓMICA</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Caja de Herramientas Conscientes</h2>
+                        <p class="text-[13px] text-[#a1a1aa] leading-relaxed">Recursos somáticos y respiraciones guiadas disponibles al instante según tu nivel de energía y fase del ciclo.</p>
+                    </div>
+                    <div class="w-full flex flex-wrap items-center gap-2.5 pt-1 border-t border-white/[0.06]">
+                        <a href="inicio.html" class="px-3 py-1.5 rounded-xl bg-[#18181d] hover:bg-[#232329] border border-white/[0.08] text-[#e5e2e1] text-xs font-semibold inline-flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[14px]">home</span>
+                            <span>Inicio</span>
+                        </a>
+                        <a href="salud.html#sec-cuerpo" class="px-3 py-1.5 rounded-xl bg-[#18181d] hover:bg-[#232329] border border-white/[0.08] text-[#ffb961] text-xs font-semibold inline-flex items-center gap-1">
+                            <span>Ver Biometría &amp; Ciclo en Salud</span>
+                            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                        </a>
+                        <div class="flex flex-wrap items-center gap-2 sm:ml-auto">
+                            <button type="button" onclick="toggleNuevaHerramienta()" class="px-3.5 py-1.5 rounded-xl bg-[#a855f7]/20 hover:bg-[#a855f7]/30 border border-[#a855f7]/40 text-[#e9d5ff] text-xs font-bold">
+                                + Agregar nueva herramienta
+                            </button>
+                            <button type="button" onclick="abrirModalPracticaRapida()" class="px-3.5 py-1.5 rounded-xl bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white text-xs font-bold">
+                                Registrar práctica rápida
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="caja-nueva-wrap" class="hidden p-4 rounded-xl bg-[#08080a] border border-white/[0.08] grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    <input id="caja-nueva-nombre" type="text" maxlength="80" placeholder="Nombre (ej. Escaneo corporal)" class="bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-xs" />
+                    <select id="caja-nueva-cat" class="bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-xs">
+                        <option value="Respiración">Respiración</option>
+                        <option value="Enraizamiento">Enraizamiento</option>
+                        <option value="Somática">Somática</option>
+                    </select>
+                    <div class="flex gap-2">
+                        <input id="caja-nueva-desc" type="text" maxlength="160" placeholder="Pasos breves..." class="flex-1 bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-xs" />
+                        <button type="button" onclick="agregarHerramientaConsciente()" class="px-3 py-2 rounded-lg bg-[#a855f7] text-white text-xs font-bold">Guardar</button>
+                    </div>
+                </div>
+
+                <div id="caja-filtros" class="flex flex-wrap gap-2"></div>
+                <div id="caja-herramientas-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+            </section>
+
+            <!-- DIARIO DE REGISTROS EMOCIONALES -->
+            <section class="glass-card rounded-2xl p-6 sm:p-8 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">HISTORIAL NOTION</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Diario de Registros Emocionales</h2>
+                    </div>
+                    <span id="emo-count-lbl" class="bg-white/[0.06] text-[#8e8e93] px-3 py-1 rounded-full text-xs font-semibold">0 registros</span>
+                </div>
+                <div id="list-registros-emocionales" class="space-y-3"></div>
+            </section>
+        </div>
+
+        <footer class="border-t border-white/[0.08] py-10 px-container-padding max-w-[1200px] mx-auto mt-12">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+                <div class="space-y-2 text-left">
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">SISTEMA AUDITADO</p>
+                    <p class="text-[15px] font-bold text-white flex items-center gap-2">
+                        <span>AsistenteSabry</span>
+                        <span id="footer-version" class="bg-[#ff5f52]/10 text-[#ff5f52] px-2.5 py-0.5 rounded-full text-[11px] font-mono border border-[#ff5f52]/20">dev</span>
+                    </p>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Sabri Studios &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL SELECCIONAR HERRAMIENTA (PRÁCTICA RÁPIDA) -->
+    <div id="modal-practica-rapida" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalPracticaRapida()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-lg my-8 space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] font-label-caps text-[#a855f7] tracking-widest">CAJA DE HERRAMIENTAS CONSCIENTES</p>
+                    <h3 class="text-[18px] font-bold text-white">Elegí una herramienta para aplicar</h3>
+                </div>
+                <button type="button" onclick="cerrarModalPracticaRapida()" class="p-1.5 hover:bg-white/10 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <div id="practica-rapida-lista" class="space-y-2.5 max-h-[60vh] overflow-y-auto pr-1"></div>
+            <div class="flex justify-end pt-1">
+                <button type="button" onclick="cerrarModalPracticaRapida()" class="px-4 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] text-white text-xs font-semibold">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRO EMOCIONAL -->
+    <div id="modal-emocion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4" onclick="cerrarModalEmocion()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-lg space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between">
+                <h3 id="emo-modal-titulo" class="text-[18px] font-bold text-white">Nuevo registro emocional</h3>
+                <button type="button" onclick="cerrarModalEmocion()" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form onsubmit="manejarSubmitEmocion(event)" class="space-y-3.5">
+                <input type="hidden" id="emo-page-id" value="">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Nombre / Resumen *</label>
+                        <input id="emo-nombre" type="text" required placeholder="Ej: Pausa antes de reunión" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Fecha *</label>
+                        <input id="emo-fecha" type="date" required class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Barómetro</label>
+                        <select id="emo-barometro" class="w-full px-3 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Emoción (BD Emociones-V1)</label>
+                        <select id="emo-relacion" class="w-full px-3 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white"></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Nivel de calma (1–10)</label>
+                        <input id="emo-calma" type="number" min="1" max="10" value="7" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Nivel de energía (1–10)</label>
+                        <input id="emo-energia" type="number" min="1" max="10" value="7" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Disparador / Contexto</label>
+                    <input id="emo-disparador" type="text" placeholder="¿Qué detonó este estado?" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Reflexión / Nota</label>
+                    <textarea id="emo-reflexion" rows="2" placeholder="Observaciones o aprendizaje..." class="w-full px-3.5 py-2 rounded-xl bg-[#08080a] border border-white/[0.08] text-xs text-white"></textarea>
+                </div>
+                <label class="flex items-center gap-2 text-xs text-[#e5e2e1] cursor-pointer">
+                    <input id="emo-stop" type="checkbox" class="rounded border-white/20 bg-[#18181d] text-[#83da85]">
+                    <span>Apliqué Protocolo S.T.O.P.</span>
+                </label>
+                <p id="emo-err" class="hidden text-xs text-[#ff5f52] font-semibold"></p>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="cerrarModalEmocion()" class="px-4 py-2.5 rounded-xl bg-[#18181d] text-xs font-bold text-[#8e8e93]">Cancelar</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#ff5f52] text-white font-bold text-xs">Guardar en Notion</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TOKEN Y SPINNER -->
+    <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="cerrarModalTokenEmo()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <h3 class="text-[17px] font-bold text-white">Conectar con GitHub Actions</h3>
+            <p class="text-[13px] text-[#8e8e93]">Pegá tu Personal Access Token (permiso Actions: Read &amp; Write) para guardar en Notion.</p>
+            <input id="emo-token-input" type="password" placeholder="github_pat_..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="cerrarModalTokenEmo()" class="px-4 py-2 rounded-xl bg-[#18181d] text-xs font-bold text-[#8e8e93]">Cancelar</button>
+                <button type="button" onclick="guardarTokenEmo()" class="px-4 py-2 rounded-xl bg-[#ff5f52] text-xs font-bold text-white">Guardar token</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarSpinnerNotion()" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
+    <script src="./src/utils/gestion_emocional_logic.js"></script>
+    <script>
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        function hoyLocalISO() {
+            const d = new Date();
+            const p = (n) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+        }
+
+        function renderizarGestionEmocional() {
+            const res = calcularResumenEmocional(gestionEmocionalRegistros);
+            document.getElementById("kpi-emo-total").textContent = String(res.total);
+            document.getElementById("kpi-emo-pred").textContent = res.predominante;
+            document.getElementById("kpi-emo-stop").textContent = String(res.conStop);
+            document.getElementById("kpi-emo-calma").innerHTML = `${escapeHtml(res.calmaPromedio)}<span class="text-sm text-[#8e8e93]">/10</span>`;
+            document.getElementById("emo-count-lbl").textContent = `${res.total} registros`;
+
+            const serie = [...(gestionEmocionalRegistros || [])].slice(0, 10).reverse();
+            const svg = document.getElementById("emo-chart-svg");
+            const emptyMsg = document.getElementById("emo-chart-empty");
+            if (serie.length < 2) {
+                svg.classList.add("hidden");
+                emptyMsg.classList.remove("hidden");
+            } else {
+                svg.classList.remove("hidden");
+                emptyMsg.classList.add("hidden");
+                const padX = 24, padY = 18, w = 600 - padX * 2, h = 150 - padY * 2;
+                const pts = (key) => serie.map((r, i) => {
+                    const x = padX + (i / (serie.length - 1)) * w;
+                    const v = Math.min(10, Math.max(0, Number(r[key]) || 5));
+                    const y = padY + h - (v / 10) * h;
+                    return { x: Number(x.toFixed(1)), y: Number(y.toFixed(1)) };
+                });
+                const pCalma = pts("calma");
+                const pEnergia = pts("energia");
+                const toLine = (arr) => arr.map((p) => `${p.x},${p.y}`).join(" ");
+                const dots = (arr, color) => arr.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="${color}" />`).join("");
+                svg.innerHTML = `
+                    <line x1="${padX}" y1="${padY + h / 2}" x2="${600 - padX}" y2="${padY + h / 2}" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 4" />
+                    <polyline fill="none" stroke="#00aaff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${toLine(pCalma)}" />
+                    <polyline fill="none" stroke="#ffb961" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${toLine(pEnergia)}" />
+                    ${dots(pCalma, "#00aaff")}
+                    ${dots(pEnergia, "#ffb961")}
+                `;
+            }
+
+            const barOps = gestionEmocionalOpciones.barometro || BAROMETRO_OPCIONES;
+            document.getElementById("barometro-botones").innerHTML = barOps.map((op, idx) => _modoGestionBarometro
+                ? `<div class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#18181d] border border-[#ffb961]/30 text-xs font-bold text-white">
+                    <span>${escapeHtml(op)}</span>
+                    <button type="button" onclick="editarClimaBarometro(${idx})" class="p-0.5 hover:text-[#38bdf8] text-[#a1a1aa]" title="Editar clima"><span class="material-symbols-outlined text-[14px]">edit</span></button>
+                    <button type="button" onclick="eliminarClimaBarometro(${idx})" class="p-0.5 hover:text-[#ff5f52] text-[#a1a1aa]" title="Eliminar clima"><span class="material-symbols-outlined text-[14px]">close</span></button>
+                   </div>`
+                : `<button type="button" onclick="abrirModalEmocion('${escapeHtml(op)}')" class="px-4 py-2 rounded-xl bg-[#18181d] hover:bg-[#232329] border border-white/[0.08] text-xs font-bold text-white transition-all active:scale-95">
+                    ${escapeHtml(op)}
+                   </button>`
+            ).join("") + `
+                <button type="button" onclick="toggleNuevoClimaBarometro()" class="px-4 py-2 rounded-xl bg-transparent hover:bg-white/[0.04] border border-dashed border-white/[0.2] text-xs font-semibold text-[#8e8e93] hover:text-white transition-all">
+                    + Añadir clima
+                </button>
+            `;
+
+            const cont = document.getElementById("list-registros-emocionales");
+            cont.innerHTML = gestionEmocionalRegistros.length === 0
+                ? `<div class="status-row flex items-center justify-center py-5 px-4 text-[#8e8e93] text-[13px]">Sin registros emocionales aún</div>`
+                : gestionEmocionalRegistros.map((r) => {
+                    const meta = [r.fecha, r.barometro, r.emocion_nombre, `Calma ${r.calma || "-"}/10`, `Energía ${r.energia || "-"}/10`].filter(Boolean).map(escapeHtml).join(" · ");
+                    return `
+                        <div class="status-row flex items-center justify-between px-4 py-3.5 gap-3">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-white font-semibold truncate">${escapeHtml(r.nombre)}${r.stop ? ' <span class="ml-1.5 px-2 py-0.5 rounded-full bg-[#83da85]/15 text-[#83da85] text-[10px]">S.T.O.P.</span>' : ""}</p>
+                                <p class="text-[12px] text-[#8e8e93] truncate">${meta}</p>
+                                ${r.disparador ? `<p class="text-[11px] text-[#a1a1aa] truncate mt-0.5">Disparador: ${escapeHtml(r.disparador)}</p>` : ""}
+                            </div>
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                <button type="button" onclick="abrirModalEditarEmocion('${escapeHtml(r.id)}')" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                                <button type="button" onclick="eliminarRegistroEmocional('${escapeHtml(r.id)}')" class="p-1.5 hover:bg-[#ff5f52]/15 rounded-lg text-[#8e8e93] hover:text-[#ff5f52]" title="Mandar a papelera"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                            </div>
+                        </div>
+                    `;
+                }).join("");
+        }
+
+        function _poblarSelectsModalEmocion() {
+            const barOps = gestionEmocionalOpciones.barometro || BAROMETRO_OPCIONES;
+            document.getElementById("emo-barometro").innerHTML = barOps.map((o) => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join("");
+            const relOps = ['<option value="">(Sin seleccionar)</option>'].concat(
+                (emocionesCatalogo || []).map((e) => `<option value="${escapeHtml(e.id)}">${escapeHtml(e.nombre)}</option>`)
+            );
+            document.getElementById("emo-relacion").innerHTML = relOps.join("");
+        }
+
+        const BAROMETRO_OPS_KEY = "asistente_sabry:barometro_opciones_v1";
+        let _modoGestionBarometro = false;
+
+        function _cargarOpcionesBarometro() {
+            try {
+                const raw = JSON.parse(localStorage.getItem(BAROMETRO_OPS_KEY) || "null");
+                if (Array.isArray(raw) && raw.length > 0) {
+                    gestionEmocionalOpciones.barometro = raw;
+                }
+            } catch (e) {}
+        }
+
+        function _guardarOpcionesBarometro(lista) {
+            gestionEmocionalOpciones.barometro = lista;
+            try { localStorage.setItem(BAROMETRO_OPS_KEY, JSON.stringify(lista)); } catch (e) {}
+        }
+
+        function toggleModoGestionBarometro() {
+            _modoGestionBarometro = !_modoGestionBarometro;
+            const btn = document.getElementById("btn-gestionar-barometro");
+            if (btn) {
+                btn.className = _modoGestionBarometro
+                    ? "px-3 py-1.5 rounded-xl bg-[#ffb961]/20 border border-[#ffb961] text-xs font-bold text-[#ffb961] inline-flex items-center gap-1.5 transition-all"
+                    : "px-3 py-1.5 rounded-xl bg-[#18181d] hover:bg-[#232329] border border-white/[0.1] text-xs font-semibold text-[#a1a1aa] hover:text-white inline-flex items-center gap-1.5 transition-all";
+            }
+            renderizarGestionEmocional();
+        }
+
+        function editarClimaBarometro(idx) {
+            const lista = [...(gestionEmocionalOpciones.barometro || BAROMETRO_OPCIONES)];
+            if (!lista[idx]) return;
+            const nuevo = window.prompt("Editar etiqueta del clima:", lista[idx]);
+            if (nuevo === null) return;
+            const limpio = nuevo.trim();
+            if (!limpio) return;
+            lista[idx] = limpio;
+            _guardarOpcionesBarometro(lista);
+            renderizarGestionEmocional();
+        }
+
+        function eliminarClimaBarometro(idx) {
+            const lista = [...(gestionEmocionalOpciones.barometro || BAROMETRO_OPCIONES)];
+            if (lista.length <= 1) return;
+            lista.splice(idx, 1);
+            _guardarOpcionesBarometro(lista);
+            renderizarGestionEmocional();
+        }
+
+        function toggleNuevoClimaBarometro() {
+            const wrap = document.getElementById("barometro-nuevo-wrap");
+            wrap.classList.toggle("hidden");
+            if (!wrap.classList.contains("hidden")) {
+                document.getElementById("barometro-nuevo-input").focus();
+            }
+        }
+
+        function agregarOpcionBarometro() {
+            const inp = document.getElementById("barometro-nuevo-input");
+            const val = (inp.value || "").trim();
+            if (!val) return;
+            const lista = Array.isArray(gestionEmocionalOpciones.barometro) ? [...gestionEmocionalOpciones.barometro] : [...BAROMETRO_OPCIONES];
+            const existente = lista.find((x) => x.toLowerCase() === val.toLowerCase());
+            const elegido = existente || val;
+            if (!existente) {
+                lista.push(val);
+                _guardarOpcionesBarometro(lista);
+            }
+            inp.value = "";
+            document.getElementById("barometro-nuevo-wrap").classList.add("hidden");
+            renderizarGestionEmocional();
+            if (typeof mostrarToast === "function") {
+                mostrarToast(`Clima "${elegido}" listo para guardar en Notion`, "success");
+            }
+            abrirModalEmocion(elegido);
+        }
+
+        function abrirModalEmocion(barometroPreset = "", stopPreset = false) {
+            _poblarSelectsModalEmocion();
+            document.getElementById("emo-modal-titulo").textContent = "Nuevo registro emocional";
+            document.getElementById("emo-page-id").value = "";
+            document.getElementById("emo-nombre").value = "";
+            document.getElementById("emo-fecha").value = hoyLocalISO();
+            if (barometroPreset) document.getElementById("emo-barometro").value = barometroPreset;
+            document.getElementById("emo-relacion").value = "";
+            document.getElementById("emo-calma").value = "7";
+            document.getElementById("emo-energia").value = "7";
+            document.getElementById("emo-disparador").value = "";
+            document.getElementById("emo-reflexion").value = "";
+            document.getElementById("emo-stop").checked = Boolean(stopPreset);
+            document.getElementById("emo-err").classList.add("hidden");
+            const m = document.getElementById("modal-emocion");
+            m.classList.remove("hidden"); m.classList.add("flex");
+        }
+
+        function abrirModalEditarEmocion(id) {
+            const r = gestionEmocionalRegistros.find((x) => x.id === id);
+            if (!r) return;
+            _poblarSelectsModalEmocion();
+            document.getElementById("emo-modal-titulo").textContent = "Editar registro emocional";
+            document.getElementById("emo-page-id").value = r.id;
+            document.getElementById("emo-nombre").value = r.nombre || "";
+            document.getElementById("emo-fecha").value = r.fecha || hoyLocalISO();
+            if (r.barometro) document.getElementById("emo-barometro").value = r.barometro;
+            document.getElementById("emo-relacion").value = r.emocion_id || "";
+            document.getElementById("emo-calma").value = String(r.calma ?? 7);
+            document.getElementById("emo-energia").value = String(r.energia ?? 7);
+            document.getElementById("emo-disparador").value = r.disparador || "";
+            document.getElementById("emo-reflexion").value = r.reflexion || "";
+            document.getElementById("emo-stop").checked = Boolean(r.stop);
+            document.getElementById("emo-err").classList.add("hidden");
+            const m = document.getElementById("modal-emocion");
+            m.classList.remove("hidden"); m.classList.add("flex");
+        }
+
+        function cerrarModalEmocion() {
+            const m = document.getElementById("modal-emocion");
+            m.classList.add("hidden"); m.classList.remove("flex");
+        }
+
+        function obtenerTokenEmo() { try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; } }
+        function abrirModalTokenEmo() { const m = document.getElementById("modal-token-notion"); m.classList.remove("hidden"); m.classList.add("flex"); }
+        function cerrarModalTokenEmo() { const m = document.getElementById("modal-token-notion"); m.classList.add("hidden"); m.classList.remove("flex"); }
+        function guardarTokenEmo() {
+            const t = document.getElementById("emo-token-input").value.trim();
+            if (!t) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, t); } catch (e) {}
+            document.getElementById("emo-token-input").value = "";
+            cerrarModalTokenEmo();
+        }
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.remove("hidden"); modal.classList.add("flex");
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+        function cerrarSpinnerNotion() {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.add("hidden"); modal.classList.remove("flex");
+        }
+
+        async function despacharAccionEmo(accion, datos, msgOk) {
+            const token = obtenerTokenEmo();
+            if (!token) { abrirModalTokenEmo(); return; }
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, datos, token);
+                const resp = await fetch(url, options);
+                if (resp.status === 401 || resp.status === 404) {
+                    cerrarSpinnerNotion();
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModalTokenEmo();
+                    return;
+                }
+                if (resp.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${resp.status}).`);
+                    return;
+                }
+                const conf = await esperarConfirmacionWorkflow({ owner: GITHUB_OWNER, repo: GITHUB_REPO, token, workflowFile: WORKFLOW_NOTION_WRITE, dispatchedAfterMs });
+                if (conf.ok) {
+                    mostrarSpinnerNotion("ok", msgOk, "Recargando página...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", conf.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub.");
+            }
+        }
+
+        async function manejarSubmitEmocion(e) {
+            e.preventDefault();
+            const res = construirPayloadRegistroEmocional({
+                pageId: document.getElementById("emo-page-id").value,
+                nombre: document.getElementById("emo-nombre").value,
+                fecha: document.getElementById("emo-fecha").value,
+                barometro: document.getElementById("emo-barometro").value,
+                emocionId: document.getElementById("emo-relacion").value,
+                calma: document.getElementById("emo-calma").value,
+                energia: document.getElementById("emo-energia").value,
+                disparador: document.getElementById("emo-disparador").value,
+                reflexion: document.getElementById("emo-reflexion").value,
+                stop: document.getElementById("emo-stop").checked,
+            });
+            if (!res.ok) {
+                const err = document.getElementById("emo-err");
+                err.textContent = res.error;
+                err.classList.remove("hidden");
+                return;
+            }
+            cerrarModalEmocion();
+            const accion = res.payload.page_id ? "actualizar_registro_emocional" : "crear_registro_emocional";
+            await despacharAccionEmo(accion, res.payload, "¡Registro emocional guardado en Notion!");
+        }
+
+        async function eliminarRegistroEmocional(id) {
+            if (!id) return;
+            await despacharAccionEmo("archivar_pagina", { page_id: id }, "¡Registro enviado a la papelera!");
+        }
+
+        function toggleMenu() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+            const isOpen = !sidebar.classList.contains("-translate-x-full");
+            sidebar.classList.toggle("-translate-x-full", isOpen);
+            overlay.classList.toggle("hidden", isOpen);
+        }
+
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
+
+        const CAJA_TOOLS_KEY = "asistente_sabry:caja_consciente_v1";
+        const CAJA_TOOLS_DEFAULT = [
+            { id: "t-stop", nombre: "Protocolo S.T.O.P.", cat: "Somática", duracion: "2 min", desc: "Detente, respirá profundo 3 veces, observá tu cuerpo y elegí con calma." },
+            { id: "t-478", nombre: "Respiración 4-7-8", cat: "Respiración", duracion: "3 min", desc: "Inhalá en 4s, sostené 7s y exhalá lento en 8s para activar el nervio vago." },
+            { id: "t-54321", nombre: "Enraizamiento 5-4-3-2-1", cat: "Enraizamiento", duracion: "2 min", desc: "5 cosas que ves, 4 que tocás, 3 que oís, 2 que olés, 1 que saboreás." },
+            { id: "t-suspiro", nombre: "Suspiro Fisiológico Cíclico", cat: "Respiración", duracion: "1 min", desc: "Doble inhalación nasal profunda seguida de una exhalación larga por boca." },
+        ];
+        let _cajaFiltro = "Todas";
+
+        function _leerHerramientasConscientes() {
+            try {
+                const raw = localStorage.getItem(CAJA_TOOLS_KEY);
+                const extras = raw ? JSON.parse(raw) : [];
+                return [...CAJA_TOOLS_DEFAULT, ...(Array.isArray(extras) ? extras : [])];
+            } catch (e) { return [...CAJA_TOOLS_DEFAULT]; }
+        }
+
+        function toggleNuevaHerramienta() {
+            document.getElementById("caja-nueva-wrap").classList.toggle("hidden");
+        }
+
+        function agregarHerramientaConsciente() {
+            const nombre = document.getElementById("caja-nueva-nombre").value.trim();
+            const cat = document.getElementById("caja-nueva-cat").value;
+            const desc = document.getElementById("caja-nueva-desc").value.trim();
+            if (!nombre) return;
+            try {
+                const raw = localStorage.getItem(CAJA_TOOLS_KEY);
+                const extras = raw ? JSON.parse(raw) : [];
+                extras.push({ id: `t-${Date.now()}`, nombre, cat, duracion: "2 min", desc: desc || "Práctica consciente personalizada." });
+                localStorage.setItem(CAJA_TOOLS_KEY, JSON.stringify(extras));
+            } catch (e) {}
+            document.getElementById("caja-nueva-nombre").value = "";
+            document.getElementById("caja-nueva-desc").value = "";
+            document.getElementById("caja-nueva-wrap").classList.add("hidden");
+            renderizarCajaConsciente();
+        }
+
+        function filtrarCajaConsciente(cat) {
+            _cajaFiltro = cat;
+            renderizarCajaConsciente();
+        }
+
+        function renderizarCajaConsciente() {
+            const todas = _leerHerramientasConscientes();
+            const cats = ["Todas", "Respiración", "Enraizamiento", "Somática"];
+            const fltCont = document.getElementById("caja-filtros");
+            if (fltCont) {
+                fltCont.innerHTML = cats.map((c) => {
+                    const act = _cajaFiltro === c;
+                    return `<button type="button" onclick="filtrarCajaConsciente('${c}')" class="px-3 py-1 rounded-full text-xs font-semibold transition-all ${act ? "bg-[#a855f7]/25 text-[#e9d5ff] border border-[#a855f7]/50" : "bg-[#18181d] text-[#a1a1aa] border border-white/[0.06]"}">${c}</button>`;
+                }).join("");
+            }
+            const lista = _cajaFiltro === "Todas" ? todas : todas.filter((t) => t.cat === _cajaFiltro);
+            const grid = document.getElementById("caja-herramientas-grid");
+            if (grid) {
+                grid.innerHTML = lista.map((t) => `
+                    <div class="p-4 rounded-xl bg-[#08080a] border border-white/[0.06] flex flex-col justify-between gap-3">
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[10px] font-bold text-[#a855f7] uppercase tracking-wider">${escapeHtml(t.cat)}</span>
+                                <span class="text-[10px] text-[#8e8e93]">${escapeHtml(t.duracion || "2 min")}</span>
+                            </div>
+                            <p class="text-[14px] font-bold text-white">${escapeHtml(t.nombre)}</p>
+                            <p class="text-[12px] text-[#a1a1aa] leading-relaxed">${escapeHtml(t.desc)}</p>
+                        </div>
+                        <button type="button" onclick="aplicarHerramientaConsciente('${escapeHtml(t.nombre)}', '${escapeHtml(t.desc || "")}')" class="w-full py-1.5 rounded-lg bg-[#83da85]/15 hover:bg-[#83da85]/25 text-[#83da85] text-[11px] font-bold">
+                            Aplicar y registrar →
+                        </button>
+                    </div>`).join("");
+            }
+        }
+
+        function abrirModalPracticaRapida() {
+            const lista = _leerHerramientasConscientes();
+            const cont = document.getElementById("practica-rapida-lista");
+            if (cont) {
+                cont.innerHTML = lista.length === 0
+                    ? `<p class="text-[13px] text-[#8e8e93] py-4 text-center">No hay herramientas cargadas aún.</p>`
+                    : lista.map((t) => `
+                        <button type="button" onclick="aplicarHerramientaConsciente('${escapeHtml(t.nombre)}', '${escapeHtml(t.desc || "")}')" class="w-full text-left p-3.5 rounded-xl bg-[#08080a] hover:bg-[#1c1c1f] border border-white/[0.08] hover:border-[#83da85]/50 transition-all flex items-center justify-between gap-3">
+                            <div class="min-w-0 space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] font-bold text-[#a855f7] uppercase tracking-wider">${escapeHtml(t.cat)}</span>
+                                    <span class="text-[10px] text-[#8e8e93]">· ${escapeHtml(t.duracion || "2 min")}</span>
+                                </div>
+                                <p class="text-[14px] font-bold text-white">${escapeHtml(t.nombre)}</p>
+                                <p class="text-[12px] text-[#a1a1aa] line-clamp-2">${escapeHtml(t.desc || "")}</p>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-lg bg-[#83da85]/15 text-[#83da85] text-[11px] font-bold flex-shrink-0">Aplicar →</span>
+                        </button>`).join("");
+            }
+            const m = document.getElementById("modal-practica-rapida");
+            if (m) { m.classList.remove("hidden"); m.classList.add("flex"); }
+        }
+
+        function cerrarModalPracticaRapida() {
+            const m = document.getElementById("modal-practica-rapida");
+            if (m) { m.classList.add("hidden"); m.classList.remove("flex"); }
+        }
+
+        function aplicarHerramientaConsciente(nombre, desc) {
+            cerrarModalPracticaRapida();
+            abrirModalEmocion("", true);
+            document.getElementById("emo-nombre").value = `Práctica: ${nombre}`;
+            if (desc) document.getElementById("emo-reflexion").value = desc;
+            mostrarToast(`Herramienta "${nombre}" aplicada — completá cómo te sentís para guardarla`, "success");
+        }
+
+        let _stopTimerInterval = null;
+        let _stopSegundosRestantes = 180;
+        function iniciarTemporizadorSTOP() {
+            const lbl = document.getElementById("stop-timer-lbl");
+            if (_stopTimerInterval) {
+                clearInterval(_stopTimerInterval);
+                _stopTimerInterval = null;
+                _stopSegundosRestantes = 180;
+                if (lbl) lbl.textContent = "Pausa 03:00";
+                return;
+            }
+            _stopSegundosRestantes = 180;
+            const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+            if (lbl) lbl.textContent = fmt(_stopSegundosRestantes);
+            _stopTimerInterval = setInterval(() => {
+                _stopSegundosRestantes -= 1;
+                if (_stopSegundosRestantes <= 0) {
+                    clearInterval(_stopTimerInterval);
+                    _stopTimerInterval = null;
+                    if (lbl) lbl.textContent = "✓ Pausa completa";
+                    return;
+                }
+                if (lbl) lbl.textContent = fmt(_stopSegundosRestantes);
+            }, 1000);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            _cargarOpcionesBarometro();
+            initLocalStorage();
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
+            renderizarGestionEmocional();
+            renderizarCajaConsciente();
+        });
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            });
+        }
+    </script>
+    <script src="./src/utils/somatic_shell.js"></script>
+</body>
+</html>

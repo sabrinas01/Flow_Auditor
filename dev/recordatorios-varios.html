@@ -1,0 +1,638 @@
+﻿<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SABRY OFF</title>
+    <!-- PWA: instalable en celular (ver Documentacion/SRS.md SRS-FR-M3-311) -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0e0e0e">
+    <link rel="icon" href="./grafica/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./grafica/icons/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
+    <!-- Tipografías del Design System "v4.76" (Stitch) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+    <!-- CSS de Tailwind precompilado (mismo bundle que index.html/inicio.html) -->
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #08080a;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+        .status-row {
+            background: #18181d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .status-row:hover { background: #1f1f26; border-color: rgba(255, 255, 255, 0.12); }
+
+        .left-pill-blue { border-left: 3px solid #00aaff; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-green { border-left: 3px solid #53a759; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-red { border-left: 3px solid #ff5f52; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+
+        #sidebar {
+            transition: transform 0.3s ease;
+        }
+
+        /* Animación premium de rotación para refrescar el dashboard */
+        .spin-animation {
+            animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden antialiased">
+
+    <!-- =================================================== -->
+    <!-- VARIABLES INYECTADAS DINÁMICAMENTE POR EL BACKEND -->
+    <!-- =================================================== -->
+    <script>
+        // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
+        const timestampLocalStr = "28/11/2026 00:53:04";
+        const appVersionStr = "v4.95";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
+        const timestampNextStr = "28/11/2026 01:53:04";
+        const timestampServerStr = "28/11/2026 03:53:04";
+
+        // Recordatorios varios (BD "Mis Recordatorios varios V0"), clasificados por
+        // la propiedad Fecha (v4.26; hasta v4.25 se clasificaba por created_time)
+        // en las mismas tres ventanas cronológicas que Recordatorios Diarios, más
+        // un cuarto bloque "Sin fecha" para ítems sin Fecha cargada. Cada bloque es
+        // una LISTA de ítems completos (Nombre/Estado/Prioridad/Área/Periodo/Fecha)
+        // — a diferencia de index.html, acá no se agrega por estado. La UI muestra
+        // solo el Nombre de cada ítem (v4.29).
+        const recordatoriosVariosAyer = [];
+        const recordatoriosVariosHoy = [{"id": "425a38bb-7a6e-8176-8001-f2205c9e6225", "nombre": "Desinfectar cepillo dental", "estado": "Sin empezar", "prioridad": "ALTA", "area": "Higiene", "periodo": "MENSUAL", "fecha": "2026-11-28"}, {"id": "422a38bb-7a6e-81bc-8cae-c7c8c5436cd5", "nombre": "Desodorizar colchón", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "QUINCENAL", "fecha": "2026-11-28"}, {"id": "422a38bb-7a6e-8169-8d06-c2a6324a93dc", "nombre": "Girar colchón", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "QUINCENAL", "fecha": "2026-11-28"}, {"id": "41aa38bb-7a6e-811c-88a9-e7f43ea5c007", "nombre": "Lavar gorras", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Higiene", "periodo": "MENSUAL", "fecha": "2026-11-28"}, {"id": "419a38bb-7a6e-81e1-9070-fc753ca8bb3a", "nombre": "Lavar ducha (Lavadero)", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Hogar", "periodo": "MENSUAL", "fecha": "2026-11-28"}, {"id": "418a38bb-7a6e-8107-bdc5-fc07446fc36a", "nombre": "Lavar zapatillas jaguar de salir", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "MENSUAL", "fecha": "2026-11-28"}, {"id": "40aa38bb-7a6e-8162-bc0c-fe52a7ea2f83", "nombre": "Limpiar rueditas de la silla", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Hogar", "periodo": "MENSUAL", "fecha": "2026-11-28"}];
+        const recordatoriosVariosManana = [{"id": "425a38bb-7a6e-81a5-b7aa-ec52cd79f13b", "nombre": "Lavar portacepillos", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Higiene", "periodo": "QUINCENAL", "fecha": "2026-11-29"}];
+        const recordatoriosVariosSinFecha = [];
+        const recordatoriosVariosEstados = ["⏳ Pospuesta", "Sin empezar", "❌ Fallida / Vencida", "En ejecución", "En espera", "⏭️ No necesaria", "Hecha por otra persona", "Hecha"];
+    </script>
+
+    <!-- =================================================== -->
+    <!-- SIDEBAR (oculto por defecto, se activa con el menú) -->
+    <!-- =================================================== -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
+        <div class="flex items-center gap-3 mb-5 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.95</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span>Agenda personal</span>
+            </a>
+            <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">alarm</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-2 bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/30 rounded-xl font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_box</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="finanzas.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                <span>Finanzas</span>
+            </a>
+            <a href="salud.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Salud</span>
+            </a>
+            <a href="ocio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_library</span>
+                <span>Ocio</span>
+            </a>
+            <a href="gestion-emocional.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">psychology</span>
+                <span>Gestión emocional</span>
+            </a>
+            <a href="relaciones-y-limites.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">shield</span>
+                <span>Relaciones y límites</span>
+            </a>
+            <a href="desarrollo-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">trending_up</span>
+                <span>Desarrollo personal</span>
+            </a>
+            <a href="habitos-y-disciplina.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_fire_department</span>
+                <span>Hábitos y disciplina</span>
+            </a>
+        </nav>
+        <div class="pt-3 mt-3 border-t border-white/[0.08]">
+            <a href="https://contras.ai.studio/" target="_blank" rel="noopener" class="flex items-center gap-2 px-3 py-1.5 text-[#ffb961] hover:bg-[#ffb961]/10 rounded-lg transition-all text-[11px] font-semibold">
+                <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                <span>Contras AI Studio</span>
+            </a>
+        </div>
+        <div class="pt-3 mt-3 border-t border-white/[0.08] flex items-center gap-3 px-2">
+            <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
+            <div class="min-w-0">
+                <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <main class="min-h-screen lg:ml-64">
+        <!-- =================================================== -->
+        <!-- TOP APP BAR -->
+        <!-- =================================================== -->
+        <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">Asistente Sabry</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">RECORDATORIOS VARIOS</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- Mini-resumen Stitch (4 KPIs compactos alineados a Recordatorios Diarios) -->
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="bg-[#18181b] rounded-2xl p-4 border border-white/[0.06] border-l-4 border-l-[#ff5f52] shadow-2xl">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93]">URGENTES HOY</p>
+                    <p id="varios-resumen-hoy" class="text-[22px] font-bold text-[#ff5f52] mt-1">0</p>
+                </div>
+                <div class="bg-[#18181b] rounded-2xl p-4 border border-white/[0.06] border-l-4 border-l-[#e49102] shadow-2xl">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93]">PRÓXIMOS DÍAS</p>
+                    <p id="varios-resumen-manana" class="text-[22px] font-bold text-white mt-1">0</p>
+                </div>
+                <div class="bg-[#18181b] rounded-2xl p-4 border border-white/[0.06] border-l-4 border-l-[#00aaff] shadow-2xl">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93]">AYER &amp; SIN FECHA</p>
+                    <p id="varios-resumen-resto" class="text-[22px] font-bold text-white mt-1">0</p>
+                </div>
+                <div class="bg-[#18181b] rounded-2xl p-4 border border-white/[0.06] border-l-4 border-l-[#83da85] shadow-2xl">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93]">TOTAL ACTIVOS</p>
+                    <p id="varios-resumen-total" class="text-[22px] font-bold text-[#83da85] mt-1">0</p>
+                </div>
+            </section>
+
+            <!-- =================================================== -->
+            <!-- RECORDATORIOS VARIOS: HOY / MAÑANA / AYER / SIN FECHA -->
+            <!-- =================================================== -->
+            <section class="grid grid-cols-1 gap-grid-gutter">
+
+                <!-- Hoy -->
+                <article class="glass-card rounded-2xl p-5 sm:p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-5 shadow-2xl">
+                    <div class="flex justify-between items-start">
+                        <h2 class="text-headline-md font-headline-md text-white">Recordatorios de hoy</h2>
+                        <div class="flex items-center gap-2">
+                            <span id="total-varios-hoy-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 ítems</span>
+                            <button type="button" onclick="toggleBloque('varios-hoy')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-hoy">
+                                <span id="chevron-varios-hoy" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="content-varios-hoy">
+                        <div id="list-varios-hoy" class="space-y-3"></div>
+                    </div>
+                </article>
+
+                <!-- Mañana -->
+                <article class="glass-card rounded-2xl p-5 sm:p-8 border-l-4 border-l-[#e49102] flex flex-col gap-5 shadow-2xl">
+                    <div class="flex justify-between items-start">
+                        <h2 class="text-headline-md font-headline-md text-white">Recordatorios de mañana</h2>
+                        <div class="flex items-center gap-2">
+                            <span id="total-varios-manana-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
+                            <button type="button" onclick="toggleBloque('varios-manana')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-manana">
+                                <span id="chevron-varios-manana" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="content-varios-manana">
+                        <div id="list-varios-manana" class="space-y-3"></div>
+                    </div>
+                </article>
+
+                <!-- Ayer -->
+                <article class="glass-card rounded-2xl p-5 sm:p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-5 shadow-2xl">
+                    <div class="flex justify-between items-start">
+                        <h2 class="text-headline-md font-headline-md text-white">Recordatorios de ayer</h2>
+                        <div class="flex items-center gap-2">
+                            <span id="total-varios-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
+                            <button type="button" onclick="toggleBloque('varios-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-ayer">
+                                <span id="chevron-varios-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="content-varios-ayer">
+                        <div id="list-varios-ayer" class="space-y-3"></div>
+                    </div>
+                </article>
+
+                <!-- Sin fecha -->
+                <article class="glass-card rounded-2xl p-5 sm:p-8 border-l-4 border-l-[#8e8e93] flex flex-col gap-5 shadow-2xl">
+                    <div class="flex justify-between items-start">
+                        <h2 class="text-headline-md font-headline-md text-white">Recordatorios sin fecha</h2>
+                        <div class="flex items-center gap-2">
+                            <span id="total-varios-sin-fecha-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
+                            <button type="button" onclick="toggleBloque('varios-sin-fecha')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-varios-sin-fecha">
+                                <span id="chevron-varios-sin-fecha" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="content-varios-sin-fecha">
+                        <div id="list-varios-sin-fecha" class="space-y-3"></div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Caja Mentora SabryOff (alineada a Recordatorios Diarios) -->
+            <section class="bg-[#18181b] rounded-2xl p-6 border border-white/[0.06] border-l-4 border-l-[#ff5f52] flex items-start gap-4">
+                <div class="w-10 h-10 rounded-xl bg-[#e49102]/15 border border-[#e49102]/30 flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-[#e49102]">lightbulb</span>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-[11px] font-label-caps text-[#e49102] tracking-widest">FEEDBACK DE MENTORA</p>
+                    <p class="text-[14px] text-white italic leading-relaxed">"Priorizá solo lo de hoy; lo que quede sin fecha o de ayer puede esperar o reprogramarse sin culpa, cielo. 🧠✨"</p>
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] pt-1">— CON AMOR 💚 SABRYOFF</p>
+                </div>
+            </section>
+
+            <!-- Botón de Redirección Oficial a Notion DB (Ancho completo) -->
+            <section class="w-full py-2">
+                <a href="https://app.notion.com/p/22ca38bb7a6e8011b667ee8b299227ba?v=362a38bb7a6e80a1b42a000c2a8aeffe&source=copy_link"
+                   target="_blank"
+                   class="w-full bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[15px] py-4 px-8 rounded-xl flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/25 uppercase tracking-wide">
+                    <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+                    <span>Ir a Recordatorios Varios</span>
+                    <span class="material-symbols-outlined text-[20px]">open_in_new</span>
+                </a>
+            </section>
+        </div>
+
+        <!-- =================================================== -->
+        <!-- FOOTER -->
+        <!-- =================================================== -->
+        <footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">dev</span></p>
+                    </div>
+                    <div class="flex flex-wrap gap-x-8 gap-y-2">
+                        <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Sabri Studios &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- =================================================== -->
+    <!-- MODAL EDITAR RECORDATORIO VARIOS (Fecha + Estado)   -->
+    <!-- =================================================== -->
+    <div id="modal-editar-varios" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalEditarVarios()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-headline-md font-headline-md text-white">Editar recordatorio</h3>
+                <button type="button" onclick="cerrarModalEditarVarios()" class="p-1.5 hover:bg-white/5 rounded-full transition-colors text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+
+            <div id="ev-vista-token" class="space-y-4 hidden">
+                <p class="text-[13px] text-[#e2beba] leading-relaxed">
+                    Para actualizar Notion sin exponer sus claves, se usa el token de GitHub guardado en este navegador
+                    (permisos <strong>Contents: Read and write</strong> y <strong>Actions: Read-only</strong> sobre este repo).
+                </p>
+                <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener"
+                   class="text-[13px] text-primary-container underline inline-flex items-center gap-1">
+                    Crear token fine-grained en GitHub
+                    <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                </a>
+                <div>
+                    <label for="ev-token-input" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Pegá el token acá</label>
+                    <input id="ev-token-input" type="password" autocomplete="off"
+                           class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                </div>
+                <button type="button" onclick="guardarTokenVarios()"
+                        class="w-full bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">
+                    Guardar token y continuar
+                </button>
+            </div>
+
+            <form id="form-editar-varios" class="space-y-4 hidden" onsubmit="return manejarSubmitEditarVarios(event)">
+                <input id="ev-page-id" type="hidden" value="" />
+                <p id="ev-nombre-lbl" class="text-[14px] font-semibold text-white bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 truncate"></p>
+
+                <div>
+                    <label for="ev-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha</label>
+                    <input id="ev-fecha" type="date"
+                           class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                </div>
+
+                <div>
+                    <label for="ev-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
+                    <select id="ev-estado"
+                            class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container"></select>
+                </div>
+
+                <p id="ev-mensaje" class="text-[13px] hidden"></p>
+
+                <div class="flex gap-3 pt-1">
+                    <button type="button" onclick="cerrarModalEditarVarios()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl transition-all">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">Guardar</button>
+                </div>
+
+                <button type="button" onclick="cambiarTokenVarios()" class="w-full text-center text-[11px] text-[#8e8e93] hover:text-white transition-colors pt-1">
+                    🔑 Cambiar el token guardado
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- SPINNER DE ESPERA Y CONFIRMACIÓN NOTION             -->
+    <!-- =================================================== -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarSpinnerNotion()" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- UTILITARIOS COMPARTIDOS (vanilla, sin bundler) -->
+    <!-- =================================================== -->
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
+
+    <!-- =================================================== -->
+    <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
+    <!-- =================================================== -->
+    <script>
+        // escapeHtml y obtenerEstiloEstado viven en src/utils/dashboard_logic.js;
+        // toggleBloque en src/utils/dom_render.js (testeadas con Jest en tests/unit/)
+        // — se reutilizan acá para mantener la misma codificación visual y el mismo
+        // comportamiento de colapsar/expandir que Recordatorios Diarios.
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // 0. Inicializar estado versionado en localStorage (crea o migra el
+            // esquema asistente_sabry:v1.0 si hace falta) — src/utils/src_localStorage_index.js
+            initLocalStorage();
+
+            // 1. Inyectar Relojes de Telemetría
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
+
+            // 2. Renderizar los cuatro bloques de recordatorios varios (tres
+            // cronológicos + "Sin fecha", nuevo v4.26)
+            renderizarRecordatoriosVarios("varios-ayer", recordatoriosVariosAyer);
+            renderizarRecordatoriosVarios("varios-hoy", recordatoriosVariosHoy);
+            renderizarRecordatoriosVarios("varios-manana", recordatoriosVariosManana);
+            renderizarRecordatoriosVarios("varios-sin-fecha", recordatoriosVariosSinFecha);
+            const hoyCnt = recordatoriosVariosHoy.length;
+            const manCnt = recordatoriosVariosManana.length;
+            const resCnt = recordatoriosVariosAyer.length + recordatoriosVariosSinFecha.length;
+            document.getElementById("varios-resumen-total").textContent = String(hoyCnt + manCnt + resCnt);
+            document.getElementById("varios-resumen-hoy").textContent = String(hoyCnt);
+            document.getElementById("varios-resumen-manana").textContent = String(manCnt);
+            document.getElementById("varios-resumen-resto").textContent = String(resCnt);
+        });
+
+        // renderizarRecordatoriosVarios vive en src/utils/dom_render.js desde
+        // v4.23 (antes estaba inline acá, sin test) — testeada en
+        // tests/unit/dom_render.test.js.
+
+        /**
+         * Abre/cierra el menú lateral de navegación
+         */
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = sidebar.classList.contains('-translate-x-full') === false;
+
+            if (isOpen) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            } else {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            }
+        }
+
+        /**
+         * Gatilla animación de refresco al presionar botón en cabecera
+         */
+        // recargarDashboard vive en src/utils/dom_render.js desde v4.24 (antes
+        // inline acá, sin test) — testeada en tests/unit/dom_render.test.js.
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
+
+        // Registro del Service Worker (PWA) — no bloquea el render inicial.
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            });
+        }
+
+        // =================================================== //
+        // EDITAR RECORDATORIOS VARIOS (Etapa 2)                //
+        // =================================================== //
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        function obtenerTokenGuardado() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+
+        function guardarTokenVarios() {
+            const token = document.getElementById("ev-token-input").value.trim();
+            if (!token) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, token); } catch (e) {}
+            document.getElementById("ev-token-input").value = "";
+            document.getElementById("ev-vista-token").classList.add("hidden");
+            document.getElementById("form-editar-varios").classList.remove("hidden");
+        }
+
+        function cambiarTokenVarios() {
+            try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+            document.getElementById("ev-vista-token").classList.remove("hidden");
+            document.getElementById("form-editar-varios").classList.add("hidden");
+        }
+
+        function _poblarSelectEstadosVarios(estadoActual) {
+            const select = document.getElementById("ev-estado");
+            const opciones = Array.isArray(recordatoriosVariosEstados) && recordatoriosVariosEstados.length
+                ? [...recordatoriosVariosEstados]
+                : ["Sin empezar"];
+            if (estadoActual && !opciones.includes(estadoActual)) {
+                opciones.unshift(estadoActual);
+            }
+            select.innerHTML = opciones
+                .map((op) => `<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`)
+                .join("");
+            if (estadoActual) select.value = estadoActual;
+        }
+
+        function abrirModalEditarVarios(prefijo, idx) {
+            const mapa = {
+                "varios-ayer": recordatoriosVariosAyer,
+                "varios-hoy": recordatoriosVariosHoy,
+            };
+            const item = (mapa[prefijo] || [])[idx];
+            if (!item || !item.id) return;
+
+            document.getElementById("ev-page-id").value = item.id;
+            document.getElementById("ev-nombre-lbl").textContent = item.nombre || "Sin nombre";
+            document.getElementById("ev-fecha").value = (item.fecha || "").slice(0, 10);
+            _poblarSelectEstadosVarios(item.estado);
+
+            const msg = document.getElementById("ev-mensaje");
+            msg.classList.add("hidden");
+            msg.textContent = "";
+
+            document.getElementById("modal-editar-varios").classList.remove("hidden");
+            document.getElementById("modal-editar-varios").classList.add("flex");
+
+            if (obtenerTokenGuardado()) {
+                document.getElementById("ev-vista-token").classList.add("hidden");
+                document.getElementById("form-editar-varios").classList.remove("hidden");
+            } else {
+                document.getElementById("ev-vista-token").classList.remove("hidden");
+                document.getElementById("form-editar-varios").classList.add("hidden");
+            }
+        }
+
+        function cerrarModalEditarVarios() {
+            document.getElementById("modal-editar-varios").classList.add("hidden");
+            document.getElementById("modal-editar-varios").classList.remove("flex");
+        }
+
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+
+        function cerrarSpinnerNotion() {
+            document.getElementById("modal-spinner-notion").classList.add("hidden");
+            document.getElementById("modal-spinner-notion").classList.remove("flex");
+        }
+
+        async function manejarSubmitEditarVarios(event) {
+            event.preventDefault();
+            const token = obtenerTokenGuardado();
+            if (!token) {
+                cambiarTokenVarios();
+                return false;
+            }
+
+            const pageId = document.getElementById("ev-page-id").value.trim();
+            const fecha = document.getElementById("ev-fecha").value.trim();
+            const estado = document.getElementById("ev-estado").value.trim();
+
+            cerrarModalEditarVarios();
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+
+            try {
+                const { url, options } = construirSolicitudNotionWrite(
+                    GITHUB_OWNER,
+                    GITHUB_REPO,
+                    "actualizar_recordatorio_varios",
+                    { page_id: pageId, fecha, estado },
+                    token,
+                );
+                const respuesta = await fetch(url, options);
+
+                if (respuesta.status === 401 || respuesta.status === 404) {
+                    cerrarSpinnerNotion();
+                    document.getElementById("modal-editar-varios").classList.remove("hidden");
+                    document.getElementById("modal-editar-varios").classList.add("flex");
+                    cambiarTokenVarios();
+                    return false;
+                }
+                if (respuesta.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${respuesta.status}). Probá de nuevo en un rato.`);
+                    return false;
+                }
+
+                const confirmacion = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER,
+                    repo: GITHUB_REPO,
+                    token,
+                    workflowFile: WORKFLOW_NOTION_WRITE,
+                    dispatchedAfterMs,
+                });
+
+                if (confirmacion.ok) {
+                    mostrarSpinnerNotion("ok", "¡Notion actualizado!", "Recargando recordatorios...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", confirmacion.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub. Revisá tu conexión e intentá de nuevo.");
+            }
+            return false;
+        }
+    </script>
+    <script src="./src/utils/somatic_shell.js"></script>
+</body>
+</html>

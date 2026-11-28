@@ -1,0 +1,907 @@
+﻿<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>AsistenteSabry</title>
+    <!-- PWA: instalable en celular (ver Documentacion/SRS.md SRS-FR-M3-311) -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0e0e0e">
+    <link rel="icon" href="./grafica/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./grafica/icons/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
+    <!-- Tipografías del Design System "v4.76" (Stitch) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Antes pedía wght 100..700 (rango completo variable); la interfaz solo usa wght 400 fijo,
+         así que se fija a un único valor -> Google sirve una instancia estática mucho más liviana
+         en vez de la fuente variable completa. FILL se mantiene en 0..1 porque sí se usan ambos. -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+    <!-- CSS de Tailwind precompilado (antes: cdn.tailwindcss.com haciendo JIT en el
+         navegador — 127KB de JS + tiempo de compilación en cada carga). El tema
+         (colores/spacing/etc.) vive en tailwind.config.js; regenerar con:
+         npm install && npm run build:css -->
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #08080a;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+        .status-row {
+            background: #18181d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .status-row:hover { background: #1f1f26; border-color: rgba(255, 255, 255, 0.12); }
+
+        .left-pill-blue { border-left: 3px solid #00aaff; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-green { border-left: 3px solid #53a759; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-red { border-left: 3px solid #ff5f52; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+
+        #sidebar {
+            transition: transform 0.3s ease;
+        }
+
+        /* Animación premium de rotación para refrescar el dashboard */
+        .spin-animation {
+            animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden antialiased">
+
+    <!-- =================================================== -->
+    <!-- VARIABLES INYECTADAS DINÁMICAMENTE POR EL BACKEND -->
+    <!-- =================================================== -->
+    <script>
+        // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
+        const timestampLocalStr = "28/11/2026 00:53:04";
+        const appVersionStr = "v4.95";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
+        const timestampNextStr = "28/11/2026 01:53:04";
+        const timestampServerStr = "28/11/2026 03:53:04";
+
+        // Estructuras JSON reales de distribución por estados (Notion DB) - Telemetría de peticiones eliminada
+        const conteoAyer = {"Hecha": 9, "Sin empezar": 4, "❌ Fallida / Vencida": 8, "⏭️ No necesaria": 3};
+        const conteoHoy = {"Sin empezar": 3};
+        const conteoManana = {};
+
+        // Nombres de las tareas de hoy en estado "Sin empezar" (lista colapsable
+        // dentro de "Progreso de hoy"). Solo el nombre, sin otros datos.
+        const tareasHoySinEmpezar = ["[SOLO PREGUNTAR] Llenar tanque y bidones de agua-Mañana", "Desayunar", "Armar cama"];
+        // Tareas de Ayer y Hoy con id y estado para desplegable editable (Etapa 3)
+        const tareasDiariasAyer = [{"id": "426a38bb-7a6e-8109-8de5-cc60b0f9a46b", "nombre": "Cenar", "estado": "Hecha", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-81fb-9984-e63e1672f790", "nombre": "Apagar y desenchufar monitor", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-8151-9f4f-c302e96df272", "nombre": "Skincare-Noche", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-8128-a993-cc0343dec1ab", "nombre": "Apagar teclado", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-8176-95bf-fec151b0a2e5", "nombre": "Cepillado de dientes-Noche", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-8179-81dc-ea2351fa1656", "nombre": "Apagar mousse", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-819f-bcd3-e43a3bcda8f0", "nombre": "Desenchufar cargador notebook", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-8100-bad5-f9079ecba24c", "nombre": "[ABRIR]-Gastos", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-81a2-87f2-ff93b925d745", "nombre": "Limpiar piso de habitación", "estado": "⏭️ No necesaria", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-81bb-8eb2-f3d632f2909b", "nombre": "Colación-Tarde ", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-8104-be95-f36ba8c0f47e", "nombre": "[SOLO PREGUNTAR] Llenar tanque y bidones de agua-Tarde", "estado": "⏭️ No necesaria", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-81ff-a99c-d0964f5c76fc", "nombre": "[SOLO PREGUNTAR] Ropa tendida afuera", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-81ee-a966-e5109e73996c", "nombre": "Almorzar", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-8121-961b-c6cfec35fe30", "nombre": "Actividad fisica", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-8109-b35b-efbd94b18938", "nombre": "Merendar", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-81df-ae8d-cd9560d90ccc", "nombre": "Vestirme", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-81f6-8e66-deeab89dcfb0", "nombre": "Tomar T4", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-8103-9a4c-e030277d25df", "nombre": "Skincare - Mañana", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-81fd-9e66-c4b2647c6e6e", "nombre": "Guardar ropa limpia", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-816f-926b-eeda620fad6b", "nombre": "Cepillado de dientes - [Mañana]", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-8168-9a34-d24d9c667cc6", "nombre": "Colación-Mañana", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-817d-914d-d6398b6f4655", "nombre": "[SOLO PREGUNTAR] Llenar tanque y bidones de agua-Mañana", "estado": "⏭️ No necesaria", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-810b-88de-f35533ae8843", "nombre": "Desayunar", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-819d-92e9-d7ad22dc2241", "nombre": "Armar cama", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}];
+        const tareasDiariasHoy = [{"id": "426a38bb-7a6e-81df-bf63-cc496b0805ae", "nombre": "[SOLO PREGUNTAR] Llenar tanque y bidones de agua-Mañana", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-81ee-8f62-eec2c5771ef3", "nombre": "Desayunar", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-8122-b698-f812c24776ab", "nombre": "Armar cama", "estado": "Sin empezar", "tipo_estado": "status"}];
+        const recordatoriosDiariosEstados = ["Sin empezar", "❌ Fallida / Vencida", "En ejecución", "⏭️ No necesaria", "Hecha por otra persona", "Hecha"];
+    </script>
+
+    <!-- =================================================== -->
+    <!-- SIDEBAR (oculto por defecto, se activa con el menú) -->
+    <!-- =================================================== -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
+        <div class="flex items-center gap-3 mb-5 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.95</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span>Agenda personal</span>
+            </a>
+            <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-2 bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/30 rounded-xl font-bold transition-all">
+                <span class="material-symbols-outlined">alarm</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">check_box</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="finanzas.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                <span>Finanzas</span>
+            </a>
+            <a href="salud.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Salud</span>
+            </a>
+            <a href="ocio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_library</span>
+                <span>Ocio</span>
+            </a>
+            <a href="gestion-emocional.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">psychology</span>
+                <span>Gestión emocional</span>
+            </a>
+            <a href="relaciones-y-limites.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">shield</span>
+                <span>Relaciones y límites</span>
+            </a>
+            <a href="desarrollo-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">trending_up</span>
+                <span>Desarrollo personal</span>
+            </a>
+            <a href="habitos-y-disciplina.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_fire_department</span>
+                <span>Hábitos y disciplina</span>
+            </a>
+        </nav>
+        <div class="pt-3 mt-3 border-t border-white/[0.08]">
+            <a href="https://contras.ai.studio/" target="_blank" rel="noopener" class="flex items-center gap-2 px-3 py-1.5 text-[#ffb961] hover:bg-[#ffb961]/10 rounded-lg transition-all text-[11px] font-semibold">
+                <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                <span>Contras AI Studio</span>
+            </a>
+        </div>
+        <div class="pt-3 mt-3 border-t border-white/[0.08] flex items-center gap-3 px-2">
+            <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
+            <div class="min-w-0">
+                <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <main class="min-h-screen lg:ml-64">
+        <!-- =================================================== -->
+        <!-- TOP APP BAR -->
+        <!-- =================================================== -->
+        <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">Asistente Sabry</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">RECORDATORIOS DIARIOS</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- =================================================== -->
+            <!-- HERO STATS ROW: HOY / AYER (vertical)               -->
+            <!-- =================================================== -->
+            <section class="grid grid-cols-1 gap-grid-gutter">
+
+                <!-- Progreso de Hoy -->
+                <article id="hoy-card" class="glass-card rounded-2xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6 transition-colors">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <h2 class="text-headline-md font-headline-md text-white">Progreso de hoy</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="total-hoy-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 tareas</span>
+                            <button type="button" onclick="toggleBloque('hoy')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-hoy">
+                                <span id="chevron-hoy" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="content-hoy" class="flex flex-col gap-6">
+                        <div id="hoy-mini-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <div class="bg-[#0e0e0f] rounded-xl border border-white/[0.06] px-3 py-2.5 text-center">
+                                <p class="text-[10px] text-[#8e8e93] uppercase tracking-wider">Sin empezar</p>
+                                <p id="mini-hoy-sin" class="text-[18px] font-bold text-[#00aaff] mt-0.5">0</p>
+                            </div>
+                            <div class="bg-[#0e0e0f] rounded-xl border border-white/[0.06] px-3 py-2.5 text-center">
+                                <p class="text-[10px] text-[#8e8e93] uppercase tracking-wider">Hecha</p>
+                                <p id="mini-hoy-hecha" class="text-[18px] font-bold text-[#53a759] mt-0.5">0</p>
+                            </div>
+                            <div class="bg-[#0e0e0f] rounded-xl border border-white/[0.06] px-3 py-2.5 text-center">
+                                <p class="text-[10px] text-[#8e8e93] uppercase tracking-wider">No necesaria</p>
+                                <p id="mini-hoy-nonec" class="text-[18px] font-bold text-[#e5e2e1] mt-0.5">0</p>
+                            </div>
+                            <div class="bg-[#0e0e0f] rounded-xl border border-white/[0.06] px-3 py-2.5 text-center">
+                                <p class="text-[10px] text-[#8e8e93] uppercase tracking-wider">Fallida</p>
+                                <p id="mini-hoy-fallida" class="text-[18px] font-bold text-[#ff5f52] mt-0.5">0</p>
+                            </div>
+                        </div>
+
+                        <div id="list-hoy" class="space-y-3">
+                            <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+
+                        <!-- Tareas de hoy en "Sin empezar": solo nombre, colapsable (se oculta si no hay ninguna) -->
+                        <div id="wrap-hoy-sin-empezar" class="space-y-3 hidden">
+                            <div class="flex justify-between items-center px-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS SIN EMPEZAR</p>
+                                <button type="button" onclick="toggleBloque('hoy-sin-empezar')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-hoy-sin-empezar">
+                                    <span id="chevron-hoy-sin-empezar" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                            <div id="content-hoy-sin-empezar">
+                                <div id="list-hoy-sin-empezar" class="space-y-2">
+                                    <!-- Se inyectan los nombres dinámicamente -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
+                                <p id="hechas-hoy-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
+                            </div>
+                            <div id="hoy-consistencia-card" class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center transition-colors">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
+                                <p id="consistencia-hoy-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
+                            </div>
+                        </div>
+
+                        <div id="alert-hoy" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
+                            <span class="material-symbols-outlined text-[#e49102] text-[20px]">report_problem</span>
+                            <p class="text-[13px] text-[#e49102] font-semibold" id="alert-hoy-text"></p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Progreso de ayer -->
+                <article class="glass-card rounded-2xl p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <h2 class="text-headline-md font-headline-md text-white">Progreso de ayer</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="total-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 tareas</span>
+                            <button type="button" onclick="toggleBloque('ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-ayer">
+                                <span id="chevron-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="content-ayer" class="flex flex-col gap-6">
+                        <div id="list-ayer" class="space-y-3">
+                            <!-- Se inyectan las filas dinámicamente -->
+                        </div>
+
+                        <!-- Tareas de ayer con selector de estado (Etapa 3) -->
+                        <div id="wrap-tareas-ayer" class="space-y-3 hidden">
+                            <div class="flex justify-between items-center px-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">TAREAS DE AYER</p>
+                                <button type="button" onclick="toggleBloque('tareas-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-tareas-ayer">
+                                    <span id="chevron-tareas-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                            <div id="content-tareas-ayer">
+                                <div id="list-tareas-ayer" class="space-y-2"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#232326] text-center">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">COMPLETADAS</p>
+                                <p id="hechas-ayer-val" class="text-metric-xl font-metric-xl text-white">0 / 0</p>
+                            </div>
+                            <div class="bg-[#0e0e0f] p-6 rounded-xl border border-[#e49102]/20 text-center">
+                                <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">CONSISTENCIA</p>
+                                <p id="consistencia-ayer-val" class="text-metric-xl font-metric-xl text-[#e49102]">0.0%</p>
+                            </div>
+                        </div>
+
+                        <div id="alert-ayer" class="hidden bg-[#e49102]/5 border border-[#e49102]/30 p-4 rounded-xl items-center gap-3">
+                            <span class="material-symbols-outlined text-[#e49102] text-[20px]">warning</span>
+                            <p class="text-[13px] text-[#e49102] font-semibold" id="alert-ayer-text"></p>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- =================================================== -->
+            <!-- BALANCE SEMANAL Y BIENESTAR -->
+            <!-- =================================================== -->
+            <section class="glass-card rounded-2xl overflow-hidden p-8 space-y-6">
+                <div class="space-y-1">
+                    <h2 class="text-headline-md font-headline-md text-white">Analítica de Consistencia</h2>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-[#232326]">
+                                <th class="px-2 py-4 text-[10px] font-label-caps text-[#8e8e93] uppercase">Fecha / Día</th>
+                                <th class="px-2 py-4 text-[10px] font-label-caps text-[#8e8e93] uppercase text-right">Consistencia (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="weekly-table-body" class="divide-y divide-[#232326]">
+                            <!-- Filas dinámicas mediante JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Alerta Mental / Empática de la Mentora de Bienestar (PRD V3.3) -->
+                <div id="wellness-alert-card" class="hidden">
+                    <section class="bg-[#111115] rounded-2xl p-8 border border-white/[0.08] border-l-4 border-l-[#ff5f52] relative overflow-hidden group mt-4">
+                        <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                            <span class="material-symbols-outlined text-[100px] text-white">forum</span>
+                        </div>
+                        <div class="flex items-start gap-6 relative z-10">
+                            <div class="bg-[#e49102]/10 p-4 rounded-xl border border-[#e49102]/30">
+                                <span class="material-symbols-outlined text-[#e49102] text-2xl">warning</span>
+                            </div>
+                            <div class="space-y-4 flex-grow">
+                                <p class="text-[11px] font-label-caps text-[#e49102] tracking-widest">FEEDBACK DE MENTORA</p>
+                                <blockquote class="text-[18px] font-headline-md italic text-white leading-relaxed font-bold">
+                                    "Linda, es momento de ajustar prioridades y analizar si son necesarias tantas tareas. No seas dura contigo, cielo. 🧠✨"
+                                </blockquote>
+                                <div class="flex items-center gap-2 text-[10px] font-label-caps text-[#8e8e93]">
+                                    <span>— CON AMOR</span>
+                                    <span class="text-[#53a759] material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                                    <span>SABRYOFF</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+            <!-- Botón de Redirección Oficial a Notion DB -->
+            <section class="flex flex-col items-center py-4">
+                <a href="https://app.notion.com/p/a61a38bb7a6e8251a38601779b0bd382?v=50da38bb7a6e82369cc9088797549db6&source=copy_link"
+                   target="_blank"
+                   class="bg-[#c0453b] hover:bg-[#c0453b]/90 text-white font-bold text-[16px] py-4 px-10 rounded-xl flex items-center gap-3 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
+                    <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+                    <span>Ir a recordatorios diarios</span>
+                    <span class="material-symbols-outlined text-[20px]">open_in_new</span>
+                </a>
+            </section>
+        </div>
+
+        <!-- =================================================== -->
+        <!-- FOOTER -->
+        <!-- =================================================== -->
+        <footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">dev</span></p>
+                    </div>
+                    <div class="flex flex-wrap gap-x-8 gap-y-2">
+                        <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Sabri Studios &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL EDITAR TAREA DIARIA -->
+    <div id="modal-editar-diario" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="cerrarModalEditarDiario()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between">
+                <h3 class="text-headline-md font-headline-md text-white">Editar tarea diaria</h3>
+                <button type="button" onclick="cerrarModalEditarDiario()" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-editar-diario" class="space-y-4" onsubmit="return manejarSubmitEditarDiario(event)">
+                <input id="rd-edit-id" type="hidden" value="" />
+                <input id="rd-edit-tipo-estado" type="hidden" value="status" />
+                <div>
+                    <label for="rd-edit-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre de la tarea *</label>
+                    <input id="rd-edit-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-1.5">
+                        <label for="rd-edit-estado" class="block text-[12px] font-semibold text-[#8e8e93]">Estado</label>
+                        <button type="button" onclick="descomponerTareaMicroPasos()" class="text-[11px] font-bold text-[#ffb961] hover:underline">✨ Descomponer en micro-pasos</button>
+                    </div>
+                    <select id="rd-edit-estado" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                </div>
+                <div id="rd-micropasos-wrap" class="hidden p-3.5 rounded-xl bg-[#08080a] border border-[#ffb961]/30 space-y-2">
+                    <p class="text-[10px] font-label-caps text-[#ffb961] tracking-widest">MICRO-PASOS COMPASIVOS (SIN FRICCIÓN)</p>
+                    <div id="rd-micropasos-list" class="space-y-1.5 text-xs"></div>
+                </div>
+                <div class="flex gap-2.5 pt-1">
+                    <button type="button" onclick="confirmarEliminarDiario()" class="bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[13px] px-3.5 py-2.5 rounded-xl" title="Mandar a papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
+                    <button type="button" onclick="cerrarModalEditarDiario()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[13px] py-2.5 rounded-xl">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[13px] py-2.5 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- MODAL TOKEN GITHUB (solo si aún no está guardado)   -->
+    <!-- =================================================== -->
+    <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="cerrarModalTokenDiarios()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center">
+                <h3 class="text-headline-md font-headline-md text-white">Configurar token de GitHub</h3>
+                <button type="button" onclick="cerrarModalTokenDiarios()" class="p-1.5 hover:bg-white/5 rounded-full transition-colors text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <p class="text-[13px] text-[#e2beba] leading-relaxed">
+                Para actualizar Notion sin exponer sus claves, se usa un token de GitHub guardado únicamente en este navegador
+                (<strong>Contents: Read and write</strong> y <strong>Actions: Read-only</strong> sobre este repo).
+            </p>
+            <div>
+                <label for="diarios-token-input" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Pegá el token acá</label>
+                <input id="diarios-token-input" type="password" autocomplete="off"
+                       class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+            </div>
+            <button type="button" onclick="guardarTokenDiarios()"
+                    class="w-full bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">
+                Guardar token
+            </button>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- SPINNER DE ESPERA Y CONFIRMACIÓN NOTION             -->
+    <!-- =================================================== -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarSpinnerNotion()" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- UTILITARIOS COMPARTIDOS (vanilla, sin bundler) -->
+    <!-- =================================================== -->
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
+
+    <!-- =================================================== -->
+    <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
+    <!-- =================================================== -->
+    <script>
+        // escapeHtml, esEstadoCompletado, obtenerEstiloEstado, calcularMetricas,
+        // generarUltimos7Dias y calcularResumenSemanal viven en
+        // src/utils/dashboard_logic.js (testeadas con Jest en tests/unit/).
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // 0. Inicializar estado versionado en localStorage (crea o migra el
+            // esquema asistente_sabry:v1.0 si hace falta) — src/utils/src_localStorage_index.js
+            initLocalStorage();
+
+            // 1. Inyectar Relojes de Telemetría
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
+
+            // 2. Procesar e Inyectar Bloques Temporales Complejos
+            procesarSeccionMetrica("ayer", conteoAyer);
+            procesarSeccionMetrica("hoy", conteoHoy);
+            const tareasHoySinEmpezarConEstado = (tareasDiariasHoy || []).filter((t) => (t.estado || "").toLowerCase().includes("sin empezar"));
+            if (tareasHoySinEmpezarConEstado.length > 0 || (tareasDiariasHoy || []).length > 0) {
+                renderizarTareasDiariasConEstado("hoy-sin-empezar", tareasHoySinEmpezarConEstado, recordatoriosDiariosEstados);
+            } else {
+                renderizarTareasSinEmpezar("hoy-sin-empezar", tareasHoySinEmpezar);
+            }
+            const tareasAyerPendientes = (tareasDiariasAyer || []).filter((t) => esEstadoPendienteOEnCurso(t.estado));
+            renderizarTareasDiariasConEstado("tareas-ayer", tareasAyerPendientes, recordatoriosDiariosEstados);
+        });
+
+        /**
+         * Procesa cuantitativamente los estados e inyecta KPIs matemáticos en la interfaz.
+         * El cálculo (total/hechas/tasa/umbral) vive en calcularMetricas() — acá solo DOM.
+         */
+        function procesarSeccionMetrica(prefijo, data) {
+            const { total, hechas, tasa, consistenciaOk, alerta } = calcularMetricas(data);
+
+            document.getElementById(`total-${prefijo}-lbl`).innerText = `${total} tareas`;
+            document.getElementById(`hechas-${prefijo}-val`).innerText = `${hechas} / ${total}`;
+
+            const consistenciaEl = document.getElementById(`consistencia-${prefijo}-val`);
+            consistenciaEl.innerText = `${tasa.toFixed(1)}%`;
+
+            // Aplicar colores según el umbral del 70% recomendado en el SRS
+            consistenciaEl.className = consistenciaOk
+                ? "text-metric-xl font-metric-xl text-[#83da85]"
+                : "text-metric-xl font-metric-xl text-[#e49102]";
+
+            renderizarFilasEstados(`list-${prefijo}`, data);
+
+            if (prefijo === "hoy") {
+                let cSin = 0, cHecha = 0, cNoNec = 0, cFallida = 0;
+                Object.entries(data || {}).forEach(([est, cant]) => {
+                    const n = est.toLowerCase();
+                    if (n.includes("sin empezar")) cSin += cant;
+                    else if (n.includes("no neces")) cNoNec += cant;
+                    else if (n.includes("fallida") || n.includes("vencida")) cFallida += cant;
+                    else if (esEstadoCompletado(est)) cHecha += cant;
+                });
+                const elS = document.getElementById("mini-hoy-sin"); if (elS) elS.textContent = String(cSin);
+                const elH = document.getElementById("mini-hoy-hecha"); if (elH) elH.textContent = String(cHecha);
+                const elN = document.getElementById("mini-hoy-nonec"); if (elN) elN.textContent = String(cNoNec);
+                const elF = document.getElementById("mini-hoy-fallida"); if (elF) elF.textContent = String(cFallida);
+            }
+
+            // Alerta individual del cuadro de hoy/ayer si cae del 70%
+            const alertBox = document.getElementById(`alert-${prefijo}`);
+            if (alertBox) {
+                if (alerta) {
+                    document.getElementById(`alert-${prefijo}-text`).innerHTML = `Tasa de consistencia crítica (<strong>${tasa.toFixed(1)}%</strong>). Reduzca la fricción del flujo.`;
+                    alertBox.classList.remove("hidden");
+                    alertBox.classList.add("flex");
+
+                    if (prefijo === "hoy") {
+                        document.getElementById("hoy-card").style.borderLeftColor = "#ffb961"; // secondary (aviso)
+                        document.getElementById("hoy-consistencia-card").className = "bg-[#e49102]/5 rounded-xl p-6 border-2 border-[#e49102]/30 text-center transition-colors";
+                    }
+                } else {
+                    alertBox.classList.add("hidden");
+                    alertBox.classList.remove("flex");
+
+                    if (prefijo === "hoy") {
+                        document.getElementById("hoy-card").style.borderLeftColor = "#ff5f52"; // primary-container (normal)
+                        document.getElementById("hoy-consistencia-card").className = "bg-[#0e0e0f] rounded-xl p-6 border border-[#232326] text-center transition-colors";
+                    }
+                }
+            }
+
+            // Gestionar caché para el Módulo Semanal de Bienestar
+            if (prefijo === "hoy") {
+                gestionarModuloSemanal(tasa.toFixed(1));
+            }
+        }
+
+        // renderizarFilasEstados vive en src/utils/dom_render.js (testeada con Jest + jsdom).
+
+        /**
+         * Persistencia y control histórico en local para el Balance Semanal (PRD 4.3)
+         */
+        function gestionarModuloSemanal(hoyConsistencia) {
+            let cache = {};
+            try {
+                cache = JSON.parse(localStorage.getItem("nfa_weekly_cache") || "{}");
+            } catch (e) {
+                cache = {};
+            }
+
+            const key = timestampLocalStr.split(" ")[0];
+            cache[key] = parseFloat(hoyConsistencia);
+            localStorage.setItem("nfa_weekly_cache", JSON.stringify(cache));
+
+            renderizarTablaSemanal(cache);
+        }
+
+        /**
+         * Renderizar la tabla semanal y calcular la Alerta de Bienestar de la Mentora
+         */
+        function renderizarTablaSemanal(cache) {
+            const tableBody = document.getElementById("weekly-table-body");
+            tableBody.innerHTML = "";
+
+            // Generamos las 7 fechas naturales consecutivas terminando hoy, en vez de
+            // tomar solo las fechas presentes en caché (eso dejaba huecos cuando el
+            // dashboard no se abría todos los días).
+            // Cálculo (qué días, cuáles bajan de 70%) vive en dashboard_logic.js — acá solo DOM.
+            const ultimos7Dias = generarUltimos7Dias(timestampLocalStr.split(" ")[0]);
+            const { filas, mostrarAlerta } = calcularResumenSemanal(cache, ultimos7Dias);
+
+            filas.forEach(({ key, tieneDato, value }) => {
+                let celdaValor;
+                if (!tieneDato) {
+                    celdaValor = `<span class="px-3 py-1 rounded bg-[#232326] text-[#8e8e93] text-[13px] font-bold border border-[#2a2a2a]">Sin dato</span>`;
+                } else if (value >= 70.0) {
+                    celdaValor = `<span class="px-3 py-1 rounded bg-[#53a759]/10 text-[#83da85] text-[13px] font-bold border border-[#53a759]/20">${value.toFixed(1)}%</span>`;
+                } else if (value < 30.0) {
+                    celdaValor = `<span class="px-3 py-1 rounded bg-[#ff5f52]/10 text-[#ffb4ab] text-[13px] font-bold border border-[#ff5f52]/20">${value.toFixed(1)}%</span>`;
+                } else {
+                    celdaValor = `<span class="px-3 py-1 rounded bg-[#e49102]/10 text-[#ffb961] text-[13px] font-bold border border-[#e49102]/20">${value.toFixed(1)}%</span>`;
+                }
+
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-white/[0.02] transition-colors";
+                tr.innerHTML = `
+                    <td class="px-2 py-5 text-on-surface font-semibold">${key}</td>
+                    <td class="px-2 py-5 text-right">${celdaValor}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            const alertCard = document.getElementById("wellness-alert-card");
+            if (mostrarAlerta) {
+                alertCard.classList.remove("hidden");
+            } else {
+                alertCard.classList.add("hidden");
+            }
+        }
+
+        // toggleBloque vive en src/utils/dom_render.js (testeada con Jest + jsdom).
+
+        /**
+         * Abre/cierra el menú lateral de navegación
+         */
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = sidebar.classList.contains('-translate-x-full') === false;
+
+            if (isOpen) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            } else {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            }
+        }
+
+        /**
+         * Gatilla animación de refresco al presionar botón en cabecera
+         */
+        // recargarDashboard vive en src/utils/dom_render.js desde v4.24 (antes
+        // inline acá, sin test) — testeada en tests/unit/dom_render.test.js.
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
+
+        // Registro del Service Worker (PWA) — no bloquea el render inicial.
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            });
+        }
+
+        // =================================================== //
+        // CAMBIAR ESTADO EN RECORDATORIOS DIARIOS (Etapa 3)   //
+        // =================================================== //
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        function obtenerTokenGuardado() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+
+        function abrirModalTokenDiarios() {
+            document.getElementById("modal-token-notion").classList.remove("hidden");
+            document.getElementById("modal-token-notion").classList.add("flex");
+        }
+
+        function cerrarModalTokenDiarios() {
+            document.getElementById("modal-token-notion").classList.add("hidden");
+            document.getElementById("modal-token-notion").classList.remove("flex");
+        }
+
+        function guardarTokenDiarios() {
+            const token = document.getElementById("diarios-token-input").value.trim();
+            if (!token) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, token); } catch (e) {}
+            document.getElementById("diarios-token-input").value = "";
+            cerrarModalTokenDiarios();
+        }
+
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+
+        function cerrarSpinnerNotion() {
+            document.getElementById("modal-spinner-notion").classList.add("hidden");
+            document.getElementById("modal-spinner-notion").classList.remove("flex");
+        }
+
+        async function cambiarEstadoTareaDiaria(pageId, tipoEstado, selectEl) {
+            const nuevoEstado = (selectEl && selectEl.value || "").trim();
+            if (!pageId || !nuevoEstado) return;
+
+            const token = obtenerTokenGuardado();
+            if (!token) {
+                abrirModalTokenDiarios();
+                return;
+            }
+
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+
+            try {
+                const { url, options } = construirSolicitudNotionWrite(
+                    GITHUB_OWNER,
+                    GITHUB_REPO,
+                    "actualizar_recordatorio_diario",
+                    { page_id: pageId, estado: nuevoEstado, tipo_estado: tipoEstado || "status" },
+                    token,
+                );
+                const respuesta = await fetch(url, options);
+
+                if (respuesta.status === 401 || respuesta.status === 404) {
+                    cerrarSpinnerNotion();
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModalTokenDiarios();
+                    return;
+                }
+                if (respuesta.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${respuesta.status}). Probá de nuevo en un rato.`);
+                    return;
+                }
+
+                const confirmacion = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER,
+                    repo: GITHUB_REPO,
+                    token,
+                    workflowFile: WORKFLOW_NOTION_WRITE,
+                    dispatchedAfterMs,
+                });
+
+                if (confirmacion.ok) {
+                    mostrarSpinnerNotion("ok", "¡Notion actualizado!", "Recargando recordatorios...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", confirmacion.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub. Revisá tu conexión e intentá de nuevo.");
+            }
+        }
+
+        function abrirModalEditarTareaDiaria(pageId) {
+            const lista = [...(tareasDiariasHoy || []), ...(tareasDiariasAyer || [])];
+            const t = lista.find((x) => x.id === pageId);
+            if (!t) return;
+            document.getElementById("rd-edit-id").value = t.id;
+            document.getElementById("rd-edit-tipo-estado").value = t.tipo_estado || "status";
+            document.getElementById("rd-edit-nombre").value = t.nombre || "";
+            const estOps = Array.isArray(recordatoriosDiariosEstados) && recordatoriosDiariosEstados.length
+                ? recordatoriosDiariosEstados
+                : ["Sin empezar", "En ejecución", "Hecha"];
+            const sel = document.getElementById("rd-edit-estado");
+            sel.innerHTML = estOps.map((op) => `<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`).join("");
+            if (t.estado) sel.value = t.estado;
+            const modal = document.getElementById("modal-editar-diario");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function cerrarModalEditarDiario() {
+            const modal = document.getElementById("modal-editar-diario");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        }
+
+        async function _enviarAccionDiarios(accion, payload, msgOk) {
+            const token = obtenerTokenGuardado();
+            if (!token) { abrirModalTokenDiarios(); return; }
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, payload, token);
+                const r = await fetch(url, options);
+                if (r.status === 401 || r.status === 404) {
+                    cerrarSpinnerNotion();
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModalTokenDiarios();
+                    return;
+                }
+                if (r.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${r.status}).`);
+                    return;
+                }
+                const conf = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER, repo: GITHUB_REPO, token,
+                    workflowFile: WORKFLOW_NOTION_WRITE, dispatchedAfterMs,
+                });
+                if (conf.ok) {
+                    mostrarSpinnerNotion("ok", msgOk, "Recargando recordatorios...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", conf.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub.");
+            }
+        }
+
+        async function manejarSubmitEditarDiario(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("rd-edit-id").value.trim();
+            const nombre = document.getElementById("rd-edit-nombre").value.trim();
+            const estado = document.getElementById("rd-edit-estado").value.trim();
+            const tipoEstado = document.getElementById("rd-edit-tipo-estado").value.trim();
+            if (!pageId || !nombre) return false;
+            cerrarModalEditarDiario();
+            await _enviarAccionDiarios("actualizar_recordatorio_diario", { page_id: pageId, nombre, estado, tipo_estado: tipoEstado }, "¡Tarea actualizada!");
+            return false;
+        }
+
+        async function confirmarEliminarDiario() {
+            const pageId = document.getElementById("rd-edit-id").value.trim();
+            const nombre = document.getElementById("rd-edit-nombre").value.trim() || "esta tarea";
+            if (!pageId) return;
+            if (!confirm(`¿Mandar "${nombre}" a la papelera de Notion?`)) return;
+            cerrarModalEditarDiario();
+            await _enviarAccionDiarios("archivar_pagina", { page_id: pageId }, "¡Tarea archivada!");
+        }
+
+        const RD_MICROPASOS_KEY = "asistente_sabry:rd_micropasos_v1";
+
+        function descomponerTareaMicroPasos() {
+            const pageId = document.getElementById("rd-edit-id").value.trim() || "tmp";
+            const nombre = document.getElementById("rd-edit-nombre").value.trim() || "la tarea";
+            const wrap = document.getElementById("rd-micropasos-wrap");
+            const list = document.getElementById("rd-micropasos-list");
+            if (!wrap || !list) return;
+
+            let store = {};
+            try { store = JSON.parse(localStorage.getItem(RD_MICROPASOS_KEY) || "{}"); } catch (e) {}
+            if (!Array.isArray(store[pageId]) || store[pageId].length === 0) {
+                store[pageId] = [
+                    { txt: "Preparar el entorno (2 min)", done: false },
+                    { txt: `Hacer solo el primer paso mínimo de "${nombre}"`, done: false },
+                    { txt: "Cerrar y validar el avance sin exigencia", done: false },
+                ];
+                try { localStorage.setItem(RD_MICROPASOS_KEY, JSON.stringify(store)); } catch (e) {}
+            }
+            list.innerHTML = store[pageId].map((p, idx) => `
+                <label class="flex items-start gap-2 text-[#e5e2e1] cursor-pointer">
+                    <input type="checkbox" ${p.done ? "checked" : ""} onchange="toggleMicroPasoRD('${escapeHtml(pageId)}', ${idx}, this.checked)" class="mt-0.5 accent-[#ffb961]" />
+                    <span class="${p.done ? "line-through text-[#8e8e93]" : ""}">${escapeHtml(p.txt)}</span>
+                </label>`).join("");
+            wrap.classList.remove("hidden");
+        }
+
+        function toggleMicroPasoRD(pageId, idx, checked) {
+            try {
+                const store = JSON.parse(localStorage.getItem(RD_MICROPASOS_KEY) || "{}");
+                if (Array.isArray(store[pageId]) && store[pageId][idx]) {
+                    store[pageId][idx].done = Boolean(checked);
+                    localStorage.setItem(RD_MICROPASOS_KEY, JSON.stringify(store));
+                }
+            } catch (e) {}
+            descomponerTareaMicroPasos();
+        }
+    </script>
+    <script src="./src/utils/somatic_shell.js"></script>
+</body>
+</html>

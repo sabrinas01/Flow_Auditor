@@ -1,0 +1,1487 @@
+﻿<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Desarrollo personal — AsistenteSabry</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0e0e0e">
+    <link rel="icon" href="./grafica/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./grafica/icons/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #08080a;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+        .status-row {
+            background: #18181d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .status-row:hover { background: #1f1f26; border-color: rgba(255, 255, 255, 0.12); }
+        #sidebar { transition: transform 0.3s ease; }
+        .spin-animation { animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden antialiased">
+
+    <script>
+        const timestampLocalStr = "28/11/2026 00:53:04";
+        const appVersionStr = "v4.95";
+        const timestampNextStr = "28/11/2026 01:53:04";
+        const timestampServerStr = "28/11/2026 03:53:04";
+
+        const desarrolloPersonalRegistros = [{"id": "426a38bb-7a6e-8112-a6fd-e6b10cdfad73", "nombre": "Escucha activa (Regla de los 3 segundos)", "pilar": "🗣️ Comunicación", "tipo": "🏋️ Ejercicio práctico", "estado": "En curso", "fecha": null, "frecuencia_tecnica": "Semanal / 3 pasos", "puntaje": null, "recurso_asociado": "", "enlace": null, "nota": "1) Pausar 3 segundos tras el punto de la otra persona. 2) Parafrasear antes de exponer mi punto de vista. 3) Detectar si respondo para ganar o para comprender.", "habito_vinculado_ids": ["426a38bb-7a6e-8139-ad09-fac7bf72bf67"]}, {"id": "425a38bb-7a6e-8182-9682-c8aa0842f518", "nombre": "Compartir aprendizajes (post, audio, journal)", "pilar": "🧭 Autoconocimiento", "tipo": "🪞 Reflexión / Disparador", "estado": "Sin empezar", "fecha": null, "frecuencia_tecnica": "Indefinido", "puntaje": null, "recurso_asociado": "", "enlace": null, "nota": "", "habito_vinculado_ids": []}, {"id": "425a38bb-7a6e-81ba-8575-f982c7995f67", "nombre": "Reto mensual de aprendizaje", "pilar": "🧭 Autoconocimiento", "tipo": "🪞 Reflexión / Disparador", "estado": "Sin empezar", "fecha": null, "frecuencia_tecnica": "Mensual / 1", "puntaje": null, "recurso_asociado": "", "enlace": null, "nota": "", "habito_vinculado_ids": []}, {"id": "425a38bb-7a6e-8187-9d5c-d50c44d48735", "nombre": "Método 2 minutos", "pilar": "🧭 Autoconocimiento", "tipo": "🏋️ Ejercicio práctico", "estado": "Sin empezar", "fecha": null, "frecuencia_tecnica": "Indefinido", "puntaje": 0, "recurso_asociado": "", "enlace": null, "nota": "", "habito_vinculado_ids": []}, {"id": "425a38bb-7a6e-81a8-bd5a-f9f83be5b5b8", "nombre": "Diálogo interno escrito: crítica vs. yo sabio", "pilar": "🧭 Autoconocimiento", "tipo": "🏋️ Ejercicio práctico", "estado": "Sin empezar", "fecha": null, "frecuencia_tecnica": "Semestral / 1", "puntaje": 0, "recurso_asociado": "", "enlace": null, "nota": "Diálogo interno escrito: crítica vs. yo sabio", "habito_vinculado_ids": []}, {"id": "425a38bb-7a6e-814e-bbfc-c23f2e495748", "nombre": "Test VIA de fortalezas", "pilar": "🧭 Autoconocimiento", "tipo": "🏋️ Ejercicio práctico", "estado": "Sin empezar", "fecha": null, "frecuencia_tecnica": "Semestral / 1", "puntaje": 0, "recurso_asociado": "", "enlace": null, "nota": "", "habito_vinculado_ids": []}, {"id": "425a38bb-7a6e-81f3-be72-d25d7da510a3", "nombre": "Preguntas para reflexionar", "pilar": "🧭 Autoconocimiento", "tipo": "🪞 Reflexión / Disparador", "estado": "Sin empezar", "fecha": null, "frecuencia_tecnica": "", "puntaje": null, "recurso_asociado": "", "enlace": null, "nota": "¿Me expresé con claridad esta semana?\n¿Qué nuevo aspecto de mí misma estoy valorando?\n¿Qué me pidió mi cuerpo esta semana?\n¿Tuve momentos reales de descanso?\n¿Qué hábito fue más fácil esta semana?\n¿Qué me saboteó y cómo lo puedo prevenir?\n- ¿Qué aprendí esta semana que me transformó?\n- ¿Cómo puedo aplicar lo aprendido?", "habito_vinculado_ids": []}, {"id": "425a38bb-7a6e-8175-944b-de5e88a881b6", "nombre": "Aceptar elogios conscientemente", "pilar": "🗣️ Comunicación", "tipo": "🏆 Logro / Validación", "estado": "Sin empezar", "fecha": null, "frecuencia_tecnica": "Indefinida", "puntaje": null, "recurso_asociado": "", "enlace": null, "nota": "", "habito_vinculado_ids": []}, {"id": "425a38bb-7a6e-8130-af2e-de92cde82f06", "nombre": "Ejercicio espejo (3 cosas que valoro de mí)", "pilar": "💖 Autoestima", "tipo": "🏋️ Ejercicio práctico", "estado": "Sin empezar", "fecha": null, "frecuencia_tecnica": "Mensual / 1", "puntaje": 0, "recurso_asociado": "", "enlace": null, "nota": "", "habito_vinculado_ids": []}, {"id": "425a38bb-7a6e-817f-a191-c2913f72b984", "nombre": "Preguntas para reflexionar", "pilar": "🗣️ Comunicación", "tipo": "🪞 Reflexión / Disparador", "estado": "Sin empezar", "fecha": null, "frecuencia_tecnica": "", "puntaje": 0, "recurso_asociado": "", "enlace": null, "nota": "- ¿Dije que sí cuando quería decir no?\n- ¿Qué relación me está drenando y por qué?", "habito_vinculado_ids": []}, {"id": "425a38bb-7a6e-8104-9334-ffa110cc7e9f", "nombre": "Autoafirmación diaria: \"Puedo decir que no sin culpa\"", "pilar": "🗣️ Comunicación", "tipo": "🏋️ Ejercicio práctico", "estado": "Sin empezar", "fecha": null, "frecuencia_tecnica": "Diario / 1", "puntaje": 0, "recurso_asociado": "", "enlace": null, "nota": "", "habito_vinculado_ids": []}, {"id": "425a38bb-7a6e-8147-850b-c479ee9f6f64", "nombre": "Frases asertivas (practicar 1 por día)", "pilar": "🗣️ Comunicación", "tipo": "🏋️ Ejercicio práctico", "estado": "Sin empezar", "fecha": null, "frecuencia_tecnica": "Diario / 1", "puntaje": 0, "recurso_asociado": "", "enlace": null, "nota": "", "habito_vinculado_ids": []}, {"id": "425a38bb-7a6e-8126-b9c3-c8c134d93882", "nombre": "Preguntas para reflexionar", "pilar": "🧭 Autoconocimiento", "tipo": "🪞 Reflexión / Disparador", "estado": "Sin empezar", "fecha": null, "frecuencia_tecnica": "", "puntaje": null, "recurso_asociado": "", "enlace": null, "nota": "¿Qué actividad me conecta con mi energía vital?", "habito_vinculado_ids": []}, {"id": "425a38bb-7a6e-815e-a3eb-edfc0a2fa3ba", "nombre": "Escribir visión a 1, 3 y 5 años", "pilar": "🧭 Autoconocimiento", "tipo": "🏋️ Ejercicio práctico", "estado": "Sin empezar", "fecha": null, "frecuencia_tecnica": "Semestral / 1", "puntaje": 0, "recurso_asociado": "", "enlace": null, "nota": "", "habito_vinculado_ids": []}, {"id": "425a38bb-7a6e-81e5-8fd9-e387eff54893", "nombre": "Ejercicio Ikigai", "pilar": "🧭 Autoconocimiento", "tipo": "🏋️ Ejercicio práctico", "estado": "Sin empezar", "fecha": null, "frecuencia_tecnica": "Mensual / 1", "puntaje": 0, "recurso_asociado": "", "enlace": null, "nota": "", "habito_vinculado_ids": []}];
+        const desarrolloLibrosCatalogo = ["Muchos cuerpos, una misma alma", "Prohibido enamorarse de Alan walker", "La inteligencia emocional-Goleman?", "El método Silva de control mental", "Como ganar amigos e influir sobre las personas", "Padre Rico padre pobre-Robert Kiyosaky", "El lider que no tenia cargo", "El arte de amar. Ench Fromm", "Padre Rico padre pobre para jóvenes", "5 disfunciones de un equipo-Patrick Lencioni", "7 hábitos de la gente altamente efectiva-Sthepen Covey", "Habitos de ricos", "Los 4 acuerdos. Miguel Ruiz", "Harry pother y el legado del niño maldito", "Quien se ha llevado mi queso Spencer Johnson", "Poderosamente- Bernarbe Tierno", "Besar a un angel", "Libertad Financiera", "Los calabozos de langeais", "El poder del ahora. Eckhart Tolle", "Amar o depender. Walter riso"];
+        const desarrolloHabitosCatalogo = [{"id": "426a38bb-7a6e-8139-ad09-fac7bf72bf67", "nombre": "Escucha activa (Regla de los 3 segundos)", "categoria": "🧠 Mente & Foco", "frecuencia_meta": "Semanal / 3 pasos", "estado": "Activo"}, {"id": "424a38bb-7a6e-8123-9cf5-f1b567af1175", "nombre": "Una respiración al día 4-7-8", "categoria": "🧠 Mente & Foco", "frecuencia_meta": "Diario/1", "estado": "Activo"}];
+        const desarrolloPersonalOpciones = {"pilares": ["🗣️ Comunicación", "💖 Autoestima", "🧭 Autoconocimiento"], "tipos": ["💬 Conversación", "🏆 Logro / Validación", "🪞 Reflexión / Disparador", "🎯 Valor / Meta", "🏋️ Ejercicio práctico", "🎥 Video / Masterclass", "📖 Lectura / Libro"], "estados": ["Sin empezar", "En curso", "Completado", "Integrado"]};
+    </script>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
+        <div class="flex items-center gap-3 mb-5 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.95</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span>Agenda personal</span>
+            </a>
+            <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">alarm</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">check_box</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="finanzas.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                <span>Finanzas</span>
+            </a>
+            <a href="salud.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Salud</span>
+            </a>
+            <a href="ocio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_library</span>
+                <span>Ocio</span>
+            </a>
+            <a href="gestion-emocional.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">psychology</span>
+                <span>Gestión emocional</span>
+            </a>
+            <a href="relaciones-y-limites.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">shield</span>
+                <span>Relaciones y límites</span>
+            </a>
+            <a href="desarrollo-personal.html" class="flex items-center gap-3 px-4 py-2 bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/30 rounded-xl font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+                <span>Desarrollo personal</span>
+            </a>
+            <a href="habitos-y-disciplina.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_fire_department</span>
+                <span>Hábitos y disciplina</span>
+            </a>
+        </nav>
+        <div class="pt-3 mt-3 border-t border-white/[0.08]">
+            <a href="https://contras.ai.studio/" target="_blank" rel="noopener" class="flex items-center gap-2 px-3 py-1.5 text-[#ffb961] hover:bg-[#ffb961]/10 rounded-lg transition-all text-[11px] font-semibold">
+                <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                <span>Contras AI Studio</span>
+            </a>
+        </div>
+
+        <div class="pt-3 mt-3 border-t border-white/[0.08] flex items-center gap-3 px-2">
+            <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
+            <div class="min-w-0">
+                <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.95</p>
+            </div>
+        </div>
+    </aside>
+
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <main class="min-h-screen lg:ml-64">
+        <!-- TOP APP BAR -->
+        <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-4 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-white/5 rounded-full transition-colors active:scale-95 text-[#ffb4aa]" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div>
+                        <span class="text-[12px] font-label-caps font-bold text-[#a1a1aa] tracking-widest uppercase">ASISTENTESABRY • <span id="header-version" class="text-[#ff5f52]">dev</span></span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="https://app.notion.com/p/422a38bb7a6e8190992bd07ad1f80f30" target="_blank" rel="noopener" class="hidden sm:inline-flex items-center gap-1.5 bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-xs px-3 py-1.5 rounded-lg transition-all">
+                        <span>Ver en Notion</span>
+                        <span class="material-symbols-outlined text-[15px]">open_in_new</span>
+                    </a>
+                    <button id="btn-refresh" class="p-2 hover:bg-white/5 rounded-full transition-colors active:scale-95 text-[#a1a1aa] hover:text-white" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- HERO DEL MÓDULO -->
+            <section class="flex flex-wrap justify-between items-end gap-5">
+                <div class="space-y-2.5 max-w-2xl">
+                    <h1 class="font-display-lg text-3xl sm:text-4xl font-extrabold text-white tracking-tight uppercase">DESARROLLO PERSONAL</h1>
+                    <p class="text-[13px] text-[#a1a1aa] leading-relaxed"><strong class="text-white">Objetivo:</strong> Cultivar maestría personal, alinear hábitos con la visión de vida y expandir el potencial con disciplina amable.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <button id="btn-papelera-dp" type="button" onclick="abrirPapeleraDP()" class="hidden bg-[#1c1c1f] hover:bg-[#232326] border border-[#ffb961]/30 text-[#ffb961] font-semibold text-[12px] px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
+                        <span class="material-symbols-outlined text-[17px]">restore_from_trash</span>
+                        <span>Papelera Segura (<span id="papelera-dp-count">0</span>)</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- FILA DE 5 KPIs PRINCIPALES -->
+            <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#ffb961] space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest">COMUNICACIÓN ASERTIVA</p>
+                        <span class="material-symbols-outlined text-[18px] text-[#ffb961]">record_voice_over</span>
+                    </div>
+                    <p class="text-2xl font-extrabold text-white"><span id="dp-kpi-com">0</span> <span class="text-xs font-semibold text-[#83da85]">reg.</span></p>
+                    <p class="text-[11px] text-[#8e8e93]">Escucha activa y acuerdos</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#ff5f52] space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest">BARÓMETRO AUTOESTIMA</p>
+                        <span class="material-symbols-outlined text-[18px] text-[#ff5f52]">favorite</span>
+                    </div>
+                    <p class="text-2xl font-extrabold text-[#ff5f52]"><span id="dp-kpi-aut">0</span> <span class="text-xs font-semibold text-[#8e8e93]">reg.</span></p>
+                    <p class="text-[11px] text-[#8e8e93]">Diálogo interno y merecimiento</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#83da85] space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest">ALINEACIÓN VALORES</p>
+                        <span class="material-symbols-outlined text-[18px] text-[#83da85]">balance</span>
+                    </div>
+                    <p class="text-2xl font-extrabold text-white"><span id="dp-kpi-con">0</span> <span class="text-xs font-semibold text-[#83da85]">reg.</span></p>
+                    <p class="text-[11px] text-[#8e8e93]">Coherencia consciente</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#ffb961] space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest">PRÁCTICA CONSCIENTE</p>
+                        <span class="material-symbols-outlined text-[18px] text-[#ffb961]">self_improvement</span>
+                    </div>
+                    <p id="dp-kpi-prog" class="text-2xl font-extrabold text-[#83da85]">0%</p>
+                    <p id="dp-kpi-ej" class="text-[11px] text-[#8e8e93]">0 ejercicios en curso</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#ff5f52] space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest">RECURSOS VINCULADOS</p>
+                        <span class="material-symbols-outlined text-[18px] text-[#ff5f52]">auto_stories</span>
+                    </div>
+                    <p class="text-2xl font-extrabold text-white"><span id="dp-kpi-rec">0</span> <span class="text-xs font-semibold text-[#83da85]">catálogo</span></p>
+                    <p class="text-[11px] text-[#8e8e93]">Libros, videos y talleres</p>
+                </div>
+            </section>
+
+            <!-- BLOQUE PRINCIPAL: CRUD MULTIMODAL · BIBLIOTECA ACTIVA -->
+            <section class="glass-card rounded-2xl p-6 sm:p-8 border border-white/[0.08] space-y-5">
+                <div class="flex flex-wrap justify-between items-start gap-4">
+                    <div class="space-y-1">
+                        <p class="text-[11px] font-label-caps text-[#ffb961] tracking-widest">CRUD MULTIMODAL • BIBLIOTECA ACTIVA DE DESARROLLO</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Gestión Multimodal de Crecimiento &amp; Recursos Aplicados</h2>
+                        <p class="text-[12px] text-[#8e8e93]">Articulación directa entre teoría formativa y aplicación práctica con sincronización bidireccional en Notion.</p>
+                    </div>
+                    <button type="button" onclick="abrirModalDesarrollo(null, '📖 Lectura / Libro')" class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-xs px-4 py-2.5 rounded-xl inline-flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[17px]">add</span>
+                        <span>Nuevo Recurso / Actividad</span>
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                        <button type="button" onclick="filtrarTipoDP('todos')" data-tipo="todos" class="dp-tipo-flt px-3.5 py-1.5 rounded-full bg-[#ff5f52] text-white font-bold transition-all">Todos (<span id="cnt-tipo-todos">0</span>)</button>
+                        <button type="button" onclick="filtrarTipoDP('Ejercicio')" data-tipo="Ejercicio" class="dp-tipo-flt px-3.5 py-1.5 rounded-full bg-[#1c1c1f] text-[#a1a1aa] hover:text-white font-semibold transition-all">🏃 Ejercicios Prácticos (<span id="cnt-tipo-ej">0</span>)</button>
+                        <button type="button" onclick="filtrarTipoDP('Video')" data-tipo="Video" class="dp-tipo-flt px-3.5 py-1.5 rounded-full bg-[#1c1c1f] text-[#a1a1aa] hover:text-white font-semibold transition-all">📺 Videos &amp; Masterclasses (<span id="cnt-tipo-vid">0</span>)</button>
+                        <button type="button" onclick="filtrarTipoDP('Lectura')" data-tipo="Lectura" class="dp-tipo-flt px-3.5 py-1.5 rounded-full bg-[#1c1c1f] text-[#a1a1aa] hover:text-white font-semibold transition-all">📖 Lecturas &amp; Ensayos (<span id="cnt-tipo-lec">0</span>)</button>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <button type="button" onclick="filtrarPilar('todos')" id="flt-todos" class="px-3 py-1 rounded-full text-[11px] font-bold bg-[#ff5f52]/20 text-[#ff5f52] border border-[#ff5f52]/40 transition-all">Todos</button>
+                        <button type="button" onclick="filtrarPilar('🗣️ Comunicación')" id="flt-com" class="px-3 py-1 rounded-full text-[11px] font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">🗣️ Comunicación</button>
+                        <button type="button" onclick="filtrarPilar('💖 Autoestima')" id="flt-aut" class="px-3 py-1 rounded-full text-[11px] font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">💖 Autoestima</button>
+                        <button type="button" onclick="filtrarPilar('🧭 Autoconocimiento')" id="flt-con" class="px-3 py-1 rounded-full text-[11px] font-semibold bg-[#1c1c1f] text-[#a1a1aa] border border-white/[0.08] hover:text-white transition-all">🧭 Autoconocimiento</button>
+                    </div>
+                </div>
+
+                <div id="list-biblioteca-multimodal" class="space-y-3"></div>
+            </section>
+
+            <!-- SECCIÓN 01: COMUNICACIÓN ASERTIVA & VÍNCULOS -->
+            <section id="sec-comunicacion" class="glass-card rounded-2xl p-8 border-l-4 border-l-[#38bdf8] space-y-6">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#38bdf8] tracking-widest">SECCIÓN 01 • COMUNICACIÓN ASERTIVA &amp; VÍNCULOS</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Comunicación &amp; Inteligencia Relacional</h2>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="abrirModalDesarrollo('🗣️ Comunicación', '💬 Conversación')" class="bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/40 text-[#38bdf8] font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px]">add_comment</span>
+                            <span>+ Registrar Conversación</span>
+                        </button>
+                        <button type="button" onclick="abrirModalDesarrollo('🗣️ Comunicación', '🏋️ Ejercicio práctico')" class="bg-[#18181d] hover:bg-[#232326] border border-white/[0.08] text-white font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>+ Nuevo Ejercicio</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="list-comunicacion" class="space-y-3"></div>
+            </section>
+
+            <!-- SECCIÓN 02: AUTOESTIMA & AUTOCOMPASIÓN ACTIVA -->
+            <section id="sec-autoestima" class="glass-card rounded-2xl p-8 border-l-4 border-l-[#f472b6] space-y-6">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#f472b6] tracking-widest">SECCIÓN 02 • CONFIANZA, MERECIMIENTO &amp; DIÁLOGO INTERNO</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Autoestima &amp; Autocompasión Activa</h2>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="abrirModalDesarrollo('💖 Autoestima', '🏆 Logro / Validación')" class="bg-[#f472b6]/15 hover:bg-[#f472b6]/25 border border-[#f472b6]/40 text-[#f472b6] font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px]">verified</span>
+                            <span>+ Añadir Logro / Validación</span>
+                        </button>
+                        <button type="button" onclick="abrirModalDesarrollo('💖 Autoestima', '🏋️ Ejercicio práctico')" class="bg-[#18181d] hover:bg-[#232326] border border-white/[0.08] text-white font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>+ Nuevo Ejercicio</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[#18181d] border border-[#f472b6]/25 space-y-1.5">
+                    <p class="text-[10px] font-label-caps text-[#f472b6] tracking-widest">QUÉ CARGAR EN ESTE PILAR</p>
+                    <p class="text-[13px] text-[#e5e2e1] leading-relaxed">Registrá acá tus logros del día (por chicos que parezcan), momentos en los que te trataste con amabilidad, validaciones personales y ejercicios para fortalecer tu diálogo interno.</p>
+                    <p class="text-[11px] text-[#8e8e93]">Ejemplos: 🏆 Logro / Validación · 🏋️ Ejercicio práctico · 📖 Lectura o charla sobre autocompasión</p>
+                </div>
+
+                <div id="list-autoestima" class="space-y-3"></div>
+            </section>
+
+            <!-- SECCIÓN 03: AUTOCONOCIMIENTO & BRÚJULA INTERNA -->
+            <section id="sec-autoconocimiento" class="glass-card rounded-2xl p-8 border-l-4 border-l-[#a855f7] space-y-6">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#a855f7] tracking-widest">SECCIÓN 03 • MAPA INTERIOR, VALORES &amp; INTROSPECCIÓN</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Autoconocimiento &amp; Brújula Interna</h2>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="abrirModalDesarrollo('🧭 Autoconocimiento', '🪞 Reflexión / Disparador')" class="bg-[#a855f7]/15 hover:bg-[#a855f7]/25 border border-[#a855f7]/40 text-[#a855f7] font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px]">add_circle</span>
+                            <span>+ Nueva Reflexión Introspectiva</span>
+                        </button>
+                        <button type="button" onclick="abrirModalDesarrollo('🧭 Autoconocimiento', '🏋️ Ejercicio práctico')" class="bg-[#18181d] hover:bg-[#232326] border border-white/[0.08] text-white font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>+ Nuevo Ejercicio</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[#18181d] border border-[#a855f7]/25 space-y-1.5">
+                    <p class="text-[10px] font-label-caps text-[#a855f7] tracking-widest">QUÉ CARGAR EN ESTE PILAR</p>
+                    <p class="text-[13px] text-[#e5e2e1] leading-relaxed">Registrá acá reflexiones sobre qué situaciones te dan o te quitan energía, necesidades tuyas que detectaste, valores que querés priorizar, metas personales y ejercicios de introspección.</p>
+                    <p class="text-[11px] text-[#8e8e93]">Ejemplos: 🪞 Reflexión / Disparador · 🎯 Valor / Meta · 🏋️ Ejercicio práctico</p>
+                </div>
+
+                <div id="list-autoconocimiento" class="space-y-3"></div>
+            </section>
+        </div>
+
+        <footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">dev</span></p>
+                    </div>
+                    <div class="flex flex-wrap gap-x-8 gap-y-2">
+                        <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Sabri Studios &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL DESARROLLO PERSONAL (CAPA 1) -->
+    <div id="modal-desarrollo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalDesarrollo()">
+        <div id="dp-modal-card" class="glass-card rounded-2xl p-6 w-full max-w-2xl my-8 transition-all duration-200" onclick="event.stopPropagation()">
+            <div id="dp-pause-banner" class="hidden mb-4 px-3 py-2 rounded-xl bg-[#ffb961]/10 border border-[#ffb961]/30 flex items-center justify-between gap-2 text-[11px] font-semibold text-[#ffb961]">
+                <span class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[15px]">pause_circle</span>
+                    <span>PROCESO EN PAUSA • Borrador preservado • CONTEXT LOCK: NIVEL 1</span>
+                </span>
+            </div>
+            <div class="flex justify-between items-center mb-5">
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <h3 id="dp-modal-titulo" class="text-headline-md font-headline-md text-white">Nuevo registro</h3>
+                    <span id="dp-step-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#ff5f52]/15 text-[#ff5f52] border border-[#ff5f52]/30">Paso 1 de 2</span>
+                    <span id="dp-draft-badge" class="hidden px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30">✓ Borrador restaurado</span>
+                </div>
+                <button type="button" onclick="cerrarModalDesarrollo(true)" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]" title="Cerrar (Esc)">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-desarrollo" class="space-y-4" oninput="guardarBorradorDesarrollo()" onsubmit="return manejarSubmitDesarrollo(event)">
+                <input id="dp-page-id" type="hidden" value="" />
+                <input id="dp-pilar" type="hidden" value="" />
+                <input id="dp-tipo" type="hidden" value="" />
+
+                <!-- PASO 1: ELEGIR PILAR Y TIPO -->
+                <div id="dp-step-1" class="space-y-5">
+                    <p class="text-[13px] text-[#a1a1aa]">Elegí el área y el formato de lo que querés registrar para mostrarte solo los campos necesarios.</p>
+                    <div>
+                        <p class="text-[12px] font-semibold text-[#e5e2e1] mb-2">1. ¿En qué pilar estás trabajando?</p>
+                        <div id="dp-pilares-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5"></div>
+                    </div>
+                    <div>
+                        <p class="text-[12px] font-semibold text-[#e5e2e1] mb-2">2. ¿Qué tipo de registro es?</p>
+                        <div id="dp-tipos-cards" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+                    </div>
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="cerrarModalDesarrollo(true)" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                        <button type="button" onclick="irAPaso2Desarrollo()" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-3 rounded-xl inline-flex items-center justify-center gap-1.5">
+                            <span>Siguiente: Completar detalle</span>
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PASO 2: DETALLE GUIADO -->
+                <div id="dp-step-2" class="hidden space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-[#08080a] border border-white/[0.08]">
+                        <span id="dp-resumen-seleccion" class="text-xs font-bold text-white"></span>
+                        <button type="button" onclick="irAPaso1Desarrollo()" class="text-xs font-semibold text-[#ff5f52] hover:underline inline-flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">arrow_back</span>
+                            <span>Cambiar tipo / pilar</span>
+                        </button>
+                    </div>
+                    <div>
+                        <label for="dp-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre / Título *</label>
+                        <input id="dp-nombre" type="text" required maxlength="200" placeholder="Escribí un título claro y breve..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div id="dp-grupo-estado">
+                            <label for="dp-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
+                            <select id="dp-estado" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                        </div>
+                        <div>
+                            <label for="dp-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha</label>
+                            <input id="dp-fecha" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                        </div>
+                    </div>
+                    <div id="dp-grupo-puntaje" class="p-3.5 rounded-xl bg-[#08080a] border border-[#ff5f52]/25 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label for="dp-puntaje-slider" class="text-[12px] font-semibold text-[#e5e2e1]">Nivel de avance / Puntaje</label>
+                            <span id="dp-puntaje-valor" class="text-base font-extrabold text-[#ff5f52]">0%</span>
+                        </div>
+                        <input id="dp-puntaje-slider" type="range" min="0" max="100" step="5" value="0" oninput="actualizarSliderDP(this.value)" class="w-full accent-[#ff5f52] cursor-pointer" />
+                        <input id="dp-puntaje" type="hidden" value="" />
+                    </div>
+                    <div id="dp-grupo-frecuencia">
+                        <label for="dp-frecuencia" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Frecuencia / Técnica</label>
+                        <input id="dp-frecuencia" type="text" maxlength="120" placeholder="Ej. CNV · Validación / DIARIO · 5 MIN" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div id="dp-grupo-habito" class="hidden p-3.5 rounded-xl bg-[#08080a] border border-[#83da85]/30 space-y-3">
+                        <p class="text-[10px] font-label-caps text-[#83da85] tracking-widest">TRACKING EN HÁBITOS</p>
+                        <div>
+                            <label for="dp-habito-vinculado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Vincular hábito existente</label>
+                            <select id="dp-habito-vinculado" onchange="onSelectHabitoVinculadoDP(this.value)" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]">
+                                <option value="">Sin hábito vinculado</option>
+                            </select>
+                        </div>
+                        <label class="flex items-start gap-2.5 cursor-pointer">
+                            <input id="dp-crear-habito" type="checkbox" onchange="onToggleCrearHabitoDP(this.checked)" class="mt-0.5 accent-[#83da85]" />
+                            <span class="text-[12px] text-[#e5e2e1] leading-snug">
+                                <strong class="block text-white">Crear también en Hábitos para trackear</strong>
+                                <span class="text-[11px] text-[#8e8e93]">Se creará automáticamente en 🔥 Hábitos y Disciplina usando el título y la frecuencia definida arriba.</span>
+                            </span>
+                        </label>
+                        <div id="dp-habito-cat-wrap" class="hidden">
+                            <label for="dp-habito-categoria" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Categoría en Hábitos</label>
+                            <select id="dp-habito-categoria" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]">
+                                <option value="🧠 Mente & Foco">🧠 Mente &amp; Foco</option>
+                                <option value="🌅 Mañana">🌅 Mañana</option>
+                                <option value="🌙 Noche">🌙 Noche</option>
+                                <option value="💪 Cuerpo & Salud">💪 Cuerpo &amp; Salud</option>
+                                <option value="💼 Carrera & Tech">💼 Carrera &amp; Tech</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="dp-recurso-toggle-wrap" class="hidden">
+                        <button type="button" onclick="mostrarBloqueRecursoDP()" class="text-xs font-semibold text-[#a855f7] hover:text-[#c084fc] inline-flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[15px]">add_circle</span>
+                            <span>+ Vincular recurso o enlace opcional</span>
+                        </button>
+                    </div>
+                    <div id="dp-grupo-recurso" class="grid grid-cols-1 gap-3">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-1.5">
+                                <label for="dp-recurso" class="block text-[12px] font-semibold text-[#8e8e93]">Recurso asociado</label>
+                                <button type="button" onclick="abrirSubmodalRecursoVuelo()" class="text-[11px] font-bold text-[#a855f7] hover:text-[#c084fc] flex items-center gap-1 transition-colors" title="Crear nuevo recurso sin perder este borrador">
+                                    <span class="material-symbols-outlined text-[14px]">add_circle</span>
+                                    <span>+ Nuevo recurso</span>
+                                </button>
+                            </div>
+                            <input id="dp-recurso" list="dp-libros-datalist" type="text" maxlength="200" placeholder="Elegí o escribí un libro, curso o charla..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                            <datalist id="dp-libros-datalist"></datalist>
+                            <p id="dp-recurso-toast" class="hidden mt-1 text-[11px] text-[#83da85] font-semibold">✓ Recurso vinculado a la práctica</p>
+                        </div>
+                        <div>
+                            <label for="dp-enlace" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Enlace (URL opcional)</label>
+                            <input id="dp-enlace" type="url" placeholder="https://..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                        </div>
+                    </div>
+                    <div>
+                        <label for="dp-nota" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nota / Descripción</label>
+                        <textarea id="dp-nota" rows="3" maxlength="1000" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></textarea>
+                    </div>
+                    <p id="dp-mensaje" class="text-[13px] hidden"></p>
+                    <div class="flex gap-3 pt-1">
+                        <button id="dp-btn-eliminar" type="button" onclick="abrirGuardrailEliminacion()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl" title="Opciones de archivo o eliminación segura">
+                            <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                        </button>
+                        <button type="button" onclick="irAPaso1Desarrollo()" class="bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] px-4 py-3 rounded-xl">← Atrás</button>
+                        <button type="button" onclick="cerrarModalDesarrollo(true)" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                        <button type="submit" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SUBMODAL CREACIÓN DE RECURSO EN VUELO (CAPA 2) -->
+    <div id="modal-recurso-vuelo" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/75 backdrop-blur-md p-4 overflow-y-auto" onclick="cerrarSubmodalRecursoVuelo()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8 border border-[#a855f7]/40 shadow-[0_20px_60px_rgba(0,0,0,0.65)]" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider bg-[#a855f7]/15 text-[#c084fc] border border-[#a855f7]/30">CAPA 2 ACTIVA • CREACIÓN EN VUELO</span>
+                <span class="text-[11px] text-[#8e8e93]">Sabry te cuida • Cero Frustración</span>
+            </div>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-headline-md font-headline-md text-white">Nuevo Recurso en Vuelo</h3>
+                <button type="button" onclick="cerrarSubmodalRecursoVuelo()" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]" title="Volver a la práctica (Esc)">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-recurso-vuelo" class="space-y-3.5" onsubmit="return manejarSubmitRecursoVuelo(event)">
+                <div>
+                    <label for="rv-titulo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Título del recurso *</label>
+                    <input id="rv-titulo" type="text" required maxlength="180" placeholder="Ej. Neurobiología del Nervio Vago Ep. 42" class="w-full bg-[#1c1c1f] border border-[#232326] focus:border-[#a855f7] rounded-lg px-3 py-2.5 text-white text-[14px] outline-none" />
+                </div>
+                <div>
+                    <span class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Formato</span>
+                    <div id="rv-formato-pills" class="flex flex-wrap gap-1.5"></div>
+                    <input id="rv-formato" type="hidden" value="🎧 Podcast / Audio" />
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="rv-autor" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Autor / Especialista</label>
+                        <input id="rv-autor" type="text" maxlength="120" placeholder="Ej. Dr. Stephen Porges" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div>
+                        <label for="rv-url" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">URL / Enlace</label>
+                        <input id="rv-url" type="url" placeholder="https://..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                </div>
+                <div>
+                    <label for="rv-tags" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Etiquetas (separadas por coma)</label>
+                    <input id="rv-tags" type="text" maxlength="160" placeholder="nervio vago, regulación, somática" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <p id="rv-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
+                    <button type="button" onclick="cerrarSubmodalRecursoVuelo()" class="sm:w-auto px-4 py-2.5 bg-[#1c1c1f] hover:bg-[#232326] text-[#e5e2e1] font-semibold text-[13px] rounded-xl">← Volver (Esc)</button>
+                    <button type="submit" class="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white font-bold text-[13px] px-4 py-2.5 rounded-xl">Guardar y Vincular (Ctrl + ↵)</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL GUARDRAIL COMPASIVO (CONFIRMACIÓN DESTRUCTIVA) -->
+    <div id="modal-guardrail-desarrollo" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto" onclick="cerrarGuardrailEliminacion()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-lg my-8 border border-[#ffb961]/35 shadow-[0_24px_64px_rgba(0,0,0,0.75)] space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30">GUARDRAIL COMPASIVO • SOFT-DELETE 30 DÍAS</span>
+                <span class="text-[11px] text-[#8e8e93]">Sabry te cuida • Cero Pérdida</span>
+            </div>
+            <div class="flex justify-between items-start gap-3">
+                <div>
+                    <h3 class="text-headline-md font-headline-md text-white">¿Cómo querés proceder?</h3>
+                    <p id="gr-target-nombre" class="text-[13px] text-[#e5e2e1] font-semibold mt-1"></p>
+                </div>
+                <button type="button" onclick="cerrarGuardrailEliminacion()" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]" title="Volver (Esc)">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+
+            <div id="gr-impacto" class="rounded-xl p-3.5 bg-[#18181d] border border-white/[0.08] text-[12px] text-[#a1a1aa] space-y-1"></div>
+
+            <div class="space-y-2.5">
+                <label class="block rounded-xl p-3.5 border cursor-pointer transition-all bg-[#83da85]/5 border-[#83da85]/40" id="gr-opt-papelera">
+                    <div class="flex items-start gap-3">
+                        <input type="radio" name="gr-modo" value="papelera" checked onchange="actualizarSeleccionGuardrail()" class="mt-1 accent-[#83da85]" />
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-[13px] font-bold text-white">Mover a la Papelera Segura (30 días)</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#83da85]/20 text-[#83da85]">Recomendada</span>
+                            </div>
+                            <p class="text-[12px] text-[#a1a1aa] mt-0.5">Guarda un snapshot de rollback local por 30 días y archiva el registro en Notion.</p>
+                        </div>
+                    </div>
+                </label>
+
+                <label class="block rounded-xl p-3.5 border cursor-pointer transition-all bg-[#18181d] border-white/[0.08]" id="gr-opt-desvincular">
+                    <div class="flex items-start gap-3">
+                        <input type="radio" name="gr-modo" value="desvincular" onchange="actualizarSeleccionGuardrail()" class="mt-1 accent-[#38bdf8]" />
+                        <div class="min-w-0">
+                            <span class="text-[13px] font-bold text-white">Desvincular recurso solamente</span>
+                            <p id="gr-desvincular-desc" class="text-[12px] text-[#a1a1aa] mt-0.5">Quita la relación con el recurso asociado y conserva la práctica intacta.</p>
+                        </div>
+                    </div>
+                </label>
+
+                <label class="block rounded-xl p-3.5 border cursor-pointer transition-all bg-[#18181d] border-white/[0.08]" id="gr-opt-permanente">
+                    <div class="flex items-start gap-3">
+                        <input type="radio" name="gr-modo" value="permanente" onchange="actualizarSeleccionGuardrail()" class="mt-1 accent-[#ff5f52]" />
+                        <div class="min-w-0">
+                            <span class="text-[13px] font-bold text-[#ff5f52]">Eliminación directa sin snapshot local</span>
+                            <p class="text-[12px] text-[#a1a1aa] mt-0.5">Archiva en Notion sin guardar copia de recuperación en la Papelera Segura.</p>
+                            <label id="gr-confirm-check-wrap" class="hidden mt-2 flex items-center gap-2 text-[11px] text-[#e2beba]">
+                                <input id="gr-confirm-check" type="checkbox" onchange="actualizarSeleccionGuardrail()" class="accent-[#ff5f52]" />
+                                <span>Confirmo que no necesito copia local de rollback</span>
+                            </label>
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2.5 pt-1">
+                <button type="button" onclick="cerrarGuardrailEliminacion()" class="sm:w-auto px-4 py-2.5 bg-[#1c1c1f] hover:bg-[#232326] text-[#e5e2e1] font-semibold text-[13px] rounded-xl">← Volver (Esc)</button>
+                <button id="gr-btn-ejecutar" type="button" onclick="ejecutarAccionGuardrail()" class="flex-1 bg-[#83da85] hover:bg-[#83da85]/90 text-[#08080a] font-bold text-[13px] px-4 py-2.5 rounded-xl">Archivar en Papelera Segura (Ctrl + ↵)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PAPELERA SEGURA (30 DÍAS) -->
+    <div id="modal-papelera-dp" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-papelera-dp')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-lg my-8 space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center">
+                <div>
+                    <span class="text-[10px] font-bold tracking-widest text-[#ffb961] uppercase">PERÍODO DE GRACIA • 30 DÍAS</span>
+                    <h3 class="text-headline-md font-headline-md text-white">Papelera Segura</h3>
+                </div>
+                <button type="button" onclick="cerrarModal('modal-papelera-dp')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <div id="papelera-dp-lista" class="space-y-2.5 max-h-80 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- MODAL TOKEN GITHUB -->
+    <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="cerrarModal('modal-token-notion')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center">
+                <h3 class="text-headline-md font-headline-md text-white">Configurar token de GitHub</h3>
+                <button type="button" onclick="cerrarModal('modal-token-notion')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <p class="text-[13px] text-[#e2beba] leading-relaxed">
+                Para guardar en Notion sin exponer sus claves, se usa un token de GitHub guardado únicamente en este navegador
+                (<strong>Contents: Read and write</strong> y <strong>Actions: Read-only</strong> sobre este repo).
+            </p>
+            <div>
+                <label for="dp-token-input" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Pegá el token acá</label>
+                <input id="dp-token-input" type="password" autocomplete="off" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+            </div>
+            <button type="button" onclick="guardarTokenDP()" class="w-full bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-3 rounded-xl">Guardar token</button>
+        </div>
+    </div>
+
+    <!-- SPINNER CONFIRMACIÓN -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarModal('modal-spinner-notion')" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
+    <script src="./src/utils/desarrollo_personal_logic.js"></script>
+
+    <script>
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+        const DP_DRAFT_KEY = "asistente_sabry:dp_draft";
+        const DP_PAPELERA_KEY = "asistente_sabry:dp_papelera";
+        let pilarFiltro = "todos";
+        let tipoFiltroDP = "todos";
+        let catalogoRecursosLocal = [...(desarrolloLibrosCatalogo || [])];
+
+        function hoyLocalISO() {
+            const d = new Date();
+            const p = (n) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+        }
+
+        function obtenerTokenGuardado() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+
+        function _poblarSelect(id, opciones, valor) {
+            const el = document.getElementById(id);
+            el.innerHTML = (opciones || []).map((op) => `<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`).join("");
+            if (valor) el.value = valor;
+        }
+
+        function _renderListaPilar(containerId, items) {
+            const cont = document.getElementById(containerId);
+            if (!items || items.length === 0) {
+                cont.innerHTML = `<div class="status-row flex items-center justify-center py-4 px-4 text-[#8e8e93] text-[13px]">Sin registros en este pilar aún</div>`;
+                return;
+            }
+            cont.innerHTML = items.map((r) => {
+                const habId = Array.isArray(r.habito_vinculado_ids) && r.habito_vinculado_ids[0] ? r.habito_vinculado_ids[0] : "";
+                const habObj = habId ? (desarrolloHabitosCatalogo || []).find((h) => h.id === habId) : null;
+                const badges = [
+                    r.tipo ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-white/[0.06] text-[#e5e2e1]">${escapeHtml(r.tipo)}</span>` : "",
+                    r.frecuencia_tecnica ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-[#38bdf8]/15 text-[#38bdf8]">${escapeHtml(r.frecuencia_tecnica)}</span>` : "",
+                    r.estado ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#ffb961]/15 text-[#ffb961]">${escapeHtml(r.estado)}</span>` : "",
+                    r.puntaje !== null && r.puntaje !== undefined ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#83da85]/15 text-[#83da85]">${escapeHtml(String(r.puntaje))}</span>` : "",
+                    r.recurso_asociado ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-[#a855f7]/15 text-[#a855f7]">🔗 ${escapeHtml(r.recurso_asociado)}</span>` : "",
+                    habId ? `<a href="habitos-y-disciplina.html" class="px-2 py-0.5 rounded-full text-[11px] bg-[#83da85]/15 text-[#83da85] hover:underline">🔥 ${escapeHtml((habObj && habObj.nombre) || "Hábito vinculado")}</a>` : "",
+                ].filter(Boolean).join("");
+                const enlaceHtml = r.enlace
+                    ? `<a href="${escapeHtml(r.enlace)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[11px] text-[#38bdf8] hover:underline mt-1"><span>Abrir enlace</span><span class="material-symbols-outlined text-[13px]">open_in_new</span></a>`
+                    : "";
+                return `
+                    <div class="status-row p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="min-w-0 space-y-1.5">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="text-white font-bold text-[15px]">${escapeHtml(r.nombre)}</span>
+                                ${badges}
+                            </div>
+                            ${r.nota ? `<p class="text-[13px] text-[#a1a1aa]">${escapeHtml(r.nota)}</p>` : ""}
+                            ${enlaceHtml}
+                            ${r.fecha ? `<p class="text-[11px] text-[#8e8e93]">${escapeHtml(r.fecha)}</p>` : ""}
+                        </div>
+                        <button type="button" onclick="abrirModalEditarDesarrollo('${escapeHtml(r.id || "")}')" class="self-start sm:self-center p-2 hover:bg-white/10 rounded-lg text-[#a1a1aa] hover:text-white flex-shrink-0" title="Editar">
+                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                        </button>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderizarDesarrollo() {
+            const todos = desarrolloPersonalRegistros || [];
+            const res = calcularResumenDesarrollo(todos);
+            document.getElementById("dp-kpi-com").textContent = String(res.porPilar.comunicacion);
+            document.getElementById("dp-kpi-aut").textContent = String(res.porPilar.autoestima);
+            document.getElementById("dp-kpi-con").textContent = String(res.porPilar.autoconocimiento);
+            document.getElementById("dp-kpi-prog").textContent = `${res.porcentajeProgreso}%`;
+            document.getElementById("dp-kpi-ej").textContent = `${res.ejerciciosActivos} ejercicio(s) en curso`;
+            const recEl = document.getElementById("dp-kpi-rec");
+            if (recEl) recEl.textContent = String(catalogoRecursosLocal.length);
+            const totVincEl = document.getElementById("dp-total-vinculados");
+            if (totVincEl) totVincEl.textContent = String(todos.length);
+
+            const cntEj = todos.filter((r) => (r.tipo || "").toLowerCase().includes("ejercicio")).length;
+            const cntVid = todos.filter((r) => (r.tipo || "").toLowerCase().includes("video")).length;
+            const cntLec = todos.filter((r) => (r.tipo || "").toLowerCase().includes("lectura")).length;
+            const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
+            setTxt("cnt-tipo-todos", todos.length);
+            setTxt("cnt-tipo-ej", cntEj);
+            setTxt("cnt-tipo-vid", cntVid);
+            setTxt("cnt-tipo-lec", cntLec);
+
+            document.querySelectorAll(".dp-tipo-flt").forEach((btn) => {
+                const act = btn.dataset.tipo === tipoFiltroDP;
+                btn.className = act
+                    ? "dp-tipo-flt px-3.5 py-1.5 rounded-full bg-[#ff5f52] text-white font-bold transition-all"
+                    : "dp-tipo-flt px-3.5 py-1.5 rounded-full bg-[#1c1c1f] text-[#a1a1aa] hover:text-white font-semibold transition-all";
+            });
+
+            const lista = todos.filter((r) => {
+                const matchTipo = tipoFiltroDP === "todos" || (r.tipo || "").toLowerCase().includes(tipoFiltroDP.toLowerCase());
+                const matchPilar = pilarFiltro === "todos" || (r.pilar || "").toLowerCase().includes(pilarFiltro.replace(/^[^\s]+\s*/, "").toLowerCase().slice(0, 6));
+                return matchTipo && matchPilar;
+            });
+            _renderListaPilar("list-biblioteca-multimodal", lista);
+
+            const com = todos.filter((r) => (r.pilar || "").toLowerCase().includes("comunic"));
+            const aut = todos.filter((r) => (r.pilar || "").toLowerCase().includes("autoestima"));
+            const con = todos.filter((r) => (r.pilar || "").toLowerCase().includes("autoconoc"));
+
+            _renderListaPilar("list-comunicacion", com);
+            _renderListaPilar("list-autoestima", aut);
+            _renderListaPilar("list-autoconocimiento", con);
+
+            document.getElementById("sec-comunicacion").classList.toggle("hidden", pilarFiltro !== "todos" && !pilarFiltro.includes("Comunic"));
+            document.getElementById("sec-autoestima").classList.toggle("hidden", pilarFiltro !== "todos" && !pilarFiltro.includes("Autoestima"));
+            document.getElementById("sec-autoconocimiento").classList.toggle("hidden", pilarFiltro !== "todos" && !pilarFiltro.includes("Autoconocimiento"));
+        }
+
+        function filtrarPilar(pilar) {
+            pilarFiltro = pilar;
+            renderizarDesarrollo();
+        }
+
+        function filtrarTipoDP(tipo) {
+            tipoFiltroDP = tipo;
+            renderizarDesarrollo();
+        }
+
+        function _poblarDatalistLibros() {
+            const dl = document.getElementById("dp-libros-datalist");
+            if (!dl) return;
+            dl.innerHTML = catalogoRecursosLocal.map((t) => `<option value="${escapeHtml(t)}"></option>`).join("");
+        }
+
+        function _modalEstaAbierto(id) {
+            const el = document.getElementById(id);
+            return Boolean(el && !el.classList.contains("hidden"));
+        }
+
+        function _actualizarScrollBody() {
+            const hayModal = _modalEstaAbierto("modal-desarrollo")
+                || _modalEstaAbierto("modal-recurso-vuelo")
+                || _modalEstaAbierto("modal-guardrail-desarrollo")
+                || _modalEstaAbierto("modal-papelera-dp")
+                || _modalEstaAbierto("modal-token-notion");
+            document.body.classList.toggle("overflow-hidden", hayModal);
+        }
+
+        function guardarBorradorDesarrollo() {
+            const pageId = document.getElementById("dp-page-id").value.trim();
+            if (pageId) return; // Solo preservamos borrador para registros nuevos en curso
+            const borrador = {
+                nombre: document.getElementById("dp-nombre").value,
+                pilar: document.getElementById("dp-pilar").value,
+                tipo: document.getElementById("dp-tipo").value,
+                estado: document.getElementById("dp-estado").value,
+                fecha: document.getElementById("dp-fecha").value,
+                puntaje: document.getElementById("dp-puntaje").value,
+                frecuencia: document.getElementById("dp-frecuencia").value,
+                recurso: document.getElementById("dp-recurso").value,
+                enlace: document.getElementById("dp-enlace").value,
+                nota: document.getElementById("dp-nota").value,
+            };
+            const tieneContenido = Boolean(
+                borrador.nombre.trim() || borrador.frecuencia.trim() || borrador.recurso.trim() || borrador.enlace.trim() || borrador.nota.trim()
+            );
+            try {
+                if (tieneContenido) localStorage.setItem(DP_DRAFT_KEY, JSON.stringify(borrador));
+                else localStorage.removeItem(DP_DRAFT_KEY);
+            } catch (e) {}
+        }
+
+        function limpiarBorradorDesarrollo() {
+            try { localStorage.removeItem(DP_DRAFT_KEY); } catch (e) {}
+        }
+
+        function _leerBorradorDesarrollo() {
+            try {
+                const raw = localStorage.getItem(DP_DRAFT_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) { return null; }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initLocalStorage();
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
+            renderizarDesarrollo();
+            _actualizarBotonPapeleraDP();
+        });
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+            sidebar.classList.toggle('-translate-x-full', isOpen);
+            overlay.classList.toggle('hidden', isOpen);
+        }
+
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            });
+        }
+
+        function abrirModal(id) {
+            document.getElementById(id).classList.remove("hidden");
+            document.getElementById(id).classList.add("flex");
+            _actualizarScrollBody();
+        }
+        function cerrarModal(id) {
+            document.getElementById(id).classList.add("hidden");
+            document.getElementById(id).classList.remove("flex");
+            _actualizarScrollBody();
+        }
+
+        function _setCapa1Pausada(pausada) {
+            const card = document.getElementById("dp-modal-card");
+            const banner = document.getElementById("dp-pause-banner");
+            if (card) {
+                card.classList.toggle("opacity-60", pausada);
+                card.classList.toggle("pointer-events-none", pausada);
+            }
+            if (banner) banner.classList.toggle("hidden", !pausada);
+        }
+
+        function cerrarModalDesarrollo(descartarBorrador = false) {
+            if (_modalEstaAbierto("modal-recurso-vuelo")) return;
+            if (descartarBorrador) limpiarBorradorDesarrollo();
+            _setCapa1Pausada(false);
+            cerrarModal("modal-desarrollo");
+        }
+
+        const DP_PILARES_META = {
+            "🗣️ Comunicación": "Escucha activa y acuerdos",
+            "💖 Autoestima": "Diálogo interno y logros",
+            "🧭 Autoconocimiento": "Valores e introspección",
+        };
+        const DP_TIPOS_META = {
+            "💬 Conversación": "Charla importante o acuerdo",
+            "🏆 Logro / Validación": "Avance o reconocimiento personal",
+            "🪞 Reflexión / Disparador": "Insight o pregunta del día",
+            "🎯 Valor / Meta": "Objetivo o principio guía",
+            "🏋️ Ejercicio práctico": "Dinámica o hábito aplicable",
+            "🎥 Video / Masterclass": "Charla o clase grabada",
+            "📖 Lectura / Libro": "Libro, ensayo o artículo",
+        };
+
+        function _tipoUsaPuntaje(tipo) {
+            return ["🏋️ Ejercicio práctico", "🎥 Video / Masterclass", "📖 Lectura / Libro", "🎯 Valor / Meta"].includes(tipo);
+        }
+        function _tipoUsaFrecuencia(tipo) {
+            return tipo === "🏋️ Ejercicio práctico";
+        }
+        function _tipoUsaRecursoDefault(tipo) {
+            return ["🏋️ Ejercicio práctico", "🎥 Video / Masterclass", "📖 Lectura / Libro"].includes(tipo);
+        }
+
+        function _renderWizardPaso1Cards() {
+            const pilarSel = document.getElementById("dp-pilar").value;
+            const tipoSel = document.getElementById("dp-tipo").value;
+            const contPil = document.getElementById("dp-pilares-cards");
+            const contTip = document.getElementById("dp-tipos-cards");
+            if (contPil) {
+                contPil.innerHTML = (desarrolloPersonalOpciones.pilares || []).map((p) => {
+                    const activo = p === pilarSel;
+                    return `<button type="button" onclick="seleccionarPilarDP('${escapeHtml(p)}')" class="text-left p-3 rounded-xl bg-[#1c1c1f] border transition-all ${activo ? "border-[#ff5f52] ring-1 ring-[#ff5f52]/50" : "border-[#232326] hover:border-white/20"}">
+                        <p class="text-[13px] font-bold text-white">${escapeHtml(p)}</p>
+                        <p class="text-[11px] text-[#8e8e93] mt-0.5">${escapeHtml(DP_PILARES_META[p] || "")}</p>
+                    </button>`;
+                }).join("");
+            }
+            if (contTip) {
+                contTip.innerHTML = (desarrolloPersonalOpciones.tipos || []).map((t) => {
+                    const activo = t === tipoSel;
+                    return `<button type="button" onclick="seleccionarTipoDP('${escapeHtml(t)}')" class="text-left p-3 rounded-xl bg-[#1c1c1f] border transition-all ${activo ? "border-[#ff5f52] ring-1 ring-[#ff5f52]/50" : "border-[#232326] hover:border-white/20"}">
+                        <p class="text-[13px] font-bold text-white">${escapeHtml(t)}</p>
+                        <p class="text-[11px] text-[#8e8e93] mt-0.5">${escapeHtml(DP_TIPOS_META[t] || "")}</p>
+                    </button>`;
+                }).join("");
+            }
+        }
+
+        function seleccionarPilarDP(pilar) {
+            document.getElementById("dp-pilar").value = pilar;
+            _renderWizardPaso1Cards();
+            _aplicarVisibilidadCamposDP();
+            guardarBorradorDesarrollo();
+        }
+
+        function seleccionarTipoDP(tipo) {
+            document.getElementById("dp-tipo").value = tipo;
+            _renderWizardPaso1Cards();
+            _aplicarVisibilidadCamposDP();
+            guardarBorradorDesarrollo();
+        }
+
+        function actualizarSliderDP(val) {
+            const num = Math.min(100, Math.max(0, Number(val) || 0));
+            document.getElementById("dp-puntaje-slider").value = String(num);
+            document.getElementById("dp-puntaje").value = String(num);
+            document.getElementById("dp-puntaje-valor").textContent = `${num}%`;
+        }
+
+        function mostrarBloqueRecursoDP() {
+            document.getElementById("dp-grupo-recurso").classList.remove("hidden");
+            document.getElementById("dp-recurso-toggle-wrap").classList.add("hidden");
+        }
+
+        function _poblarHabitosSelectDP(selectedId) {
+            const sel = document.getElementById("dp-habito-vinculado");
+            if (!sel) return;
+            const opts = ['<option value="">Sin hábito vinculado</option>']
+                .concat((desarrolloHabitosCatalogo || []).map((h) => `<option value="${escapeHtml(h.id)}">${escapeHtml(h.nombre)}${h.frecuencia_meta ? ` (${escapeHtml(h.frecuencia_meta)})` : ""}</option>`));
+            sel.innerHTML = opts.join("");
+            sel.value = selectedId || "";
+        }
+
+        function onSelectHabitoVinculadoDP(val) {
+            const chk = document.getElementById("dp-crear-habito");
+            if (val && chk && chk.checked) {
+                chk.checked = false;
+                document.getElementById("dp-habito-cat-wrap").classList.add("hidden");
+            }
+        }
+
+        function onToggleCrearHabitoDP(checked) {
+            const wrap = document.getElementById("dp-habito-cat-wrap");
+            if (wrap) wrap.classList.toggle("hidden", !checked);
+            if (checked) {
+                const sel = document.getElementById("dp-habito-vinculado");
+                if (sel) sel.value = "";
+            }
+        }
+
+        function _aplicarVisibilidadCamposDP() {
+            const pilar = document.getElementById("dp-pilar").value;
+            const tipo = document.getElementById("dp-tipo").value;
+            const resEl = document.getElementById("dp-resumen-seleccion");
+            if (resEl) resEl.textContent = `${pilar} · ${tipo}`;
+
+            const usaPuntaje = _tipoUsaPuntaje(tipo);
+            document.getElementById("dp-grupo-puntaje").classList.toggle("hidden", !usaPuntaje);
+            if (!usaPuntaje) document.getElementById("dp-puntaje").value = "";
+
+            const usaFrec = _tipoUsaFrecuencia(tipo);
+            document.getElementById("dp-grupo-frecuencia").classList.toggle("hidden", !usaFrec);
+
+            const esEjercicio = tipo === "🏋️ Ejercicio práctico";
+            const habGrp = document.getElementById("dp-grupo-habito");
+            if (habGrp) habGrp.classList.toggle("hidden", !esEjercicio);
+
+            const usaRec = _tipoUsaRecursoDefault(tipo)
+                || Boolean(document.getElementById("dp-recurso").value.trim())
+                || Boolean(document.getElementById("dp-enlace").value.trim());
+            document.getElementById("dp-grupo-recurso").classList.toggle("hidden", !usaRec);
+            document.getElementById("dp-recurso-toggle-wrap").classList.toggle("hidden", usaRec);
+
+            const esPuntual = tipo === "🏆 Logro / Validación" || tipo === "🪞 Reflexión / Disparador";
+            const estEl = document.getElementById("dp-estado");
+            if (esPuntual && estEl && !document.getElementById("dp-page-id").value && estEl.value === "En curso") {
+                if ([...estEl.options].some((o) => o.value === "Completado")) estEl.value = "Completado";
+            }
+        }
+
+        function irAPaso1Desarrollo() {
+            document.getElementById("dp-step-1").classList.remove("hidden");
+            document.getElementById("dp-step-2").classList.add("hidden");
+            document.getElementById("dp-step-badge").textContent = "Paso 1 de 2";
+            _renderWizardPaso1Cards();
+        }
+
+        function irAPaso2Desarrollo() {
+            _aplicarVisibilidadCamposDP();
+            document.getElementById("dp-step-1").classList.add("hidden");
+            document.getElementById("dp-step-2").classList.remove("hidden");
+            document.getElementById("dp-step-badge").textContent = "Paso 2 de 2";
+            setTimeout(() => document.getElementById("dp-nombre").focus(), 40);
+        }
+
+        function abrirModalDesarrollo(pilarPre, tipoPre) {
+            document.getElementById("form-desarrollo").reset();
+            document.getElementById("dp-page-id").value = "";
+            document.getElementById("dp-modal-titulo").textContent = "Nuevo registro";
+            _poblarDatalistLibros();
+            _poblarHabitosSelectDP("");
+            document.getElementById("dp-crear-habito").checked = false;
+            document.getElementById("dp-habito-cat-wrap").classList.add("hidden");
+            document.getElementById("dp-pilar").value = pilarPre || desarrolloPersonalOpciones.pilares[0];
+            document.getElementById("dp-tipo").value = tipoPre || desarrolloPersonalOpciones.tipos[0];
+            _poblarSelect("dp-estado", desarrolloPersonalOpciones.estados, "En curso");
+            document.getElementById("dp-fecha").value = hoyLocalISO();
+            actualizarSliderDP(0);
+            document.getElementById("dp-btn-eliminar").classList.add("hidden");
+            document.getElementById("dp-mensaje").classList.add("hidden");
+            document.getElementById("dp-recurso-toast").classList.add("hidden");
+
+            const borrador = _leerBorradorDesarrollo();
+            const badgeBorrador = document.getElementById("dp-draft-badge");
+            if (borrador) {
+                document.getElementById("dp-nombre").value = borrador.nombre || "";
+                if (borrador.pilar && !pilarPre) document.getElementById("dp-pilar").value = borrador.pilar;
+                if (borrador.tipo && !tipoPre) document.getElementById("dp-tipo").value = borrador.tipo;
+                if (borrador.estado) document.getElementById("dp-estado").value = borrador.estado;
+                if (borrador.fecha) document.getElementById("dp-fecha").value = borrador.fecha;
+                if (borrador.puntaje !== undefined && borrador.puntaje !== "") actualizarSliderDP(borrador.puntaje);
+                document.getElementById("dp-frecuencia").value = borrador.frecuencia || "";
+                document.getElementById("dp-recurso").value = borrador.recurso || "";
+                document.getElementById("dp-enlace").value = borrador.enlace || "";
+                document.getElementById("dp-nota").value = borrador.nota || "";
+                if (badgeBorrador) badgeBorrador.classList.remove("hidden");
+            } else if (badgeBorrador) {
+                badgeBorrador.classList.add("hidden");
+            }
+            _setCapa1Pausada(false);
+            if (pilarPre || tipoPre) {
+                irAPaso2Desarrollo();
+            } else {
+                irAPaso1Desarrollo();
+            }
+            abrirModal("modal-desarrollo");
+        }
+
+        function _renderPillsFormatoRecurso(activo) {
+            const cont = document.getElementById("rv-formato-pills");
+            if (!cont) return;
+            cont.innerHTML = FORMATOS_RECURSO_VUELO.map((fmt) => {
+                const seleccionado = fmt === activo;
+                const cls = seleccionado
+                    ? "bg-[#a855f7]/25 text-[#e9d5ff] border-[#a855f7] font-bold"
+                    : "bg-[#1c1c1f] text-[#a1a1aa] border-[#232326] hover:text-white";
+                return `<button type="button" onclick="seleccionarFormatoRecursoVuelo('${escapeHtml(fmt)}')" class="px-2.5 py-1.5 rounded-lg text-[11px] border transition-all ${cls}">${escapeHtml(fmt)}</button>`;
+            }).join("");
+        }
+
+        function seleccionarFormatoRecursoVuelo(fmt) {
+            document.getElementById("rv-formato").value = fmt;
+            _renderPillsFormatoRecurso(fmt);
+        }
+
+        function abrirSubmodalRecursoVuelo() {
+            guardarBorradorDesarrollo();
+            _setCapa1Pausada(true);
+            document.getElementById("form-recurso-vuelo").reset();
+            const fmtInicial = FORMATOS_RECURSO_VUELO[0];
+            document.getElementById("rv-formato").value = fmtInicial;
+            _renderPillsFormatoRecurso(fmtInicial);
+            document.getElementById("rv-mensaje").classList.add("hidden");
+            abrirModal("modal-recurso-vuelo");
+            setTimeout(() => document.getElementById("rv-titulo").focus(), 40);
+        }
+
+        function cerrarSubmodalRecursoVuelo() {
+            cerrarModal("modal-recurso-vuelo");
+            _setCapa1Pausada(false);
+            const inputRecurso = document.getElementById("dp-recurso");
+            if (inputRecurso) inputRecurso.focus();
+        }
+
+        function manejarSubmitRecursoVuelo(event) {
+            event.preventDefault();
+            const res = construirRecursoEnVuelo({
+                titulo: document.getElementById("rv-titulo").value,
+                formato: document.getElementById("rv-formato").value,
+                autor: document.getElementById("rv-autor").value,
+                url: document.getElementById("rv-url").value,
+                tags: document.getElementById("rv-tags").value,
+            });
+            const msg = document.getElementById("rv-mensaje");
+            if (!res.ok) {
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            catalogoRecursosLocal = agregarRecursoACatalogo(catalogoRecursosLocal, res.recurso.etiquetaCatalogo);
+            _poblarDatalistLibros();
+            document.getElementById("dp-recurso").value = res.recurso.etiquetaCatalogo;
+            if (res.recurso.url && !document.getElementById("dp-enlace").value.trim()) {
+                document.getElementById("dp-enlace").value = res.recurso.url;
+            }
+            guardarBorradorDesarrollo();
+            cerrarSubmodalRecursoVuelo();
+            const toast = document.getElementById("dp-recurso-toast");
+            if (toast) toast.classList.remove("hidden");
+            return false;
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                if (_modalEstaAbierto("modal-guardrail-desarrollo")) {
+                    e.preventDefault();
+                    cerrarGuardrailEliminacion();
+                } else if (_modalEstaAbierto("modal-recurso-vuelo")) {
+                    e.preventDefault();
+                    cerrarSubmodalRecursoVuelo();
+                } else if (_modalEstaAbierto("modal-papelera-dp")) {
+                    e.preventDefault();
+                    cerrarModal("modal-papelera-dp");
+                } else if (_modalEstaAbierto("modal-desarrollo")) {
+                    e.preventDefault();
+                    cerrarModalDesarrollo(false);
+                }
+            } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+                if (_modalEstaAbierto("modal-guardrail-desarrollo")) {
+                    e.preventDefault();
+                    ejecutarAccionGuardrail();
+                } else if (_modalEstaAbierto("modal-recurso-vuelo")) {
+                    e.preventDefault();
+                    document.getElementById("form-recurso-vuelo").requestSubmit();
+                } else if (_modalEstaAbierto("modal-desarrollo")) {
+                    e.preventDefault();
+                    document.getElementById("form-desarrollo").requestSubmit();
+                }
+            }
+        });
+
+        function abrirModalEditarDesarrollo(id) {
+            const r = (desarrolloPersonalRegistros || []).find((x) => x.id === id);
+            if (!r) return;
+            document.getElementById("form-desarrollo").reset();
+            document.getElementById("dp-page-id").value = r.id;
+            document.getElementById("dp-modal-titulo").textContent = "Editar registro";
+            document.getElementById("dp-nombre").value = r.nombre || "";
+            document.getElementById("dp-pilar").value = r.pilar || desarrolloPersonalOpciones.pilares[0];
+            document.getElementById("dp-tipo").value = r.tipo || desarrolloPersonalOpciones.tipos[0];
+            _poblarSelect("dp-estado", desarrolloPersonalOpciones.estados, r.estado || "En curso");
+            document.getElementById("dp-fecha").value = r.fecha || "";
+            actualizarSliderDP(r.puntaje !== null && r.puntaje !== undefined ? r.puntaje : 0);
+            document.getElementById("dp-frecuencia").value = r.frecuencia_tecnica || "";
+            _poblarDatalistLibros();
+            const habId = Array.isArray(r.habito_vinculado_ids) && r.habito_vinculado_ids[0] ? r.habito_vinculado_ids[0] : "";
+            _poblarHabitosSelectDP(habId);
+            document.getElementById("dp-crear-habito").checked = false;
+            document.getElementById("dp-habito-cat-wrap").classList.add("hidden");
+            document.getElementById("dp-recurso").value = r.recurso_asociado || "";
+            document.getElementById("dp-enlace").value = r.enlace || "";
+            document.getElementById("dp-nota").value = r.nota || "";
+            document.getElementById("dp-btn-eliminar").classList.remove("hidden");
+            document.getElementById("dp-mensaje").classList.add("hidden");
+            document.getElementById("dp-draft-badge").classList.add("hidden");
+            irAPaso2Desarrollo();
+            abrirModal("modal-desarrollo");
+        }
+
+        function guardarTokenDP() {
+            const token = document.getElementById("dp-token-input").value.trim();
+            if (!token) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, token); } catch (e) {}
+            document.getElementById("dp-token-input").value = "";
+            cerrarModal("modal-token-notion");
+        }
+
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            abrirModal("modal-spinner-notion");
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+
+        async function ejecutarEscrituraConSpinner(accion, datos) {
+            const token = obtenerTokenGuardado();
+            if (!token) { abrirModal("modal-token-notion"); return; }
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, datos, token);
+                const respuesta = await fetch(url, options);
+                if (respuesta.status === 401 || respuesta.status === 404) {
+                    cerrarModal("modal-spinner-notion");
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModal("modal-token-notion");
+                    return;
+                }
+                if (respuesta.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${respuesta.status}). Probá de nuevo.`);
+                    return;
+                }
+                const confirmacion = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER, repo: GITHUB_REPO, token,
+                    workflowFile: WORKFLOW_NOTION_WRITE, dispatchedAfterMs,
+                });
+                if (confirmacion.ok) {
+                    mostrarSpinnerNotion("ok", "¡Notion actualizado!", "Recargando Desarrollo personal...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", confirmacion.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub. Revisá tu conexión.");
+            }
+        }
+
+        async function manejarSubmitDesarrollo(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("dp-page-id").value.trim();
+            const tipo = document.getElementById("dp-tipo").value;
+            const res = construirPayloadDesarrollo({
+                pageId,
+                nombre: document.getElementById("dp-nombre").value,
+                pilar: document.getElementById("dp-pilar").value,
+                tipo,
+                estado: document.getElementById("dp-estado").value,
+                fecha: document.getElementById("dp-fecha").value,
+                puntaje: _tipoUsaPuntaje(tipo) ? document.getElementById("dp-puntaje").value : "",
+                frecuenciaTecnica: _tipoUsaFrecuencia(tipo) ? document.getElementById("dp-frecuencia").value : "",
+                recursoAsociado: document.getElementById("dp-recurso").value,
+                enlace: document.getElementById("dp-enlace").value,
+                nota: document.getElementById("dp-nota").value,
+                habitoVinculadoId: document.getElementById("dp-habito-vinculado").value,
+                crearHabito: document.getElementById("dp-crear-habito").checked,
+                habitoCategoria: document.getElementById("dp-habito-categoria").value,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("dp-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
+            limpiarBorradorDesarrollo();
+            _setCapa1Pausada(false);
+            cerrarModal("modal-desarrollo");
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_desarrollo_personal" : "crear_desarrollo_personal", res.payload);
+            return false;
+        }
+
+        function _leerPapeleraDP() {
+            try {
+                const raw = localStorage.getItem(DP_PAPELERA_KEY);
+                const vigentes = filtrarSnapshotsVigentes(raw ? JSON.parse(raw) : []);
+                localStorage.setItem(DP_PAPELERA_KEY, JSON.stringify(vigentes));
+                return vigentes;
+            } catch (e) { return []; }
+        }
+
+        function _guardarPapeleraDP(lista) {
+            try { localStorage.setItem(DP_PAPELERA_KEY, JSON.stringify(lista)); } catch (e) {}
+            _actualizarBotonPapeleraDP();
+        }
+
+        function _actualizarBotonPapeleraDP() {
+            const lista = _leerPapeleraDP();
+            const btn = document.getElementById("btn-papelera-dp");
+            const cnt = document.getElementById("papelera-dp-count");
+            if (cnt) cnt.textContent = String(lista.length);
+            if (btn) btn.classList.toggle("hidden", lista.length === 0);
+        }
+
+        let _registroGuardrailActual = null;
+
+        function abrirGuardrailEliminacion() {
+            const pageId = document.getElementById("dp-page-id").value.trim();
+            const reg = (desarrolloPersonalRegistros || []).find((x) => x.id === pageId) || {
+                id: pageId,
+                nombre: document.getElementById("dp-nombre").value.trim() || "Registro sin título",
+                pilar: document.getElementById("dp-pilar").value,
+                tipo: document.getElementById("dp-tipo").value,
+                estado: document.getElementById("dp-estado").value,
+                fecha: document.getElementById("dp-fecha").value,
+                frecuencia_tecnica: document.getElementById("dp-frecuencia").value,
+                puntaje: document.getElementById("dp-puntaje").value || null,
+                recurso_asociado: document.getElementById("dp-recurso").value.trim() || null,
+                enlace: document.getElementById("dp-enlace").value.trim() || null,
+                nota: document.getElementById("dp-nota").value.trim() || null,
+            };
+            _registroGuardrailActual = reg;
+            document.getElementById("gr-target-nombre").textContent = `${reg.nombre} (${reg.pilar || "Desarrollo personal"})`;
+
+            const impacto = analizarImpactoEliminacionDesarrollo(reg, desarrolloPersonalRegistros);
+            const boxImpacto = document.getElementById("gr-impacto");
+            if (impacto.tieneRecurso) {
+                const nRel = impacto.vinculosRelacionados.length;
+                boxImpacto.innerHTML = `<p class="text-[#ffb961] font-semibold">🔗 Recurso vinculado: ${escapeHtml(impacto.recurso)}</p>`
+                    + `<p>${nRel > 0 ? `Compartido con otras ${nRel} práctica(s) activa(s) en este tablero.` : "Este recurso solo está vinculado a esta práctica actualmente."}</p>`;
+            } else {
+                boxImpacto.innerHTML = `<p class="text-[#83da85] font-semibold">✓ Sin dependencias cruzadas detectadas</p><p>Podés archivarlo con tranquilidad en la Papelera Segura por 30 días.</p>`;
+            }
+
+            const optDesv = document.getElementById("gr-opt-desvincular");
+            const radioDesv = optDesv.querySelector('input[type="radio"]');
+            radioDesv.disabled = !impacto.tieneRecurso;
+            optDesv.classList.toggle("opacity-45", !impacto.tieneRecurso);
+            optDesv.classList.toggle("pointer-events-none", !impacto.tieneRecurso);
+            document.getElementById("gr-desvincular-desc").textContent = impacto.tieneRecurso
+                ? `Quita "${impacto.recurso}" de esta práctica y la conserva intacta.`
+                : "No hay recurso asociado para desvincular en este registro.";
+
+            document.querySelector('input[name="gr-modo"][value="papelera"]').checked = true;
+            document.getElementById("gr-confirm-check").checked = false;
+            actualizarSeleccionGuardrail();
+            _setCapa1Pausada(true);
+            abrirModal("modal-guardrail-desarrollo");
+        }
+
+        function cerrarGuardrailEliminacion() {
+            cerrarModal("modal-guardrail-desarrollo");
+            _setCapa1Pausada(false);
+        }
+
+        function actualizarSeleccionGuardrail() {
+            const modo = (document.querySelector('input[name="gr-modo"]:checked') || {}).value || "papelera";
+            const checkWrap = document.getElementById("gr-confirm-check-wrap");
+            const btn = document.getElementById("gr-btn-ejecutar");
+            checkWrap.classList.toggle("hidden", modo !== "permanente");
+
+            if (modo === "papelera") {
+                btn.textContent = "Archivar en Papelera Segura (Ctrl + ↵)";
+                btn.className = "flex-1 bg-[#83da85] hover:bg-[#83da85]/90 text-[#08080a] font-bold text-[13px] px-4 py-2.5 rounded-xl";
+                btn.disabled = false;
+            } else if (modo === "desvincular") {
+                btn.textContent = "Desvincular recurso solamente (Ctrl + ↵)";
+                btn.className = "flex-1 bg-[#38bdf8] hover:bg-[#38bdf8]/90 text-[#08080a] font-bold text-[13px] px-4 py-2.5 rounded-xl";
+                btn.disabled = false;
+            } else {
+                const confirmado = document.getElementById("gr-confirm-check").checked;
+                btn.textContent = "Eliminar sin snapshot local";
+                btn.className = `flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl ${confirmado ? "" : "opacity-45 cursor-not-allowed"}`;
+                btn.disabled = !confirmado;
+            }
+        }
+
+        async function ejecutarAccionGuardrail() {
+            const reg = _registroGuardrailActual;
+            if (!reg || !reg.id) return;
+            const modo = (document.querySelector('input[name="gr-modo"]:checked') || {}).value || "papelera";
+            if (modo === "permanente" && !document.getElementById("gr-confirm-check").checked) return;
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return; }
+
+            cerrarModal("modal-guardrail-desarrollo");
+            _setCapa1Pausada(false);
+            cerrarModal("modal-desarrollo");
+
+            if (modo === "desvincular") {
+                const res = construirPayloadDesarrollo({
+                    pageId: reg.id,
+                    nombre: reg.nombre,
+                    pilar: reg.pilar,
+                    tipo: reg.tipo,
+                    estado: reg.estado,
+                    fecha: reg.fecha,
+                    puntaje: reg.puntaje,
+                    frecuenciaTecnica: reg.frecuencia_tecnica,
+                    recursoAsociado: "",
+                    enlace: reg.enlace,
+                    nota: reg.nota,
+                });
+                if (res.ok) await ejecutarEscrituraConSpinner("actualizar_desarrollo_personal", res.payload);
+                return;
+            }
+
+            if (modo === "papelera") {
+                const snap = crearSnapshotRollback(reg, 30);
+                if (snap) {
+                    const actual = _leerPapeleraDP();
+                    actual.unshift(snap);
+                    _guardarPapeleraDP(actual);
+                }
+            }
+            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: reg.id });
+        }
+
+        function abrirPapeleraDP() {
+            const lista = _leerPapeleraDP();
+            const cont = document.getElementById("papelera-dp-lista");
+            if (lista.length === 0) {
+                cont.innerHTML = `<p class="text-[13px] text-[#8e8e93] py-4 text-center">La Papelera Segura está vacía.</p>`;
+            } else {
+                cont.innerHTML = lista.map((s, idx) => `
+                    <div class="status-row p-3.5 flex items-center justify-between gap-3">
+                        <div class="min-w-0">
+                            <p class="text-[14px] font-bold text-white truncate">${escapeHtml(s.nombre)}</p>
+                            <p class="text-[11px] text-[#8e8e93]">${escapeHtml(s.pilar)} · Expira: ${escapeHtml((s.expiraEnISO || "").slice(0, 10))}</p>
+                        </div>
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                            <button type="button" onclick="restaurarDesdePapeleraDP(${idx})" class="px-2.5 py-1.5 rounded-lg bg-[#83da85]/15 hover:bg-[#83da85]/25 text-[#83da85] text-[12px] font-bold">Restaurar</button>
+                            <button type="button" onclick="descartarSnapshotDP(${idx})" class="p-1.5 rounded-lg hover:bg-white/10 text-[#8e8e93]" title="Descartar copia">
+                                <span class="material-symbols-outlined text-[16px]">close</span>
+                            </button>
+                        </div>
+                    </div>
+                `).join("");
+            }
+            abrirModal("modal-papelera-dp");
+        }
+
+        async function restaurarDesdePapeleraDP(idx) {
+            const lista = _leerPapeleraDP();
+            const snap = lista[idx];
+            if (!snap) return;
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return; }
+            const res = construirPayloadDesarrollo({
+                nombre: snap.nombre,
+                pilar: snap.pilar,
+                tipo: snap.tipo,
+                estado: snap.estado,
+                fecha: snap.fecha,
+                frecuenciaTecnica: snap.frecuencia_tecnica,
+                puntaje: snap.puntaje,
+                recursoAsociado: snap.recurso_asociado,
+                enlace: snap.enlace,
+                nota: snap.nota,
+            });
+            if (!res.ok) return;
+            lista.splice(idx, 1);
+            _guardarPapeleraDP(lista);
+            cerrarModal("modal-papelera-dp");
+            await ejecutarEscrituraConSpinner("crear_desarrollo_personal", res.payload);
+        }
+
+        function descartarSnapshotDP(idx) {
+            const lista = _leerPapeleraDP();
+            lista.splice(idx, 1);
+            _guardarPapeleraDP(lista);
+            abrirPapeleraDP();
+        }
+    </script>
+    <script src="./src/utils/somatic_shell.js"></script>
+</body>
+</html>

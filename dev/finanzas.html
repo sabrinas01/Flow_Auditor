@@ -1,0 +1,922 @@
+﻿<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Finanzas — AsistenteSabry</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0e0e0e">
+    <link rel="icon" href="./grafica/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./grafica/icons/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #08080a;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+        .status-row {
+            background: #18181d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .status-row:hover { background: #1f1f26; border-color: rgba(255, 255, 255, 0.12); }
+        .left-pill-green { border-left: 3px solid #53a759; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-red { border-left: 3px solid #ff5f52; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        #sidebar { transition: transform 0.3s ease; }
+        .spin-animation { animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden antialiased">
+
+    <script>
+        const timestampLocalStr = "28/11/2026 00:53:04";
+        const appVersionStr = "v4.95";
+        const timestampNextStr = "28/11/2026 01:53:04";
+        const timestampServerStr = "28/11/2026 03:53:04";
+
+        const finanzasMesActual = "2026-11";
+        const finanzasIngresos = [{"id": "421a38bb-7a6e-81b5-b213-f42867b844af", "titulo": "Ahorros wise", "monto": 66193.98, "fecha": "2026-11-16", "tipo": "AHORROS"}, {"id": "41ba38bb-7a6e-8032-92c2-cf871a434028", "titulo": "Prestamos uala", "monto": 80000, "fecha": "2026-11-13", "tipo": "PRESTAMOS"}, {"id": "411a38bb-7a6e-809a-91f4-f5381b1f4fb5", "titulo": "Trabajo con Abel (3)", "monto": 54000, "fecha": "2026-11-06", "tipo": "EXTRAS"}];
+        const finanzasEgresos = [{"id": "422a38bb-7a6e-81a3-b0b8-c5f479263542", "nombre": "[11] - Seguro Auto", "monto": 32406, "monto_usd": null, "fecha": "2026-11-24", "forma_pago": ["TARJETA (1 CUOTA)"], "tarjeta": "UILO", "cuotas": 1, "cuota_mensual": 32406, "categoria": ["AUTO"], "detalle": null}, {"id": "422a38bb-7a6e-812e-a534-cc1f6fc27331", "nombre": "[11] - Colaboración con Oli", "monto": 5000, "monto_usd": null, "fecha": "2026-11-19", "forma_pago": ["DÉBITO"], "tarjeta": "UILO", "cuotas": null, "cuota_mensual": null, "categoria": ["DONACIONES"], "detalle": null}, {"id": "421a38bb-7a6e-81c3-9d12-c334927503b6", "nombre": "[11] - Plata que le di a mamá", "monto": 20000, "monto_usd": null, "fecha": "2026-11-17", "forma_pago": ["EFECTIVO"], "tarjeta": null, "cuotas": null, "cuota_mensual": null, "categoria": ["SUPERMERCADO"], "detalle": null}, {"id": "421a38bb-7a6e-8164-ad96-ec8b4810ce7d", "nombre": "Sesiones con Stephie", "monto": 100000, "monto_usd": null, "fecha": "2026-11-17", "forma_pago": ["DÉBITO"], "tarjeta": "GALICIA", "cuotas": null, "cuota_mensual": null, "categoria": ["EDUCACIÓN"], "detalle": null}, {"id": "422a38bb-7a6e-809b-8d7e-eb0afd7a9194", "nombre": "[MES] - Gasto: Sube", "monto": 4000, "monto_usd": null, "fecha": "2026-11-14", "forma_pago": ["DÉBITO"], "tarjeta": "GALICIA", "cuotas": null, "cuota_mensual": null, "categoria": ["TRANSPORTE"], "detalle": "carga sube"}, {"id": "41ba38bb-7a6e-80c3-b9a1-dc8a0317c0e9", "nombre": "[11] - Gasto: Juntada con Mary", "monto": 5350, "monto_usd": null, "fecha": "2026-11-14", "forma_pago": ["DÉBITO"], "tarjeta": "UILO", "cuotas": null, "cuota_mensual": null, "categoria": ["SALIDAS"], "detalle": null}, {"id": "41ba38bb-7a6e-80ef-9622-e9224e3362d4", "nombre": "[11] - Gasto: Remeras", "monto": 21000, "monto_usd": null, "fecha": "2026-11-14", "forma_pago": ["DÉBITO"], "tarjeta": "UILO", "cuotas": null, "cuota_mensual": null, "categoria": ["INDUMENTARIA"], "detalle": null}, {"id": "41ba38bb-7a6e-802f-a4a5-f40a218ceb40", "nombre": "[11] - Gasto: Corte de pelo ", "monto": 50000, "monto_usd": null, "fecha": "2026-11-14", "forma_pago": ["DÉBITO"], "tarjeta": "UILO", "cuotas": null, "cuota_mensual": null, "categoria": ["BELLEZA"], "detalle": null}, {"id": "41ba38bb-7a6e-8002-952f-fd1fa9b16f62", "nombre": "[11]- Gasto: Depiladoras ", "monto": 98798, "monto_usd": null, "fecha": "2026-11-14", "forma_pago": ["TARJETA (1 CUOTA)"], "tarjeta": "UILO", "cuotas": 1, "cuota_mensual": 98798, "categoria": ["BELLEZA"], "detalle": null}, {"id": "41ba38bb-7a6e-806b-8981-f046a2f63ca8", "nombre": "[11] - Gasto: Impuesto al sello", "monto": 384, "monto_usd": null, "fecha": "2026-11-13", "forma_pago": ["DÉBITO"], "tarjeta": "UILO", "cuotas": null, "cuota_mensual": null, "categoria": ["IMPUESTOS"], "detalle": null}, {"id": "41ba38bb-7a6e-8035-a61b-e0f98d91544b", "nombre": "[11]- Gasto: Préstamo ualá", "monto": 83000, "monto_usd": null, "fecha": "2026-11-13", "forma_pago": ["TARJETA (1 CUOTA)"], "tarjeta": "UILO", "cuotas": 1, "cuota_mensual": 83000, "categoria": ["PRESTAMO"], "detalle": null}, {"id": "41ba38bb-7a6e-80fe-9fb4-c71487f05905", "nombre": "[11]- Gasto: Suscripción de google ", "monto": 7460.05, "monto_usd": null, "fecha": "2026-11-12", "forma_pago": ["TARJETA (1 CUOTA)"], "tarjeta": "UILO", "cuotas": 1, "cuota_mensual": 7460.05, "categoria": ["SERVICIOS"], "detalle": null}, {"id": "411a38bb-7a6e-8003-9684-c1ff6c49a6c8", "nombre": "[11] - Gasto: Compra en Chino Mall ", "monto": 31063.61, "monto_usd": null, "fecha": "2026-11-04", "forma_pago": ["DÉBITO"], "tarjeta": "GALICIA", "cuotas": null, "cuota_mensual": null, "categoria": ["FERRETERÍA"], "detalle": null}, {"id": "411a38bb-7a6e-80b9-ace8-ec9c3773cb12", "nombre": "[11] - Gasto: VTO TC GALICIA ", "monto": 255131.21, "monto_usd": null, "fecha": "2026-11-04", "forma_pago": ["DÉBITO"], "tarjeta": "GALICIA", "cuotas": null, "cuota_mensual": null, "categoria": ["TARJETAS"], "detalle": null}, {"id": "411a38bb-7a6e-8034-96e3-f39b54efde0a", "nombre": "[11] - Gasto: Auriculares + páñuelo ", "monto": 38235.28, "monto_usd": null, "fecha": "2026-11-02", "forma_pago": ["TARJETA (1 CUOTA)"], "tarjeta": "GALICIA", "cuotas": 1, "cuota_mensual": 38235.28, "categoria": ["TECNOLOGÍA", "ACCESORIOS"], "detalle": null}, {"id": "40ba38bb-7a6e-80e8-8cea-e0cfc53df754", "nombre": "[MES] - Gasto: [11]-Debito automático Starlink ", "monto": 45000, "monto_usd": null, "fecha": "2026-11-01", "forma_pago": ["TARJETA (1 CUOTA)"], "tarjeta": "UILO", "cuotas": 1, "cuota_mensual": 45000, "categoria": ["SERVICIOS"], "detalle": null}];
+        const finanzasCuotas = [{"id": "422a38bb-7a6e-81f3-9a37-d0e6b5ba76e0", "nombre": "Cuota n°: 1 - [11]-Seguro Auto", "fecha_corte": "2026-11-30", "monto": 32406.0}, {"id": "41ba38bb-7a6e-80b0-8dc8-dd640c5955c7", "nombre": "Cuota n°: 1 - [11]- Gasto: Préstamo ualá ", "fecha_corte": "2026-12-01", "monto": 82000.0}, {"id": "41ba38bb-7a6e-809a-83ea-f514dd310f1c", "nombre": "Cuota n°: 1  - [11]- Gasto: Depiladoras  ", "fecha_corte": "2026-11-30", "monto": 98798.0}, {"id": "41ba38bb-7a6e-8010-b94d-cf6ee17646f7", "nombre": "Cuota n°: 1  - [11]- Gasto: Suscripción de google  ", "fecha_corte": "2026-11-30", "monto": 7460.05}, {"id": "411a38bb-7a6e-8059-8bd2-e4a806dc422f", "nombre": "Cuota n°: 1  - [MES] - Gasto: Impuestos TC Galicia ", "fecha_corte": "2026-10-22", "monto": 31616.92}, {"id": "411a38bb-7a6e-8077-b1f7-cbdde7b6daba", "nombre": "Cuota n°: 1  - [10] - Gasto: [10]-Débito automático OS  ", "fecha_corte": "2026-10-22", "monto": 1827.21}, {"id": "411a38bb-7a6e-8026-891b-d51568ab559f", "nombre": "Cuota n°: 1  - [MES] - Gasto: Impuestos TC UALÁ ", "fecha_corte": "2026-10-30", "monto": 10119.41}, {"id": "411a38bb-7a6e-8097-b1f8-dc05c14f31b6", "nombre": "Cuota n°: 1  - [10] - Gasto: Seguro Auto ", "fecha_corte": "2026-10-30", "monto": 30510.0}, {"id": "411a38bb-7a6e-80fd-a6d5-f80069487314", "nombre": "Cuota n°: 1  - [10] - Gasto: Recarga cel ", "fecha_corte": "2026-10-30", "monto": 10000.0}, {"id": "411a38bb-7a6e-8055-9da6-dbedac562c76", "nombre": "Cuota n°: 1  - [10] - Gasto: Google Estudiante", "fecha_corte": "2026-10-30", "monto": 7460.05}, {"id": "411a38bb-7a6e-80aa-b4a0-e25a12e7a697", "nombre": "Cuota n°: X  - [11] - Gasto: Auriculares + páñuelo  ", "fecha_corte": "2026-11-20", "monto": 38235.28}, {"id": "411a38bb-7a6e-80d4-9271-fc9f49dd181f", "nombre": "Cuota n°: 2  - [10] - Gasto: Compra MELI 1 ", "fecha_corte": "2026-11-20", "monto": 38237.175}, {"id": "411a38bb-7a6e-802e-ae23-d1329c52b2da", "nombre": "Cuota n°: 1  - [10] - Gasto: Compra MELI 1 ", "fecha_corte": "2026-11-20", "monto": 38237.175}, {"id": "411a38bb-7a6e-8057-9036-f56cc7be794a", "nombre": "Cuota n°: 2  - [10] - Gasto: Combo emprendedor  ", "fecha_corte": "2026-12-21", "monto": 42294.5}, {"id": "411a38bb-7a6e-8095-8f63-e7c621cf9819", "nombre": "Cuota n°: 1  - [10] - Gasto: Combo emprendedor  ", "fecha_corte": "2026-11-20", "monto": 42294.5}, {"id": "40ba38bb-7a6e-8042-b7a4-c23ecf93a6b7", "nombre": "Cuota n°: X  - [MES] - Gasto: [11]-Debito automático Starlink  ", "fecha_corte": "2026-11-30", "monto": 45000.0}, {"id": "400a38bb-7a6e-80a4-8f21-c79a581cc904", "nombre": "Cuota n°: 1 - [10] Compra Curso ventas  ", "fecha_corte": "2026-10-24", "monto": 18990.0}, {"id": "3f1a38bb-7a6e-807c-b2b5-e247e50182e3", "nombre": "Cuota n°: 1  - [10] - Gasto: [10]-Spotify Music  ", "fecha_corte": "2026-10-30", "monto": 2299.0}, {"id": "3efa38bb-7a6e-809e-b0be-f2e1248b9c9a", "nombre": "Cuota n°: 1  - [10] - Gasto: Compra en MELI ", "fecha_corte": "2026-10-23", "monto": 69890.5}, {"id": "3efa38bb-7a6e-8080-8f37-d74bd03c4e08", "nombre": "Cuota n°: 1  - [09] - Gasto: Compra en Los gemelos ", "fecha_corte": "2026-10-23", "monto": 85849.9}, {"id": "3efa38bb-7a6e-80b1-88c9-f9defa0c42ec", "nombre": "Cuota n°: 1  - [MES] - Gasto: Impuestos TC Galicia ", "fecha_corte": "2026-09-24", "monto": 31417.44}, {"id": "3efa38bb-7a6e-80b3-91c9-feedcdea9d36", "nombre": "Cuota n°: 1  - [09] - Gasto: Impuestos TC UALÁ ", "fecha_corte": "2026-09-30", "monto": 6511.57}, {"id": "3efa38bb-7a6e-8098-b8ec-e2b7608ebf71", "nombre": "Cuota n°: 1  - [10] - Gasto: [10]-Debito automático Starlink  ", "fecha_corte": "2026-10-30", "monto": 45000.0}, {"id": "3efa38bb-7a6e-80c6-acc1-dd9f119a26c7", "nombre": "Cuota n°: 1  - 09] - Gasto: [09]-Débito automático OS  ", "fecha_corte": "2026-10-23", "monto": 1787.39}, {"id": "3d9a38bb-7a6e-80e8-8aab-fc4a3cc87064", "nombre": "Cuota n°: 1  - [09] - Gasto: [09]-PAGAR seguro del auto  ", "fecha_corte": "2026-09-30", "monto": 30510.0}, {"id": "3d9a38bb-7a6e-80e5-83a5-f6ab87392c44", "nombre": "Cuota n°: 1  - [09] - Gasto: [09]-Spotify Music  ", "fecha_corte": "2026-09-30", "monto": 1799.0}, {"id": "3cea38bb-7a6e-80d6-b278-f56a25c799c8", "nombre": "Cuota n°: 1 - [09] - Gasto: [09]-Debito automático Starlink  ", "fecha_corte": "2026-09-30", "monto": 45000.0}, {"id": "3cea38bb-7a6e-801d-a97f-ebc025e0a12e", "nombre": "Cuota n°: 1  - [08] - Gasto: CIERRE UILO  ", "fecha_corte": "2026-08-31", "monto": 30000.0}, {"id": "3cea38bb-7a6e-80e7-94d1-e3eaed9f63ac", "nombre": "Cuota n°: 1  - [08] - Gasto: CIERRE BNA  ", "fecha_corte": "2026-08-23", "monto": 1500.0}, {"id": "3cea38bb-7a6e-8094-b25d-e45b2b4e6c2b", "nombre": "Cuota n°: 1  - [08] - Gasto: CIERRE GALICIA  ", "fecha_corte": "2026-08-23", "monto": 35000.0}, {"id": "3cea38bb-7a6e-80d5-83fa-ec05f1c6ff11", "nombre": "Cuota n°: 1  - [08]- Gasto: Snipo ", "fecha_corte": "2026-08-31", "monto": 48634.77}, {"id": "3cba38bb-7a6e-80f2-be3b-da95e5130f47", "nombre": "Cuota n°: 1 - [08]- Gasto: Compra en Los gemelos  ", "fecha_corte": "2026-09-24", "monto": 73349.85}, {"id": "3cba38bb-7a6e-8084-be02-ddaceb4609df", "nombre": "Cuota n°: 1  - [08] - Gasto: [08]-Débito automático OS  ", "fecha_corte": "2026-09-23", "monto": 1748.5}, {"id": "3c9a38bb-7a6e-80bf-bc07-ccecadc458b8", "nombre": "Cuota n°: 1  - [08]- Gasto: Compra en Los gemelos (1) ", "fecha_corte": "2026-08-23", "monto": 24099.75}, {"id": "3bca38bb-7a6e-8038-8691-de864576318a", "nombre": "Cuota n°: 1  - [08]- Gasto: Seguro del auto ", "fecha_corte": "2026-08-31", "monto": 30150.0}, {"id": "3b4a38bb-7a6e-80d5-8525-c0e3c376d45c", "nombre": "Cuota n°: 1 - [08]- Gasto: Spotify ", "fecha_corte": "2026-08-31", "monto": 1799.0}, {"id": "3b1a38bb-7a6e-8028-b035-ecb43f5485cf", "nombre": "Cuota n°: 1  - [07] - Gasto: CIERRE UILO  ", "fecha_corte": "2026-07-31", "monto": 2000.0}, {"id": "3b1a38bb-7a6e-80d7-885a-f26e5177f8da", "nombre": "Cuota n°: 1  - [MES] - Gasto: [07]-Débito automático OS  ", "fecha_corte": "2026-08-21", "monto": 1709.0}, {"id": "3b1a38bb-7a6e-80b0-a7ed-d6acda8b584e", "nombre": "Cuota n°: 1  - [07] - Gasto: CIERRE BNA  ", "fecha_corte": "2026-07-23", "monto": 2000.0}, {"id": "3b1a38bb-7a6e-8026-b55a-f27c71b0425c", "nombre": "Cuota n°: 1  - [07] - Gasto: CIERRE GALICIA  ", "fecha_corte": "2026-07-23", "monto": 35000.0}, {"id": "3b0a38bb-7a6e-808f-a6c2-ec1e869b6d84", "nombre": "Cuota n°: 1  - [08]- Gasto: Débito Starlink ", "fecha_corte": "2026-08-31", "monto": 45000.0}, {"id": "3ada38bb-7a6e-80dc-8247-db61ed286f45", "nombre": "Cuota n°: 1  - [07]- Gasto: Remedios  ", "fecha_corte": "2026-08-21", "monto": 100161.92}, {"id": "3a1a38bb-7a6e-8015-bd6d-c74323451099", "nombre": "Cuota n°: 1  - [07] - Gasto: [07]-PAGAR seguro del auto  ", "fecha_corte": "2026-07-31", "monto": 28367.0}, {"id": "39fa38bb-7a6e-8084-9a7e-faddae05a988", "nombre": "Cuota n°: 1  - [07] - Gasto: Jarabe Pa ", "fecha_corte": "2026-07-23", "monto": 11915.51}, {"id": "39fa38bb-7a6e-80cd-bfdd-dbdfde8d0a28", "nombre": "Cuota n°: 1  - [07]- Gasto: Compra en Bazar chino ", "fecha_corte": "2026-07-23", "monto": 7000.0}, {"id": "396a38bb-7a6e-80a6-bad6-d62a0d1364b7", "nombre": "Cuota n°: 1  - [06]- Gasto: Aranceles periodo b ", "fecha_corte": "2026-07-22", "monto": 470545.84}, {"id": "395a38bb-7a6e-804f-bc24-fd18b26ead23", "nombre": "Cuota n°: 1  - [07] - Gasto: [07]-Spotify Music  ", "fecha_corte": "2026-07-31", "monto": 1799.0}, {"id": "395a38bb-7a6e-801f-97b5-db7913596b91", "nombre": "Cuota n°: 1  - [06]- Gasto: Compra en Los gemelos ", "fecha_corte": "2026-07-25", "monto": 22199.95}, {"id": "395a38bb-7a6e-8063-baa4-dea27368f5b2", "nombre": "Cuota n°: 1  - [07] - Gasto: [07]-Debito automático Starlink  ", "fecha_corte": "2026-07-31", "monto": 45000.0}, {"id": "38aa38bb-7a6e-80c3-8287-fb4c9f77b988", "nombre": "Cuota n°: 1  - [06] - Gasto: [06]-Débito automático OS  ", "fecha_corte": "2026-06-25", "monto": 1700.0}, {"id": "38aa38bb-7a6e-8089-8165-ecf9b973a58c", "nombre": "Impuestos- [06] - Gasto: Impuestos TC BNA ", "fecha_corte": "2026-06-26", "monto": 996.8}, {"id": "38aa38bb-7a6e-8049-b057-c9490a44caa6", "nombre": "Impuestos  - [06] - Gasto: Impuestos TC Galicia ", "fecha_corte": "2026-06-25", "monto": 31417.44}, {"id": "387a38bb-7a6e-8089-927a-e7b7a10be8d7", "nombre": "Cuota n°: 1  - [06]- Gasto: Compra en Los Gemelos ", "fecha_corte": "2026-06-25", "monto": 29199.94}, {"id": "37ba38bb-7a6e-8047-93b3-d3e39db09c6f", "nombre": "Cuota n°: 1  - [06] - Gasto: [06]-PAGAR seguro del auto  ", "fecha_corte": "2026-06-30", "monto": 28367.0}, {"id": "377a38bb-7a6e-8068-89df-d221245954af", "nombre": "Cuota n°: 1  - [06] - Gasto: [06]-Spotify Music  ", "fecha_corte": "2026-06-30", "monto": 1800.0}, {"id": "376a38bb-7a6e-8016-815e-d982e3a50010", "nombre": "Cuota n°: 1  - [06]- Gasto: Compra en Los gemelos  ", "fecha_corte": "2026-06-30", "monto": 92349.99}, {"id": "374a38bb-7a6e-806f-bfb6-d10198486120", "nombre": "Cuota n°: 2  - [06]- Gasto: Zapatillas Pa ", "fecha_corte": "2026-07-24", "monto": 33324.94}, {"id": "373a38bb-7a6e-8004-8ac0-d674a4b662f3", "nombre": "Cuota n°: 1  - [06]- Gasto: Zapatillas Pa ", "fecha_corte": "2026-06-25", "monto": 33324.94}, {"id": "373a38bb-7a6e-80d8-9d90-d75e51cda7a1", "nombre": "Cuota n°: 1  - [06]- Gasto: Compra en Carrefur ", "fecha_corte": "2026-06-25", "monto": 29188.0}, {"id": "373a38bb-7a6e-80cc-97d9-fe3fb29fbfe9", "nombre": "Cuota n°: 1  - [06] - Gasto: [06]-Debito automático Starlink  ", "fecha_corte": "2026-06-30", "monto": 45000.0}, {"id": "370a38bb-7a6e-806b-b0a6-df8d30743c52", "nombre": "Cuota n°: 1  - [05] - Gasto: [05]-Spotify Music  ", "fecha_corte": "2026-05-29", "monto": 1800.0}, {"id": "370a38bb-7a6e-804c-b1b6-fe1eeb52297d", "nombre": "[05] - Impuestos TC UILO ", "fecha_corte": "2026-05-29", "monto": 17911.41}, {"id": "370a38bb-7a6e-801e-b47c-d93eae9dd342", "nombre": "Impuestos TC Galicia  - [05] - Gasto: Impuestos tarjeta ", "fecha_corte": "2026-05-21", "monto": 28496.0}, {"id": "370a38bb-7a6e-80e3-b1fe-c355612ee326", "nombre": "Cuota n°: 1  - [05] - Gasto: [05]-Débito automático OS  ", "fecha_corte": "2026-06-22", "monto": 1626.76}, {"id": "370a38bb-7a6e-809c-b426-daf043012669", "nombre": "Cuota n°: 3  - [05]- Gasto: Compra en Los gemelos ", "fecha_corte": "2026-08-21", "monto": 17533.296666666665}, {"id": "370a38bb-7a6e-806e-b1cd-cb8e00c3bbc5", "nombre": "Cuota n°: 2  - [05]- Gasto: Compra en Los gemelos ", "fecha_corte": "2026-07-24", "monto": 17533.296666666665}, {"id": "370a38bb-7a6e-80f2-86c1-e4b14ce9a447", "nombre": "Cuota n°: 1  - [05]- Gasto: Compra en Los gemelos ", "fecha_corte": "2026-06-26", "monto": 17533.296666666665}, {"id": "360a38bb-7a6e-802a-9693-c81341e07550", "nombre": "Cuota n°: 1  - [05] - Gasto: [05]-PAGAR seguro del auto  ", "fecha_corte": "2026-05-29", "monto": 28367.0}, {"id": "35aa38bb-7a6e-80a7-9270-ea7736c80d38", "nombre": "Cuota n°: 2  - [04]- Gasto: Compra en Los gemelos ", "fecha_corte": "2026-06-22", "monto": 46849.935}, {"id": "35aa38bb-7a6e-8071-ba6a-c0355f062228", "nombre": "Cuota n°: 1  - [04]- Gasto: Compra en Los gemelos ", "fecha_corte": "2026-05-21", "monto": 46849.935}, {"id": "35aa38bb-7a6e-8014-b528-eda83a16e489", "nombre": "Cuota n°: 1  - [04] - Gasto: Recarga celular ", "fecha_corte": "2026-05-30", "monto": 10000.0}, {"id": "354a38bb-7a6e-80e9-b69a-e25a185ad01a", "nombre": "Cuota n°: 1  - [04]- Gasto: OS ", "fecha_corte": "2026-05-21", "monto": 1585.55}, {"id": "354a38bb-7a6e-80d8-96f9-dd9b6402b9b1", "nombre": "Cuota n°: X  - [05] - Gasto: [05]-Debito automático Starlink  ", "fecha_corte": "2026-05-30", "monto": 36530.0}, {"id": "34ba38bb-7a6e-80c3-ae74-f1c10dd9ef7f", "nombre": "Cuota n°: 1  - [04] - Gasto: [04]-Débito automático OS  ", "fecha_corte": "2026-04-23", "monto": 1582.0}, {"id": "345a38bb-7a6e-80cb-89b1-ccca665210b7", "nombre": "Cuota n°: 1  - [04] - Gasto: [04]-PAGAR seguro del auto  ", "fecha_corte": "2026-04-30", "monto": 26551.0}, {"id": "345a38bb-7a6e-8004-b4a1-ca6005249239", "nombre": "Cuota n°: 1  - [04] - Gasto: Débito LKD Premium  ", "fecha_corte": "2026-04-30", "monto": 11988.0}, {"id": "33ca38bb-7a6e-80de-bad5-de94d69b6c38", "nombre": "Cuota n°: 1- [04] - Gasto: Recarga  ", "fecha_corte": "2026-04-30", "monto": 10000.0}, {"id": "33aa38bb-7a6e-8061-b4de-fd89565dc47d", "nombre": "Cuota n°: 1  - [MES] - Gasto: [04]-Spotify Music  ", "fecha_corte": "2026-04-30", "monto": 1800.0}, {"id": "338a38bb-7a6e-8095-a393-ece415f0a398", "nombre": "Cuota n°: 1  - [04]- Gasto: Compra MELI 04 ", "fecha_corte": "2026-05-27", "monto": 65867.0}, {"id": "338a38bb-7a6e-805a-86f4-f4f30a91343f", "nombre": "Cuota n°: 1  - [04] - Gasto: [04]-Debito automático Starlink  ", "fecha_corte": "2026-04-30", "monto": 38000.0}, {"id": "330a38bb-7a6e-8024-929f-c0cd274f725b", "nombre": "Cuota n°: 1  - [03] - Gasto: Débito automático M.Office  ", "fecha_corte": "2026-03-30", "monto": 46000.0}, {"id": "32da38bb-7a6e-8018-a137-e18ed3a9dc5a", "nombre": "Cuota n°: 1 - [03] - Gasto: [03]-Débito automático OS  ", "fecha_corte": "2026-03-20", "monto": 1600.0}, {"id": "326a38bb-7a6e-8012-9553-c3b2d74c975c", "nombre": "Cuota n°: 2  - [03]- Gasto: Compra Meli  ", "fecha_corte": "2026-04-24", "monto": 27708.1}, {"id": "326a38bb-7a6e-8056-89f4-ce7571ffc209", "nombre": "Cuota n°: 1  - [03]- Gasto: Compra Meli  ", "fecha_corte": "2026-03-20", "monto": 27708.1}, {"id": "325a38bb-7a6e-8014-b20f-e8b8d0b2550f", "nombre": "Cuota n°: 1  - [03]- Gasto: Compra MELI ", "fecha_corte": "2026-03-27", "monto": 54807.39}, {"id": "325a38bb-7a6e-8030-8330-fbd80ab4b992", "nombre": "Cuota n°: 6  - [03]- Gasto: Periodo A -UNI ", "fecha_corte": "2026-08-21", "monto": 207667.26666666666}, {"id": "325a38bb-7a6e-8044-a676-e0191a6d7781", "nombre": "Cuota n°: 5  - [03]- Gasto: Periodo A -UNI ", "fecha_corte": "2026-07-24", "monto": 207667.26666666666}, {"id": "325a38bb-7a6e-8026-99f1-d46aa7f0718c", "nombre": "Cuota n°: 4  - [03]- Gasto: Periodo A -UNI ", "fecha_corte": "2026-06-26", "monto": 207667.26666666666}, {"id": "325a38bb-7a6e-807d-8c27-e3a04b3ea02a", "nombre": "Cuota n°: 3  - [03]- Gasto: Periodo A -UNI ", "fecha_corte": "2026-05-22", "monto": 207667.26666666666}, {"id": "325a38bb-7a6e-80f6-bfe2-e70c2dc352e9", "nombre": "Cuota n°: 2  - [03]- Gasto: Periodo A -UNI ", "fecha_corte": "2026-04-24", "monto": 207667.26666666666}, {"id": "325a38bb-7a6e-8087-875e-d931b11d1152", "nombre": "Cuota n°: 1  - [03]- Gasto: Periodo A -UNI ", "fecha_corte": "2026-03-20", "monto": 207667.26666666666}, {"id": "325a38bb-7a6e-80d6-a61a-e72afe837ac0", "nombre": "Cuota n°: 1  - [03]- Gasto: Seguro del auto ", "fecha_corte": "2026-03-31", "monto": 26551.0}, {"id": "31ea38bb-7a6e-801c-b27f-fcff987338a9", "nombre": "Cuota n°: 1 - [03]- Gasto: Curso Ciberseguridad  ", "fecha_corte": "2026-03-31", "monto": 30000.0}, {"id": "31ca38bb-7a6e-80f6-bf42-e550f2d6929d", "nombre": "Cuota n°: 2  - [03]- Gasto: Super MELI ", "fecha_corte": "2026-04-24", "monto": 40038.245}, {"id": "31ca38bb-7a6e-8008-96bc-fc0f0f7799e1", "nombre": "Cuota n°: 1  - [03]- Gasto: Super MELI ", "fecha_corte": "2026-03-19", "monto": 40038.245}, {"id": "31ca38bb-7a6e-8061-a3db-c51b266709a8", "nombre": "Cuota n°: 1 - [03] - Gasto: [03]-Spotify Music  ", "fecha_corte": "2026-03-31", "monto": 1799.0}, {"id": "318a38bb-7a6e-8026-83fe-e6d86475f622", "nombre": "Cuota n°: 2  - [12]- Gasto: Compras Varios ", "fecha_corte": "2026-02-19", "monto": 15671.3}];
+        const finanzasOpciones = {"tipos_ingreso": ["SUELDO", "AHORROS", "PRESTAMOS", "EXTRAS", "SALDO MES ANTERIOR", "INDEMNIZACIÓN", "SUBSIDIO"], "formas_pago": ["TARJETA", "TARJETA (1 CUOTA)", "EFECTIVO", "DÉBITO", "CRÉDITO GALICIA"], "tarjetas": ["BBVA", "GALICIA", "EFECTIVO", "NARANJA X", "UILO", "brubank", "SANTANDER", "MP", "Lemon", "BNA", "BCO SJ"], "categorias": ["TARJETAS", "COMPRAS HORMIGAS (caramelos gaseosa galletas chicles)", "TRANSPORTE", "SALIDAS", "SUPERMERCADO", "SALUD", "SERVICIOS", "INDUMENTARIA", "TECNOLOGÍA", "AHORRO e INVERSIONES", "TELÉFONO", "EDUCACIÓN", "PRESTAMO", "BELLEZA", "IMPUESTOS", "ALIMENTO PERRO", "CHUCHES", "VIVERO", "GASTO NO TRACKEADO", "AUTO", "CuidaMe", "DONACIONES", "BLANCA", "ACCESORIOS", "BICICLETA", "HOGAR", "FERRETERÍA", "Tribu del Papel"]};
+    </script>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
+        <div class="flex items-center gap-3 mb-5 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.95</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span>Agenda personal</span>
+            </a>
+            <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">alarm</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">check_box</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="finanzas.html" class="flex items-center gap-3 px-4 py-2 bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/30 rounded-xl font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+                <span>Finanzas</span>
+            </a>
+            <a href="salud.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Salud</span>
+            </a>
+            <a href="ocio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_library</span>
+                <span>Ocio</span>
+            </a>
+            <a href="gestion-emocional.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">psychology</span>
+                <span>Gestión emocional</span>
+            </a>
+            <a href="relaciones-y-limites.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">shield</span>
+                <span>Relaciones y límites</span>
+            </a>
+            <a href="desarrollo-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">trending_up</span>
+                <span>Desarrollo personal</span>
+            </a>
+            <a href="habitos-y-disciplina.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_fire_department</span>
+                <span>Hábitos y disciplina</span>
+            </a>
+        </nav>
+        <div class="pt-3 mt-3 border-t border-white/[0.08]">
+            <a href="https://contras.ai.studio/" target="_blank" rel="noopener" class="flex items-center gap-2 px-3 py-1.5 text-[#ffb961] hover:bg-[#ffb961]/10 rounded-lg transition-all text-[11px] font-semibold">
+                <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                <span>Contras AI Studio</span>
+            </a>
+        </div>
+        <div class="pt-3 mt-3 border-t border-white/[0.08] flex items-center gap-3 px-2">
+            <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
+            <div class="min-w-0">
+                <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.95</p>
+            </div>
+        </div>
+    </aside>
+
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <main class="min-h-screen lg:ml-64">
+        <!-- TOP APP BAR -->
+        <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">Asistente Sabry</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">FINANZAS</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- RESUMEN DEL MES -->
+            <section class="space-y-4">
+                <div class="flex flex-wrap justify-between items-center gap-3 px-1">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">RESUMEN MENSUAL</p>
+                        <div class="flex flex-wrap items-center gap-3 mt-0.5">
+                            <h2 id="finanzas-mes-lbl" class="text-headline-md font-headline-md text-white">Movimientos del mes</h2>
+                            <input id="fin-selector-mes" type="month" onchange="cambiarMesFinanzas(this.value)" class="bg-[#18181d] border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs font-semibold text-[#e5e2e1] focus:outline-none focus:border-[#ff5f52]" title="Seleccionar mes" />
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="abrirModalIngreso()"
+                                class="bg-[#53a759] hover:bg-[#53a759]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">add</span>
+                            <span>Registrar Ingreso</span>
+                        </button>
+                        <button type="button" onclick="abrirModalEgreso()"
+                                class="bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">add</span>
+                            <span>Registrar Egreso</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="glass-card rounded-2xl p-6 border-l-4 border-l-[#53a759]">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">TOTAL INGRESOS</p>
+                        <p id="total-ingresos-val" class="text-metric-xl font-metric-xl text-[#53a759]">$ 0,00</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 border-l-4 border-l-[#ff5f52]">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">TOTAL EGRESOS</p>
+                        <p id="total-egresos-val" class="text-metric-xl font-metric-xl text-[#ff5f52]">$ 0,00</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 border-l-4 border-l-[#00aaff]">
+                        <p class="text-[10px] font-label-caps text-[#8e8e93] mb-2">BALANCE DEL MES</p>
+                        <p id="balance-mes-val" class="text-metric-xl font-metric-xl text-white">$ 0,00</p>
+                    </div>
+                </div>
+
+                <!-- PROYECCIÓN DE CUOTAS TC (6 MESES) -->
+                <div class="glass-card rounded-2xl p-6 border border-white/[0.08] space-y-4">
+                    <div class="flex flex-wrap justify-between items-center gap-2">
+                        <div>
+                            <p class="text-[10px] font-label-caps text-[#ffb961] tracking-widest">TARJETAS · PRÓXIMOS 6 MESES</p>
+                            <h3 class="text-base font-bold text-white">Proyección de Cuotas TC</h3>
+                        </div>
+                        <span id="proyeccion-cuotas-total" class="text-xs font-bold text-[#ffb961] bg-[#ffb961]/10 px-3 py-1 rounded-full border border-[#ffb961]/30">$ 0,00 proyectado</span>
+                    </div>
+                    <div id="proyeccion-cuotas-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3"></div>
+                </div>
+            </section>
+
+            <!-- BUSCADOR RÁPIDO -->
+            <div class="relative">
+                <span class="material-symbols-outlined text-[18px] text-[#8e8e93] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">search</span>
+                <input id="fin-buscador" type="text" oninput="renderizarFinanzas()" placeholder="Buscar movimientos por nombre, categoría o tarjeta..."
+                       class="w-full bg-[#111115] border border-white/[0.08] rounded-xl pl-10 pr-4 py-2.5 text-[14px] text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#ff5f52]/50" />
+            </div>
+
+            <!-- LISTADOS DEL MES -->
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-grid-gutter">
+                <!-- Ingresos -->
+                <article class="glass-card rounded-2xl p-8 border-l-4 border-l-[#53a759] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">INGRESOS</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Ingresos del mes</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="total-ingresos-lbl" class="bg-[#53a759]/10 text-[#53a759] px-3 py-1 rounded-full text-[12px] font-semibold">0 ítems</span>
+                            <button type="button" onclick="toggleBloque('ingresos')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-ingresos">
+                                <span id="chevron-ingresos" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="content-ingresos">
+                        <div id="list-ingresos" class="space-y-3"></div>
+                    </div>
+                </article>
+
+                <!-- Egresos -->
+                <article class="glass-card rounded-2xl p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">EGRESOS</p>
+                            <h2 class="text-headline-md font-headline-md text-white">Egresos del mes</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="total-egresos-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 ítems</span>
+                            <button type="button" onclick="toggleBloque('egresos')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-egresos">
+                                <span id="chevron-egresos" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="content-egresos">
+                        <div id="list-egresos" class="space-y-3"></div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Redirección a la vista en Notion -->
+            <section class="flex flex-col items-center py-4">
+                <a href="https://app.notion.com/p/32aa38bb7a6e8076ba6be8b4c8dd89e2?v=32aa38bb7a6e80a38764000c90903153&source=copy_link"
+                   target="_blank"
+                   class="bg-[#c0453b] hover:bg-[#c0453b]/90 text-white font-bold text-[15px] py-3.5 px-8 rounded-xl flex items-center gap-2 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
+                    <span class="material-symbols-outlined text-[18px]">payments</span>
+                    <span>Ver Finanzas en Notion</span>
+                    <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                </a>
+            </section>
+        </div>
+
+        <footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">dev</span></p>
+                    </div>
+                    <div class="flex flex-wrap gap-x-8 gap-y-2">
+                        <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Sabri Studios &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL INGRESO -->
+    <div id="modal-ingreso" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalIngreso()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="ing-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar Ingreso</h3>
+                <button type="button" onclick="cerrarModalIngreso()" class="p-1.5 hover:bg-white/5 rounded-full transition-colors text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-ingreso" class="space-y-4" onsubmit="return manejarSubmitIngreso(event)">
+                <input id="ing-page-id" type="hidden" value="" />
+                <div>
+                    <label for="ing-titulo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Título *</label>
+                    <input id="ing-titulo" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="ing-monto" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Monto ($) *</label>
+                        <input id="ing-monto" type="number" step="0.01" min="0.01" required class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                    <div>
+                        <label for="ing-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha *</label>
+                        <input id="ing-fecha" type="date" required class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                </div>
+                <div>
+                    <label for="ing-tipo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Tipo de Ingreso</label>
+                    <select id="ing-tipo" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container"></select>
+                </div>
+                <p id="ing-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button id="ing-btn-eliminar" type="button" onclick="confirmarEliminarIngresoDesdeModal()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl transition-all" title="Mandar a la papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
+                    <button type="button" onclick="cerrarModalIngreso()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl transition-all">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-[#53a759] hover:bg-[#53a759]/90 text-white font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL EGRESO -->
+    <div id="modal-egreso" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalEgreso()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="egr-modal-titulo" class="text-headline-md font-headline-md text-white">Registrar Egreso</h3>
+                <button type="button" onclick="cerrarModalEgreso()" class="p-1.5 hover:bg-white/5 rounded-full transition-colors text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-egreso" class="space-y-3.5" onsubmit="return manejarSubmitEgreso(event)">
+                <input id="egr-page-id" type="hidden" value="" />
+                <div>
+                    <label for="egr-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Nombre del gasto *</label>
+                    <input id="egr-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="egr-monto" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Monto ($) *</label>
+                        <input id="egr-monto" type="number" step="0.01" min="0.01" required class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                    <div>
+                        <label for="egr-monto-usd" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Monto en USD</label>
+                        <input id="egr-monto-usd" type="number" step="0.01" min="0" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="egr-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Fecha *</label>
+                        <input id="egr-fecha" type="date" required class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                    <div>
+                        <label for="egr-cuotas" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Cuotas</label>
+                        <input id="egr-cuotas" type="number" min="1" step="1" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="egr-forma-pago" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Forma de pago</label>
+                        <select id="egr-forma-pago" onchange="actualizarVisibilidadFechaCorte()" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container"></select>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                            <label for="egr-tarjeta" class="block text-[12px] font-semibold text-[#8e8e93]">Tarjeta usada</label>
+                            <button type="button" onclick="abrirSubmodalFinOpcion('tarjeta')" class="text-[11px] font-bold text-[#ffb961] hover:underline">+ Nueva</button>
+                        </div>
+                        <select id="egr-tarjeta" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container"></select>
+                    </div>
+                </div>
+                <div id="egr-wrap-fecha-corte" class="hidden space-y-1">
+                    <label for="egr-fecha-corte" class="block text-[12px] font-semibold text-[#8e8e93]">Fecha de Corte TC (1ª cuota)</label>
+                    <input id="egr-fecha-corte" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    <p class="text-[11px] text-[#8e8e93]">Se crearán también las cuotas en Cuotas Pendientes BD-V0.</p>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-1">
+                        <label for="egr-categoria" class="block text-[12px] font-semibold text-[#8e8e93]">Categoría</label>
+                        <button type="button" onclick="abrirSubmodalFinOpcion('categoria')" class="text-[11px] font-bold text-[#ffb961] hover:underline">+ Nueva</button>
+                    </div>
+                    <select id="egr-categoria" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container"></select>
+                </div>
+                <div>
+                    <label for="egr-detalle" class="block text-[12px] font-semibold text-[#8e8e93] mb-1">Detalle</label>
+                    <textarea id="egr-detalle" rows="2" maxlength="1000" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2 text-white text-[14px] focus:outline-none focus:border-primary-container resize-none"></textarea>
+                </div>
+                <p id="egr-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button id="egr-btn-eliminar" type="button" onclick="confirmarEliminarEgresoDesdeModal()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl transition-all" title="Mandar a la papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
+                    <button type="button" onclick="cerrarModalEgreso()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl transition-all">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SUBMODAL CREACIÓN EN VUELO: TARJETA / CATEGORÍA (CAPA 2) -->
+    <div id="modal-fin-opcion-vuelo" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarSubmodalFinOpcion()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4 border border-[#ffb961]/40 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30">CAPA 2 • EN VUELO</span>
+                <button type="button" onclick="cerrarSubmodalFinOpcion()" class="px-2 py-1 hover:bg-white/5 rounded-full text-[11px] text-[#8e8e93] hover:text-white inline-flex items-center gap-1" title="Esc | Cerrar a Finanzas">
+                    <span>Esc</span>
+                    <span class="material-symbols-outlined text-[16px]">close</span>
+                </button>
+            </div>
+            <p class="text-[11px] text-[#8e8e93] font-medium">Finanzas → Egreso → <span class="text-[#ffb961]">+ En vuelo</span></p>
+            <h3 id="fin-ov-titulo" class="text-base font-bold text-white">Nueva tarjeta</h3>
+            <form onsubmit="return guardarSubmodalFinOpcion(event)" class="space-y-3">
+                <input id="fin-ov-tipo" type="hidden" value="tarjeta" />
+                <input id="fin-ov-valor" type="text" required maxlength="80" placeholder="Ej. Visa Signature Sabri" class="w-full bg-[#1c1c1f] border border-[#232326] focus:border-[#ffb961] rounded-lg px-3 py-2.5 text-white text-sm outline-none" />
+                <div class="flex gap-2">
+                    <button type="button" onclick="cerrarSubmodalFinOpcion()" class="flex-1 py-2.5 rounded-xl bg-[#1c1c1f] text-white text-xs font-semibold">← Volver al gasto</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-[#ffb961] text-[#08080a] text-xs font-bold">Agregar y seleccionar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR PAPELERA -->
+    <div id="modal-confirmar-papelera" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="cerrarModalPapelera()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-3 text-[#ff5f52]">
+                <span class="material-symbols-outlined text-[24px]">delete</span>
+                <h3 class="text-headline-md font-headline-md text-white">Mandar a la papelera</h3>
+            </div>
+            <p id="papelera-texto" class="text-[14px] text-[#e2beba] leading-relaxed">¿Deseas mandar este registro a la papelera de Notion?</p>
+            <div class="flex gap-3 pt-1">
+                <button type="button" onclick="cerrarModalPapelera()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cancelar</button>
+                <button type="button" onclick="ejecutarEnvioPapelera()" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-2.5 rounded-xl transition-all active:scale-95">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TOKEN GITHUB -->
+    <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="cerrarModalTokenFinanzas()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center">
+                <h3 class="text-headline-md font-headline-md text-white">Configurar token de GitHub</h3>
+                <button type="button" onclick="cerrarModalTokenFinanzas()" class="p-1.5 hover:bg-white/5 rounded-full transition-colors text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <p class="text-[13px] text-[#e2beba] leading-relaxed">
+                Para guardar en Notion sin exponer sus claves, se usa un token de GitHub guardado únicamente en este navegador
+                (<strong>Contents: Read and write</strong> y <strong>Actions: Read-only</strong> sobre este repo).
+            </p>
+            <div>
+                <label for="fin-token-input" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Pegá el token acá</label>
+                <input id="fin-token-input" type="password" autocomplete="off" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+            </div>
+            <button type="button" onclick="guardarTokenFinanzas()" class="w-full bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">Guardar token</button>
+        </div>
+    </div>
+
+    <!-- SPINNER CONFIRMACIÓN -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarSpinnerNotion()" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
+    <script src="./src/utils/finanzas_logic.js"></script>
+
+    <script>
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        function obtenerTokenGuardado() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+
+        function hoyLocalISO() {
+            const d = new Date();
+            const pad = (n) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        }
+
+        function _poblarSelect(id, opciones, valorActual) {
+            const el = document.getElementById(id);
+            const lista = ['<option value="">Sin especificar</option>'];
+            (opciones || []).forEach((op) => {
+                lista.push(`<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`);
+            });
+            el.innerHTML = lista.join("");
+            if (valorActual) el.value = valorActual;
+        }
+
+        function renderizarFinanzas() {
+            document.getElementById("finanzas-mes-lbl").textContent = `Movimientos (${finanzasMesActual})`;
+            const { totalIngresos, totalEgresos, balance } = calcularResumenFinanzas(finanzasIngresos, finanzasEgresos);
+            document.getElementById("total-ingresos-val").textContent = formatearMonedaARS(totalIngresos);
+            document.getElementById("total-egresos-val").textContent = formatearMonedaARS(totalEgresos);
+            const balEl = document.getElementById("balance-mes-val");
+            balEl.textContent = formatearMonedaARS(balance);
+            balEl.className = "text-metric-xl font-metric-xl " + (balance >= 0 ? "text-[#53a759]" : "text-[#ff5f52]");
+
+            document.getElementById("total-ingresos-lbl").textContent = `${finanzasIngresos.length} ítems`;
+            document.getElementById("total-egresos-lbl").textContent = `${finanzasEgresos.length} ítems`;
+
+            const mesActivo = (typeof finanzasMesSeleccionado !== "undefined" && finanzasMesSeleccionado) ? finanzasMesSeleccionado : finanzasMesActual;
+            const proy = calcularProyeccionCuotas(finanzasCuotas, mesActivo, 6);
+            const totalProy = proy.reduce((a, b) => a + b.total, 0);
+            const maxProy = Math.max(1, ...proy.map((m) => m.total));
+            document.getElementById("proyeccion-cuotas-total").textContent = `${formatearMonedaARS(totalProy)} proyectado`;
+            document.getElementById("proyeccion-cuotas-grid").innerHTML = proy.map((m) => {
+                const hPct = m.total > 0 ? Math.max(10, Math.round((m.total / maxProy) * 100)) : 4;
+                return `
+                    <div class="bg-[#0e0e0f] border border-white/[0.06] rounded-xl p-3 flex flex-col justify-between gap-2">
+                        <div class="flex justify-between items-center text-[11px]">
+                            <span class="font-bold text-white">${escapeHtml(m.mes)}</span>
+                            <span class="text-[#8e8e93]">${m.cantidad} c.</span>
+                        </div>
+                        <div class="h-14 flex items-end">
+                            <div class="w-full rounded-md ${m.total > 0 ? "bg-gradient-to-t from-[#ff5f52] to-[#ffb961]" : "bg-white/[0.06]"}" style="height: ${hPct}%;"></div>
+                        </div>
+                        <p class="text-[11px] font-bold ${m.total > 0 ? "text-[#ffb961]" : "text-[#8e8e93]"} truncate">${escapeHtml(formatearMonedaARS(m.total))}</p>
+                    </div>
+                `;
+            }).join("");
+
+            const q = ((document.getElementById("fin-buscador") || {}).value || "").trim().toLowerCase();
+            const ingFiltrados = finanzasIngresos.map((item, idx) => ({ item, idx })).filter(({ item }) =>
+                !q || `${item.titulo} ${item.tipo || ""} ${item.fecha || ""}`.toLowerCase().includes(q)
+            );
+            const egrFiltrados = finanzasEgresos.map((item, idx) => ({ item, idx })).filter(({ item }) =>
+                !q || `${item.nombre} ${(item.categoria || []).join(" ")} ${item.tarjeta || ""} ${item.fecha || ""}`.toLowerCase().includes(q)
+            );
+
+            const contIng = document.getElementById("list-ingresos");
+            contIng.innerHTML = ingFiltrados.length === 0
+                ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin ingresos para mostrar</div>`
+                : ingFiltrados.map(({ item, idx }) => `
+                    <div class="status-row left-pill-green flex items-center justify-between px-4 py-3.5 gap-3">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-white font-semibold truncate">${escapeHtml(item.titulo)}</p>
+                            <p class="text-[12px] text-[#8e8e93] truncate">${escapeHtml(item.fecha)}${item.tipo ? " · " + escapeHtml(item.tipo) : ""}</p>
+                        </div>
+                        <span class="text-[#53a759] font-bold text-[14px] flex-shrink-0">${escapeHtml(formatearMonedaARS(item.monto))}</span>
+                        <div class="flex items-center gap-1 flex-shrink-0">
+                            <button type="button" onclick="abrirModalEditarIngreso(${idx})" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                            <button type="button" onclick="confirmarEliminarFinanza('${escapeHtml(item.id)}', '${escapeHtml(item.titulo)}')" class="p-1.5 hover:bg-[#ff5f52]/15 rounded-lg text-[#8e8e93] hover:text-[#ff5f52]" title="Mandar a papelera"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                        </div>
+                    </div>
+                `).join("");
+
+            const contEgr = document.getElementById("list-egresos");
+            contEgr.innerHTML = egrFiltrados.length === 0
+                ? `<div class="status-row flex items-center justify-center py-3.5 px-4 text-[#8e8e93] text-[13px]">Sin egresos para mostrar</div>`
+                : egrFiltrados.map(({ item, idx }) => {
+                    const cuotaPill = item.cuota_mensual
+                        ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/[0.06] text-[11px] text-[#e5e2e1] mr-1"><span class="material-symbols-outlined text-[13px] text-[#ffb961]">credit_card</span>${escapeHtml(formatearMonedaARS(item.cuota_mensual))}/mes</span>`
+                        : "";
+                    const meta = [item.fecha, ...(item.categoria || []), item.tarjeta].filter(Boolean).map(escapeHtml).join(" · ");
+                    return `
+                    <div class="status-row left-pill-red flex items-center justify-between px-4 py-3.5 gap-3">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-white font-semibold truncate">${escapeHtml(item.nombre)}</p>
+                            <p class="text-[12px] text-[#8e8e93] truncate">${cuotaPill}${meta}</p>
+                        </div>
+                        <span class="text-[#ff5f52] font-bold text-[14px] flex-shrink-0">${escapeHtml(formatearMonedaARS(item.monto))}</span>
+                        <div class="flex items-center gap-1 flex-shrink-0">
+                            <button type="button" onclick="abrirModalEditarEgreso(${idx})" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                            <button type="button" onclick="confirmarEliminarFinanza('${escapeHtml(item.id)}', '${escapeHtml(item.nombre)}')" class="p-1.5 hover:bg-[#ff5f52]/15 rounded-lg text-[#8e8e93] hover:text-[#ff5f52]" title="Mandar a papelera"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                        </div>
+                    </div>
+                `;}).join("");
+        }
+
+        const FIN_EXTRAS_KEY = "asistente_sabry:finanzas_extras_v1";
+        let finanzasMesSeleccionado = "";
+
+        function _cargarExtrasFinanzas() {
+            try {
+                const raw = JSON.parse(localStorage.getItem(FIN_EXTRAS_KEY) || "{}");
+                if (Array.isArray(raw.tarjetas)) {
+                    raw.tarjetas.forEach((t) => { if (!finanzasOpciones.tarjetas.includes(t)) finanzasOpciones.tarjetas.push(t); });
+                }
+                if (Array.isArray(raw.categorias)) {
+                    raw.categorias.forEach((c) => { if (!finanzasOpciones.categorias.includes(c)) finanzasOpciones.categorias.push(c); });
+                }
+            } catch (e) {}
+        }
+
+        function cambiarMesFinanzas(nuevoMes) {
+            if (!nuevoMes || !/^\d{4}-\d{2}$/.test(nuevoMes)) return;
+            finanzasMesSeleccionado = nuevoMes;
+            const lbl = document.getElementById("finanzas-mes-lbl");
+            if (lbl) lbl.textContent = `Movimientos · ${nuevoMes}`;
+            renderizarFinanzas();
+        }
+
+        function abrirSubmodalFinOpcion(tipo) {
+            document.getElementById("fin-ov-tipo").value = tipo;
+            document.getElementById("fin-ov-valor").value = "";
+            document.getElementById("fin-ov-titulo").textContent = tipo === "tarjeta" ? "Nueva tarjeta" : "Nueva categoría";
+            document.getElementById("fin-ov-valor").placeholder = tipo === "tarjeta" ? "Ej. Visa Signature Sabri" : "Ej. Bienestar / Suscripciones";
+            const m = document.getElementById("modal-fin-opcion-vuelo");
+            m.classList.remove("hidden"); m.classList.add("flex");
+            setTimeout(() => document.getElementById("fin-ov-valor").focus(), 30);
+        }
+
+        function cerrarSubmodalFinOpcion() {
+            const m = document.getElementById("modal-fin-opcion-vuelo");
+            m.classList.add("hidden"); m.classList.remove("flex");
+        }
+
+        function guardarSubmodalFinOpcion(event) {
+            event.preventDefault();
+            const tipo = document.getElementById("fin-ov-tipo").value;
+            const val = document.getElementById("fin-ov-valor").value.trim();
+            if (!val) return false;
+            const lista = tipo === "tarjeta" ? finanzasOpciones.tarjetas : finanzasOpciones.categorias;
+            if (!lista.includes(val)) lista.push(val);
+            try {
+                const raw = JSON.parse(localStorage.getItem(FIN_EXTRAS_KEY) || "{}");
+                const key = tipo === "tarjeta" ? "tarjetas" : "categorias";
+                const arr = Array.isArray(raw[key]) ? raw[key] : [];
+                if (!arr.includes(val)) arr.push(val);
+                raw[key] = arr;
+                localStorage.setItem(FIN_EXTRAS_KEY, JSON.stringify(raw));
+            } catch (e) {}
+            const selId = tipo === "tarjeta" ? "egr-tarjeta" : "egr-categoria";
+            _poblarSelect(selId, lista, val);
+            cerrarSubmodalFinOpcion();
+            return false;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            _cargarExtrasFinanzas();
+            const selMes = document.getElementById("fin-selector-mes");
+            if (selMes && typeof finanzasMesActual === "string") selMes.value = finanzasMesActual;
+            initLocalStorage();
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
+            renderizarFinanzas();
+        });
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+            sidebar.classList.toggle('-translate-x-full', isOpen);
+            overlay.classList.toggle('hidden', isOpen);
+        }
+
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            });
+        }
+
+        function abrirModalIngreso() {
+            document.getElementById("ing-modal-titulo").textContent = "Registrar Ingreso";
+            document.getElementById("form-ingreso").reset();
+            document.getElementById("ing-page-id").value = "";
+            document.getElementById("ing-fecha").value = hoyLocalISO();
+            document.getElementById("ing-btn-eliminar").classList.add("hidden");
+            _poblarSelect("ing-tipo", finanzasOpciones.tipos_ingreso, "");
+            document.getElementById("ing-mensaje").classList.add("hidden");
+            document.getElementById("modal-ingreso").classList.remove("hidden");
+            document.getElementById("modal-ingreso").classList.add("flex");
+        }
+
+        function abrirModalEditarIngreso(idx) {
+            const item = finanzasIngresos[idx];
+            if (!item || !item.id) return;
+            document.getElementById("ing-modal-titulo").textContent = "Editar Ingreso";
+            document.getElementById("ing-page-id").value = item.id;
+            document.getElementById("ing-titulo").value = item.titulo || "";
+            document.getElementById("ing-monto").value = item.monto || "";
+            document.getElementById("ing-fecha").value = item.fecha || hoyLocalISO();
+            _poblarSelect("ing-tipo", finanzasOpciones.tipos_ingreso, item.tipo || "");
+            document.getElementById("ing-btn-eliminar").classList.remove("hidden");
+            document.getElementById("ing-mensaje").classList.add("hidden");
+            document.getElementById("modal-ingreso").classList.remove("hidden");
+            document.getElementById("modal-ingreso").classList.add("flex");
+        }
+
+        function cerrarModalIngreso() {
+            document.getElementById("modal-ingreso").classList.add("hidden");
+            document.getElementById("modal-ingreso").classList.remove("flex");
+        }
+
+        function actualizarVisibilidadFechaCorte() {
+            const val = (document.getElementById("egr-forma-pago").value || "").trim().toUpperCase();
+            const esTarjeta = val === "TARJETA" || val === "TARJETA (1 CUOTA)";
+            const esNuevo = !document.getElementById("egr-page-id").value.trim();
+            document.getElementById("egr-wrap-fecha-corte").classList.toggle("hidden", !(esTarjeta && esNuevo));
+        }
+
+        function abrirModalEgreso() {
+            document.getElementById("egr-modal-titulo").textContent = "Registrar Egreso";
+            document.getElementById("form-egreso").reset();
+            document.getElementById("egr-page-id").value = "";
+            document.getElementById("egr-fecha").value = hoyLocalISO();
+            document.getElementById("egr-btn-eliminar").classList.add("hidden");
+            _poblarSelect("egr-forma-pago", finanzasOpciones.formas_pago, "");
+            _poblarSelect("egr-tarjeta", finanzasOpciones.tarjetas, "");
+            _poblarSelect("egr-categoria", finanzasOpciones.categorias, "");
+            actualizarVisibilidadFechaCorte();
+            document.getElementById("egr-mensaje").classList.add("hidden");
+            document.getElementById("modal-egreso").classList.remove("hidden");
+            document.getElementById("modal-egreso").classList.add("flex");
+        }
+
+        function abrirModalEditarEgreso(idx) {
+            const item = finanzasEgresos[idx];
+            if (!item || !item.id) return;
+            document.getElementById("egr-modal-titulo").textContent = "Editar Egreso";
+            document.getElementById("egr-page-id").value = item.id;
+            document.getElementById("egr-nombre").value = item.nombre || "";
+            document.getElementById("egr-monto").value = item.monto || "";
+            document.getElementById("egr-monto-usd").value = item.monto_usd || "";
+            document.getElementById("egr-fecha").value = item.fecha || hoyLocalISO();
+            document.getElementById("egr-cuotas").value = item.cuotas || "";
+            _poblarSelect("egr-forma-pago", finanzasOpciones.formas_pago, (item.forma_pago || [])[0] || "");
+            _poblarSelect("egr-tarjeta", finanzasOpciones.tarjetas, item.tarjeta || "");
+            _poblarSelect("egr-categoria", finanzasOpciones.categorias, (item.categoria || [])[0] || "");
+            document.getElementById("egr-detalle").value = item.detalle || "";
+            actualizarVisibilidadFechaCorte();
+            document.getElementById("egr-btn-eliminar").classList.remove("hidden");
+            document.getElementById("egr-mensaje").classList.add("hidden");
+            document.getElementById("modal-egreso").classList.remove("hidden");
+            document.getElementById("modal-egreso").classList.add("flex");
+        }
+
+        function cerrarModalEgreso() {
+            document.getElementById("modal-egreso").classList.add("hidden");
+            document.getElementById("modal-egreso").classList.remove("flex");
+        }
+
+        let _papeleraTarget = null;
+        function confirmarEliminarFinanza(id, nombre) {
+            if (!id) return;
+            _papeleraTarget = { id, nombre: nombre || "este registro" };
+            document.getElementById("papelera-texto").textContent = `¿Deseas mandar "${_papeleraTarget.nombre}" a la papelera de Notion?`;
+            document.getElementById("modal-confirmar-papelera").classList.remove("hidden");
+            document.getElementById("modal-confirmar-papelera").classList.add("flex");
+        }
+        function confirmarEliminarIngresoDesdeModal() {
+            confirmarEliminarFinanza(document.getElementById("ing-page-id").value, document.getElementById("ing-titulo").value);
+        }
+        function confirmarEliminarEgresoDesdeModal() {
+            confirmarEliminarFinanza(document.getElementById("egr-page-id").value, document.getElementById("egr-nombre").value);
+        }
+        function cerrarModalPapelera() {
+            document.getElementById("modal-confirmar-papelera").classList.add("hidden");
+            document.getElementById("modal-confirmar-papelera").classList.remove("flex");
+            _papeleraTarget = null;
+        }
+        async function ejecutarEnvioPapelera() {
+            if (!_papeleraTarget) return;
+            const target = _papeleraTarget;
+            cerrarModalPapelera();
+            cerrarModalIngreso();
+            cerrarModalEgreso();
+            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: target.id });
+        }
+
+        function abrirModalTokenFinanzas() {
+            document.getElementById("modal-token-notion").classList.remove("hidden");
+            document.getElementById("modal-token-notion").classList.add("flex");
+        }
+        function cerrarModalTokenFinanzas() {
+            document.getElementById("modal-token-notion").classList.add("hidden");
+            document.getElementById("modal-token-notion").classList.remove("flex");
+        }
+        function guardarTokenFinanzas() {
+            const token = document.getElementById("fin-token-input").value.trim();
+            if (!token) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, token); } catch (e) {}
+            document.getElementById("fin-token-input").value = "";
+            cerrarModalTokenFinanzas();
+        }
+
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+        function cerrarSpinnerNotion() {
+            document.getElementById("modal-spinner-notion").classList.add("hidden");
+            document.getElementById("modal-spinner-notion").classList.remove("flex");
+        }
+
+        async function ejecutarEscrituraConSpinner(accion, datos) {
+            const token = obtenerTokenGuardado();
+            if (!token) {
+                abrirModalTokenFinanzas();
+                return;
+            }
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, datos, token);
+                const respuesta = await fetch(url, options);
+                if (respuesta.status === 401 || respuesta.status === 404) {
+                    cerrarSpinnerNotion();
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModalTokenFinanzas();
+                    return;
+                }
+                if (respuesta.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${respuesta.status}). Probá de nuevo.`);
+                    return;
+                }
+                const confirmacion = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER,
+                    repo: GITHUB_REPO,
+                    token,
+                    workflowFile: WORKFLOW_NOTION_WRITE,
+                    dispatchedAfterMs,
+                });
+                if (confirmacion.ok) {
+                    mostrarSpinnerNotion("ok", "¡Notion actualizado!", "Recargando Finanzas...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", confirmacion.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub. Revisá tu conexión.");
+            }
+        }
+
+        async function manejarSubmitIngreso(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("ing-page-id").value.trim();
+            const res = construirPayloadIngreso({
+                pageId,
+                titulo: document.getElementById("ing-titulo").value,
+                monto: document.getElementById("ing-monto").value,
+                fecha: document.getElementById("ing-fecha").value,
+                tipo: document.getElementById("ing-tipo").value,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("ing-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) {
+                abrirModalTokenFinanzas();
+                return false;
+            }
+            cerrarModalIngreso();
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_ingreso" : "crear_ingreso", res.payload);
+            return false;
+        }
+
+        async function manejarSubmitEgreso(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("egr-page-id").value.trim();
+            const res = construirPayloadEgreso({
+                pageId,
+                nombre: document.getElementById("egr-nombre").value,
+                monto: document.getElementById("egr-monto").value,
+                montoUsd: document.getElementById("egr-monto-usd").value,
+                fecha: document.getElementById("egr-fecha").value,
+                cuotas: document.getElementById("egr-cuotas").value,
+                formaPago: document.getElementById("egr-forma-pago").value,
+                tarjeta: document.getElementById("egr-tarjeta").value,
+                categoria: document.getElementById("egr-categoria").value,
+                detalle: document.getElementById("egr-detalle").value,
+                fechaCorte: document.getElementById("egr-fecha-corte").value,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("egr-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) {
+                abrirModalTokenFinanzas();
+                return false;
+            }
+            cerrarModalEgreso();
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_egreso" : "crear_egreso", res.payload);
+            return false;
+        }
+    </script>
+    <script src="./src/utils/somatic_shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,1008 @@
+﻿<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#08080a">
+    <title>Ocio — AsistenteSabry</title>
+    <link rel="icon" type="image/png" href="./grafica/logo 1-1 NF.png">
+    <link rel="apple-touch-icon" href="./grafica/icons/apple-touch-icon.png">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #08080a;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+        #sidebar { transition: transform 0.3s ease; }
+        .spin-animation { animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+
+    <script>
+        const timestampLocalStr = "28/11/2026 00:53:04";
+        const appVersionStr = "v4.95";
+        const timestampNextStr = "28/11/2026 01:53:04";
+        const timestampServerStr = "28/11/2026 03:53:04";
+        const ocioLibrosNotion = [{"id": "173a38bb-7a6e-8019-9a0a-d8dcebed80e5", "titulo": "Muchos cuerpos, una misma alma", "secundario": "Brian Weiss", "genero": "Autoayuda", "estado": "Completado", "progreso": "100%", "detalle": "⭐️⭐️⭐️⭐️⭐️", "puntuacion": 5, "valoracion": "⭐️⭐️⭐️⭐️⭐️", "notas": ""}, {"id": "55242c02-9117-4b33-b546-22bc47986fe2", "titulo": "Prohibido enamorarse de Alan walker", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "710b8d49-f2c4-44fb-abcd-5717eb10126e", "titulo": "La inteligencia emocional-Goleman?", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "c2c6762e-cdca-487e-9b69-93b1c6c01e1e", "titulo": "El método Silva de control mental", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "5de7f2b6-1552-40b0-a735-e70ffcbfb14d", "titulo": "Como ganar amigos e influir sobre las personas", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "b5a42354-0461-45e9-90e5-f6b6b5670b5b", "titulo": "Padre Rico padre pobre-Robert Kiyosaky", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "cda836a4-6b32-4147-bcd5-d60f59ffb528", "titulo": "El lider que no tenia cargo", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "4044e290-9958-473e-950c-6faa46eccdfd", "titulo": "El arte de amar. Ench Fromm", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "a0c85f37-e402-4c16-bea6-1f7047e83aa6", "titulo": "Padre Rico padre pobre para jóvenes", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "5b1a3902-0277-4a2e-bf67-636d0416135d", "titulo": "5 disfunciones de un equipo-Patrick Lencioni", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "df41d875-96b0-44e4-98dc-602d8e2575e8", "titulo": "7 hábitos de la gente altamente efectiva-Sthepen Covey", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "3edce9ea-b75f-47fe-9925-25b392f953bf", "titulo": "Habitos de ricos", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "e98e242c-1499-4da6-b93e-8497cef04f44", "titulo": "Los 4 acuerdos. Miguel Ruiz", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "319e13ac-4b91-4e9f-a24a-0f0c48ed88fa", "titulo": "Harry pother y el legado del niño maldito", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "71327563-acc8-48db-bec0-f9753f99b892", "titulo": "Quien se ha llevado mi queso Spencer Johnson", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "db01cf89-4c58-4728-b534-ff47555b61b7", "titulo": "Poderosamente- Bernarbe Tierno", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "fa8ba41e-938a-4dbd-9696-93c7ba0d6681", "titulo": "Besar a un angel", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "a2f26dff-2886-4f0e-a3e8-171666cf1485", "titulo": "Libertad Financiera", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "bacd5ad0-1522-424c-9c17-da06ed2761d9", "titulo": "Los calabozos de langeais", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "071ef421-cf57-4e58-a899-2ff6432cf758", "titulo": "El poder del ahora. Eckhart Tolle", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "88fe5985-1bb7-4f16-b230-22466ffa0372", "titulo": "Amar o depender. Walter riso", "secundario": "Autor pendiente", "genero": "General", "estado": "No empezado", "progreso": "0%", "detalle": "No empezado", "puntuacion": 5, "valoracion": "", "notas": ""}];
+        const ocioSeriesNotion = [{"id": "421a38bb-7a6e-813f-99c8-f7c0d71c0687", "titulo": "FBI Internacional", "secundario": "acción, drama, crimen, policiaca", "generos": ["acción", "drama", "crimen", "policiaca"], "genero": "acción, drama, crimen, policiaca", "estado": "VIENDO", "progreso": "50%", "detalle": "⭐️⭐️⭐️⭐️⭐️", "puntuacion": 5, "valoracion": "⭐️⭐️⭐️⭐️⭐️", "notas": ""}, {"id": "421a38bb-7a6e-812f-8226-f2d09bcd6964", "titulo": "FBI", "secundario": "acción, drama, policiaca", "generos": ["acción", "drama", "policiaca"], "genero": "acción, drama, policiaca", "estado": "VISTA", "progreso": "100%", "detalle": "⭐️⭐️⭐️⭐️⭐️", "puntuacion": 5, "valoracion": "⭐️⭐️⭐️⭐️⭐️", "notas": ""}, {"id": "2efa38bb-7a6e-8085-8a29-f469d079dd20", "titulo": "Chicago Med", "secundario": "drama médico", "generos": ["drama médico"], "genero": "drama médico", "estado": "VIENDO", "progreso": "50%", "detalle": "VIENDO", "puntuacion": 5, "valoracion": "", "notas": ""}, {"id": "2efa38bb-7a6e-80a4-8d4a-c5257e15755e", "titulo": "Shadowhunters: The mortal instruments", "secundario": "fantasía, acción, drama sobrenatural", "generos": ["fantasía", "acción", "drama sobrenatural"], "genero": "fantasía, acción, drama sobrenatural", "estado": "VISTA", "progreso": "100%", "detalle": "⭐️⭐️⭐️⭐️⭐️", "puntuacion": 5, "valoracion": "⭐️⭐️⭐️⭐️⭐️", "notas": ""}, {"id": "219a38bb-7a6e-80ab-a0d4-cf2b1c1d9e3d", "titulo": "CHICAGO P.D", "secundario": "drama, misterio, suspenso, acción, crimen", "generos": ["drama", "misterio", "suspenso", "acción", "crimen"], "genero": "drama, misterio, suspenso, acción, crimen", "estado": "VISTA", "progreso": "100%", "detalle": "⭐️⭐️⭐️⭐️⭐️", "puntuacion": 5, "valoracion": "⭐️⭐️⭐️⭐️⭐️", "notas": ""}, {"id": "219a38bb-7a6e-80ce-86f2-f659e2be7361", "titulo": "Hawai 5 cero", "secundario": "acción, crimen, drama", "generos": ["acción", "crimen", "drama"], "genero": "acción, crimen, drama", "estado": "VISTA", "progreso": "100%", "detalle": "⭐️⭐️⭐️⭐️⭐️", "puntuacion": 5, "valoracion": "⭐️⭐️⭐️⭐️⭐️", "notas": ""}, {"id": "536fa2ce-c40e-468e-b090-c52702271bca", "titulo": "SWAT ", "secundario": "drama", "generos": ["drama"], "genero": "drama", "estado": "VISTA", "progreso": "100%", "detalle": "⭐️⭐️⭐️⭐️⭐️", "puntuacion": 5, "valoracion": "⭐️⭐️⭐️⭐️⭐️", "notas": ""}];
+        const ocioPeliculasNotion = [{"id": "21077ce5-439d-4a33-b1ed-34500f2869a1", "titulo": "Animales fantasticos 2", "secundario": "fantasía/aventura", "generos": ["fantasía/aventura"], "genero": "fantasía/aventura", "estado": "VISTA", "progreso": "100%", "detalle": "⭐️⭐️⭐️⭐️⭐️", "puntuacion": 5, "valoracion": "⭐️⭐️⭐️⭐️⭐️", "notas": ""}];
+        const ocioOpciones = {"categorias": ["Realismo mágico", "Ficción", "No ficción", "Biografía", "Misterio", "Fantasía", "Ciencia ficción", "Histórico", "Romance", "Thriller", "Autoayuda", "Poesía", "Novela gráfica", "Aventura", "Horror", "Crimen real", "Para niños", "Adulto joven", "Literatura clásica", "Filosofía", "Antología"], "estados": ["No empezado", "Leyendo", "Completado"], "valoraciones": ["⭐️⭐️⭐️⭐️⭐️", "⭐️⭐️⭐️⭐️", "⭐️⭐️⭐️", "⭐️⭐️", "⭐️"], "generos_series": ["romance", "terror", "comedia", "thriller", "acción", "drama", "crimen", "misterio", "suspenso", "fantasía", "drama sobrenatural", "drama médico", "policiaca"], "estados_series": ["VISTA", "POR VER", "VIENDO"], "generos_peliculas": ["romance", "terror", "comedia", "thriller", "acción", "melodrama", "drama", "fantasía/aventura"], "estados_peliculas": ["VISTA", "POR VER"]};
+    </script>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
+        <div class="flex items-center gap-3 mb-5 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.95</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span>Agenda personal</span>
+            </a>
+            <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">alarm</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">check_box</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="finanzas.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                <span>Finanzas</span>
+            </a>
+            <a href="salud.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Salud</span>
+            </a>
+            <a href="ocio.html" class="flex items-center gap-3 px-4 py-2 bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/30 rounded-xl font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_library</span>
+                <span>Ocio</span>
+            </a>
+            <a href="gestion-emocional.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">psychology</span>
+                <span>Gestión emocional</span>
+            </a>
+            <a href="relaciones-y-limites.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">shield</span>
+                <span>Relaciones y límites</span>
+            </a>
+            <a href="desarrollo-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">trending_up</span>
+                <span>Desarrollo personal</span>
+            </a>
+            <a href="habitos-y-disciplina.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_fire_department</span>
+                <span>Hábitos y disciplina</span>
+            </a>
+        </nav>
+        <div class="pt-3 mt-3 border-t border-white/[0.08]">
+            <a href="https://contras.ai.studio/" target="_blank" rel="noopener" class="flex items-center gap-2 px-3 py-1.5 text-[#ffb961] hover:bg-[#ffb961]/10 rounded-lg transition-all text-[11px] font-semibold">
+                <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                <span>Contras AI Studio</span>
+            </a>
+        </div>
+
+        <div class="pt-3 mt-3 border-t border-white/[0.08] flex items-center gap-3 px-2">
+            <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
+            <div class="min-w-0">
+                <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo</p>
+            </div>
+        </div>
+    </aside>
+
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <main class="min-h-screen lg:ml-64">
+        <!-- HEADER -->
+        <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">Asistente Sabry</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">OCIO</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- CABECERA OCIO + BOTONES ABM -->
+            <section class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-white/[0.08]">
+                <div class="space-y-2.5">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold font-headline-md tracking-tight text-white">
+                        OCIO
+                    </h1>
+                    <p class="text-[13px] text-[#a1a1aa] max-w-2xl leading-relaxed">
+                        Espacio unificado de entretenimiento y desconexión: gestioná tus lecturas, series en seguimiento, películas e ideas para el fin de semana.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-2 pt-1">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#111115] border border-white/[0.08] text-xs text-white">📚 Libros</span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#111115] border border-white/[0.08] text-xs text-white">📺 Series</span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#111115] border border-white/[0.08] text-xs text-white">🎬 Películas</span>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <button type="button" onclick="abrirModalOcio('libros')" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#ff5f52] hover:bg-[#ff4838] text-white font-bold text-xs transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[17px]">auto_stories</span>
+                        <span>+ Agregar libro</span>
+                    </button>
+                    <button type="button" onclick="abrirModalOcio('series')" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#ffb961] hover:bg-[#ffb961]/90 text-[#131313] font-bold text-xs transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[17px]">tv</span>
+                        <span>+ Agregar serie</span>
+                    </button>
+                    <button type="button" onclick="abrirModalOcio('peliculas')" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#18181d] hover:bg-[#232329] border border-white/[0.08] text-white font-bold text-xs transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[17px] text-[#83da85]">movie</span>
+                        <span>+ Agregar película</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- KPIS SUPERIORES -->
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-[#8e8e93]">
+                        <span class="text-[11px] font-label-caps tracking-widest">LIBROS LEÍDOS</span>
+                        <span class="material-symbols-outlined text-[20px] text-[#83da85]">check_circle</span>
+                    </div>
+                    <div class="mt-4 flex items-baseline gap-2">
+                        <span id="kpi-libros-leidos" class="text-3xl font-extrabold text-white">0</span>
+                        <span id="kpi-libros-curso" class="text-xs text-[#83da85] font-semibold">0 leyendo</span>
+                    </div>
+                    <div class="w-full bg-white/[0.08] h-1.5 rounded-full mt-3 overflow-hidden">
+                        <div id="bar-libros" class="bg-[#83da85] h-full rounded-full" style="width: 50%;"></div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-[#8e8e93]">
+                        <span class="text-[11px] font-label-caps tracking-widest">SERIES EN CURSO</span>
+                        <span class="material-symbols-outlined text-[20px] text-[#ffb961]">tv</span>
+                    </div>
+                    <div class="mt-4 flex items-baseline gap-2">
+                        <span id="kpi-series-curso" class="text-3xl font-extrabold text-white">0</span>
+                        <span class="text-xs text-[#ffb961] font-semibold">activas</span>
+                    </div>
+                    <div class="w-full bg-white/[0.08] h-1.5 rounded-full mt-3 overflow-hidden">
+                        <div id="bar-series" class="bg-[#ffb961] h-full rounded-full" style="width: 60%;"></div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-[#8e8e93]">
+                        <span class="text-[11px] font-label-caps tracking-widest">PELÍCULAS VISTAS</span>
+                        <span class="material-symbols-outlined text-[20px] text-[#ff5f52]">movie_filter</span>
+                    </div>
+                    <div class="mt-4 flex items-baseline gap-2">
+                        <span id="kpi-pelis-vistas" class="text-3xl font-extrabold text-white">0</span>
+                        <span id="kpi-pelis-pend" class="text-xs text-[#8e8e93]">0 pendientes</span>
+                    </div>
+                    <div class="w-full bg-white/[0.08] h-1.5 rounded-full mt-3 overflow-hidden">
+                        <div id="bar-pelis" class="bg-[#ff5f52] h-full rounded-full" style="width: 75%;"></div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-[#8e8e93]">
+                        <span class="text-[11px] font-label-caps tracking-widest">DESCONEXIÓN TOTAL</span>
+                        <span class="material-symbols-outlined text-[20px] text-[#83da85]">bedtime</span>
+                    </div>
+                    <div class="mt-3 flex items-baseline gap-2">
+                        <span id="kpi-total-horas" class="text-3xl font-extrabold text-white">0h</span>
+                        <span class="text-xs text-[#83da85] font-semibold">Semanal est.</span>
+                    </div>
+                    <div class="w-full bg-white/[0.08] h-2 rounded-full mt-3 overflow-hidden flex gap-0.5 p-0.5">
+                        <div id="seg-lectura" class="bg-[#83da85] h-full rounded-l-full" style="width: 37%;"></div>
+                        <div id="seg-series" class="bg-[#ffb961] h-full" style="width: 42%;"></div>
+                        <div id="seg-pelis" class="bg-[#ff5f52] h-full rounded-r-full" style="width: 21%;"></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1 mt-2 pt-2 border-t border-white/[0.06] text-[10px] text-[#8e8e93]">
+                        <div><span class="text-[#83da85]">●</span> Lectura <strong id="h-lectura" class="text-white block">0h</strong></div>
+                        <div><span class="text-[#ffb961]">●</span> Series <strong id="h-series" class="text-white block">0h</strong></div>
+                        <div><span class="text-[#ff5f52]">●</span> Pelis <strong id="h-pelis" class="text-white block">0h</strong></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CATÁLOGO & ABM MULTIMEDIA -->
+            <section class="glass-card rounded-2xl p-5 sm:p-8 space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/[0.08] pb-4">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[#ff5f52] text-[22px]">category</span>
+                                <h2 class="text-xl font-bold font-headline-md text-white">Catálogo &amp; ABM Multimedia</h2>
+                            </div>
+                            <p class="text-xs text-[#8e8e93] mt-0.5">Gestioná tus libros, series y películas.</p>
+                        </div>
+                        <button type="button" onclick="toggleBloque('ocio-catalogo')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors flex-shrink-0" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-ocio-catalogo">
+                            <span id="chevron-ocio-catalogo" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center p-1 rounded-xl bg-[#08080a] border border-white/[0.08] gap-1">
+                        <button id="btnTab-libros" type="button" onclick="cambiarTabOcio('libros')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-[#ff5f52] text-white transition-all">📚 Libros (<span id="count-libros">0</span>)</button>
+                        <button id="btnTab-series" type="button" onclick="cambiarTabOcio('series')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold text-[#8e8e93] hover:text-white transition-all">📺 Series (<span id="count-series">0</span>)</button>
+                        <button id="btnTab-peliculas" type="button" onclick="cambiarTabOcio('peliculas')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold text-[#8e8e93] hover:text-white transition-all">🎬 Películas (<span id="count-peliculas">0</span>)</button>
+                    </div>
+                </div>
+
+                <div id="content-ocio-catalogo" class="space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div class="relative flex-1 min-w-[220px] max-w-md">
+                            <span class="material-symbols-outlined text-[18px] text-[#8e8e93] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">search</span>
+                            <input id="ocio-buscador" type="text" oninput="renderizarCatalogoOcio()" placeholder="Buscar por título, autor, plataforma o género..."
+                                   class="w-full bg-[#08080a] border border-white/[0.08] rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#ff5f52]/50" />
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button type="button" onclick="toggleVistaCatalogoOcio()" id="btn-vista-ocio" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#18181d] border border-white/[0.08] text-xs font-bold text-[#e5e2e1] hover:bg-[#232329]">
+                                <span class="material-symbols-outlined text-[16px]">view_kanban</span>
+                                <span>Vista: Tablero</span>
+                            </button>
+                            <button type="button" onclick="abrirModalOcio(tabActual)" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#ff5f52] text-white font-bold text-xs hover:opacity-90">
+                                <span class="material-symbols-outlined text-[16px]">add</span>
+                                <span id="btn-nuevo-tab-lbl">Nuevo libro</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="grid-catalogo-ocio" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+                </div>
+            </section>
+
+            <!-- TABLERO KANBAN DE ACTIVIDADES -->
+            <section class="space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-xl font-bold font-headline-md text-white">Tablero de Actividades &amp; Finde</h2>
+                        <p class="text-xs text-[#8e8e93]">Mové ideas de ocio entre columnas con las flechas.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="abrirModalKanban()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#18181d] hover:bg-[#232329] border border-white/[0.08] text-white font-bold text-xs">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>Nueva actividad</span>
+                        </button>
+                        <button type="button" onclick="toggleBloque('ocio-kanban')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-ocio-kanban">
+                            <span id="chevron-ocio-kanban" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="content-ocio-kanban">
+                    <div id="grid-kanban-ocio" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+                </div>
+            </section>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="border-t border-white/[0.08] py-10 px-container-padding max-w-[1200px] mx-auto mt-12">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+                <div class="space-y-2 text-left">
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">SISTEMA AUDITADO</p>
+                    <p class="text-[15px] font-bold text-white flex items-center gap-2">
+                        <span>AsistenteSabry</span>
+                        <span id="footer-version" class="bg-[#ff5f52]/10 text-[#ff5f52] px-2.5 py-0.5 rounded-full text-[11px] font-mono border border-[#ff5f52]/20">dev</span>
+                    </p>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Sabri Studios &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL ABM MULTIMEDIA -->
+    <div id="mediaModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4" onclick="cerrarModalOcio()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-lg space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span id="modalIcon" class="material-symbols-outlined text-[#ff5f52] text-[24px]">auto_stories</span>
+                    <h3 id="modalTitle" class="font-headline-md font-bold text-lg text-white">Nuevo Registro</h3>
+                </div>
+                <button type="button" onclick="cerrarModalOcio()" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-ocio" onsubmit="manejarSubmitOcio(event)" class="space-y-3.5">
+                <input type="hidden" id="ocio-edit-id" value="">
+                <input type="hidden" id="ocio-edit-tipo" value="libros">
+                <div>
+                    <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Título *</label>
+                    <input id="inputTitle" type="text" required placeholder="Ej: Nombre de la obra" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50">
+                </div>
+                <div id="wrap-campos-libro" class="grid grid-cols-2 gap-3">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                            <label id="labelSecondary" class="block text-[11px] font-label-caps text-[#8e8e93]">Autor</label>
+                            <button type="button" onclick="abrirSubmodalAutorOcio()" class="text-[11px] font-bold text-[#ffb961] hover:underline">+ Nuevo autor</button>
+                        </div>
+                        <input id="inputSecondary" list="ocio-autores-datalist" type="text" placeholder="Ej: James Clear" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50">
+                        <datalist id="ocio-autores-datalist"></datalist>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Categoría</label>
+                        <select id="inputCategoriaLibro" class="w-full px-3 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50"></select>
+                    </div>
+                </div>
+                <div id="wrap-generos-av" class="hidden space-y-1.5">
+                    <label class="block text-[11px] font-label-caps text-[#8e8e93]">Géneros</label>
+                    <div id="ocio-generos-checks" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-36 overflow-y-auto p-2 rounded-xl bg-[#08080a] border border-white/[0.08]"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Estado</label>
+                        <select id="inputEstado" class="w-full px-3 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50"></select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Puntuación (1–5)</label>
+                        <select id="inputScore" class="w-full px-3 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#ff5f52]/50">
+                            <option value="5">⭐️⭐️⭐️⭐️⭐️ (5)</option>
+                            <option value="4">⭐️⭐️⭐️⭐️ (4)</option>
+                            <option value="3">⭐️⭐️⭐️ (3)</option>
+                            <option value="2">⭐️⭐️ (2)</option>
+                            <option value="1">⭐️ (1)</option>
+                        </select>
+                    </div>
+                </div>
+                <p id="ocio-form-err" class="hidden text-xs text-[#ff5f52] font-semibold"></p>
+                <div class="pt-2 flex justify-end gap-2.5">
+                    <button type="button" onclick="cerrarModalOcio()" class="px-4 py-2.5 rounded-xl bg-[#18181d] hover:bg-[#232329] text-xs font-bold text-[#8e8e93]">Cancelar</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#ff5f52] hover:bg-[#ff4838] text-white font-bold text-xs">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SUBMODAL CREACIÓN EN VUELO: AUTOR (CAPA 2) -->
+    <div id="modal-ocio-autor-vuelo" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarSubmodalAutorOcio()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4 border border-[#ffb961]/40 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30">CAPA 2 • AUTOR EN VUELO</span>
+                <button type="button" onclick="cerrarSubmodalAutorOcio()" class="p-1 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+            <h3 class="text-base font-bold text-white">Nuevo Autor / Creador</h3>
+            <form onsubmit="return guardarSubmodalAutorOcio(event)" class="space-y-3">
+                <input id="ocio-av-nombre" type="text" required maxlength="120" placeholder="Nombre del autor (ej. Brené Brown)" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white outline-none focus:border-[#ffb961]" />
+                <input id="ocio-av-nota" type="text" maxlength="120" placeholder="Nota o estilo opcional" class="w-full px-3.5 py-2 rounded-xl bg-[#08080a] border border-white/[0.08] text-xs text-white outline-none" />
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="cerrarSubmodalAutorOcio()" class="flex-1 py-2.5 rounded-xl bg-[#18181d] text-white text-xs font-semibold">Volver</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-[#ffb961] text-[#08080a] text-xs font-bold">Guardar y vincular</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL NUEVA TARJETA KANBAN -->
+    <div id="kanbanModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4" onclick="cerrarModalKanban()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between">
+                <h3 class="font-headline-md font-bold text-lg text-white">Nueva actividad de ocio</h3>
+                <button type="button" onclick="cerrarModalKanban()" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form onsubmit="manejarSubmitKanban(event)" class="space-y-3">
+                <div>
+                    <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Actividad *</label>
+                    <input id="kan-titulo" type="text" required placeholder="Ej: Ir al cine / Leer en el parque" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Columna</label>
+                        <select id="kan-col" class="w-full px-3 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+                            <option value="ideas">💡 Ideas</option>
+                            <option value="finde">🗓️ Para el Finde</option>
+                            <option value="curso">⚡ En curso</option>
+                            <option value="completado">✨ Completado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Etiqueta</label>
+                        <input id="kan-tag" type="text" placeholder="Ej: Cultura / 📚 Lectura" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Detalle</label>
+                    <textarea id="kan-desc" rows="2" placeholder="Notas o lugar..." class="w-full px-3.5 py-2 rounded-xl bg-[#08080a] border border-white/[0.08] text-xs text-white"></textarea>
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="cerrarModalKanban()" class="px-4 py-2.5 rounded-xl bg-[#18181d] text-xs font-bold text-[#8e8e93]">Cancelar</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#ff5f52] text-white font-bold text-xs">Agregar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TOKEN GITHUB Y SPINNER DE NOTION -->
+    <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="cerrarModalTokenOcio()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <h3 class="text-[17px] font-bold text-white">Conectar con GitHub Actions</h3>
+            <p class="text-[13px] text-[#8e8e93]">Pegá tu Personal Access Token (permiso Actions: Read &amp; Write en este repo) para guardar Libros directo en Notion.</p>
+            <input id="ocio-token-input" type="password" placeholder="github_pat_..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="cerrarModalTokenOcio()" class="px-4 py-2 rounded-xl bg-[#18181d] text-xs font-bold text-[#8e8e93]">Cancelar</button>
+                <button type="button" onclick="guardarTokenOcio()" class="px-4 py-2 rounded-xl bg-[#ff5f52] text-xs font-bold text-white">Guardar token</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarSpinnerNotion()" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
+    <script src="./src/utils/ocio_logic.js"></script>
+    <script>
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        let ocioDatos = null;
+        let tabActual = "libros";
+        let vistaCatalogo = "tablero";
+
+        function cargarDatosOcio() {
+            let kanban = JSON.parse(JSON.stringify(OCIO_SEED.kanban));
+            try {
+                const raw = localStorage.getItem(OCIO_STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed.kanban)) kanban = parsed.kanban;
+                }
+            } catch (e) {}
+            return {
+                libros: Array.isArray(ocioLibrosNotion) ? ocioLibrosNotion : [],
+                series: Array.isArray(ocioSeriesNotion) ? ocioSeriesNotion : [],
+                peliculas: Array.isArray(ocioPeliculasNotion) ? ocioPeliculasNotion : [],
+                kanban,
+            };
+        }
+
+        function guardarDatosOcio() {
+            try { localStorage.setItem(OCIO_STORAGE_KEY, JSON.stringify(ocioDatos)); } catch (e) {}
+        }
+
+        function renderizarTodoOcio() {
+            const res = calcularResumenOcio(ocioDatos);
+            document.getElementById("kpi-libros-leidos").textContent = String(res.librosLeidos);
+            document.getElementById("kpi-libros-curso").textContent = `${res.librosEnCurso} leyendo`;
+            document.getElementById("kpi-series-curso").textContent = String(res.seriesEnCurso);
+            document.getElementById("kpi-pelis-vistas").textContent = String(res.pelisVistas);
+            document.getElementById("kpi-pelis-pend").textContent = `${res.pelisPendientes} pendientes`;
+            document.getElementById("kpi-total-horas").textContent = `${res.totalHoras}h`;
+            document.getElementById("h-lectura").textContent = `${res.hLectura}h`;
+            document.getElementById("h-series").textContent = `${res.hSeries}h`;
+            document.getElementById("h-pelis").textContent = `${res.hPelis}h`;
+
+            if (res.totalHoras > 0) {
+                document.getElementById("seg-lectura").style.width = `${Math.round((res.hLectura / res.totalHoras) * 100)}%`;
+                document.getElementById("seg-series").style.width = `${Math.round((res.hSeries / res.totalHoras) * 100)}%`;
+                document.getElementById("seg-pelis").style.width = `${Math.round((res.hPelis / res.totalHoras) * 100)}%`;
+            }
+
+            document.getElementById("count-libros").textContent = String(ocioDatos.libros.length);
+            document.getElementById("count-series").textContent = String(ocioDatos.series.length);
+            document.getElementById("count-peliculas").textContent = String(ocioDatos.peliculas.length);
+
+            renderizarCatalogoOcio();
+            renderizarKanbanOcio();
+        }
+
+        function cambiarTabOcio(tab) {
+            tabActual = tab;
+            ["libros", "series", "peliculas"].forEach((t) => {
+                const btn = document.getElementById(`btnTab-${t}`);
+                btn.className = t === tab
+                    ? "flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-[#ff5f52] text-white transition-all"
+                    : "flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold text-[#8e8e93] hover:text-white transition-all";
+            });
+            const labels = { libros: "Nuevo libro", series: "Nueva serie", peliculas: "Nueva película" };
+            document.getElementById("btn-nuevo-tab-lbl").textContent = labels[tab] || "Nuevo ítem";
+            renderizarCatalogoOcio();
+        }
+
+        function toggleVistaCatalogoOcio() {
+            const orden = ["tablero", "galeria", "grilla"];
+            vistaCatalogo = orden[(orden.indexOf(vistaCatalogo) + 1) % orden.length];
+            const btn = document.getElementById("btn-vista-ocio");
+            if (btn) {
+                const cfg = {
+                    tablero: '<span class="material-symbols-outlined text-[16px]">view_kanban</span><span>Vista: Tablero</span>',
+                    galeria: '<span class="material-symbols-outlined text-[16px]">photo_library</span><span>Vista: Galería</span>',
+                    grilla: '<span class="material-symbols-outlined text-[16px]">grid_view</span><span>Vista: Grilla</span>',
+                };
+                btn.innerHTML = cfg[vistaCatalogo];
+            }
+            if (typeof mostrarToast === "function") {
+                mostrarToast(`Vista cambiada a ${vistaCatalogo}`, "info");
+            }
+            renderizarCatalogoOcio();
+        }
+
+        function _renderCardGaleria(item) {
+            const esDone = (item.estado || "").toLowerCase().includes("completad") || (item.estado || "").toLowerCase().includes("vista");
+            const pct = parseInt(item.progreso, 10);
+            const widthPct = Number.isFinite(pct) ? Math.min(100, Math.max(0, pct)) : (esDone ? 100 : 30);
+            const iconoTab = tabActual === "libros" ? "menu_book" : tabActual === "series" ? "live_tv" : "movie";
+            return `
+                <div class="group rounded-2xl bg-[#18181d] border border-white/[0.08] hover:border-[#ff5f52]/50 overflow-hidden flex flex-col transition-all">
+                    <div class="relative aspect-[3/4] bg-gradient-to-br from-[#1f1f29] via-[#131318] to-[#0a0a0d] p-4 flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/50 text-white border border-white/10">${escapeHtml(item.estado)}</span>
+                            <span class="text-[#ffb961] text-xs font-bold bg-black/50 px-2 py-0.5 rounded-md">★ ${escapeHtml(String(item.puntuacion || 5))}</span>
+                        </div>
+                        <div class="my-auto flex flex-col items-center text-center gap-2">
+                            <span class="material-symbols-outlined text-[40px] text-[#ff5f52]/80">${iconoTab}</span>
+                            <h3 class="font-headline-md font-extrabold text-base text-white line-clamp-2">${escapeHtml(item.titulo)}</h3>
+                            <p class="text-[11px] text-[#a1a1aa] truncate max-w-full">${escapeHtml(item.secundario || "")}</p>
+                        </div>
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-[10px] text-[#a1a1aa]">
+                                <span>${escapeHtml(item.detalle || "")}</span>
+                                <span class="text-white font-bold">${widthPct}%</span>
+                            </div>
+                            <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-[#83da85] h-full rounded-full" style="width: ${widthPct}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-1 px-3 py-2 bg-[#111115] border-t border-white/[0.06]">
+                        <button type="button" onclick="abrirModalOcio('${tabActual}', '${escapeHtml(item.id)}')" class="p-1.5 rounded-lg hover:bg-white/10 text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+                        <button type="button" onclick="eliminarItemOcio('${tabActual}', '${escapeHtml(item.id)}')" class="p-1.5 rounded-lg hover:bg-[#ff5f52]/15 text-[#8e8e93] hover:text-[#ff5f52]" title="Eliminar"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function _renderCardCatalogo(item) {
+            const esDone = (item.estado || "").toLowerCase().includes("completad") || (item.estado || "").toLowerCase().includes("vista");
+            const badgeCls = esDone ? "bg-[#83da85]/20 text-[#83da85]" : "bg-[#ffb961]/20 text-[#ffb961]";
+            const pct = parseInt(item.progreso, 10);
+            const widthPct = Number.isFinite(pct) ? Math.min(100, Math.max(0, pct)) : (esDone ? 100 : 30);
+            return `
+                <div class="p-4 rounded-2xl bg-[#18181d] border border-white/[0.06] hover:border-white/[0.15] flex flex-col justify-between gap-3 transition-all">
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${badgeCls}">${escapeHtml(item.estado)}</span>
+                            <span class="text-[#ffb961] text-xs font-bold">★ ${escapeHtml(String(item.puntuacion || 5))}</span>
+                        </div>
+                        <h3 class="font-headline-md font-bold text-sm text-white truncate">${escapeHtml(item.titulo)}</h3>
+                        <p class="text-xs text-[#a1a1aa] truncate">${escapeHtml(item.secundario)}${item.genero && item.genero !== item.secundario ? " · " + escapeHtml(item.genero) : ""}</p>
+                    </div>
+                    <div class="space-y-2 pt-2 border-t border-white/[0.06]">
+                        <div class="flex justify-between text-[11px] text-[#8e8e93]">
+                            <span>${escapeHtml(item.detalle || item.progreso)}</span>
+                            <span class="text-white font-semibold">${widthPct}%</span>
+                        </div>
+                        <div class="w-full bg-white/[0.08] h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-[#83da85] h-full rounded-full" style="width: ${widthPct}%;"></div>
+                        </div>
+                        <div class="flex justify-end gap-1 pt-0.5">
+                            <button type="button" onclick="abrirModalOcio('${tabActual}', '${escapeHtml(item.id)}')" class="p-1.5 rounded-lg hover:bg-white/10 text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+                            <button type="button" onclick="eliminarItemOcio('${tabActual}', '${escapeHtml(item.id)}')" class="p-1.5 rounded-lg hover:bg-[#ff5f52]/15 text-[#8e8e93] hover:text-[#ff5f52]" title="Eliminar"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderizarCatalogoOcio() {
+            const q = (document.getElementById("ocio-buscador").value || "");
+            const lista = filtrarCatalogoOcio(ocioDatos[tabActual] || [], q);
+            const cont = document.getElementById("grid-catalogo-ocio");
+            if (vistaCatalogo === "grilla") {
+                cont.className = "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4";
+                cont.innerHTML = lista.length === 0
+                    ? `<div class="col-span-full py-8 text-center text-sm text-[#8e8e93]">Sin registros para mostrar</div>`
+                    : lista.map(_renderCardCatalogo).join("");
+                return;
+            }
+            if (vistaCatalogo === "galeria") {
+                cont.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4";
+                cont.innerHTML = lista.length === 0
+                    ? `<div class="col-span-full py-8 text-center text-sm text-[#8e8e93]">Sin registros para mostrar</div>`
+                    : lista.map(_renderCardGaleria).join("");
+                return;
+            }
+
+            const estadosCols = tabActual === "libros"
+                ? (ocioOpciones.estados || ["No empezado", "Leyendo", "Completado"])
+                : tabActual === "series"
+                    ? ["POR VER", "VIENDO", "VISTA"]
+                    : ["POR VER", "VISTA"];
+            const colsClass = estadosCols.length === 2 ? "grid grid-cols-1 md:grid-cols-2 gap-4" : "grid grid-cols-1 md:grid-cols-3 gap-4";
+            cont.className = colsClass;
+            cont.innerHTML = estadosCols.map((est) => {
+                const itemsCol = lista.filter((x) => (x.estado || "").toLowerCase() === est.toLowerCase());
+                return `
+                    <div class="rounded-2xl bg-[#08080a] border border-white/[0.08] p-3.5 space-y-3 min-h-[220px]">
+                        <div class="flex items-center justify-between px-1">
+                            <span class="text-xs font-bold text-white uppercase tracking-wider">${escapeHtml(est)}</span>
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-white/[0.06] text-[#8e8e93]">${itemsCol.length}</span>
+                        </div>
+                        <div class="space-y-2.5">
+                            ${itemsCol.length === 0 ? `<p class="text-xs text-[#8e8e93] py-6 text-center">Sin ítems</p>` : itemsCol.map(_renderCardCatalogo).join("")}
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderizarKanbanOcio() {
+            const cont = document.getElementById("grid-kanban-ocio");
+            cont.innerHTML = OCIO_KANBAN_COLUMNAS.map((col, colIdx) => {
+                const cards = (ocioDatos.kanban || []).filter((c) => c.col === col.key);
+                return `
+                    <div class="flex flex-col rounded-2xl bg-[#111115] p-3.5 border border-white/[0.08] min-h-[340px]">
+                        <div class="flex items-center justify-between px-1 pb-3">
+                            <span class="font-headline-md font-bold text-xs text-white uppercase tracking-wider">${col.label}</span>
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-white/[0.06] text-[#8e8e93]">${cards.length}</span>
+                        </div>
+                        <div class="flex flex-col gap-2.5 flex-1">
+                            ${cards.map((c) => `
+                                <div class="p-3 rounded-xl bg-[#18181d] border border-white/[0.06] space-y-1.5">
+                                    <div class="flex items-center justify-between gap-1">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-white/[0.06] text-[#ffb961]">${escapeHtml(c.tag || "Ocio")}</span>
+                                        <div class="flex items-center gap-0.5">
+                                            ${colIdx > 0 ? `<button type="button" onclick="moverKanban('${escapeHtml(c.id)}', -1)" class="p-1 text-[#8e8e93] hover:text-white" title="Mover atrás"><span class="material-symbols-outlined text-[15px]">arrow_back</span></button>` : ""}
+                                            ${colIdx < OCIO_KANBAN_COLUMNAS.length - 1 ? `<button type="button" onclick="moverKanban('${escapeHtml(c.id)}', 1)" class="p-1 text-[#8e8e93] hover:text-white" title="Mover adelante"><span class="material-symbols-outlined text-[15px]">arrow_forward</span></button>` : ""}
+                                            <button type="button" onclick="eliminarKanban('${escapeHtml(c.id)}')" class="p-1 text-[#8e8e93] hover:text-[#ff5f52]" title="Eliminar"><span class="material-symbols-outlined text-[15px]">delete</span></button>
+                                        </div>
+                                    </div>
+                                    <h4 class="font-bold text-xs text-white">${escapeHtml(c.titulo)}</h4>
+                                    ${c.desc ? `<p class="text-[11px] text-[#8e8e93]">${escapeHtml(c.desc)}</p>` : ""}
+                                </div>
+                            `).join("")}
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function abrirModalOcio(tipo, editId = "") {
+            document.getElementById("ocio-edit-tipo").value = tipo;
+            document.getElementById("ocio-edit-id").value = editId;
+            document.getElementById("ocio-form-err").classList.add("hidden");
+            const cfg = {
+                libros: { icon: "auto_stories", titulo: "Libro" },
+                series: { icon: "tv", titulo: "Serie" },
+                peliculas: { icon: "movie", titulo: "Película" },
+            }[tipo];
+            document.getElementById("modalIcon").textContent = cfg.icon;
+
+            const existente = editId ? (ocioDatos[tipo] || []).find((x) => x.id === editId) : null;
+            document.getElementById("modalTitle").textContent = existente ? `Editar ${cfg.titulo}` : `Nuevo ${cfg.titulo}`;
+            document.getElementById("inputTitle").value = existente ? existente.titulo : "";
+            document.getElementById("inputScore").value = existente ? String(Math.max(1, Math.min(5, Math.round(existente.puntuacion || 5)))) : "5";
+
+            const esLibro = tipo === "libros";
+            document.getElementById("wrap-campos-libro").classList.toggle("hidden", !esLibro);
+            document.getElementById("wrap-generos-av").classList.toggle("hidden", esLibro);
+
+            const selEst = document.getElementById("inputEstado");
+            if (esLibro) {
+                document.getElementById("inputSecondary").value = existente ? (existente.secundario || "") : "";
+                const cats = ocioOpciones.categorias || ["Ficción", "No ficción", "Autoayuda", "Fantasía", "Romance", "Thriller"];
+                const selCat = document.getElementById("inputCategoriaLibro");
+                selCat.innerHTML = cats.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+                if (existente && existente.genero) selCat.value = existente.genero;
+                const estOps = ocioOpciones.estados || ["No empezado", "Leyendo", "Completado"];
+                selEst.innerHTML = estOps.map((op) => `<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`).join("");
+                selEst.value = existente ? existente.estado : "Leyendo";
+            } else {
+                const gens = tipo === "series"
+                    ? (ocioOpciones.generos_series || ["drama", "comedia", "thriller", "romance", "fantasía"])
+                    : (ocioOpciones.generos_peliculas || ["drama", "comedia", "thriller", "romance", "acción"]);
+                const actuales = new Set((existente && Array.isArray(existente.generos)) ? existente.generos : []);
+                document.getElementById("ocio-generos-checks").innerHTML = gens.map((g) => `
+                    <label class="flex items-center gap-1.5 text-xs text-[#e5e2e1] cursor-pointer px-1.5 py-1 rounded hover:bg-white/5">
+                        <input type="checkbox" name="ocio-genero-av" value="${escapeHtml(g)}" ${actuales.has(g) ? "checked" : ""} class="rounded border-white/20 bg-[#18181d] text-[#ff5f52]" />
+                        <span class="truncate">${escapeHtml(g)}</span>
+                    </label>
+                `).join("");
+                const estOps = tipo === "series"
+                    ? (ocioOpciones.estados_series || ["POR VER", "VIENDO", "VISTA"])
+                    : (ocioOpciones.estados_peliculas || ["POR VER", "VISTA"]);
+                selEst.innerHTML = estOps.map((op) => `<option value="${escapeHtml(op)}">${escapeHtml(op)}</option>`).join("");
+                selEst.value = existente ? existente.estado : "POR VER";
+            }
+
+            const m = document.getElementById("mediaModal");
+            m.classList.remove("hidden");
+            m.classList.add("flex");
+        }
+
+        function cerrarModalOcio() {
+            const m = document.getElementById("mediaModal");
+            m.classList.add("hidden");
+            m.classList.remove("flex");
+        }
+
+        function obtenerTokenOcio() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+        function abrirModalTokenOcio() {
+            const m = document.getElementById("modal-token-notion");
+            m.classList.remove("hidden"); m.classList.add("flex");
+        }
+        function cerrarModalTokenOcio() {
+            const m = document.getElementById("modal-token-notion");
+            m.classList.add("hidden"); m.classList.remove("flex");
+        }
+        function guardarTokenOcio() {
+            const t = document.getElementById("ocio-token-input").value.trim();
+            if (!t) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, t); } catch (e) {}
+            document.getElementById("ocio-token-input").value = "";
+            cerrarModalTokenOcio();
+        }
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.remove("hidden"); modal.classList.add("flex");
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+        function cerrarSpinnerNotion() {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.add("hidden"); modal.classList.remove("flex");
+        }
+
+        async function despacharAccionOcioNotion(accion, datos, msgOk) {
+            const token = obtenerTokenOcio();
+            if (!token) { abrirModalTokenOcio(); return false; }
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, datos, token);
+                const resp = await fetch(url, options);
+                if (resp.status === 401 || resp.status === 404) {
+                    cerrarSpinnerNotion();
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModalTokenOcio();
+                    return false;
+                }
+                if (resp.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${resp.status}).`);
+                    return false;
+                }
+                const conf = await esperarConfirmacionWorkflow({ owner: GITHUB_OWNER, repo: GITHUB_REPO, token, workflowFile: WORKFLOW_NOTION_WRITE, dispatchedAfterMs });
+                if (conf.ok) {
+                    mostrarSpinnerNotion("ok", msgOk, "Recargando página...");
+                    setTimeout(() => window.location.reload(), 1200);
+                    return true;
+                }
+                mostrarSpinnerNotion("error", "No se pudo confirmar", conf.error);
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub.");
+            }
+            return false;
+        }
+
+        async function manejarSubmitOcio(e) {
+            e.preventDefault();
+            const tipo = document.getElementById("ocio-edit-tipo").value;
+            const editId = document.getElementById("ocio-edit-id").value;
+            const titulo = (document.getElementById("inputTitle").value || "").trim();
+            if (!titulo) {
+                const errEl = document.getElementById("ocio-form-err");
+                errEl.textContent = "El título es obligatorio.";
+                errEl.classList.remove("hidden");
+                return;
+            }
+            const estado = document.getElementById("inputEstado").value;
+            const puntuacion = Number(document.getElementById("inputScore").value || 5);
+
+            if (tipo === "libros") {
+                const payload = {
+                    titulo,
+                    autor: (document.getElementById("inputSecondary").value || "").trim(),
+                    categoria: document.getElementById("inputCategoriaLibro").value,
+                    estado,
+                    puntuacion,
+                };
+                if (editId) payload.page_id = editId;
+                cerrarModalOcio();
+                await despacharAccionOcioNotion(editId ? "actualizar_libro_ocio" : "crear_libro_ocio", payload, "¡Libro guardado en Notion!");
+                return;
+            }
+
+            const generos = Array.from(document.querySelectorAll('input[name="ocio-genero-av"]:checked')).map((el) => el.value);
+            const payload = { titulo, generos, estado, puntuacion };
+            if (editId) payload.page_id = editId;
+            const accion = tipo === "series"
+                ? (editId ? "actualizar_serie_ocio" : "crear_serie_ocio")
+                : (editId ? "actualizar_pelicula_ocio" : "crear_pelicula_ocio");
+            const msgOk = tipo === "series" ? "¡Serie guardada en Notion!" : "¡Película guardada en Notion!";
+            cerrarModalOcio();
+            await despacharAccionOcioNotion(accion, payload, msgOk);
+        }
+
+        async function eliminarItemOcio(tipo, id) {
+            if (id && !id.startsWith("lib-") && !id.startsWith("ser-") && !id.startsWith("pel-") && !id.startsWith("ocio-")) {
+                await despacharAccionOcioNotion("archivar_pagina", { page_id: id }, "¡Registro enviado a la papelera!");
+                return;
+            }
+            ocioDatos[tipo] = (ocioDatos[tipo] || []).filter((x) => x.id !== id);
+            guardarDatosOcio();
+            renderizarTodoOcio();
+        }
+
+        function moverKanban(id, dir) {
+            ocioDatos.kanban = moverTarjetaKanban(ocioDatos.kanban, id, dir);
+            guardarDatosOcio();
+            renderizarKanbanOcio();
+        }
+
+        function eliminarKanban(id) {
+            ocioDatos.kanban = (ocioDatos.kanban || []).filter((c) => c.id !== id);
+            guardarDatosOcio();
+            renderizarKanbanOcio();
+        }
+
+        function abrirModalKanban() {
+            document.getElementById("kan-titulo").value = "";
+            document.getElementById("kan-tag").value = "";
+            document.getElementById("kan-desc").value = "";
+            const m = document.getElementById("kanbanModal");
+            m.classList.remove("hidden");
+            m.classList.add("flex");
+        }
+
+        function cerrarModalKanban() {
+            const m = document.getElementById("kanbanModal");
+            m.classList.add("hidden");
+            m.classList.remove("flex");
+        }
+
+        function manejarSubmitKanban(e) {
+            e.preventDefault();
+            const titulo = document.getElementById("kan-titulo").value.trim();
+            if (!titulo) return;
+            ocioDatos.kanban.push({
+                id: `kan-${Date.now()}`,
+                col: document.getElementById("kan-col").value,
+                tag: document.getElementById("kan-tag").value.trim() || "Ocio",
+                titulo,
+                desc: document.getElementById("kan-desc").value.trim(),
+            });
+            guardarDatosOcio();
+            cerrarModalKanban();
+            renderizarKanbanOcio();
+        }
+
+        function toggleMenu() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+            const isOpen = !sidebar.classList.contains("-translate-x-full");
+            sidebar.classList.toggle("-translate-x-full", isOpen);
+            overlay.classList.toggle("hidden", isOpen);
+        }
+
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initLocalStorage();
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
+            ocioDatos = cargarDatosOcio();
+            renderizarTodoOcio();
+        });
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            });
+        }
+        const OCIO_AUTORES_KEY = "asistente_sabry:ocio_autores_v1";
+
+        function _poblarDatalistAutoresOcio() {
+            const dl = document.getElementById("ocio-autores-datalist");
+            if (!dl) return;
+            const set = new Set();
+            (typeof ocioLibros !== "undefined" ? ocioLibros : []).forEach((l) => { if (l && l.autor) set.add(l.autor.trim()); });
+            try {
+                const extras = JSON.parse(localStorage.getItem(OCIO_AUTORES_KEY) || "[]");
+                if (Array.isArray(extras)) extras.forEach((a) => { if (a) set.add(String(a).trim()); });
+            } catch (e) {}
+            dl.innerHTML = [...set].filter(Boolean).map((a) => `<option value="${escapeHtml(a)}"></option>`).join("");
+        }
+
+        function abrirSubmodalAutorOcio() {
+            document.getElementById("ocio-av-nombre").value = "";
+            document.getElementById("ocio-av-nota").value = "";
+            const m = document.getElementById("modal-ocio-autor-vuelo");
+            m.classList.remove("hidden"); m.classList.add("flex");
+            setTimeout(() => document.getElementById("ocio-av-nombre").focus(), 30);
+        }
+
+        function cerrarSubmodalAutorOcio() {
+            const m = document.getElementById("modal-ocio-autor-vuelo");
+            m.classList.add("hidden"); m.classList.remove("flex");
+        }
+
+        function guardarSubmodalAutorOcio(event) {
+            event.preventDefault();
+            const nombre = document.getElementById("ocio-av-nombre").value.trim();
+            if (!nombre) return false;
+            try {
+                const extras = JSON.parse(localStorage.getItem(OCIO_AUTORES_KEY) || "[]");
+                const lista = Array.isArray(extras) ? extras : [];
+                if (!lista.some((a) => String(a).toLowerCase() === nombre.toLowerCase())) {
+                    lista.unshift(nombre);
+                    localStorage.setItem(OCIO_AUTORES_KEY, JSON.stringify(lista));
+                }
+            } catch (e) {}
+            _poblarDatalistAutoresOcio();
+            document.getElementById("inputSecondary").value = nombre;
+            cerrarSubmodalAutorOcio();
+            return false;
+        }
+
+        document.addEventListener("DOMContentLoaded", _poblarDatalistAutoresOcio);
+    </script>
+    <script src="./src/utils/somatic_shell.js"></script>
+</body>
+</html>

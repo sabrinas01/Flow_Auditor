@@ -68,10 +68,10 @@
     <!-- =================================================== -->
     <script>
         // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
-        const timestampLocalStr = "18/08/2026 20:20:23";
-        const appVersionStr = "dev";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
-        const timestampNextStr = "18/08/2026 21:20:23";
-        const timestampServerStr = "18/08/2026 23:20:23";
+        const timestampLocalStr = "28/11/2026 09:43:08";
+        const appVersionStr = "v4.95";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
+        const timestampNextStr = "28/11/2026 10:43:08";
+        const timestampServerStr = "28/11/2026 12:43:08";
 
         // Recordatorios varios (BD "Mis Recordatorios varios V0"), clasificados por
         // la propiedad Fecha (v4.26; hasta v4.25 se clasificaba por created_time)
@@ -81,10 +81,10 @@
         // — a diferencia de index.html, acá no se agrega por estado. La UI muestra
         // solo el Nombre de cada ítem (v4.29).
         const recordatoriosVariosAyer = [];
-        const recordatoriosVariosHoy = [];
-        const recordatoriosVariosManana = [];
+        const recordatoriosVariosHoy = [{"id": "426a38bb-7a6e-811d-8639-e0572be7ac38", "nombre": "Limpiar y acondicionar mi bici", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Hogar", "periodo": "QUINCENAL", "fecha": "2026-11-28"}, {"id": "426a38bb-7a6e-819a-9e07-e42c38e8ca2c", "nombre": "Lavar o repasar baño", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Higiene", "periodo": "SEMANAL", "fecha": "2026-11-28"}, {"id": "426a38bb-7a6e-8187-a623-eb9f93c68720", "nombre": "Lavar peines", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "QUINCENAL", "fecha": "2026-11-28"}, {"id": "426a38bb-7a6e-8130-b628-f84108b3301a", "nombre": "Limpiar rueditas de la silla", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Hogar", "periodo": "MENSUAL", "fecha": "2026-11-28"}, {"id": "425a38bb-7a6e-8176-8001-f2205c9e6225", "nombre": "Desinfectar cepillo dental", "estado": "Sin empezar", "prioridad": "ALTA", "area": "Higiene", "periodo": "MENSUAL", "fecha": "2026-11-28"}, {"id": "422a38bb-7a6e-81bc-8cae-c7c8c5436cd5", "nombre": "Desodorizar colchón", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "QUINCENAL", "fecha": "2026-11-28"}, {"id": "422a38bb-7a6e-8169-8d06-c2a6324a93dc", "nombre": "Girar colchón", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "QUINCENAL", "fecha": "2026-11-28"}, {"id": "41aa38bb-7a6e-811c-88a9-e7f43ea5c007", "nombre": "Lavar gorras", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Higiene", "periodo": "MENSUAL", "fecha": "2026-11-28"}, {"id": "419a38bb-7a6e-81e1-9070-fc753ca8bb3a", "nombre": "Lavar ducha (Lavadero)", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Hogar", "periodo": "MENSUAL", "fecha": "2026-11-28"}, {"id": "418a38bb-7a6e-8107-bdc5-fc07446fc36a", "nombre": "Lavar zapatillas jaguar de salir", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Higiene", "periodo": "MENSUAL", "fecha": "2026-11-28"}, {"id": "40aa38bb-7a6e-8162-bc0c-fe52a7ea2f83", "nombre": "Limpiar rueditas de la silla", "estado": "Sin empezar", "prioridad": "MEDIA", "area": "Hogar", "periodo": "MENSUAL", "fecha": "2026-11-28"}];
+        const recordatoriosVariosManana = [{"id": "425a38bb-7a6e-81a5-b7aa-ec52cd79f13b", "nombre": "Lavar portacepillos", "estado": "Sin empezar", "prioridad": "BAJA", "area": "Higiene", "periodo": "QUINCENAL", "fecha": "2026-11-29"}];
         const recordatoriosVariosSinFecha = [];
-        const recordatoriosVariosEstados = ["Sin empezar", "⏳ Pospuesta", "En ejecución", "En espera", "Hecha por otra persona", "⏭️ No necesaria", "Hecha", "❌ Fallida / Vencida"];
+        const recordatoriosVariosEstados = ["⏳ Pospuesta", "Sin empezar", "❌ Fallida / Vencida", "En ejecución", "En espera", "⏭️ No necesaria", "Hecha por otra persona", "Hecha"];
     </script>
 
     <!-- =================================================== -->
@@ -95,7 +95,7 @@
             <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
             <div>
                 <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
-                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.87</p>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.95</p>
             </div>
         </div>
 

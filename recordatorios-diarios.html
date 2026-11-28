@@ -74,23 +74,23 @@
     <!-- =================================================== -->
     <script>
         // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
-        const timestampLocalStr = "18/08/2026 20:20:23";
-        const appVersionStr = "dev";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
-        const timestampNextStr = "18/08/2026 21:20:23";
-        const timestampServerStr = "18/08/2026 23:20:23";
+        const timestampLocalStr = "28/11/2026 09:43:08";
+        const appVersionStr = "v4.95";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
+        const timestampNextStr = "28/11/2026 10:43:08";
+        const timestampServerStr = "28/11/2026 12:43:08";
 
         // Estructuras JSON reales de distribución por estados (Notion DB) - Telemetría de peticiones eliminada
-        const conteoAyer = {"Sin empezar": 13, "⏭️ No necesaria": 4, "Hecha": 4, "❌ Fallida / Vencida": 6};
-        const conteoHoy = {"Sin empezar": 20};
+        const conteoAyer = {"Hecha": 11, "Sin empezar": 2, "❌ Fallida / Vencida": 8, "⏭️ No necesaria": 3};
+        const conteoHoy = {"Sin empezar": 9};
         const conteoManana = {};
 
         // Nombres de las tareas de hoy en estado "Sin empezar" (lista colapsable
         // dentro de "Progreso de hoy"). Solo el nombre, sin otros datos.
-        const tareasHoySinEmpezar = [];
+        const tareasHoySinEmpezar = ["Vestirme", "Tomar T4", "Skincare - Mañana", "Guardar ropa limpia", "Cepillado de dientes - [Mañana]", "Colación-Mañana", "[SOLO PREGUNTAR] Llenar tanque y bidones de agua-Mañana", "Desayunar", "Armar cama"];
         // Tareas de Ayer y Hoy con id y estado para desplegable editable (Etapa 3)
-        const tareasDiariasAyer = [];
-        const tareasDiariasHoy = [];
-        const recordatoriosDiariosEstados = ["Sin empezar", "En ejecución", "Hecha por otra persona", "⏭️ No necesaria", "Hecha", "❌ Fallida / Vencida"];
+        const tareasDiariasAyer = [{"id": "426a38bb-7a6e-8109-8de5-cc60b0f9a46b", "nombre": "Cenar", "estado": "Hecha", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-81fb-9984-e63e1672f790", "nombre": "Apagar y desenchufar monitor", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-8151-9f4f-c302e96df272", "nombre": "Skincare-Noche", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-8128-a993-cc0343dec1ab", "nombre": "Apagar teclado", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-8176-95bf-fec151b0a2e5", "nombre": "Cepillado de dientes-Noche", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-8179-81dc-ea2351fa1656", "nombre": "Apagar mousse", "estado": "Hecha", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-819f-bcd3-e43a3bcda8f0", "nombre": "Desenchufar cargador notebook", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-8100-bad5-f9079ecba24c", "nombre": "[ABRIR]-Gastos", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-81a2-87f2-ff93b925d745", "nombre": "Limpiar piso de habitación", "estado": "⏭️ No necesaria", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-81bb-8eb2-f3d632f2909b", "nombre": "Colación-Tarde ", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-8104-be95-f36ba8c0f47e", "nombre": "[SOLO PREGUNTAR] Llenar tanque y bidones de agua-Tarde", "estado": "⏭️ No necesaria", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-81ff-a99c-d0964f5c76fc", "nombre": "[SOLO PREGUNTAR] Ropa tendida afuera", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-81ee-a966-e5109e73996c", "nombre": "Almorzar", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-8121-961b-c6cfec35fe30", "nombre": "Actividad fisica", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-8109-b35b-efbd94b18938", "nombre": "Merendar", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-81df-ae8d-cd9560d90ccc", "nombre": "Vestirme", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-81f6-8e66-deeab89dcfb0", "nombre": "Tomar T4", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-8103-9a4c-e030277d25df", "nombre": "Skincare - Mañana", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-81fd-9e66-c4b2647c6e6e", "nombre": "Guardar ropa limpia", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-816f-926b-eeda620fad6b", "nombre": "Cepillado de dientes - [Mañana]", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-8168-9a34-d24d9c667cc6", "nombre": "Colación-Mañana", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-817d-914d-d6398b6f4655", "nombre": "[SOLO PREGUNTAR] Llenar tanque y bidones de agua-Mañana", "estado": "⏭️ No necesaria", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-810b-88de-f35533ae8843", "nombre": "Desayunar", "estado": "Hecha", "tipo_estado": "status"}, {"id": "425a38bb-7a6e-819d-92e9-d7ad22dc2241", "nombre": "Armar cama", "estado": "❌ Fallida / Vencida", "tipo_estado": "status"}];
+        const tareasDiariasHoy = [{"id": "426a38bb-7a6e-8144-908f-d51996df3c6b", "nombre": "Vestirme", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-81b4-96d2-c898935484a9", "nombre": "Tomar T4", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-817e-9501-dc3bcffe75a6", "nombre": "Skincare - Mañana", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-8119-9dd1-c120a04259dc", "nombre": "Guardar ropa limpia", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-81e9-81d8-c828c0272b96", "nombre": "Cepillado de dientes - [Mañana]", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-8148-9f81-c20aaf0c9437", "nombre": "Colación-Mañana", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-81df-bf63-cc496b0805ae", "nombre": "[SOLO PREGUNTAR] Llenar tanque y bidones de agua-Mañana", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-81ee-8f62-eec2c5771ef3", "nombre": "Desayunar", "estado": "Sin empezar", "tipo_estado": "status"}, {"id": "426a38bb-7a6e-8122-b698-f812c24776ab", "nombre": "Armar cama", "estado": "Sin empezar", "tipo_estado": "status"}];
+        const recordatoriosDiariosEstados = ["Sin empezar", "❌ Fallida / Vencida", "En ejecución", "⏭️ No necesaria", "Hecha por otra persona", "Hecha"];
     </script>
 
     <!-- =================================================== -->
@@ -101,7 +101,7 @@
             <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
             <div>
                 <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
-                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.87</p>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.95</p>
             </div>
         </div>
 

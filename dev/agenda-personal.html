@@ -1,0 +1,1111 @@
+﻿<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Agenda Personal</title>
+    <!-- PWA: instalable en celular (ver Documentacion/SRS.md SRS-FR-M3-311) -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0e0e0e">
+    <link rel="icon" href="./grafica/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./grafica/icons/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
+    <!-- Tipografías del Design System "v4.76" (Stitch) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+    <!-- CSS de Tailwind precompilado (mismo bundle que index.html/recordatorios-varios.html) -->
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #08080a;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+        .status-row {
+            background: #18181d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .status-row:hover { background: #1f1f26; border-color: rgba(255, 255, 255, 0.12); }
+
+        .left-pill-blue { border-left: 3px solid #00aaff; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-green { border-left: 3px solid #53a759; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-red { border-left: 3px solid #ff5f52; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .left-pill-orange { border-left: 3px solid #e49102; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+
+        #sidebar {
+            transition: transform 0.3s ease;
+        }
+
+        /* Animación premium de rotación para refrescar el dashboard */
+        .spin-animation {
+            animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden antialiased">
+
+    <!-- =================================================== -->
+    <!-- VARIABLES INYECTADAS DINÁMICAMENTE POR EL BACKEND -->
+    <!-- =================================================== -->
+    <script>
+        // Declaración estricta compatible con las expresiones regulares de extract_and_audit.py
+        const timestampLocalStr = "28/11/2026 00:53:04";
+        const appVersionStr = "v4.95";// extract_and_audit.py inyecta acá el tag real (git describe --tags)
+        const timestampNextStr = "28/11/2026 01:53:04";
+        const timestampServerStr = "28/11/2026 03:53:04";
+
+        // Eventos (BD "Agenda Personal - Eventos"), clasificados por su propia
+        // fecha programada en Ayer/Hoy/Mañana. Regla de negocio (SRS-FR-M5-502):
+        // el backend ya descarta los eventos "FINALIZADO" — acá solo llegan
+        // los que están "SIN_EMPEZAR" o "EN_CURSO".
+        const agendaEventosAyer = [];
+        const agendaEventosHoy = [{"id": "421a38bb-7a6e-814c-b983-f938886e7a6c", "nombre": "Visitar a Fati", "inicio": "2026-11-28", "fin": null, "lugar": null, "tipo": "VINCULOS", "estado": "Sin empezar", "prioridad": "Media", "descripcion": null}, {"id": "425a38bb-7a6e-817e-9a3d-c9ce4feea92b", "nombre": "Trabajar en cursos con Barbi", "inicio": "2026-11-28T11:00:00.000-03:00", "fin": "2026-11-28T13:00:00.000-03:00", "lugar": null, "tipo": "RECORDATORIO", "estado": "Sin empezar", "prioridad": "Media", "descripcion": null}, {"id": "14fba3c7-bcf2-446c-9962-3dde072c9dd5", "nombre": "Visitar a Raquel y Tia Claudia", "inicio": "2026-11-28T17:30:00.000-03:00", "fin": null, "lugar": null, "tipo": "RECORDATORIO", "estado": "Sin empezar", "prioridad": "Media", "descripcion": null}];
+        const agendaEventosManana = [];
+    </script>
+
+    <!-- =================================================== -->
+    <!-- SIDEBAR (oculto por defecto, se activa con el menú) -->
+    <!-- =================================================== -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
+        <div class="flex items-center gap-3 mb-5 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.95</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-2 bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/30 rounded-xl font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+                <span>Agenda personal</span>
+            </a>
+            <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">alarm</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">check_box</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="finanzas.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                <span>Finanzas</span>
+            </a>
+            <a href="salud.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Salud</span>
+            </a>
+            <a href="ocio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_library</span>
+                <span>Ocio</span>
+            </a>
+            <a href="gestion-emocional.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">psychology</span>
+                <span>Gestión emocional</span>
+            </a>
+            <a href="relaciones-y-limites.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">shield</span>
+                <span>Relaciones y límites</span>
+            </a>
+            <a href="desarrollo-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">trending_up</span>
+                <span>Desarrollo personal</span>
+            </a>
+            <a href="habitos-y-disciplina.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_fire_department</span>
+                <span>Hábitos y disciplina</span>
+            </a>
+        </nav>
+        <div class="pt-3 mt-3 border-t border-white/[0.08]">
+            <a href="https://contras.ai.studio/" target="_blank" rel="noopener" class="flex items-center gap-2 px-3 py-1.5 text-[#ffb961] hover:bg-[#ffb961]/10 rounded-lg transition-all text-[11px] font-semibold">
+                <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                <span>Contras AI Studio</span>
+            </a>
+        </div>
+        <div class="pt-3 mt-3 border-t border-white/[0.08] flex items-center gap-3 px-2">
+            <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
+            <div class="min-w-0">
+                <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <div id="modal-crear-tarea" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModalCrearTarea()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="ct-modal-titulo" class="text-headline-md font-headline-md text-white">Crear tarea</h3>
+                <button type="button" onclick="cerrarModalCrearTarea()" class="p-1.5 hover:bg-white/5 rounded-full transition-colors text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+
+            <!-- Vista 1: alta de token de GitHub (solo la primera vez por navegador) -->
+            <div id="ct-vista-token" class="space-y-4 hidden">
+                <p class="text-[13px] text-[#e2beba] leading-relaxed">
+                    Para escribir en Notion sin exponer sus claves, el botón usa un token de GitHub
+                    acotado (solo permiso <strong>Actions: Read and write</strong> sobre este repo), que se
+                    guarda únicamente en este navegador — nunca se sube al repositorio.
+                </p>
+                <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener"
+                   class="text-[13px] text-primary-container underline inline-flex items-center gap-1">
+                    Crear token fine-grained en GitHub
+                    <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                </a>
+                <div>
+                    <label for="ct-token-input" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Pegá el token acá</label>
+                    <input id="ct-token-input" type="password" autocomplete="off"
+                           class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                </div>
+                <button type="button" onclick="guardarTokenCrearTarea()"
+                        class="w-full bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">
+                    Guardar token y continuar
+                </button>
+            </div>
+
+            <!-- Vista 2: formulario de la tarea (Crear / Editar) -->
+            <form id="form-crear-tarea" class="space-y-4 hidden" onsubmit="return manejarSubmitCrearTarea(event)">
+                <input id="ct-page-id" name="pageId" type="hidden" value="" />
+                <div>
+                    <label for="ct-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre *</label>
+                    <input id="ct-nombre" name="nombre" type="text" required maxlength="200"
+                           class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="ct-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fecha *</label>
+                        <input id="ct-fecha" name="fecha" type="date" required
+                               class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                    <div>
+                        <label for="ct-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
+                        <select id="ct-estado" name="estado"
+                                class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container">
+                            <option value="Sin empezar">Sin empezar</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Planificada">Planificada</option>
+                            <option value="En curso">En curso</option>
+                            <option value="Hecha">Hecha</option>
+                            <option value="Asisti">Asisti</option>
+                            <option value="Sin asistir">Sin asistir</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="ct-hora-inicio" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Hora inicio</label>
+                        <input id="ct-hora-inicio" name="horaInicio" type="time"
+                               class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                    <div>
+                        <label for="ct-hora-fin" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Hora fin</label>
+                        <input id="ct-hora-fin" name="horaFin" type="time"
+                               class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="ct-tipo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Tipo de tarea</label>
+                        <select id="ct-tipo" name="tipoTarea"
+                                class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container">
+                            <option value="">Sin especificar</option>
+                            <option value="EVENTO">Evento</option>
+                            <option value="TURNO AGENDADO">Turno agendado</option>
+                            <option value="ESTUDIO MÉDICO">Estudio médico</option>
+                            <option value="TRANSPORTE">Transporte</option>
+                            <option value="REINTEGRO">Reintegro</option>
+                            <option value="VINCULOS">Vínculos</option>
+                            <option value="RECORDATORIO">Recordatorio</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="ct-prioridad" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Prioridad</label>
+                        <select id="ct-prioridad" name="prioridad"
+                                class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container">
+                            <option value="">Sin especificar</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Media">Media</option>
+                            <option value="Baja">Baja</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="ct-descripcion" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Descripción</label>
+                    <textarea id="ct-descripcion" name="descripcion" rows="2" maxlength="2000"
+                              class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px] focus:outline-none focus:border-primary-container resize-none"></textarea>
+                </div>
+
+                <p class="text-[11px] text-[#8e8e93] leading-relaxed">No se puede cargar "Lugar" desde acá (la API de Notion exige coordenadas) — completalo en Notion si lo necesitás.</p>
+
+                <p id="ct-mensaje" class="text-[13px] hidden"></p>
+
+                <div class="flex gap-3 pt-1">
+                    <button id="ct-btn-eliminar" type="button" onclick="confirmarEliminarDesdeModal()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl transition-all" title="Mandar a la papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
+                    <button type="button" onclick="cerrarModalCrearTarea()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl transition-all">Cancelar</button>
+                    <button id="ct-btn-guardar" type="submit" class="flex-1 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-bold text-[14px] py-3 rounded-xl transition-all active:scale-95">Guardar</button>
+                </div>
+
+                <button type="button" onclick="cambiarTokenCrearTarea()" class="w-full text-center text-[11px] text-[#8e8e93] hover:text-white transition-colors pt-1">
+                    🔑 Cambiar el token guardado
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- MODAL CONFIRMACIÓN PAPELERA                         -->
+    <!-- =================================================== -->
+    <div id="modal-confirmar-papelera" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="cerrarModalPapelera()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-3 text-[#ff5f52]">
+                <span class="material-symbols-outlined text-[24px]">delete</span>
+                <h3 class="text-headline-md font-headline-md text-white">Mandar a la papelera</h3>
+            </div>
+            <p id="papelera-texto" class="text-[14px] text-[#e2beba] leading-relaxed">
+                ¿Deseas mandar esta tarea a la papelera de Notion?
+            </p>
+            <div class="flex gap-3 pt-1">
+                <button type="button" onclick="cerrarModalPapelera()" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cancelar</button>
+                <button type="button" onclick="ejecutarEnvioPapelera()" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-2.5 rounded-xl transition-all active:scale-95">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- MODAL DETALLE DE EVENTO SELECCIONADO (STITCH v4.86) -->
+    <!-- =================================================== -->
+    <div id="modal-detalle-evento" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-md p-4" onclick="cerrarModalDetalleEvento()">
+        <div class="glass-card rounded-2xl p-6 sm:p-7 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/[0.12] space-y-5" onclick="event.stopPropagation()">
+            <!-- Header Chips & Acciones rápidas -->
+            <div class="flex items-start justify-between gap-4">
+                <div class="space-y-2 min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="det-ev-tipo" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-[#ff5f52]/15 text-[#ffb4aa] border border-[#ff5f52]/30">EVENTO</span>
+                        <span id="det-ev-estado" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-[#ffb961]/15 text-[#ffb961] border border-[#ffb961]/30">SIN EMPEZAR</span>
+                    </div>
+                    <h3 id="det-ev-nombre" class="text-xl sm:text-2xl font-headline-md font-extrabold text-white leading-snug">Evento</h3>
+                    <p id="det-ev-horario" class="text-[13px] text-[#a1a1aa] flex flex-wrap items-center gap-2"></p>
+                </div>
+                <div class="flex items-center gap-1 flex-shrink-0">
+                    <button type="button" onclick="editarDesdeDetalle()" class="p-2 hover:bg-white/10 rounded-lg text-[#a1a1aa] hover:text-white transition-colors" title="Editar detalles">
+                        <span class="material-symbols-outlined text-[19px]">edit</span>
+                    </button>
+                    <button type="button" onclick="duplicarDesdeDetalle()" class="p-2 hover:bg-white/10 rounded-lg text-[#a1a1aa] hover:text-white transition-colors" title="Duplicar bloque">
+                        <span class="material-symbols-outlined text-[19px]">content_copy</span>
+                    </button>
+                    <button type="button" onclick="cerrarModalDetalleEvento()" class="p-2 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white transition-colors" title="Cerrar modal (Esc)">
+                        <span class="material-symbols-outlined text-[20px]">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contexto Notion & Energía Somática -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="rounded-xl bg-[#18181d] border border-white/[0.06] p-3.5 space-y-1.5">
+                    <div class="flex items-center gap-1.5 text-[11px] font-label-caps text-[#8e8e93] uppercase">
+                        <span class="material-symbols-outlined text-[15px] text-[#38bdf8]">dataset</span>
+                        <span>Notion &amp; Ubicación</span>
+                    </div>
+                    <p id="det-ev-lugar" class="text-[13px] text-white font-medium truncate">Agenda Sabry</p>
+                    <a id="det-ev-notion-link" href="https://app.notion.com/p/Agenda-Sabry-163a38bb7a6e8301b08d81592cd8c2f2" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[12px] font-bold text-[#ffb4aa] hover:text-white transition-colors">
+                        <span>Abrir espacio</span>
+                        <span class="material-symbols-outlined text-[14px]">north_east</span>
+                    </a>
+                </div>
+                <div class="rounded-xl bg-[#18181d] border border-white/[0.06] p-3.5 space-y-1.5">
+                    <div class="flex items-center gap-1.5 text-[11px] font-label-caps text-[#8e8e93] uppercase">
+                        <span class="material-symbols-outlined text-[15px] text-[#ffb961]">neurology</span>
+                        <span>Energía Requerida</span>
+                    </div>
+                    <p id="det-ev-energia" class="text-[13px] text-white font-semibold">Energía Media-Alta</p>
+                    <p class="text-[11px] text-[#83da85] flex items-start gap-1">
+                        <span class="material-symbols-outlined text-[13px] mt-0.5">self_improvement</span>
+                        <span>Pausa sugerida de 10 min al finalizar para hidratación y estiramiento.</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Checklist Operativo del Bloque -->
+            <div class="rounded-xl bg-[#141418] border border-white/[0.08] p-4 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-[11px] font-label-caps text-[#e2beba] uppercase tracking-widest flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px] text-[#83da85]">checklist</span>
+                        <span>Objetivos &amp; Entregables del Foco</span>
+                    </span>
+                    <span id="det-ev-checklist-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#83da85]/15 text-[#83da85] whitespace-nowrap">0 / 0 completados</span>
+                </div>
+                <div id="det-ev-checklist-items" class="space-y-2"></div>
+                <div class="flex gap-2 pt-1">
+                    <input id="det-ev-checklist-input" type="text" maxlength="100" placeholder="Agregar objetivo o paso concreto..." onkeydown="if (event.key === 'Enter') { event.preventDefault(); agregarItemChecklistDetalle(); }" class="flex-1 min-w-0 bg-[#1c1c1f] border border-white/[0.1] rounded-lg px-3 py-2 text-[13px] text-white placeholder-[#8e8e93] focus:outline-none focus:border-[#ff5f52]" />
+                    <button type="button" onclick="agregarItemChecklistDetalle()" class="flex-shrink-0 whitespace-nowrap px-3 py-2 rounded-lg bg-[#232326] hover:bg-[#2d2d32] text-white text-xs font-bold transition-colors">+ Agregar</button>
+                </div>
+            </div>
+
+            <!-- Notas & Preparación -->
+            <div class="rounded-xl bg-[#18181d] border border-white/[0.06] p-3.5 space-y-1.5">
+                <div class="flex items-center gap-1.5 text-[11px] font-label-caps text-[#8e8e93] uppercase">
+                    <span class="material-symbols-outlined text-[15px] text-[#e2beba]">sticky_note_2</span>
+                    <span>Notas &amp; Preparación Mental</span>
+                </div>
+                <p id="det-ev-notas" class="text-[13px] text-[#e2beba] leading-relaxed">Sin notas adicionales. Priorizá presencia y foco sostenible.</p>
+            </div>
+
+            <!-- Footer Acciones -->
+            <div class="pt-3 border-t border-white/[0.08] flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-2.5">
+                <button type="button" onclick="eliminarDesdeDetalle()" class="w-full sm:w-auto justify-center px-3.5 py-2.5 rounded-xl bg-[#ff5f52]/10 hover:bg-[#ff5f52]/20 border border-[#ff5f52]/30 text-[#ff5f52] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                    <span class="material-symbols-outlined text-[16px]">event_busy</span>
+                    <span>Eliminar evento</span>
+                </button>
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                    <button id="det-ev-btn-posponer" type="button" onclick="posponerEvento30Min()" class="w-full sm:w-auto justify-center px-3.5 py-2.5 rounded-xl bg-[#1c1c1f] hover:bg-[#232326] border border-white/[0.1] text-[#ffb961] text-xs font-bold inline-flex items-center gap-1.5 transition-all">
+                        <span class="material-symbols-outlined text-[16px]">more_time</span>
+                        <span>Posponer 30 min</span>
+                    </button>
+                    <button type="button" onclick="completarEventoDesdeDetalle()" class="w-full sm:w-auto justify-center px-4 py-2.5 rounded-xl bg-[#83da85] hover:bg-[#83da85]/90 text-[#00390e] text-xs font-extrabold inline-flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[16px]">check</span>
+                        <span>Marcar como Completado</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- SPINNER DE ESPERA Y CONFIRMACIÓN NOTION             -->
+    <!-- =================================================== -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarSpinnerNotion()" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl transition-all">Cerrar</button>
+        </div>
+    </div>
+
+    <main class="min-h-screen lg:ml-64">
+        <!-- =================================================== -->
+        <!-- TOP APP BAR -->
+        <!-- =================================================== -->
+        <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">Asistente Sabry</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">AGENDA PERSONAL</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- =================================================== -->
+            <!-- EVENTOS: HOY / MAÑANA -->
+            <!-- =================================================== -->
+            <section class="space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <h2 class="text-label-caps font-label-caps text-primary tracking-widest px-1">EVENTOS</h2>
+                    <div class="flex items-center gap-2.5">
+                        <span id="agenda-hoy-resumen" class="text-[11px] font-semibold bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/20 px-2.5 py-1 rounded-full">0 hoy</span>
+                        <button id="btn-crear-tarea" type="button" onclick="abrirModalCrearTarea()" class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-xs px-3.5 py-2 rounded-xl inline-flex items-center gap-1.5 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>Crear tarea</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Mensaje motivacional estático debajo del título EVENTOS (pedido explícito de Sabrina, HU Notion Épica 2 #8; movido en v4.30) -->
+                <div class="bg-[#111115] rounded-2xl p-5 border border-[#53a759]/30 flex items-start gap-4">
+                    <span class="material-symbols-outlined text-[#53a759] text-xl">directions_walk</span>
+                    <p class="text-[13px] text-[#e2beba] italic leading-relaxed">Linda, si es posible agenda el tiempo de transporte y preparación y si vuelves caminando para que cuente como actividad física 😉</p>
+                </div>
+                <div class="grid grid-cols-1 gap-grid-gutter">
+
+                    <!-- Hoy -->
+                    <article class="glass-card rounded-2xl p-5 sm:p-8 border-l-4 border-l-[#ff5f52] flex flex-col gap-6">
+                        <div class="flex justify-between items-start">
+                            <div class="space-y-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">HOY</p>
+                                <h2 class="text-headline-md font-headline-md text-white">Eventos de hoy</h2>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="total-eventos-hoy-lbl" class="bg-[#ff5f52]/10 text-[#ff5f52] px-3 py-1 rounded-full text-[12px] font-semibold border border-[#ff5f52]/20">0 eventos</span>
+                                <button type="button" onclick="toggleBloque('eventos-hoy')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-eventos-hoy">
+                                    <span id="chevron-eventos-hoy" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="content-eventos-hoy">
+                            <div id="list-eventos-hoy" class="space-y-3">
+                                <!-- Se inyectan las filas dinámicamente -->
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Mañana -->
+                    <article class="glass-card rounded-2xl p-5 sm:p-8 border-l-4 border-l-[#e49102] flex flex-col gap-6">
+                        <div class="flex justify-between items-start">
+                            <div class="space-y-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">MAÑANA</p>
+                                <h2 class="text-headline-md font-headline-md text-white">Eventos de mañana</h2>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="total-eventos-manana-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 eventos</span>
+                                <button type="button" onclick="toggleBloque('eventos-manana')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-eventos-manana">
+                                    <span id="chevron-eventos-manana" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="content-eventos-manana">
+                            <div id="list-eventos-manana" class="space-y-3">
+                                <!-- Se inyectan las filas dinámicamente -->
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Ayer -->
+                    <article class="glass-card rounded-2xl p-5 sm:p-8 border-l-4 border-l-[#00aaff] flex flex-col gap-6">
+                        <div class="flex justify-between items-start">
+                            <div class="space-y-1">
+                                <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">AYER</p>
+                                <h2 class="text-headline-md font-headline-md text-white">Eventos de ayer</h2>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="total-eventos-ayer-lbl" class="bg-[#242426] text-[#8e8e93] px-3 py-1 rounded-full text-[12px] font-semibold">0 eventos</span>
+                                <button type="button" onclick="toggleBloque('eventos-ayer')" class="p-1.5 hover:bg-white/5 rounded-full transition-colors" title="Colapsar/expandir" aria-expanded="true" aria-controls="content-eventos-ayer">
+                                    <span id="chevron-eventos-ayer" class="material-symbols-outlined text-[20px] text-[#8e8e93] transition-transform duration-200">expand_more</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="content-eventos-ayer">
+                            <div id="list-eventos-ayer" class="space-y-3">
+                                <!-- Se inyectan las filas dinámicamente -->
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- Botón de Redirección Oficial a la Agenda de Sabry en Notion -->
+            <section class="flex flex-col sm:flex-row items-center justify-center gap-4 py-4">
+                <a href="https://app.notion.com/p/Agenda-Sabry-163a38bb7a6e8301b08d81592cd8c2f2"
+                   target="_blank"
+                   class="bg-[#c0453b] hover:bg-[#c0453b]/90 text-white font-bold text-[15px] py-3.5 px-8 rounded-xl flex items-center gap-2 transition-all transform active:scale-95 shadow-xl shadow-[#ff5f52]/20 uppercase tracking-wide">
+                    <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                    <span>Ver Agenda en Notion</span>
+                    <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                </a>
+            </section>
+        </div>
+
+        <!-- =================================================== -->
+        <!-- FOOTER -->
+        <!-- =================================================== -->
+        <footer class="w-full pt-10 pb-24 lg:pb-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">dev</span></p>
+                    </div>
+                    <div class="flex flex-wrap gap-x-8 gap-y-2">
+                        <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Sabri Studios &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- =================================================== -->
+    <!-- UTILITARIOS COMPARTIDOS (vanilla, sin bundler) -->
+    <!-- =================================================== -->
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/crear_evento.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
+
+    <!-- =================================================== -->
+    <!-- LÓGICA DE CONTROL DE DATOS Y PARSER DE ESTADOS -->
+    <!-- =================================================== -->
+    <script>
+        // escapeHtml vive en src/utils/dashboard_logic.js; toggleBloque en
+        // src/utils/dom_render.js (testeadas con Jest en tests/unit/) — se
+        // reutilizan acá para mantener la misma codificación visual y el
+        // mismo comportamiento de colapsar/expandir que el resto de la app.
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // 0. Inicializar estado versionado en localStorage (crea o migra el
+            // esquema asistente_sabry:v1.0 si hace falta) — src/utils/src_localStorage_index.js
+            initLocalStorage();
+
+            // 1. Inyectar Relojes de Telemetría
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
+
+            // 2. Renderizar Eventos (Ayer/Hoy/Mañana) — el backend ya descarta
+            // los eventos "FINALIZADO", solo llegan "SIN_EMPEZAR"/"EN_CURSO"
+            renderizarAgendaEventos("eventos-ayer", agendaEventosAyer);
+            renderizarAgendaEventos("eventos-hoy", agendaEventosHoy);
+            renderizarAgendaEventos("eventos-manana", agendaEventosManana);
+            const hoyRes = document.getElementById("agenda-hoy-resumen");
+            if (hoyRes) hoyRes.textContent = `${agendaEventosHoy.length} hoy`;
+        });
+
+        // formatHora y renderizarAgendaEventos viven en src/utils/dom_render.js
+        // desde v4.23 (antes estaban inline acá, sin test) — testeadas en
+        // tests/unit/dom_render.test.js.
+
+        /**
+         * Abre/cierra el menú lateral de navegación
+         */
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = sidebar.classList.contains('-translate-x-full') === false;
+
+            if (isOpen) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            } else {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            }
+        }
+
+        /**
+         * Gatilla animación de refresco al presionar botón en cabecera
+         */
+        // recargarDashboard vive en src/utils/dom_render.js desde v4.24 (antes
+        // inline acá, sin test) — testeada en tests/unit/dom_render.test.js.
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
+
+        // Registro del Service Worker (PWA) — no bloquea el render inicial.
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            });
+        }
+
+        // =================================================== //
+        // CREAR TAREA (SRS-FR-M5-507)                          //
+        // =================================================== //
+        // construirPayloadEvento/construirSolicitudDispatch viven en
+        // src/utils/crear_evento.js (testeadas en tests/unit/crear_evento.test.js,
+        // sin DOM ni red). Acá solo queda el manejo del modal, el token y el fetch.
+
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        // Clave propia, fuera del blob versionado de src_localStorage_index.js:
+        // un secreto no debe viajar con el resto del estado de la app si algún
+        // día se agrega una función de exportar/debuggear ese estado.
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        function obtenerTokenGuardado() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+
+        function guardarTokenCrearTarea() {
+            const token = document.getElementById("ct-token-input").value.trim();
+            if (!token) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, token); } catch (e) {}
+            document.getElementById("ct-token-input").value = "";
+            mostrarVistaFormularioCrearTarea();
+        }
+
+        function cambiarTokenCrearTarea() {
+            try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+            mostrarVistaTokenCrearTarea();
+        }
+
+        function mostrarVistaTokenCrearTarea() {
+            document.getElementById("ct-vista-token").classList.remove("hidden");
+            document.getElementById("form-crear-tarea").classList.add("hidden");
+        }
+
+        function mostrarVistaFormularioCrearTarea() {
+            document.getElementById("ct-vista-token").classList.add("hidden");
+            document.getElementById("form-crear-tarea").classList.remove("hidden");
+        }
+
+        function abrirModalCrearTarea() {
+            document.getElementById("ct-modal-titulo").textContent = "Crear tarea";
+            document.getElementById("ct-page-id").value = "";
+            document.getElementById("form-crear-tarea").reset();
+            document.getElementById("ct-btn-eliminar").classList.add("hidden");
+            document.getElementById("modal-crear-tarea").classList.remove("hidden");
+            document.getElementById("modal-crear-tarea").classList.add("flex");
+            mostrarMensajeCrearTarea("", null);
+
+            if (obtenerTokenGuardado()) {
+                mostrarVistaFormularioCrearTarea();
+            } else {
+                mostrarVistaTokenCrearTarea();
+            }
+        }
+
+        function _obtenerEventoPorPrefijo(prefijo, idx) {
+            const mapa = {
+                "eventos-ayer": agendaEventosAyer,
+                "eventos-hoy": agendaEventosHoy,
+                "eventos-manana": agendaEventosManana,
+            };
+            const lista = mapa[prefijo] || [];
+            return lista[idx] || null;
+        }
+
+        function abrirModalEditarEvento(prefijo, idx) {
+            const item = _obtenerEventoPorPrefijo(prefijo, idx);
+            if (!item || !item.id) return;
+
+            const inicio = extraerFechaYHora(item.inicio);
+            const fin = extraerFechaYHora(item.fin);
+
+            document.getElementById("ct-modal-titulo").textContent = "Editar tarea";
+            document.getElementById("ct-page-id").value = item.id;
+            document.getElementById("ct-nombre").value = item.nombre || "";
+            document.getElementById("ct-fecha").value = inicio.fecha;
+            document.getElementById("ct-hora-inicio").value = inicio.hora;
+            document.getElementById("ct-hora-fin").value = fin.hora;
+            document.getElementById("ct-estado").value = item.estado || "Sin empezar";
+            document.getElementById("ct-tipo").value = item.tipo || "";
+            document.getElementById("ct-prioridad").value = item.prioridad || "";
+            document.getElementById("ct-descripcion").value = item.descripcion || "";
+            document.getElementById("ct-btn-eliminar").classList.remove("hidden");
+
+            document.getElementById("modal-crear-tarea").classList.remove("hidden");
+            document.getElementById("modal-crear-tarea").classList.add("flex");
+            mostrarMensajeCrearTarea("", null);
+
+            if (obtenerTokenGuardado()) {
+                mostrarVistaFormularioCrearTarea();
+            } else {
+                mostrarVistaTokenCrearTarea();
+            }
+        }
+
+        function cerrarModalCrearTarea() {
+            document.getElementById("modal-crear-tarea").classList.add("hidden");
+            document.getElementById("modal-crear-tarea").classList.remove("flex");
+            document.getElementById("form-crear-tarea").reset();
+            document.getElementById("ct-page-id").value = "";
+            document.getElementById("ct-btn-eliminar").classList.add("hidden");
+            mostrarMensajeCrearTarea("", null);
+        }
+
+        let _papeleraTarget = null;
+
+        function confirmarEliminarEvento(prefijo, idx) {
+            const item = _obtenerEventoPorPrefijo(prefijo, idx);
+            if (!item || !item.id) return;
+            _papeleraTarget = { id: item.id, nombre: item.nombre || "esta tarea" };
+            document.getElementById("papelera-texto").textContent = `¿Deseas mandar "${_papeleraTarget.nombre}" a la papelera de Notion?`;
+            document.getElementById("modal-confirmar-papelera").classList.remove("hidden");
+            document.getElementById("modal-confirmar-papelera").classList.add("flex");
+        }
+
+        function confirmarEliminarDesdeModal() {
+            const pageId = document.getElementById("ct-page-id").value.trim();
+            const nombre = document.getElementById("ct-nombre").value.trim() || "esta tarea";
+            if (!pageId) return;
+            _papeleraTarget = { id: pageId, nombre };
+            document.getElementById("papelera-texto").textContent = `¿Deseas mandar "${nombre}" a la papelera de Notion?`;
+            document.getElementById("modal-confirmar-papelera").classList.remove("hidden");
+            document.getElementById("modal-confirmar-papelera").classList.add("flex");
+        }
+
+        function cerrarModalPapelera() {
+            document.getElementById("modal-confirmar-papelera").classList.add("hidden");
+            document.getElementById("modal-confirmar-papelera").classList.remove("flex");
+            _papeleraTarget = null;
+        }
+
+        async function ejecutarEnvioPapelera() {
+            if (!_papeleraTarget) return;
+            const target = _papeleraTarget;
+            cerrarModalPapelera();
+            cerrarModalCrearTarea();
+            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: target.id });
+        }
+
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+
+        function cerrarSpinnerNotion() {
+            document.getElementById("modal-spinner-notion").classList.add("hidden");
+            document.getElementById("modal-spinner-notion").classList.remove("flex");
+        }
+
+        async function ejecutarEscrituraConSpinner(accion, datos) {
+            const token = obtenerTokenGuardado();
+            if (!token) {
+                abrirModalCrearTarea();
+                mostrarVistaTokenCrearTarea();
+                return;
+            }
+
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, datos, token);
+                const respuesta = await fetch(url, options);
+
+                if (respuesta.status === 401 || respuesta.status === 404) {
+                    cerrarSpinnerNotion();
+                    abrirModalCrearTarea();
+                    mostrarMensajeCrearTarea("El token no es válido o no tiene permiso sobre este repo. Volvé a cargarlo.", "error");
+                    cambiarTokenCrearTarea();
+                    return;
+                }
+                if (respuesta.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${respuesta.status}). Probá de nuevo en un rato.`);
+                    return;
+                }
+
+                const confirmacion = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER,
+                    repo: GITHUB_REPO,
+                    token,
+                    workflowFile: WORKFLOW_NOTION_WRITE,
+                    dispatchedAfterMs,
+                });
+
+                if (confirmacion.ok) {
+                    mostrarSpinnerNotion("ok", "¡Notion actualizado!", "Recargando la agenda...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", confirmacion.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub. Revisá tu conexión e intentá de nuevo.");
+            }
+        }
+
+        function mostrarMensajeCrearTarea(texto, tipo) {
+            const el = document.getElementById("ct-mensaje");
+            if (!texto) {
+                el.classList.add("hidden");
+                el.textContent = "";
+                return;
+            }
+            el.textContent = texto;
+            el.className = "text-[13px] " + (tipo === "error" ? "text-[#ff5f52]" : tipo === "exito" ? "text-[#53a759]" : "text-[#8e8e93]");
+        }
+
+        async function manejarSubmitCrearTarea(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const pageId = form.pageId.value.trim();
+            const resultado = construirPayloadEvento({
+                pageId,
+                nombre: form.nombre.value,
+                fecha: form.fecha.value,
+                horaInicio: form.horaInicio.value,
+                horaFin: form.horaFin.value,
+                estado: form.estado.value,
+                tipoTarea: form.tipoTarea.value,
+                prioridad: form.prioridad.value,
+                descripcion: form.descripcion.value,
+            });
+
+            if (!resultado.ok) {
+                mostrarMensajeCrearTarea(resultado.error, "error");
+                return false;
+            }
+
+            if (!obtenerTokenGuardado()) {
+                mostrarVistaTokenCrearTarea();
+                return false;
+            }
+
+            const accion = pageId ? "actualizar_evento" : "crear_evento";
+            cerrarModalCrearTarea();
+            await ejecutarEscrituraConSpinner(accion, resultado.payload);
+            return false;
+        }
+
+        // =================================================== //
+        // DETALLE DE EVENTO SELECCIONADO (STITCH v4.86)       //
+        // =================================================== //
+        const AGENDA_CHECKLIST_KEY = "asistente_sabry:agenda_checklist_v1";
+        let _detalleEventoTarget = null;
+
+        function _leerChecklistsAgenda() {
+            try { return JSON.parse(localStorage.getItem(AGENDA_CHECKLIST_KEY) || "{}") || {}; } catch (e) { return {}; }
+        }
+
+        function _guardarChecklistsAgenda(mapa) {
+            try { localStorage.setItem(AGENDA_CHECKLIST_KEY, JSON.stringify(mapa)); } catch (e) {}
+        }
+
+        function _calcularDuracionMin(inicioIso, finIso) {
+            if (!inicioIso || !finIso) return null;
+            const t1 = Date.parse(inicioIso);
+            const t2 = Date.parse(finIso);
+            if (!Number.isFinite(t1) || !Number.isFinite(t2) || t2 <= t1) return null;
+            return Math.round((t2 - t1) / 60000);
+        }
+
+        function _renderChecklistDetalle(eventKey) {
+            const mapa = _leerChecklistsAgenda();
+            const items = Array.isArray(mapa[eventKey]) ? mapa[eventKey] : [];
+            const hechos = items.filter((i) => i.hecho).length;
+            document.getElementById("det-ev-checklist-badge").textContent = `${hechos} / ${items.length} completados`;
+            const cont = document.getElementById("det-ev-checklist-items");
+            if (items.length === 0) {
+                cont.innerHTML = `<p class="text-[12px] text-[#8e8e93] italic">Sin entregables cargados aún. Agregá micro-objetivos para este bloque.</p>`;
+                return;
+            }
+            cont.innerHTML = items.map((it, idx) => `
+                <div class="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-[#1c1c1f] border border-white/[0.06]">
+                    <label class="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer">
+                        <input type="checkbox" ${it.hecho ? "checked" : ""} onchange="toggleItemChecklistDetalle(${idx})" class="rounded border-white/20 bg-[#131313] text-[#83da85] focus:ring-[#83da85]" />
+                        <span class="text-[13px] ${it.hecho ? "line-through text-[#8e8e93]" : "text-white"} truncate">${escapeHtml(it.texto || "")}</span>
+                    </label>
+                    <button type="button" onclick="eliminarItemChecklistDetalle(${idx})" class="text-[#8e8e93] hover:text-[#ff5f52] p-1 rounded" title="Quitar">
+                        <span class="material-symbols-outlined text-[15px]">close</span>
+                    </button>
+                </div>
+            `).join("");
+        }
+
+        function abrirModalDetalleEvento(prefijo, idx) {
+            const item = _obtenerEventoPorPrefijo(prefijo, idx);
+            if (!item) return;
+            _detalleEventoTarget = { prefijo, idx, item, key: item.id || item.nombre || `${prefijo}:${idx}` };
+
+            document.getElementById("det-ev-tipo").textContent = (item.tipo || "EVENTO").toUpperCase();
+            document.getElementById("det-ev-estado").textContent = (item.estado || "SIN EMPEZAR").toUpperCase();
+            document.getElementById("det-ev-nombre").textContent = item.nombre || "Sin nombre";
+
+            const hIni = formatHora(item.inicio);
+            const hFin = formatHora(item.fin);
+            const dur = _calcularDuracionMin(item.inicio, item.fin);
+            const fechaBase = extraerFechaYHora(item.inicio).fecha || "Fecha por definir";
+            document.getElementById("det-ev-horario").innerHTML = `
+                <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">schedule</span> ${escapeHtml(hIni)} – ${escapeHtml(hFin)}${dur ? ` (${dur} min)` : ""}</span>
+                <span>•</span>
+                <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">calendar_today</span> ${escapeHtml(fechaBase)}</span>
+            `;
+
+            document.getElementById("det-ev-lugar").textContent = item.lugar || "Agenda Sabry • Notion";
+            const notionLink = document.getElementById("det-ev-notion-link");
+            notionLink.href = item.url || "https://app.notion.com/p/Agenda-Sabry-163a38bb7a6e8301b08d81592cd8c2f2";
+
+            const prio = (item.prioridad || "").toLowerCase();
+            const energiaTxt = prio.includes("alta") ? "Energía Alta (Foco Profundo)"
+                : prio.includes("baja") ? "Energía Baja / Liviana"
+                : "Energía Media-Alta";
+            document.getElementById("det-ev-energia").textContent = energiaTxt;
+            document.getElementById("det-ev-notas").textContent = item.descripcion || "Sin notas adicionales. Priorizá presencia y foco sostenible.";
+
+            const btnPosponer = document.getElementById("det-ev-btn-posponer");
+            btnPosponer.classList.toggle("hidden", !item.inicio || !item.inicio.includes("T"));
+
+            _renderChecklistDetalle(_detalleEventoTarget.key);
+            const modal = document.getElementById("modal-detalle-evento");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function cerrarModalDetalleEvento() {
+            const modal = document.getElementById("modal-detalle-evento");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+            _detalleEventoTarget = null;
+        }
+
+        function agregarItemChecklistDetalle() {
+            if (!_detalleEventoTarget) return;
+            const inp = document.getElementById("det-ev-checklist-input");
+            const texto = (inp.value || "").trim();
+            if (!texto) return;
+            const mapa = _leerChecklistsAgenda();
+            const lista = Array.isArray(mapa[_detalleEventoTarget.key]) ? mapa[_detalleEventoTarget.key] : [];
+            lista.push({ texto, hecho: false });
+            mapa[_detalleEventoTarget.key] = lista;
+            _guardarChecklistsAgenda(mapa);
+            inp.value = "";
+            _renderChecklistDetalle(_detalleEventoTarget.key);
+        }
+
+        function toggleItemChecklistDetalle(idx) {
+            if (!_detalleEventoTarget) return;
+            const mapa = _leerChecklistsAgenda();
+            const lista = Array.isArray(mapa[_detalleEventoTarget.key]) ? mapa[_detalleEventoTarget.key] : [];
+            if (!lista[idx]) return;
+            lista[idx].hecho = !lista[idx].hecho;
+            mapa[_detalleEventoTarget.key] = lista;
+            _guardarChecklistsAgenda(mapa);
+            _renderChecklistDetalle(_detalleEventoTarget.key);
+        }
+
+        function eliminarItemChecklistDetalle(idx) {
+            if (!_detalleEventoTarget) return;
+            const mapa = _leerChecklistsAgenda();
+            const lista = Array.isArray(mapa[_detalleEventoTarget.key]) ? mapa[_detalleEventoTarget.key] : [];
+            lista.splice(idx, 1);
+            mapa[_detalleEventoTarget.key] = lista;
+            _guardarChecklistsAgenda(mapa);
+            _renderChecklistDetalle(_detalleEventoTarget.key);
+        }
+
+        function editarDesdeDetalle() {
+            if (!_detalleEventoTarget) return;
+            const { prefijo, idx } = _detalleEventoTarget;
+            cerrarModalDetalleEvento();
+            abrirModalEditarEvento(prefijo, idx);
+        }
+
+        function duplicarDesdeDetalle() {
+            if (!_detalleEventoTarget) return;
+            const { item } = _detalleEventoTarget;
+            const inicio = extraerFechaYHora(item.inicio);
+            const fin = extraerFechaYHora(item.fin);
+            cerrarModalDetalleEvento();
+            abrirModalCrearTarea();
+            document.getElementById("ct-nombre").value = `${item.nombre || ""} (copia)`.trim();
+            document.getElementById("ct-fecha").value = inicio.fecha || "";
+            document.getElementById("ct-hora-inicio").value = inicio.hora || "";
+            document.getElementById("ct-hora-fin").value = fin.hora || "";
+            document.getElementById("ct-estado").value = "Sin empezar";
+            document.getElementById("ct-tipo").value = item.tipo || "";
+            document.getElementById("ct-prioridad").value = item.prioridad || "";
+            document.getElementById("ct-descripcion").value = item.descripcion || "";
+        }
+
+        function eliminarDesdeDetalle() {
+            if (!_detalleEventoTarget) return;
+            const { prefijo, idx } = _detalleEventoTarget;
+            cerrarModalDetalleEvento();
+            confirmarEliminarEvento(prefijo, idx);
+        }
+
+        function _sumarMinutosHora(horaStr, deltaMin) {
+            if (!horaStr || !/^\d{2}:\d{2}$/.test(horaStr)) return "";
+            const [hh, mm] = horaStr.split(":").map(Number);
+            const total = Math.min(23 * 60 + 59, hh * 60 + mm + deltaMin);
+            const nh = String(Math.floor(total / 60)).padStart(2, "0");
+            const nm = String(total % 60).padStart(2, "0");
+            return `${nh}:${nm}`;
+        }
+
+        async function posponerEvento30Min() {
+            if (!_detalleEventoTarget) return;
+            const { item } = _detalleEventoTarget;
+            const inicio = extraerFechaYHora(item.inicio);
+            const fin = extraerFechaYHora(item.fin);
+            const nuevaIni = _sumarMinutosHora(inicio.hora, 30);
+            const nuevaFin = fin.hora ? _sumarMinutosHora(fin.hora, 30) : "";
+            const res = construirPayloadEvento({
+                pageId: item.id,
+                nombre: item.nombre || "",
+                fecha: inicio.fecha,
+                horaInicio: nuevaIni,
+                horaFin: nuevaFin,
+                estado: item.estado || "Sin empezar",
+                tipoTarea: item.tipo || "",
+                prioridad: item.prioridad || "",
+                descripcion: item.descripcion || "",
+            });
+            if (!res.ok) return;
+            cerrarModalDetalleEvento();
+            await ejecutarEscrituraConSpinner("actualizar_evento", res.payload);
+        }
+
+        async function completarEventoDesdeDetalle() {
+            if (!_detalleEventoTarget) return;
+            const { item } = _detalleEventoTarget;
+            const inicio = extraerFechaYHora(item.inicio);
+            const fin = extraerFechaYHora(item.fin);
+            const res = construirPayloadEvento({
+                pageId: item.id,
+                nombre: item.nombre || "",
+                fecha: inicio.fecha,
+                horaInicio: inicio.hora,
+                horaFin: fin.hora,
+                estado: "Hecha",
+                tipoTarea: item.tipo || "",
+                prioridad: item.prioridad || "",
+                descripcion: item.descripcion || "",
+            });
+            if (!res.ok) return;
+            cerrarModalDetalleEvento();
+            await ejecutarEscrituraConSpinner("actualizar_evento", res.payload);
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                const det = document.getElementById("modal-detalle-evento");
+                if (det && !det.classList.contains("hidden")) cerrarModalDetalleEvento();
+            }
+        });
+    </script>
+    <script src="./src/utils/somatic_shell.js"></script>
+</body>
+</html>

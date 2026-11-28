@@ -1,0 +1,832 @@
+﻿<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Hábitos y disciplina — AsistenteSabry</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0e0e0e">
+    <link rel="icon" href="./grafica/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./grafica/icons/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #08080a;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+        .status-row {
+            background: #18181d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .status-row:hover { background: #1f1f26; border-color: rgba(255, 255, 255, 0.12); }
+        #sidebar { transition: transform 0.3s ease; }
+        .spin-animation { animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden antialiased">
+
+    <script>
+        const timestampLocalStr = "28/11/2026 00:53:04";
+        const appVersionStr = "v4.95";
+        const timestampNextStr = "28/11/2026 01:53:04";
+        const timestampServerStr = "28/11/2026 03:53:04";
+
+        const habitosRegistros = [{"id": "426a38bb-7a6e-8139-ad09-fac7bf72bf67", "nombre": "Escucha activa (Regla de los 3 segundos)", "modulo": "🔥 Hábito", "estado": "Activo", "categoria": "🧠 Mente & Foco", "frecuencia_meta": "Semanal / 3 pasos", "racha_progreso": 0, "ultima_fecha": null, "nota": "1) Pausar 3s tras el punto de la otra persona. 2) Parafrasear antes de responder: \nPara parafrasear a otra persona (en el contexto de la comunicación interpersonal), debes reformular lo que dijo con tus propias palabras para confirmar que entendiste correctamente su mensaje o emoción, sin agregar juicios ni nueva información.\n\nEl proceso efectivo sigue estos pasos:\n\nEscucha activamente: Presta atención completa hasta que la otra persona termine de hablar, sin planificar tu respuesta mientras ella habla. ⁠\nIdentifica el punto central: Detecta la idea principal o la emoción detrás de lo dicho, no cada detalle secundario. ⁠\nReformula: Usa frases introductorias como \"Lo que entiendo es que...\", \"Suena como si dijeras que...\" o \"Así que sientes q\n3) Detectar si respondo para ganar o comprender.", "historial_fechas": "", "ejercicios_vinculados_ids": ["426a38bb-7a6e-8112-a6fd-e6b10cdfad73"]}, {"id": "424a38bb-7a6e-8123-9cf5-f1b567af1175", "nombre": "Una respiración al día 4-7-8", "modulo": "🔥 Hábito", "estado": "Activo", "categoria": "🧠 Mente & Foco", "frecuencia_meta": "Diario/1", "racha_progreso": 3, "ultima_fecha": "2026-11-27", "nota": "", "historial_fechas": "{\"done\":[\"2026-11-27\"],\"frozen\":[]}", "ejercicios_vinculados_ids": []}];
+        const formacionesRegistros = [{"id": "422a38bb-7a6e-80a3-9307-c648c1d803ed", "tema": "Hay equipo: Introducción a la ciberseguridad", "estado": "Terminado", "plataforma": "Fundacion Sadowsky", "tematica": ["Cybersecurity"], "inicio": "2026-10-01", "fin": "2026-11-30", "seccion_onenote": ""}, {"id": "371a38bb-7a6e-8037-9cbc-decf346d39fb", "tema": "Bootcamp de Comunidad Dojo", "estado": "Terminado", "plataforma": "Grabaciones de Zoom", "tematica": ["Cybersecurity"], "inicio": null, "fin": null, "seccion_onenote": ""}, {"id": "346a38bb-7a6e-80bf-82b8-daa11414e8e9", "tema": "Como crear y lanzar una empresa", "estado": "Sin empezar", "plataforma": "Santander Open Academy", "tematica": ["Empresa"], "inicio": "2026-05-02", "fin": "2026-05-31", "seccion_onenote": ""}, {"id": "2f3a38bb-7a6e-806d-90e0-ffbf381a090d", "tema": "Introducción al mundo web", "estado": "Sin empezar", "plataforma": "Educación IT", "tematica": ["Desarrollo web"], "inicio": null, "fin": null, "seccion_onenote": ""}, {"id": "1e8a38bb-7a6e-8077-bb1d-d49984bbb39e", "tema": "API REST", "estado": "Terminado", "plataforma": "Ed team", "tematica": ["API"], "inicio": null, "fin": null, "seccion_onenote": "API REST  (Vista web)"}, {"id": "1e8a38bb-7a6e-80c9-965a-c9af787ecc09", "tema": "Ciberseguridad", "estado": "Terminado", "plataforma": "CoderHouse", "tematica": ["Cybersecurity"], "inicio": null, "fin": null, "seccion_onenote": "Ciberseguridad  (Vista web)"}, {"id": "1e8a38bb-7a6e-804c-a32a-d23c85bcf260", "tema": "PO Fundamentals", "estado": "Terminado", "plataforma": "Kinetic Trainning Hub", "tematica": ["Product ownership"], "inicio": null, "fin": null, "seccion_onenote": "Curso PO Fundamentals  (Vista web)"}, {"id": "1e8a38bb-7a6e-8070-aa7e-d5d5500bda1d", "tema": "BPMN", "estado": "Terminado", "plataforma": "Kinetic Trainning Hub", "tematica": ["BPMN"], "inicio": null, "fin": null, "seccion_onenote": "Curso BPMN  (Vista web)"}, {"id": "1e8a38bb-7a6e-8038-bcde-c46a78843d75", "tema": "Análisis funcional", "estado": "Terminado", "plataforma": "Educación IT", "tematica": ["Análisis funcional"], "inicio": null, "fin": null, "seccion_onenote": "Analisis Funcional  (Vista web)"}, {"id": "1e8a38bb-7a6e-8049-82af-f990cc234f33", "tema": "Ingles SAINT THOMAS", "estado": "Terminado", "plataforma": "Instituto S.T", "tematica": ["Inglés"], "inicio": null, "fin": null, "seccion_onenote": "Sección en OneNote"}, {"id": "1e8a38bb-7a6e-8018-93d9-d919d62513ce", "tema": "AF By Oscar Mendez  ", "estado": "Terminado", "plataforma": "Oscar Méndez", "tematica": ["Análisis funcional"], "inicio": null, "fin": null, "seccion_onenote": "Sección en OneNote"}, {"id": "1e8a38bb-7a6e-804b-b32c-ed2a888dc03d", "tema": "Gestión y organización del tiempo", "estado": "Terminado", "plataforma": "Identidad Argentina", "tematica": ["Gestión del tiempo"], "inicio": null, "fin": null, "seccion_onenote": "Sección en OneNote"}, {"id": "174a38bb-7a6e-8052-b6c9-faebc6101bfc", "tema": "Introducción a la ciberseguridad", "estado": "En pausa", "plataforma": "Educación IT", "tematica": ["Cybersecurity"], "inicio": null, "fin": null, "seccion_onenote": ""}, {"id": "21cbaddc-0d04-4611-9736-6a1b856b9593", "tema": "Curso de autoconocimiento Flor C", "estado": "En pausa", "plataforma": "Youtube", "tematica": ["Autoconocimiento"], "inicio": null, "fin": null, "seccion_onenote": ""}, {"id": "c168fadb-f046-41a4-b1cc-73e1a9175f87", "tema": "Digital Mindset", "estado": "En curso", "plataforma": "Digital House", "tematica": ["Management"], "inicio": "2026-04-17", "fin": "2026-04-30", "seccion_onenote": ""}];
+        const habitosOpciones = {"modulos": ["🔥 Hábito", "🎓 Formación / Curso"], "estados": ["Activo", "Por empezar", "En progreso", "En pausa", "Completado"], "categorias": ["🌅 Mañana", "🌙 Noche", "🧠 Mente & Foco", "💪 Cuerpo & Salud", "💼 Carrera & Tech"], "estados_formacion": ["Sin empezar", "En curso", "En pausa", "Terminado"], "plataformas_formacion": ["Youtube", "Educación IT", "Kinetic Trainning Hub", "Identidad Argentina", "Oscar Méndez", "Ed team", "Instituto S.T", "CoderHouse", "Digital House", "Santander Open Academy", "Grabaciones de Zoom", "Fundacion Sadowsky"], "tematicas_formacion": ["Autoconocimiento", "Análisis funcional", "Gestión del tiempo", "Inglés", "BPMN", "Product ownership", "Cybersecurity", "API", "Management", "Desarrollo web", "Empresa"]};
+    </script>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
+        <div class="flex items-center gap-3 mb-5 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.95</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span>Agenda personal</span>
+            </a>
+            <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">alarm</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">check_box</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="finanzas.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                <span>Finanzas</span>
+            </a>
+            <a href="salud.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Salud</span>
+            </a>
+            <a href="ocio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_library</span>
+                <span>Ocio</span>
+            </a>
+            <a href="gestion-emocional.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">psychology</span>
+                <span>Gestión emocional</span>
+            </a>
+            <a href="relaciones-y-limites.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">shield</span>
+                <span>Relaciones y límites</span>
+            </a>
+            <a href="desarrollo-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">trending_up</span>
+                <span>Desarrollo personal</span>
+            </a>
+            <a href="habitos-y-disciplina.html" class="flex items-center gap-3 px-4 py-2 bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/30 rounded-xl font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                <span>Hábitos y disciplina</span>
+            </a>
+        </nav>
+        <div class="pt-3 mt-3 border-t border-white/[0.08]">
+            <a href="https://contras.ai.studio/" target="_blank" rel="noopener" class="flex items-center gap-2 px-3 py-1.5 text-[#ffb961] hover:bg-[#ffb961]/10 rounded-lg transition-all text-[11px] font-semibold">
+                <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                <span>Contras AI Studio</span>
+            </a>
+        </div>
+
+        <div class="pt-3 mt-3 border-t border-white/[0.08] flex items-center gap-3 px-2">
+            <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
+            <div class="min-w-0">
+                <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.95</p>
+            </div>
+        </div>
+    </aside>
+
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <main class="min-h-screen lg:ml-64">
+        <!-- TOP APP BAR -->
+        <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">Asistente Sabry</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">HÁBITOS Y DISCIPLINA</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="https://app.notion.com/p/422a38bb7a6e805bb6feccf2829c847d?v=422a38bb7a6e804fa319000c0f326027&source=copy_link" target="_blank" rel="noopener" class="hidden sm:inline-flex items-center gap-1.5 bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-xs px-3 py-1.5 rounded-lg transition-all">
+                        <span>Ver en Notion</span>
+                        <span class="material-symbols-outlined text-[15px]">open_in_new</span>
+                    </a>
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- CABECERA -->
+            <section class="flex flex-wrap justify-between items-end gap-4">
+                <div class="space-y-1.5">
+                    <h1 class="font-display-lg text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Hábitos y Disciplina</h1>
+                    <p class="text-[13px] text-[#8e8e93]">Disciplina compasiva, micro-hábitos sostenibles y tablero de formaciones.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="abrirModalHabito('🔥 Hábito')" class="bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">add</span>
+                        <span>Nuevo Hábito</span>
+                    </button>
+                    <button type="button" onclick="abrirModalFormacion()" class="bg-[#00aaff]/15 hover:bg-[#00aaff]/25 border border-[#00aaff]/40 text-[#00aaff] font-bold text-[13px] px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">school</span>
+                        <span>Nueva Formación</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 4 KPIs -->
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#ff5f52]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">HÁBITOS ACTIVOS</p>
+                    <p id="hab-kpi-activos" class="text-2xl font-extrabold text-white">0</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#ffb961]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">RACHA MÁXIMA</p>
+                    <p id="hab-kpi-racha" class="text-2xl font-extrabold text-[#ffb961]">0 días</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#00aaff]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">FORMACIONES EN CURSO</p>
+                    <p id="hab-kpi-curso" class="text-2xl font-extrabold text-[#00aaff]">0</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#83da85]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] tracking-widest mb-1">COMPLETADAS</p>
+                    <p id="hab-kpi-comp" class="text-2xl font-extrabold text-[#83da85]">0</p>
+                </div>
+            </section>
+
+            <!-- SUBMÓDULO 1: HÁBITOS Y DISCIPLINA -->
+            <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#ff5f52] space-y-5">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#ff5f52] tracking-widest">01 · DISCIPLINA COMPASIVA</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Hábitos Diarios &amp; Rachas</h2>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="hab-hechos-hoy-lbl" class="text-xs px-3 py-1 rounded-full bg-[#83da85]/15 text-[#83da85] border border-[#83da85]/30 font-semibold">0/0 hechos hoy</span>
+                        <span id="hab-count-lbl" class="text-xs px-3 py-1 rounded-full bg-[#ff5f52]/10 text-[#ff5f52] font-semibold">0 hábitos</span>
+                    </div>
+                </div>
+                <div id="list-habitos" class="space-y-3"></div>
+                <div class="pt-4 border-t border-white/[0.06] space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <p class="text-[11px] font-label-caps text-[#83da85] tracking-widest">MATRIZ DE RACHAS · 52 SEMANAS</p>
+                            <p class="text-xs text-[#a1a1aa]">Constancia anual y protocolo de congelación compasiva en días de baja energía.</p>
+                        </div>
+                        <button id="btn-congelar-racha" type="button" onclick="toggleCongelacionCompasiva()" class="px-3 py-1.5 rounded-xl bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/35 text-[#38bdf8] text-xs font-bold transition-all">
+                            ❄️ Congelación Compasiva
+                        </button>
+                    </div>
+                    <div id="hab-heatmap-anual" class="grid gap-1 overflow-x-auto pb-1" style="grid-template-columns: repeat(26, minmax(10px, 1fr));"></div>
+                </div>
+            </section>
+
+            <!-- SUBMÓDULO 2: APRENDIZAJE CONTINUO (KANBAN FORMACIONES) -->
+            <section class="glass-card rounded-2xl p-8 border-l-4 border-l-[#00aaff] space-y-5">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#00aaff] tracking-widest">02 · APRENDIZAJE CONTINUO · MIS CURSOS</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Tablero de Formaciones y Cursos</h2>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="https://app.notion.com/p/1e8a38bb7a6e80c295e8e8d1e55b54b7?v=1e8a38bb7a6e801294fb000cc4496be1&source=copy_link" target="_blank" rel="noopener" class="bg-[#1c1c1f] hover:bg-[#232326] border border-[#232326] text-[#e5e2e1] font-semibold text-xs px-3 py-1.5 rounded-lg inline-flex items-center gap-1">
+                            <span>Ver Mis cursos</span>
+                            <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                        </a>
+                        <span id="form-count-lbl" class="text-xs px-3 py-1 rounded-full bg-[#00aaff]/10 text-[#00aaff] font-semibold">0 formaciones</span>
+                    </div>
+                </div>
+                <div id="kanban-formaciones" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+            </section>
+        </div>
+
+        <footer class="w-full py-10 mt-section-margin border-t border-[#232326] bg-[#0e0e0e]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end px-container-padding max-w-[1200px] mx-auto gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#ff5f52] shadow-[0_0_8px_#ff5f52] animate-pulse"></span>
+                        <p class="text-[13px] text-[#8e8e93]">GitHub Pages Release: <span id="footer-version" class="font-bold text-white">dev</span></p>
+                    </div>
+                    <div class="flex flex-wrap gap-x-8 gap-y-2">
+                        <span class="text-[#8e8e93] text-[13px] font-semibold">Dashboard de uso personal</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Sabri Studios &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL HÁBITO / FORMACIÓN -->
+    <div id="modal-habito" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-habito')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-lg my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="hab-modal-titulo" class="text-headline-md font-headline-md text-white">Nuevo registro</h3>
+                <button type="button" onclick="cerrarModal('modal-habito')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-habito" class="space-y-4" onsubmit="return manejarSubmitHabito(event)">
+                <input id="hab-page-id" type="hidden" value="" />
+                <div>
+                    <label for="hab-nombre" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Nombre *</label>
+                    <input id="hab-nombre" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="hab-modulo" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Módulo</label>
+                        <select id="hab-modulo" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                    <div>
+                        <label for="hab-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
+                        <select id="hab-estado" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label for="hab-categoria" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Categoría</label>
+                        <select id="hab-categoria" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                    <div>
+                        <label for="hab-racha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Racha / %</label>
+                        <input id="hab-racha" type="number" min="0" step="1" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div>
+                        <label for="hab-fecha" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Última fecha</label>
+                        <input id="hab-fecha" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-1.5">
+                        <label for="hab-frecuencia" class="block text-[12px] font-semibold text-[#8e8e93]">Frecuencia / Meta</label>
+                        <button type="button" onclick="abrirFormacionEnVueloDesdeHabito()" class="text-[11px] font-bold text-[#00aaff] hover:underline flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">add_circle</span>
+                            <span>Crear formación en vuelo</span>
+                        </button>
+                    </div>
+                    <input id="hab-frecuencia" type="text" maxlength="120" placeholder="Ej. Diario · 5 min / 12 módulos" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div>
+                    <label for="hab-nota" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Micro-hábito / Nota</label>
+                    <textarea id="hab-nota" rows="2" maxlength="800" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></textarea>
+                </div>
+                <p id="hab-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button id="hab-btn-eliminar" type="button" onclick="confirmarEliminarHabito()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl" title="Mandar a papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
+                    <button type="button" onclick="cerrarModal('modal-habito')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL FORMACIÓN / MIS CURSOS -->
+    <div id="modal-formacion" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto" onclick="cerrarModal('modal-formacion')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-lg my-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="form-modal-titulo" class="text-headline-md font-headline-md text-white">Nueva formación</h3>
+                <button type="button" onclick="cerrarModal('modal-formacion')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="form-formacion" class="space-y-4" onsubmit="return manejarSubmitFormacion(event)">
+                <input id="form-page-id" type="hidden" value="" />
+                <div>
+                    <label for="form-tema" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Tema *</label>
+                    <input id="form-tema" type="text" required maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="form-estado" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Estado</label>
+                        <select id="form-estado" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                    <div>
+                        <label for="form-plataforma" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Plataforma</label>
+                        <select id="form-plataforma" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]"></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="form-inicio" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Inicio (Duración)</label>
+                        <input id="form-inicio" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                    <div>
+                        <label for="form-fin" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Fin (Duración)</label>
+                        <input id="form-fin" type="date" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                    </div>
+                </div>
+                <div>
+                    <label for="form-onenote" class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Sección OneNote</label>
+                    <input id="form-onenote" type="text" maxlength="200" class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+                </div>
+                <div>
+                    <label class="block text-[12px] font-semibold text-[#8e8e93] mb-1.5">Temática</label>
+                    <div id="form-tematica-list" class="max-h-36 overflow-y-auto bg-[#1c1c1f] border border-[#232326] rounded-lg p-2.5 grid grid-cols-1 sm:grid-cols-2 gap-1.5"></div>
+                </div>
+                <p id="form-mensaje" class="text-[13px] hidden"></p>
+                <div class="flex gap-3 pt-1">
+                    <button id="form-btn-eliminar" type="button" onclick="confirmarEliminarFormacion()" class="hidden bg-[#ff5f52]/15 hover:bg-[#ff5f52]/25 text-[#ff5f52] font-semibold text-[14px] px-4 py-3 rounded-xl" title="Mandar a papelera">
+                        <span class="material-symbols-outlined text-[18px] align-middle">delete</span>
+                    </button>
+                    <button type="button" onclick="cerrarModal('modal-formacion')" class="flex-1 bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-3 rounded-xl">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-[#00aaff] hover:bg-[#00aaff]/90 text-white font-bold text-[14px] py-3 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TOKEN GITHUB -->
+    <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="cerrarModal('modal-token-notion')">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center">
+                <h3 class="text-headline-md font-headline-md text-white">Configurar token de GitHub</h3>
+                <button type="button" onclick="cerrarModal('modal-token-notion')" class="p-1.5 hover:bg-white/5 rounded-full text-[#8e8e93]"><span class="material-symbols-outlined text-[20px]">close</span></button>
+            </div>
+            <input id="hab-token-input" type="password" autocomplete="off" placeholder="Pegá tu token..." class="w-full bg-[#1c1c1f] border border-[#232326] rounded-lg px-3 py-2.5 text-white text-[14px]" />
+            <button type="button" onclick="guardarTokenHabitos()" class="w-full bg-[#ff5f52] hover:bg-[#ff5f52]/90 text-white font-bold text-[14px] py-3 rounded-xl">Guardar token</button>
+        </div>
+    </div>
+
+    <!-- SPINNER CONFIRMACIÓN -->
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarModal('modal-spinner-notion')" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
+    <script src="./src/utils/habitos_logic.js"></script>
+
+    <script>
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        function hoyLocalISO() {
+            const d = new Date();
+            const p = (n) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+        }
+
+        function obtenerTokenGuardado() {
+            try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; }
+        }
+
+        function _poblarSelect(id, ops, val) {
+            const el = document.getElementById(id);
+            el.innerHTML = (ops || []).map((o) => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join("");
+            if (val) el.value = val;
+        }
+
+        function renderizarHabitosYDisciplina() {
+            const habitos = (habitosRegistros || []).filter((x) => !x.modulo || (x.modulo || "").includes("Hábito"));
+            const formaciones = formacionesRegistros || [];
+            const res = calcularResumenHabitos(habitos, formaciones);
+            document.getElementById("hab-kpi-activos").textContent = String(res.habitosActivos);
+            document.getElementById("hab-kpi-racha").textContent = `${res.rachaMaxima} días`;
+            document.getElementById("hab-kpi-curso").textContent = String(res.formacionesEnCurso);
+            document.getElementById("hab-kpi-comp").textContent = String(res.formacionesCompletadas);
+
+            const hoyIso = hoyLocalISO();
+            const hechosHoyCount = habitos.filter((h) => estaHabitoHechoHoy(h, hoyIso)).length;
+            const hechosEl = document.getElementById("hab-hechos-hoy-lbl");
+            if (hechosEl) hechosEl.textContent = `${hechosHoyCount}/${habitos.length} hechos hoy`;
+
+            document.getElementById("hab-count-lbl").textContent = `${habitos.length} hábitos`;
+            document.getElementById("form-count-lbl").textContent = `${formaciones.length} formaciones`;
+
+            const habitosOrdenados = [...habitos].sort((a, b) => {
+                const aHecho = estaHabitoHechoHoy(a, hoyIso) ? 1 : 0;
+                const bHecho = estaHabitoHechoHoy(b, hoyIso) ? 1 : 0;
+                return aHecho - bHecho;
+            });
+
+            const contHab = document.getElementById("list-habitos");
+            contHab.innerHTML = habitosOrdenados.length === 0
+                ? `<div class="status-row flex items-center justify-center py-4 px-4 text-[#8e8e93] text-[13px]">Sin hábitos registrados aún</div>`
+                : habitosOrdenados.map((h) => {
+                    const hechoHoy = estaHabitoHechoHoy(h, hoyIso);
+                    const congeladoHoy = estaHabitoCongeladoHoy(h, hoyIso);
+                    return `
+                    <div class="status-row p-4 flex items-center justify-between gap-3 ${hechoHoy ? "opacity-75 bg-[#83da85]/[0.04] border border-[#83da85]/20" : ""}">
+                        <div class="min-w-0 space-y-1 flex-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="font-bold text-[15px] ${hechoHoy ? "text-[#a1a1aa] line-through decoration-[#83da85]/60" : "text-white"}">${escapeHtml(h.nombre)}</span>
+                                ${h.categoria ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-white/[0.06] text-[#e5e2e1]">${escapeHtml(h.categoria)}</span>` : ""}
+                                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#ffb961]/15 text-[#ffb961]">🔥 ${Number(h.racha_progreso) || 0} días</span>
+                                ${hechoHoy ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#83da85]/20 text-[#83da85]">✓ Hecho hoy</span>` : (h.estado ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-[#83da85]/15 text-[#83da85]">${escapeHtml(h.estado)}</span>` : "")}
+                                ${congeladoHoy && !hechoHoy ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#38bdf8]/15 text-[#38bdf8]">❄️ Protegido hoy</span>` : ""}
+                                ${Array.isArray(h.ejercicios_vinculados_ids) && h.ejercicios_vinculados_ids.length > 0 ? `<span class="px-2 py-0.5 rounded-full text-[11px] bg-[#ff5f52]/15 text-[#ff5f52]">🏋️ Ejercicio práctico</span>` : ""}
+                            </div>
+                            ${h.frecuencia_meta || h.nota ? `<p class="text-[12px] text-[#a1a1aa]">${[h.frecuencia_meta, h.nota].filter(Boolean).map(escapeHtml).join(" · ")}</p>` : ""}
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            ${hechoHoy
+                                ? `<button type="button" disabled aria-label="Hábito completado hoy" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#83da85]/20 border border-[#83da85] text-[#83da85] text-[13px] font-bold cursor-default"><span class="w-5 h-5 flex-shrink-0 rounded-full bg-[#83da85] text-[#111115] flex items-center justify-center text-[12px] font-extrabold">✓</span><span>Hecho</span></button>`
+                                : `<button type="button" onclick="marcarHabitoHechoHoy('${escapeHtml(h.id || "")}')" title="Marcar como hecho hoy" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/[0.04] hover:bg-[#83da85]/15 border border-white/[0.15] hover:border-[#83da85]/60 text-[#e5e2e1] hover:text-[#83da85] text-[13px] font-semibold transition-all active:scale-95"><span class="w-5 h-5 flex-shrink-0 rounded-full border-2 border-current inline-block"></span><span>Hecho</span></button>`
+                            }
+                            <button type="button" onclick="abrirModalEditarHabito('${escapeHtml(h.id || "")}')" class="p-2 hover:bg-white/10 rounded-lg text-[#a1a1aa] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                        </div>
+                    </div>
+                `;
+                }).join("");
+
+            const estadosCols = habitosOpciones.estados_formacion || ESTADOS_FORMACION;
+            const contForm = document.getElementById("kanban-formaciones");
+            contForm.innerHTML = estadosCols.map((est) => {
+                const cols = formaciones.filter((f) => (f.estado || "").toLowerCase() === est.toLowerCase());
+                return `
+                    <div class="rounded-2xl bg-[#08080a] border border-white/[0.08] p-3.5 space-y-3 min-h-[180px]">
+                        <div class="flex items-center justify-between px-1">
+                            <span class="text-xs font-bold text-white uppercase tracking-wider">${escapeHtml(est)}</span>
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-white/[0.06] text-[#8e8e93]">${cols.length}</span>
+                        </div>
+                        <div class="space-y-2.5">
+                            ${cols.length === 0
+                                ? `<p class="text-xs text-[#8e8e93] py-6 text-center">Sin formaciones</p>`
+                                : cols.map((f) => `
+                                    <div class="p-3 rounded-xl bg-[#18181d] border border-white/[0.06] space-y-2">
+                                        <div class="flex items-start justify-between gap-2">
+                                            <p class="text-[13px] font-bold text-white leading-snug">${escapeHtml(f.tema)}</p>
+                                            <button type="button" onclick="abrirModalEditarFormacion('${escapeHtml(f.id || "")}')" class="p-1 hover:bg-white/10 rounded text-[#8e8e93] hover:text-white flex-shrink-0"><span class="material-symbols-outlined text-[15px]">edit</span></button>
+                                        </div>
+                                        ${f.plataforma ? `<span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-semibold bg-[#00aaff]/15 text-[#00aaff]">${escapeHtml(f.plataforma)}</span>` : ""}
+                                        ${(f.tematica || []).length ? `<div class="flex flex-wrap gap-1">${f.tematica.map((t) => `<span class="px-1.5 py-0.5 rounded text-[10px] bg-white/[0.06] text-[#a1a1aa]">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
+                                        ${f.seccion_onenote ? `<p class="text-[11px] text-[#8e8e93] truncate">📓 ${escapeHtml(f.seccion_onenote)}</p>` : ""}
+                                    </div>
+                                `).join("")}
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initLocalStorage();
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
+            renderizarHabitosYDisciplina();
+        });
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+            sidebar.classList.toggle('-translate-x-full', isOpen);
+            overlay.classList.toggle('hidden', isOpen);
+        }
+
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => { navigator.serviceWorker.register("./sw.js").catch(() => {}); });
+        }
+
+        function abrirModal(id) { document.getElementById(id).classList.remove("hidden"); document.getElementById(id).classList.add("flex"); }
+        function cerrarModal(id) { document.getElementById(id).classList.add("hidden"); document.getElementById(id).classList.remove("flex"); }
+
+        function abrirModalHabito(modPre) {
+            document.getElementById("form-habito").reset();
+            document.getElementById("hab-page-id").value = "";
+            document.getElementById("hab-modal-titulo").textContent = modPre && modPre.includes("Formación") ? "Nueva formación" : "Nuevo hábito";
+            _poblarSelect("hab-modulo", habitosOpciones.modulos, modPre || habitosOpciones.modulos[0]);
+            _poblarSelect("hab-estado", habitosOpciones.estados, modPre && modPre.includes("Formación") ? "Por empezar" : "Activo");
+            _poblarSelect("hab-categoria", habitosOpciones.categorias, habitosOpciones.categorias[0]);
+            document.getElementById("hab-fecha").value = hoyLocalISO();
+            document.getElementById("hab-btn-eliminar").classList.add("hidden");
+            document.getElementById("hab-mensaje").classList.add("hidden");
+            abrirModal("modal-habito");
+        }
+
+        function abrirModalEditarHabito(id) {
+            const h = (habitosRegistros || []).find((x) => x.id === id);
+            if (!h) return;
+            document.getElementById("form-habito").reset();
+            document.getElementById("hab-page-id").value = h.id;
+            document.getElementById("hab-modal-titulo").textContent = "Editar registro";
+            document.getElementById("hab-nombre").value = h.nombre || "";
+            _poblarSelect("hab-modulo", habitosOpciones.modulos, h.modulo || habitosOpciones.modulos[0]);
+            _poblarSelect("hab-estado", habitosOpciones.estados, h.estado || "Activo");
+            _poblarSelect("hab-categoria", habitosOpciones.categorias, h.categoria || habitosOpciones.categorias[0]);
+            document.getElementById("hab-racha").value = h.racha_progreso !== null && h.racha_progreso !== undefined ? h.racha_progreso : "";
+            document.getElementById("hab-fecha").value = h.ultima_fecha || "";
+            document.getElementById("hab-frecuencia").value = h.frecuencia_meta || "";
+            document.getElementById("hab-nota").value = h.nota || "";
+            document.getElementById("hab-btn-eliminar").classList.remove("hidden");
+            document.getElementById("hab-mensaje").classList.add("hidden");
+            abrirModal("modal-habito");
+        }
+
+        function guardarTokenHabitos() {
+            const token = document.getElementById("hab-token-input").value.trim();
+            if (!token) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, token); } catch (e) {}
+            document.getElementById("hab-token-input").value = "";
+            cerrarModal("modal-token-notion");
+        }
+
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            abrirModal("modal-spinner-notion");
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+
+        async function ejecutarEscrituraConSpinner(accion, datos) {
+            const token = obtenerTokenGuardado();
+            if (!token) { abrirModal("modal-token-notion"); return; }
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, datos, token);
+                const r = await fetch(url, options);
+                if (r.status === 401 || r.status === 404) {
+                    cerrarModal("modal-spinner-notion");
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModal("modal-token-notion");
+                    return;
+                }
+                if (r.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${r.status}).`);
+                    return;
+                }
+                const conf = await esperarConfirmacionWorkflow({
+                    owner: GITHUB_OWNER, repo: GITHUB_REPO, token,
+                    workflowFile: WORKFLOW_NOTION_WRITE, dispatchedAfterMs,
+                });
+                if (conf.ok) {
+                    mostrarSpinnerNotion("ok", "¡Notion actualizado!", "Recargando Hábitos...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", conf.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub.");
+            }
+        }
+
+        async function manejarSubmitHabito(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("hab-page-id").value.trim();
+            const existente = pageId ? (habitosRegistros || []).find((x) => x.id === pageId) : null;
+            const res = construirPayloadHabito({
+                pageId,
+                nombre: document.getElementById("hab-nombre").value,
+                modulo: document.getElementById("hab-modulo").value,
+                estado: document.getElementById("hab-estado").value,
+                categoria: document.getElementById("hab-categoria").value,
+                rachaProgreso: document.getElementById("hab-racha").value,
+                ultimaFecha: document.getElementById("hab-fecha").value,
+                frecuenciaMeta: document.getElementById("hab-frecuencia").value,
+                nota: document.getElementById("hab-nota").value,
+                historialFechas: existente && existente.historial_fechas ? existente.historial_fechas : "",
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("hab-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
+            cerrarModal("modal-habito");
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_habito_disciplina" : "crear_habito_disciplina", res.payload);
+            return false;
+        }
+
+        async function confirmarEliminarHabito() {
+            const pageId = document.getElementById("hab-page-id").value.trim();
+            if (!pageId) return;
+            if (!confirm("¿Deseas mandar este registro a la papelera de Notion?")) return;
+            cerrarModal("modal-habito");
+            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: pageId });
+        }
+
+        function _poblarTematicasFormacion(sel) {
+            const setSel = new Set(sel || []);
+            document.getElementById("form-tematica-list").innerHTML = (habitosOpciones.tematicas_formacion || []).map((t) => `
+                <label class="flex items-center gap-2 text-[12px] text-[#e5e2e1] cursor-pointer px-1.5 py-1 rounded hover:bg-white/5">
+                    <input type="checkbox" name="form-tematica" value="${escapeHtml(t)}"${setSel.has(t) ? " checked" : ""} class="accent-[#00aaff] rounded" />
+                    <span class="truncate">${escapeHtml(t)}</span>
+                </label>
+            `).join("");
+        }
+
+        function abrirModalFormacion() {
+            document.getElementById("form-formacion").reset();
+            document.getElementById("form-page-id").value = "";
+            document.getElementById("form-modal-titulo").textContent = "Nueva formación";
+            _poblarSelect("form-estado", habitosOpciones.estados_formacion || ESTADOS_FORMACION, "Sin empezar");
+            const platEl = document.getElementById("form-plataforma");
+            platEl.innerHTML = ['<option value="">Sin especificar</option>'].concat(
+                (habitosOpciones.plataformas_formacion || []).map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`)
+            ).join("");
+            _poblarTematicasFormacion([]);
+            document.getElementById("form-btn-eliminar").classList.add("hidden");
+            document.getElementById("form-mensaje").classList.add("hidden");
+            abrirModal("modal-formacion");
+        }
+
+        function abrirModalEditarFormacion(id) {
+            const f = (formacionesRegistros || []).find((x) => x.id === id);
+            if (!f) return;
+            abrirModalFormacion();
+            document.getElementById("form-page-id").value = f.id;
+            document.getElementById("form-modal-titulo").textContent = "Editar formación";
+            document.getElementById("form-tema").value = f.tema || "";
+            document.getElementById("form-estado").value = f.estado || "Sin empezar";
+            document.getElementById("form-plataforma").value = f.plataforma || "";
+            document.getElementById("form-inicio").value = f.inicio || "";
+            document.getElementById("form-fin").value = f.fin || "";
+            document.getElementById("form-onenote").value = f.seccion_onenote || "";
+            _poblarTematicasFormacion(f.tematica || []);
+            document.getElementById("form-btn-eliminar").classList.remove("hidden");
+        }
+
+        async function manejarSubmitFormacion(event) {
+            event.preventDefault();
+            const pageId = document.getElementById("form-page-id").value.trim();
+            const tematica = [...document.querySelectorAll('input[name="form-tematica"]:checked')].map((el) => el.value);
+            const res = construirPayloadFormacion({
+                pageId,
+                tema: document.getElementById("form-tema").value,
+                estado: document.getElementById("form-estado").value,
+                plataforma: document.getElementById("form-plataforma").value,
+                inicio: document.getElementById("form-inicio").value,
+                fin: document.getElementById("form-fin").value,
+                seccionOnenote: document.getElementById("form-onenote").value,
+                tematica,
+            });
+            if (!res.ok) {
+                const msg = document.getElementById("form-mensaje");
+                msg.textContent = res.error;
+                msg.className = "text-[13px] text-[#ff5f52]";
+                return false;
+            }
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return false; }
+            cerrarModal("modal-formacion");
+            await ejecutarEscrituraConSpinner(pageId ? "actualizar_formacion_curso" : "crear_formacion_curso", res.payload);
+            return false;
+        }
+
+        async function confirmarEliminarFormacion() {
+            const pageId = document.getElementById("form-page-id").value.trim();
+            if (!pageId) return;
+            if (!confirm("¿Deseas mandar esta formación a la papelera de Notion?")) return;
+            cerrarModal("modal-formacion");
+            await ejecutarEscrituraConSpinner("archivar_pagina", { page_id: pageId });
+        }
+        async function marcarHabitoHechoHoy(id) {
+            const idx = (habitosRegistros || []).findIndex((x) => x.id === id);
+            if (idx < 0) return;
+            const hoyIso = hoyLocalISO();
+            const res = completarHabitoHoy(habitosRegistros[idx], hoyIso);
+            if (!res.changed) return;
+            if (!obtenerTokenGuardado()) { abrirModal("modal-token-notion"); return; }
+
+            habitosRegistros[idx] = res.actualizado;
+            renderizarHabitosYDisciplina();
+            renderizarHeatmapHabitos();
+            await ejecutarEscrituraConSpinner("actualizar_habito_disciplina", res.payload);
+        }
+
+        const CONGELACION_KEY = "asistente_sabry:habitos_congelacion";
+        let _habitoPausadoParaFormacion = false;
+
+        async function toggleCongelacionCompasiva() {
+            const hoyIso = hoyLocalISO();
+            const habitos = (habitosRegistros || []).filter((x) => !x.modulo || (x.modulo || "").includes("Hábito"));
+            const yaActivo = habitos.some((h) => estaHabitoCongeladoHoy(h, hoyIso))
+                || (() => { try { return localStorage.getItem(CONGELACION_KEY) === hoyIso; } catch (_e) { return false; } })();
+            const activar = !yaActivo;
+
+            if (habitos.length > 0 && !obtenerTokenGuardado()) {
+                abrirModal("modal-token-notion");
+                return;
+            }
+
+            try { localStorage.setItem(CONGELACION_KEY, activar ? hoyIso : ""); } catch (_e) {}
+
+            const payloads = [];
+            (habitosRegistros || []).forEach((h, i) => {
+                if (h.modulo && !(h.modulo || "").includes("Hábito")) return;
+                if ((h.estado || "").toLowerCase().includes("pausa")) return;
+                const r = alternarCongelacionHabitoHoy(h, hoyIso, activar);
+                if (r.changed) {
+                    habitosRegistros[i] = r.actualizado;
+                    payloads.push(r.payload);
+                }
+            });
+
+            renderizarHabitosYDisciplina();
+            renderizarHeatmapHabitos();
+
+            for (const p of payloads) {
+                await ejecutarEscrituraConSpinner("actualizar_habito_disciplina", p);
+            }
+        }
+
+        function _actualizarBtnCongelacion(activo) {
+            const btn = document.getElementById("btn-congelar-racha");
+            if (!btn) return;
+            btn.textContent = activo ? "❄️ Racha Protegida (Hoy)" : "❄️ Congelación Compasiva";
+            btn.className = activo
+                ? "px-3 py-1.5 rounded-xl bg-[#38bdf8]/30 border border-[#38bdf8] text-white text-xs font-bold transition-all"
+                : "px-3 py-1.5 rounded-xl bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/35 text-[#38bdf8] text-xs font-bold transition-all";
+        }
+
+        function renderizarHeatmapHabitos() {
+            const cont = document.getElementById("hab-heatmap-anual");
+            if (!cont) return;
+            const hoyIso = hoyLocalISO();
+            const habitos = (typeof habitosRegistros !== "undefined" ? habitosRegistros : []).filter((x) => !x.modulo || (x.modulo || "").includes("Hábito"));
+            const celdas = calcularMatriz52Semanas(habitos, hoyIso);
+            const colores = ["bg-white/[0.08]", "bg-[#83da85]/35", "bg-[#83da85]/65", "bg-[#83da85]"];
+            cont.innerHTML = celdas.map((c) => {
+                const cls = c.esCongelada && c.cumplidos === 0
+                    ? "bg-[#38bdf8]/65 ring-1 ring-[#38bdf8]"
+                    : c.esCongelada
+                        ? `${colores[c.nivel]} ring-1 ring-[#38bdf8]`
+                        : colores[c.nivel];
+                return `<div class="h-3.5 rounded-sm ${cls} transition-colors" style="min-height:14px" title="${escapeHtml(c.tooltip)}"></div>`;
+            }).join("");
+            const congeladoHoy = habitos.some((h) => estaHabitoCongeladoHoy(h, hoyIso))
+                || (() => { try { return localStorage.getItem(CONGELACION_KEY) === hoyIso; } catch (_e) { return false; } })();
+            _actualizarBtnCongelacion(congeladoHoy);
+        }
+
+        function abrirFormacionEnVueloDesdeHabito() {
+            _habitoPausadoParaFormacion = true;
+            abrirModalFormacion();
+        }
+
+        document.addEventListener("DOMContentLoaded", renderizarHeatmapHabitos);
+    </script>
+    <script src="./src/utils/somatic_shell.js"></script>
+</body>
+</html>

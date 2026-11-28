@@ -1,0 +1,590 @@
+﻿<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#08080a">
+    <title>Relaciones y límites — AsistenteSabry</title>
+    <link rel="icon" type="image/png" href="./grafica/logo 1-1 NF.png">
+    <link rel="apple-touch-icon" href="./grafica/icons/apple-touch-icon.png">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsistenteSabry">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        body {
+            background-color: #08080a;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+        .status-row {
+            background: #18181d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .status-row:hover { background: #1f1f26; border-color: rgba(255, 255, 255, 0.12); }
+        #sidebar { transition: transform 0.3s ease; }
+        .spin-animation { animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+
+    <script>
+        const timestampLocalStr = "28/11/2026 00:53:04";
+        const appVersionStr = "v4.95";
+        const timestampNextStr = "28/11/2026 01:53:04";
+        const timestampServerStr = "28/11/2026 03:53:04";
+        const relacionesAfirmaciones = [{"id": "422a38bb-7a6e-81f0-a012-df19f07dfdef", "nombre": "Cree en ti misma y todo será posible", "categoria": "🌿 Espacio personal", "contexto": "🪞 Conmigo misma", "integrada": true, "nota": ""}];
+        const relacionesFrases = [{"id": "2e6a38bb-7a6e-8061-aa67-e4281a9b1d5c", "frase": "¿Qué decisiones tomo cuyos errores podrían pagar otros?", "autor": "No lo sé"}, {"id": "223a38bb-7a6e-80de-8aa7-d99f73b44a62", "frase": "Nunca es insoportable el momento presente si lo vives\nplenamente. Lo insoportable es estar aquí con el cuerpo a las diez de la mañana\ny con la mente a las seis de la tarde.", "autor": "No lo sé"}, {"id": "1f8a38bb-7a6e-80a5-9710-e3d71f947cba", "frase": "“Los mejores momentos al leer son esos en los que te encuentras con algo —un pensamiento, un sentimiento, una forma de ver las cosas— que creías especial y únicamente tuyo. Y de pronto está ahí, escrito por otra persona, alguien a quien nunca has conocido, incluso alguien que murió hace mucho. Y es como si una mano saliera de esas páginas y tomara la tuya.”", "autor": "Alan Bennet"}, {"id": "1dea38bb-7a6e-801d-aa43-df3eff1b4e75", "frase": "Mantra: No se trata de números, sino de carácter.", "autor": "No lo sé"}, {"id": "1dda38bb-7a6e-80ea-bbf7-e2077431665d", "frase": "\"La simplicidad es la máxima sofisticación.\"", "autor": "Leonardo da Vinci"}];
+        const relacionesOpciones = {"categorias": ["🛡️ Autorrespeto", "💛 Culpa y merecimiento", "🌿 Espacio personal", "🤝 Vulnerabilidad segura"], "contextos": ["💼 Laboral", "❤️ Pareja & Vínculos", "🏡 Familia & Social", "⚡ Presión / Urgencia", "🪞 Conmigo misma"]};
+    </script>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col p-4 bg-[#0c0c0f]/95 backdrop-blur-xl border-r border-white/[0.08] w-64 -translate-x-full lg:translate-x-0">
+        <div class="flex items-center gap-3 mb-5 px-2">
+            <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h2 class="font-display-lg text-white text-[17px] font-bold leading-tight">Asistente de Sabry</h2>
+                <p class="text-[10px] text-[#8e8e93] tracking-widest uppercase mt-0.5">v4.95</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">home</span>
+                <span>Inicio</span>
+            </a>
+            <a href="agenda-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span>Agenda personal</span>
+            </a>
+            <a href="recordatorios-diarios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">alarm</span>
+                <span>Recordatorios diarios</span>
+            </a>
+            <a href="recordatorios-varios.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">check_box</span>
+                <span>Recordatorios varios</span>
+            </a>
+            <a href="finanzas.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                <span>Finanzas</span>
+            </a>
+            <a href="salud.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">favorite</span>
+                <span>Salud</span>
+            </a>
+            <a href="ocio.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_library</span>
+                <span>Ocio</span>
+            </a>
+            <a href="gestion-emocional.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">psychology</span>
+                <span>Gestión emocional</span>
+            </a>
+            <a href="relaciones-y-limites.html" class="flex items-center gap-3 px-4 py-2 bg-[#ff5f52]/10 text-[#ff5f52] border border-[#ff5f52]/30 rounded-xl font-bold transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shield</span>
+                <span>Relaciones y límites</span>
+            </a>
+            <a href="desarrollo-personal.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">trending_up</span>
+                <span>Desarrollo personal</span>
+            </a>
+            <a href="habitos-y-disciplina.html" class="flex items-center gap-3 px-4 py-2 text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white rounded-xl transition-all">
+                <span class="material-symbols-outlined">local_fire_department</span>
+                <span>Hábitos y disciplina</span>
+            </a>
+        </nav>
+        <div class="pt-3 mt-3 border-t border-white/[0.08]">
+            <a href="https://contras.ai.studio/" target="_blank" rel="noopener" class="flex items-center gap-2 px-3 py-1.5 text-[#ffb961] hover:bg-[#ffb961]/10 rounded-lg transition-all text-[11px] font-semibold">
+                <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                <span>Contras AI Studio</span>
+            </a>
+        </div>
+
+        <div class="pt-3 mt-3 border-t border-white/[0.08] flex items-center gap-3 px-2">
+            <div class="w-8 h-8 rounded-full bg-[#ff5f52]/15 border border-[#ff5f52]/30 flex items-center justify-center text-[#ff5f52] font-bold text-xs">S</div>
+            <div class="min-w-0">
+                <p class="text-[13px] font-semibold text-white leading-tight">Sabry</p>
+                <p class="text-[10px] text-[#83da85] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#83da85] inline-block"></span>Sistema activo • v4.95</p>
+            </div>
+        </div>
+    </aside>
+
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <main class="min-h-screen lg:ml-64">
+        <header class="bg-[#08080a]/90 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
+            <div class="flex justify-between items-center w-full px-container-padding py-5 max-w-[1200px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-primary" title="Menú">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0">
+                        <img src="./grafica/logo 1-1 NF.png" alt="Logo AsistenteSabry" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="text-[18px] font-headline-md font-extrabold text-on-background tracking-tight leading-none">Asistente Sabry</span><span id="header-version" class="ml-2 text-[10px] text-[#ff5f52] font-semibold bg-[#ff5f52]/10 px-2 py-0.5 rounded-full border border-[#ff5f52]/20 align-middle">dev</span>
+                        <p class="text-[10px] font-label-caps text-primary tracking-widest">RELACIONES Y LÍMITES</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-refresh" class="p-2 hover:bg-surface-container-highest rounded-full transition-colors active:scale-95 text-on-surface-variant" title="Actualizar" onclick="recargarDashboard()">
+                        <span id="icon-refresh" class="material-symbols-outlined text-[20px]">refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-[1200px] mx-auto p-container-padding space-y-section-margin">
+            <!-- CABECERA -->
+            <section class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-white/[0.08]">
+                <div class="space-y-2">
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">VÍNCULOS · ASERTIVIDAD · CUIDADO PROPIO</p>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold font-headline-md text-white tracking-tight">RELACIONES Y LÍMITES</h1>
+                    <p class="text-[13px] text-[#a1a1aa] max-w-2xl">
+                        <span class="text-[#ff5f52] font-semibold">Objetivo:</span> Cultivar vínculos recíprocos, sostener límites compasivos y comunicarme con asertividad sin culpa.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2.5">
+                    <button type="button" onclick="abrirModalAfirmacion()" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#ff5f52] hover:bg-[#ff4838] text-white font-bold text-xs">
+                        <span class="material-symbols-outlined text-[17px]">add</span>
+                        <span>+ Nueva afirmación</span>
+                    </button>
+                    <button type="button" onclick="abrirModalFrase()" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#ffb961] hover:bg-[#ffb961]/90 text-[#131313] font-bold text-xs">
+                        <span class="material-symbols-outlined text-[17px]">format_quote</span>
+                        <span>+ Nueva frase</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- KPIS -->
+            <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#ff5f52]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">AFIRMACIONES DIARIAS</p>
+                    <p id="kpi-rel-afirmaciones" class="text-3xl font-extrabold text-white">0</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#83da85]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">INTEGRADAS</p>
+                    <p id="kpi-rel-integradas" class="text-3xl font-extrabold text-[#83da85]">0</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 border-l-4 border-l-[#ffb961]">
+                    <p class="text-[10px] font-label-caps text-[#8e8e93] mb-1">FRASES GUARDADAS</p>
+                    <p id="kpi-rel-frases" class="text-3xl font-extrabold text-[#ffb961]">0</p>
+                </div>
+            </section>
+
+            <!-- ACCESO A EJERCICIOS DE COMUNICACIÓN -->
+            <section class="glass-card rounded-2xl p-6 sm:p-8 border-l-4 border-l-[#ffb961] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="space-y-1.5">
+                    <p class="text-[11px] font-label-caps text-[#ffb961] tracking-widest">COMUNICACIÓN ASERTIVA</p>
+                    <h2 class="text-headline-md font-headline-md text-white">¿Tuviste o vas a tener una conversación que te quitó energía?</h2>
+                    <p class="text-sm text-[#a1a1aa] leading-relaxed">Si estás por afrontar o tuviste una charla difícil que te dejó con emociones fuertes, hacé una pausa y practicá un ejercicio para regular y ordenar lo que sentís.</p>
+                </div>
+                <a href="desarrollo-personal.html#sec-comunicacion" class="bg-[#ffb961] hover:bg-[#ffb961]/90 text-[#111115] font-bold text-xs px-4 py-3 rounded-xl inline-flex items-center justify-center gap-2 transition-all active:scale-95 whitespace-nowrap flex-shrink-0">
+                    <span class="material-symbols-outlined text-[18px]">record_voice_over</span>
+                    <span>Ir a ejercicios de comunicación</span>
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </a>
+            </section>
+
+            <!-- AFIRMACIONES DIARIAS -->
+            <section class="glass-card rounded-2xl p-6 sm:p-8 border-l-4 border-l-[#ff5f52] space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">NOTION · RELACIONES Y LÍMITES</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Afirmaciones Diarias</h2>
+                    </div>
+                    <a href="https://app.notion.com/p/421a38bb7a6e80e8ac8bd4543ce353b4?v=421a38bb7a6e80408e5c000cefa421d9&source=copy_link" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-xl bg-[#18181d] border border-white/[0.08] text-xs font-semibold text-[#e5e2e1] inline-flex items-center gap-1">
+                        <span>Ver en Notion</span>
+                        <span class="material-symbols-outlined text-[15px]">open_in_new</span>
+                    </a>
+                </div>
+                <div id="list-afirmaciones" class="space-y-3"></div>
+            </section>
+
+            <!-- FRASES QUE ME GUSTAN -->
+            <section class="glass-card rounded-2xl p-6 sm:p-8 border-l-4 border-l-[#00aaff] space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">NOTION · FRASES QUE ME GUSTAN</p>
+                        <h2 class="text-headline-md font-headline-md text-white">Catálogo de Frases</h2>
+                    </div>
+                    <a href="https://app.notion.com/p/1dda38bb7a6e8055a328fc8bd816bd7d?v=1dda38bb7a6e80f3bf2c000cdca2b5be&source=copy_link" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-xl bg-[#18181d] border border-white/[0.08] text-xs font-semibold text-[#e5e2e1] inline-flex items-center gap-1">
+                        <span>Ver en Notion</span>
+                        <span class="material-symbols-outlined text-[15px]">open_in_new</span>
+                    </a>
+                </div>
+                <div class="relative max-w-md">
+                    <span class="material-symbols-outlined text-[18px] text-[#8e8e93] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">search</span>
+                    <input id="rel-buscador-frases" type="text" oninput="renderizarRelaciones()" placeholder="Buscar frase o autor..." class="w-full bg-[#08080a] border border-white/[0.08] rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-[#8e8e93]">
+                </div>
+                <div id="list-frases" class="space-y-3"></div>
+            </section>
+        </div>
+
+        <footer class="border-t border-white/[0.08] py-10 px-container-padding max-w-[1200px] mx-auto mt-12">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+                <div class="space-y-2 text-left">
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] tracking-widest">SISTEMA AUDITADO</p>
+                    <p class="text-[15px] font-bold text-white flex items-center gap-2">
+                        <span>AsistenteSabry</span>
+                        <span id="footer-version" class="bg-[#ff5f52]/10 text-[#ff5f52] px-2.5 py-0.5 rounded-full text-[11px] font-mono border border-[#ff5f52]/20">dev</span>
+                    </p>
+                </div>
+                <div class="flex flex-col items-start gap-2 text-left">
+                    <p class="text-[13px] text-[#8e8e93]">Sincro ART: <span id="footer-sync-time" class="font-bold text-white">--/--/-- --:--:--</span></p>
+                    <p class="text-[13px] text-[#8e8e93]">Próxima actualización: <span id="footer-next-time" class="text-[#ffb961] font-bold">--/--/-- --:--:--</span></p>
+                    <p class="text-[11px] font-label-caps text-[#8e8e93] mt-2">Sabri Studios &copy; 2026</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL AFIRMACIÓN -->
+    <div id="modal-afirmacion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4" onclick="cerrarModalAfirmacion()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between">
+                <h3 id="af-modal-titulo" class="text-[18px] font-bold text-white">Nueva afirmación</h3>
+                <button type="button" onclick="cerrarModalAfirmacion()" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white"><span class="material-symbols-outlined text-[20px]">close</span></button>
+            </div>
+            <form onsubmit="manejarSubmitAfirmacion(event)" class="space-y-3">
+                <input type="hidden" id="af-page-id" value="">
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93]">Afirmación *</label>
+                        <span id="af-char-count" class="text-[11px] text-[#8e8e93]">0 / 140</span>
+                    </div>
+                    <input id="af-nombre" type="text" required maxlength="140" oninput="actualizarPreviewAfirmacion()" placeholder="Ej: Decir no con respeto también es cuidarme" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+                    <p id="af-preview" class="mt-2 p-2.5 rounded-xl bg-[#18181d] border border-white/[0.06] text-xs text-[#e2beba] italic hidden"></p>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Categoría</label>
+                        <select id="af-categoria" class="w-full px-3 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Contexto</label>
+                        <select id="af-contexto" class="w-full px-3 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white"></select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Nota</label>
+                    <textarea id="af-nota" rows="2" class="w-full px-3.5 py-2 rounded-xl bg-[#08080a] border border-white/[0.08] text-xs text-white"></textarea>
+                </div>
+                <label class="flex items-center gap-2 text-xs text-[#e5e2e1] cursor-pointer">
+                    <input id="af-integrada" type="checkbox" class="rounded border-white/20 bg-[#18181d] text-[#83da85]">
+                    <span>Afirmación integrada</span>
+                </label>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="cerrarModalAfirmacion()" class="px-4 py-2.5 rounded-xl bg-[#18181d] text-xs font-bold text-[#8e8e93]">Cancelar</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#ff5f52] text-white font-bold text-xs">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL FRASE -->
+    <div id="modal-frase" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4" onclick="cerrarModalFrase()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between">
+                <h3 id="fr-modal-titulo" class="text-[18px] font-bold text-white">Nueva frase</h3>
+                <button type="button" onclick="cerrarModalFrase()" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white"><span class="material-symbols-outlined text-[20px]">close</span></button>
+            </div>
+            <form onsubmit="manejarSubmitFrase(event)" class="space-y-3">
+                <input type="hidden" id="fr-page-id" value="">
+                <div>
+                    <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Frase *</label>
+                    <textarea id="fr-texto" rows="3" required placeholder="Escribí la frase..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white"></textarea>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-label-caps text-[#8e8e93] mb-1">Autor</label>
+                    <input id="fr-autor" type="text" placeholder="Ej: Brené Brown / Sabry" class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="cerrarModalFrase()" class="px-4 py-2.5 rounded-xl bg-[#18181d] text-xs font-bold text-[#8e8e93]">Cancelar</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#ffb961] text-[#131313] font-bold text-xs">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TOKEN Y SPINNER -->
+    <div id="modal-token-notion" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="cerrarModalTokenRel()">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md space-y-4" onclick="event.stopPropagation()">
+            <h3 class="text-[17px] font-bold text-white">Conectar con GitHub Actions</h3>
+            <p class="text-[13px] text-[#8e8e93]">Pegá tu Personal Access Token (permiso Actions: Read &amp; Write) para guardar en Notion.</p>
+            <input id="rel-token-input" type="password" placeholder="github_pat_..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#08080a] border border-white/[0.08] text-sm text-white">
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="cerrarModalTokenRel()" class="px-4 py-2 rounded-xl bg-[#18181d] text-xs font-bold text-[#8e8e93]">Cancelar</button>
+                <button type="button" onclick="guardarTokenRel()" class="px-4 py-2 rounded-xl bg-[#ff5f52] text-xs font-bold text-white">Guardar token</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-spinner-notion" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card rounded-2xl p-7 w-full max-w-xs text-center space-y-4">
+            <div id="spinner-icono-carga" class="mx-auto w-12 h-12 rounded-full border-4 border-[#232326] border-t-[#ff5f52] animate-spin"></div>
+            <span id="spinner-icono-ok" class="material-symbols-outlined text-[44px] text-[#53a759] hidden">check_circle</span>
+            <span id="spinner-icono-error" class="material-symbols-outlined text-[44px] text-[#ff5f52] hidden">error</span>
+            <h4 id="spinner-titulo" class="text-[16px] font-bold text-white">Actualizando en Notion...</h4>
+            <p id="spinner-subtitulo" class="text-[13px] text-[#8e8e93] leading-relaxed">Esperando confirmación de GitHub Actions (~30-60s)</p>
+            <button id="spinner-btn-cerrar" type="button" onclick="cerrarSpinnerNotion()" class="hidden w-full bg-[#1c1c1f] hover:bg-[#232326] text-white font-semibold text-[14px] py-2.5 rounded-xl">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="./src/utils/debounce.js"></script>
+    <script src="./src/utils/src_localStorage_index.js"></script>
+    <script src="./src/utils/dashboard_logic.js"></script>
+    <script src="./src/utils/dom_render.js"></script>
+    <script src="./src/utils/notion_write.js"></script>
+    <script src="./src/utils/relaciones_logic.js"></script>
+    <script>
+        const GITHUB_OWNER = "sabrinas01";
+        const GITHUB_REPO = "Flow_Auditor";
+        const TOKEN_STORAGE_KEY = "asistente_sabry:github_pat";
+
+        function renderizarRelaciones() {
+            const res = calcularResumenRelaciones(relacionesAfirmaciones, relacionesFrases);
+            document.getElementById("kpi-rel-afirmaciones").textContent = String(res.totalAfirmaciones);
+            document.getElementById("kpi-rel-integradas").textContent = String(res.integradas);
+            document.getElementById("kpi-rel-frases").textContent = String(res.totalFrases);
+
+            const contAf = document.getElementById("list-afirmaciones");
+            contAf.innerHTML = relacionesAfirmaciones.length === 0
+                ? `<div class="status-row flex items-center justify-center py-4 px-4 text-[#8e8e93] text-[13px]">Sin afirmaciones registradas</div>`
+                : relacionesAfirmaciones.map((a) => {
+                    const meta = [a.categoria, a.contexto].filter(Boolean).map(escapeHtml).join(" · ");
+                    return `
+                        <div class="status-row flex items-center justify-between px-4 py-3.5 gap-3">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-white font-semibold truncate">${escapeHtml(a.nombre)}${a.integrada ? ' <span class="ml-1.5 px-2 py-0.5 rounded-full bg-[#83da85]/15 text-[#83da85] text-[10px]">Integrada</span>' : ""}</p>
+                                ${meta ? `<p class="text-[12px] text-[#8e8e93] truncate">${meta}</p>` : ""}
+                            </div>
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                <button type="button" onclick="abrirModalEditarAfirmacion('${escapeHtml(a.id)}')" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                                <button type="button" onclick="eliminarPaginaRel('${escapeHtml(a.id)}')" class="p-1.5 hover:bg-[#ff5f52]/15 rounded-lg text-[#8e8e93] hover:text-[#ff5f52]" title="Mandar a papelera"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                            </div>
+                        </div>
+                    `;
+                }).join("");
+
+            const q = (document.getElementById("rel-buscador-frases").value || "").trim().toLowerCase();
+            const frasesFilt = (relacionesFrases || []).filter((f) => !q || `${f.frase} ${f.autor || ""}`.toLowerCase().includes(q));
+            const contFr = document.getElementById("list-frases");
+            contFr.innerHTML = frasesFilt.length === 0
+                ? `<div class="status-row flex items-center justify-center py-4 px-4 text-[#8e8e93] text-[13px]">Sin frases registradas</div>`
+                : frasesFilt.map((f, idx) => `
+                    <div class="status-row flex items-center justify-between px-4 py-3.5 gap-3">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-white font-medium">"${escapeHtml(f.frase)}"</p>
+                            ${f.autor ? `<p class="text-[12px] text-[#8e8e93] mt-0.5">— ${escapeHtml(f.autor)}</p>` : ""}
+                        </div>
+                        <div class="flex items-center gap-1 flex-shrink-0">
+                            <button type="button" onclick="copiarFrase(${idx})" class="p-1.5 hover:bg-white/10 rounded-lg text-[#ffb961]" title="Copiar frase"><span class="material-symbols-outlined text-[18px]">content_copy</span></button>
+                            <button type="button" onclick="abrirModalEditarFrase('${escapeHtml(f.id)}')" class="p-1.5 hover:bg-white/10 rounded-lg text-[#8e8e93] hover:text-white" title="Editar"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                            <button type="button" onclick="eliminarPaginaRel('${escapeHtml(f.id)}')" class="p-1.5 hover:bg-[#ff5f52]/15 rounded-lg text-[#8e8e93] hover:text-[#ff5f52]" title="Mandar a papelera"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                        </div>
+                    </div>
+                `).join("");
+        }
+
+        function copiarFrase(idx) {
+            const q = (document.getElementById("rel-buscador-frases").value || "").trim().toLowerCase();
+            const frasesFilt = (relacionesFrases || []).filter((f) => !q || `${f.frase} ${f.autor || ""}`.toLowerCase().includes(q));
+            const f = frasesFilt[idx];
+            if (f && navigator.clipboard) navigator.clipboard.writeText(f.frase).catch(() => {});
+        }
+
+        function _poblarSelectsAf() {
+            const cats = relacionesOpciones.categorias || ["🛡️ Autorrespeto", "💛 Culpa y merecimiento", "🌿 Espacio personal", "🤝 Vulnerabilidad segura"];
+            const ctxs = relacionesOpciones.contextos || ["💼 Laboral", "❤️ Pareja & Vínculos", "🏡 Familia & Social", "⚡ Presión / Urgencia", "🪞 Conmigo misma"];
+            document.getElementById("af-categoria").innerHTML = cats.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+            document.getElementById("af-contexto").innerHTML = ctxs.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+        }
+
+        function abrirModalAfirmacion() {
+            _poblarSelectsAf();
+            document.getElementById("af-modal-titulo").textContent = "Nueva afirmación";
+            document.getElementById("af-page-id").value = "";
+            document.getElementById("af-nombre").value = "";
+            document.getElementById("af-nota").value = "";
+            document.getElementById("af-integrada").checked = false;
+            const m = document.getElementById("modal-afirmacion"); m.classList.remove("hidden"); m.classList.add("flex");
+        }
+        function abrirModalEditarAfirmacion(id) {
+            const a = relacionesAfirmaciones.find((x) => x.id === id);
+            if (!a) return;
+            _poblarSelectsAf();
+            document.getElementById("af-modal-titulo").textContent = "Editar afirmación";
+            document.getElementById("af-page-id").value = a.id;
+            document.getElementById("af-nombre").value = a.nombre || "";
+            if (a.categoria) document.getElementById("af-categoria").value = a.categoria;
+            if (a.contexto) document.getElementById("af-contexto").value = a.contexto;
+            document.getElementById("af-nota").value = a.nota || "";
+            document.getElementById("af-integrada").checked = Boolean(a.integrada);
+            const m = document.getElementById("modal-afirmacion"); m.classList.remove("hidden"); m.classList.add("flex");
+        }
+        function cerrarModalAfirmacion() { const m = document.getElementById("modal-afirmacion"); m.classList.add("hidden"); m.classList.remove("flex"); }
+
+        function abrirModalFrase() {
+            document.getElementById("fr-modal-titulo").textContent = "Nueva frase";
+            document.getElementById("fr-page-id").value = "";
+            document.getElementById("fr-texto").value = "";
+            document.getElementById("fr-autor").value = "";
+            const m = document.getElementById("modal-frase"); m.classList.remove("hidden"); m.classList.add("flex");
+        }
+        function abrirModalEditarFrase(id) {
+            const f = relacionesFrases.find((x) => x.id === id);
+            if (!f) return;
+            document.getElementById("fr-modal-titulo").textContent = "Editar frase";
+            document.getElementById("fr-page-id").value = f.id;
+            document.getElementById("fr-texto").value = f.frase || "";
+            document.getElementById("fr-autor").value = f.autor || "";
+            const m = document.getElementById("modal-frase"); m.classList.remove("hidden"); m.classList.add("flex");
+        }
+        function cerrarModalFrase() { const m = document.getElementById("modal-frase"); m.classList.add("hidden"); m.classList.remove("flex"); }
+
+        function obtenerTokenRel() { try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ""; } catch (e) { return ""; } }
+        function abrirModalTokenRel() { const m = document.getElementById("modal-token-notion"); m.classList.remove("hidden"); m.classList.add("flex"); }
+        function cerrarModalTokenRel() { const m = document.getElementById("modal-token-notion"); m.classList.add("hidden"); m.classList.remove("flex"); }
+        function guardarTokenRel() {
+            const t = document.getElementById("rel-token-input").value.trim();
+            if (!t) return;
+            try { localStorage.setItem(TOKEN_STORAGE_KEY, t); } catch (e) {}
+            document.getElementById("rel-token-input").value = "";
+            cerrarModalTokenRel();
+        }
+        function mostrarSpinnerNotion(estado, titulo, subtitulo) {
+            const modal = document.getElementById("modal-spinner-notion");
+            modal.classList.remove("hidden"); modal.classList.add("flex");
+            document.getElementById("spinner-icono-carga").classList.toggle("hidden", estado !== "cargando");
+            document.getElementById("spinner-icono-ok").classList.toggle("hidden", estado !== "ok");
+            document.getElementById("spinner-icono-error").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-btn-cerrar").classList.toggle("hidden", estado !== "error");
+            document.getElementById("spinner-titulo").textContent = titulo;
+            document.getElementById("spinner-subtitulo").textContent = subtitulo;
+        }
+        function cerrarSpinnerNotion() { const modal = document.getElementById("modal-spinner-notion"); modal.classList.add("hidden"); modal.classList.remove("flex"); }
+
+        async function despacharAccionRel(accion, datos, msgOk) {
+            const token = obtenerTokenRel();
+            if (!token) { abrirModalTokenRel(); return; }
+            mostrarSpinnerNotion("cargando", "Actualizando en Notion...", "Esperando confirmación de GitHub Actions (~30-60s)");
+            const dispatchedAfterMs = Date.now();
+            try {
+                const { url, options } = construirSolicitudNotionWrite(GITHUB_OWNER, GITHUB_REPO, accion, datos, token);
+                const resp = await fetch(url, options);
+                if (resp.status === 401 || resp.status === 404) {
+                    cerrarSpinnerNotion();
+                    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+                    abrirModalTokenRel();
+                    return;
+                }
+                if (resp.status !== 204) {
+                    mostrarSpinnerNotion("error", "Error al enviar", `GitHub respondió (${resp.status}).`);
+                    return;
+                }
+                const conf = await esperarConfirmacionWorkflow({ owner: GITHUB_OWNER, repo: GITHUB_REPO, token, workflowFile: WORKFLOW_NOTION_WRITE, dispatchedAfterMs });
+                if (conf.ok) {
+                    mostrarSpinnerNotion("ok", msgOk, "Recargando página...");
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    mostrarSpinnerNotion("error", "No se pudo confirmar", conf.error);
+                }
+            } catch (e) {
+                mostrarSpinnerNotion("error", "Error de conexión", "No se pudo conectar con GitHub.");
+            }
+        }
+
+        async function manejarSubmitAfirmacion(e) {
+            e.preventDefault();
+            const res = construirPayloadAfirmacion({
+                pageId: document.getElementById("af-page-id").value,
+                nombre: document.getElementById("af-nombre").value,
+                categoria: document.getElementById("af-categoria").value,
+                contexto: document.getElementById("af-contexto").value,
+                nota: document.getElementById("af-nota").value,
+                integrada: document.getElementById("af-integrada").checked,
+            });
+            if (!res.ok) return;
+            cerrarModalAfirmacion();
+            await despacharAccionRel(res.payload.page_id ? "actualizar_afirmacion_relacion" : "crear_afirmacion_relacion", res.payload, "¡Afirmación guardada en Notion!");
+        }
+
+        async function manejarSubmitFrase(e) {
+            e.preventDefault();
+            const res = construirPayloadFrase({
+                pageId: document.getElementById("fr-page-id").value,
+                frase: document.getElementById("fr-texto").value,
+                autor: document.getElementById("fr-autor").value,
+            });
+            if (!res.ok) return;
+            cerrarModalFrase();
+            await despacharAccionRel(res.payload.page_id ? "actualizar_frase_relacion" : "crear_frase_relacion", res.payload, "¡Frase guardada en Notion!");
+        }
+
+        async function eliminarPaginaRel(id) {
+            if (!id) return;
+            await despacharAccionRel("archivar_pagina", { page_id: id }, "¡Registro enviado a la papelera!");
+        }
+
+        function toggleMenu() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+            const isOpen = !sidebar.classList.contains("-translate-x-full");
+            sidebar.classList.toggle("-translate-x-full", isOpen);
+            overlay.classList.toggle("hidden", isOpen);
+        }
+
+        const recargarDashboard = crearManejadorDeRefresco(debounce);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initLocalStorage();
+            document.getElementById("footer-sync-time").innerText = timestampLocalStr;
+            document.getElementById("footer-next-time").innerText = timestampNextStr;
+            document.getElementById("footer-version").innerText = appVersionStr;
+            const hv = document.getElementById("header-version"); if (hv) hv.innerText = appVersionStr;
+            renderizarRelaciones();
+        });
+
+        function actualizarPreviewAfirmacion() {
+            const inp = document.getElementById("af-nombre");
+            const cnt = document.getElementById("af-char-count");
+            const prev = document.getElementById("af-preview");
+            const val = inp ? inp.value : "";
+            if (cnt) cnt.textContent = `${val.length} / 140`;
+            if (prev) {
+                prev.textContent = val.trim() ? `“${val.trim()}”` : "";
+                prev.classList.toggle("hidden", !val.trim());
+            }
+        }
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            });
+        }
+    </script>
+    <script src="./src/utils/somatic_shell.js"></script>
+</body>
+</html>
