@@ -401,17 +401,6 @@ function inicializarCommandPalette() {
     document.body.appendChild(btnHint);
   }
 
-  if (!document.getElementById("btn-ocr-rapido-fab")) {
-    const btnOcr = document.createElement("button");
-    btnOcr.id = "btn-ocr-rapido-fab";
-    btnOcr.type = "button";
-    btnOcr.title = "Escanear foto o texto para Notion";
-    btnOcr.className = "hidden lg:inline-flex fixed bottom-5 left-36 z-30 items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#111115]/95 border border-[#53a759]/40 text-[11px] font-bold text-[#83da85] hover:bg-[#53a759]/20 backdrop-blur-md shadow-xl transition-all";
-    btnOcr.innerHTML = `<span class="material-symbols-outlined text-[15px]">photo_camera</span><span>Escanear</span>`;
-    btnOcr.addEventListener("click", abrirAccesoRapidoOCR);
-    document.body.appendChild(btnOcr);
-  }
-
   document.addEventListener("keydown", (e) => {
     if (e.altKey && e.key.toLowerCase() === "h") {
       e.preventDefault();
